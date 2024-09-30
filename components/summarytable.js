@@ -1,4 +1,6 @@
+import spendingCategories from "@/helpers/spendingcategories";
 import { Table } from "react-bootstrap";
+import CategoryRow from "./categoryRow";
 
 const SummaryTable = () => {
     return (
@@ -14,18 +16,9 @@ const SummaryTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">Category 1</th>
-                        <td>$100</td>
-                        <td>$90</td>
-                        <td>$10</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Category 2</th>
-                        <td>$150</td>
-                        <td>$120</td>
-                        <td>$30</td>
-                    </tr>
+                    {spendingCategories.map((category) => (
+                        <CategoryRow key={category} category={category} />
+                    ))}
                 </tbody>
                 <tfoot>
                     <tr>
