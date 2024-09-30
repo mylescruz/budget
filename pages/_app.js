@@ -1,6 +1,7 @@
+import InputTransaction from "@/components/inputTransaction";
 import SummaryTable from "@/components/summarytable";
 import Title from "@/components/title";
-import Transactions from "@/components/transactions";
+import TransactionsTable from "@/components/transactionstable";
 import "@/styles/globals.css";
 
 const App = () => {
@@ -8,7 +9,8 @@ const App = () => {
       <>
         <Title />
         <SummaryTable />
-        <Transactions />
+        <TransactionsTable />
+        <InputTransaction />
       </>
     );
   };
