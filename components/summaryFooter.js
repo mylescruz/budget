@@ -1,10 +1,15 @@
+import currencyFormatter from "@/helpers/currencyFormatter";
+import transactions from "@/helpers/transactions";
+
 const SummaryFooter = ({ categories }) => {
     let totalBudget = 0;
-    let totalActual = 0;
-
     categories.forEach(item => {
         totalBudget += item.budget;
-        totalActual += item.actual;
+    });
+
+    let totalActual = 0;
+    transactions.map(transaction => {
+        totalActual += transaction.amount;
     });
 
     const totalDifference = totalBudget - totalActual;
@@ -12,9 +17,9 @@ const SummaryFooter = ({ categories }) => {
     return (
         <tr>
             <th scope="col">Total</th>
-            <td scope="col">{totalBudget}</td>
-            <td scope="col">{totalActual}</td>
-            <td scope="col">{totalDifference}</td>
+            <td scope="col">{currencyFormatter.format(totalBudget)}</td>
+            <td scope="col">{currencyFormatter.format(totalActual)}</td>
+            <td scope="col">{currencyFormatter.format(totalDifference)}</td>
         </tr>
     );
 };

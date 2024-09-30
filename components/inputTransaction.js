@@ -25,12 +25,15 @@ const InputTransaction = () => {
         console.log("After: ", newTransaction[e.target.id]);
     }
 
+    const transactions = [];
+
     const onTransactionSubmitClick = () => {
         console.log(newTransaction.date);
         console.log(newTransaction.store);
         console.log(newTransaction.items);
         console.log(newTransaction.category);
         console.log(newTransaction.amount);
+        transactions.push(newTransaction);
     };
 
     return (

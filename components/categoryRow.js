@@ -1,12 +1,21 @@
-const CategoryRow = ({ category }) => {
-    const difference = category.budget - category.actual;
+import currencyFormatter from "@/helpers/currencyFormatter";
+import transactions from "@/helpers/transactions";
 
+const CategoryRow = ({ category }) => {
+    let actualAmount = 0;
+    transactions.map(transaction => {
+        if (transaction.category === category.name) {
+            actualAmount += transaction.amount;
+        }
+    });
+
+    const difference = category.budget - actualAmount;
     return (
         <tr>
             <th scope="row">{category.name}</th>
-            <td>{category.budget}</td>
-            <td>{category.actual}</td>
-            <td>{difference}</td>
+            <td>{currencyFormatter.format(category.budget)}</td>
+            <td>{currencyFormatter.format(actualAmount)}</td>
+            <td>{currencyFormatter.format(difference)}</td>
         </tr>
     );
 };

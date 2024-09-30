@@ -1,4 +1,6 @@
+import transactions from "@/helpers/transactions";
 import { Table } from "react-bootstrap";
+import TransactionRow from "./transactionRow";
 
 const TransactionsTable = () => {
     return (
@@ -7,19 +9,15 @@ const TransactionsTable = () => {
                 <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Store</th>
-                <th scope="col">Items Purchased</th>
+                <th scope="col">Item(s) Purchased</th>
                 <th scope="col">Category</th>
                 <th scope="col">Amount</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>09/29/24</td>
-                    <td>Example Store</td>
-                    <td>Example Description</td>
-                    <td>Example Category</td>
-                    <td>$15</td>
-                </tr>
+                {transactions.map(transaction => (
+                    <TransactionRow key={transaction.date} transaction={transaction}/>
+                ))}
             </tbody>
         </Table>
     );
