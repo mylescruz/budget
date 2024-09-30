@@ -1,7 +1,7 @@
 const Title = () => {
     return (
-        <header className="container mt-4">
-            <h1>BUDGET</h1>
+        <header className="container my-4">
+            <h1 className="text-center">BUDGET</h1>
         </header>
     );
 };
