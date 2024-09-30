@@ -1,8 +1,7 @@
-import transactions from "@/helpers/transactions";
 import { Table } from "react-bootstrap";
 import TransactionRow from "./transactionRow";
 
-const TransactionsTable = () => {
+const TransactionsTable = ({transactions}) => {
     return (
         <Table striped bordered className="mt-4">
             <thead className="thead-dark">
@@ -16,7 +15,7 @@ const TransactionsTable = () => {
             </thead>
             <tbody>
                 {transactions.map(transaction => (
-                    <TransactionRow key={transaction.date} transaction={transaction}/>
+                    <TransactionRow key={transaction.id} transaction={transaction}/>
                 ))}
             </tbody>
         </Table>

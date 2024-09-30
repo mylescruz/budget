@@ -1,9 +1,9 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
-import transactions from "@/helpers/transactions";
 
-const CategoryRow = ({ category }) => {
+const CategoryRow = ({ category, transactions }) => {
     let actualAmount = 0;
     transactions.map(transaction => {
+        console.log("Amount: ", transaction.category, " ", transaction.amount);
         if (transaction.category === category.name) {
             actualAmount += transaction.amount;
         }

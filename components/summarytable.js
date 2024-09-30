@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import SummaryFooter from "./summaryFooter";
 
-const SummaryTable = () => {
+const SummaryTable = ({transactions}) => {
     return (
         <>
             <h4 className="text-center">Summary by Category</h4>
@@ -18,7 +18,7 @@ const SummaryTable = () => {
                 </thead>
                 <tbody>
                     {categories.map(category => (
-                        <CategoryRow key={category.id} category={category}/>
+                        <CategoryRow key={category.id} category={category} transactions={transactions}/>
                     ))}
                 </tbody>
                 <tfoot>

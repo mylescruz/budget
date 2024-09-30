@@ -1,16 +1,13 @@
-import InputTransaction from "@/components/inputTransaction";
-import SummaryTable from "@/components/summarytable";
+import SummaryTable from "@/components/summaryTable";
 import Title from "@/components/title";
-import TransactionsTable from "@/components/transactionstable";
+import Transactions from "@/components/transactions";
 import "@/styles/globals.css";
 
 const App = () => {
     return (
       <>
         <Title />
-        <SummaryTable />
-        <TransactionsTable />
-        <InputTransaction />
+        <Transactions />
       </>
     );
   };

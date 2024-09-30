@@ -1,34 +1,39 @@
-const transactions = [
+const allTransactions = [
     {
-        "date": "01/01/24",
+        "id": 1,
+        "date": "2024-01-01",
         "store": "Integrity Property Management",
         "items": "Rent",
         "category": "Rent",
         "amount": 962.83
     },
     {
-        "date": "01/01/24",
+        "id": 2,
+        "date": "2024-01-01",
         "store": "Target",
         "items": "Dog Food",
         "category": "Necessities",
         "amount": 10
     },
     {
-        "date": "01/02/24",
+        "id": 3,
+        "date": "2024-01-02",
         "store": "Ralphs",
         "items": "Groceries",
         "category": "Groceries",
         "amount": 50
     },
     {
-        "date": "01/03/24",
+        "id": 4,
+        "date": "2024-01-03",
         "store": "Target",
         "items": "Body Soap",
         "category": "Necessities",
         "amount": 15
     },
     {
-        "date": "01/04/24",
+        "id": 5,
+        "date": "2024-01-04",
         "store": "Trader Joes",
         "items": "Bananas",
         "category": "Groceries",
@@ -36,4 +41,4 @@ const transactions = [
     }
 ];
 
-export default transactions;
+export default allTransactions;

@@ -1,5 +1,5 @@
+import allTransactions from "@/helpers/allTransactions";
 import currencyFormatter from "@/helpers/currencyFormatter";
-import transactions from "@/helpers/transactions";
 
 const SummaryFooter = ({ categories }) => {
     let totalBudget = 0;
@@ -8,7 +8,7 @@ const SummaryFooter = ({ categories }) => {
     });
 
     let totalActual = 0;
-    transactions.map(transaction => {
+    allTransactions.map(transaction => {
         totalActual += transaction.amount;
     });
 
