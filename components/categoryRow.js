@@ -3,7 +3,6 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 const CategoryRow = ({ category, transactions }) => {
     let actualAmount = 0;
     transactions.map(transaction => {
-        console.log("Amount: ", transaction.category, " ", transaction.amount);
         if (transaction.category === category.name) {
             actualAmount += transaction.amount;
         }

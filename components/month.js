@@ -1,22 +1,16 @@
-import { useState }  from "react";
-import InputTransaction from "./inputTransaction";
-import TransactionsTable from "./transactionsTable";
 import allTransactions from "@/helpers/allTransactions";
+import InputTransaction from "./inputTransaction";
 import SummaryTable from "./summaryTable";
+import TransactionsTable from "./transactionsTable";
+import { useEffect, useState } from "react";
 
-const Transactions = () => {
+
+const Month = () => {
     const [transactions, setTransactions] = useState(allTransactions);
-
-    // useEffect(() => {
-    //     axios
-    //         .get("/db/transactions.json")
-    //         .then((res) => setTransactions(res.data))
-    //         .catch((err) => console.log(err));
-    // });
 
     const updateTransactions = (newTransaction) => {
         setTransactions([...transactions, newTransaction]);
-    }
+    };
 
     return (
         <>
@@ -27,4 +21,4 @@ const Transactions = () => {
     );
 };
 
-export default Transactions;
+export default Month;

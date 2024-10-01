@@ -11,25 +11,20 @@ const InputTransaction = ({transactions, updateTransactions}) => {
 
     const emptyTransaction = {
         id: 999,
-        date: currentDate,
-        store: "Store Name",
-        items: "Item(s)",
-        category: "Necessities",
+        date: "",
+        store: "",
+        items: "",
+        category: "",
         amount: 0
     };
 
-    let newTransaction = emptyTransaction;
-
-    const handleUserInput = (e) => {
-        // console.log("Before: ", newTransaction[e.target.id]);
-        newTransaction[e.target.id] = e.target.value;
-        // console.log("After: ", newTransaction[e.target.id]);
-    }
+    const [newTransaction, setTransaction] = useState(emptyTransaction);
 
     const AddTransaction = () => {
         const maxID = Math.max(...transactions.map(trans => trans.id));
         newTransaction.id = maxID + 1;
         updateTransactions(newTransaction);
+        setTransaction(emptyTransaction);
     };
 
     return (
@@ -42,7 +37,7 @@ const InputTransaction = ({transactions, updateTransactions}) => {
                         type="date"
                         min={minDate}
                         max={maxDate}
-                        onChange={handleUserInput}
+                        onChange={(e) => setTransaction({ ...newTransaction, date: e.target.value })}
                         required
                     ></input>
                 </div>
@@ -52,7 +47,7 @@ const InputTransaction = ({transactions, updateTransactions}) => {
                         className="h-100"
                         type="text"
                         placeholder="Store/Restaurant"
-                        onChange={handleUserInput}
+                        onChange={(e) => setTransaction({ ...newTransaction, store: e.target.value })}
                         required
                     ></input>
                 </div>
@@ -62,12 +57,14 @@ const InputTransaction = ({transactions, updateTransactions}) => {
                         className="h-100"
                         type="text"
                         placeholder="What was purchased?"
-                        onChange={handleUserInput}
+                        onChange={(e) => setTransaction({ ...newTransaction, items: e.target.value })}
                         required
                     ></input>
                 </div>
                 <div className="col-5">
-                    <select id="category" className="h-100" onChange={handleUserInput} required>
+                    <select id="category" className="h-100" 
+                    onChange={(e) => setTransaction({ ...newTransaction, category: e.target.value })}
+                    required>
                         {categories.map(category => (
                             <option key={category.id} value={category.name}>{category.name}</option>
                         ))}
@@ -79,7 +76,7 @@ const InputTransaction = ({transactions, updateTransactions}) => {
                         className="h-100"
                         type="number"
                         placeholder="Amount"
-                        onChange={handleUserInput}
+                        onChange={(e) => setTransaction({ ...newTransaction, amount: parseFloat(e.target.value) })}
                         required
                     ></input>
                 </div>

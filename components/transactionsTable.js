@@ -1,7 +1,10 @@
 import { Table } from "react-bootstrap";
 import TransactionRow from "./transactionRow";
+import dateSorter from "@/helpers/dateSorter";
 
 const TransactionsTable = ({transactions}) => {
+    transactions = dateSorter(transactions);
+
     return (
         <Table striped bordered className="mt-4">
             <thead className="thead-dark">
