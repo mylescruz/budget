@@ -6,7 +6,7 @@ const TransactionsTable = ({transactions}) => {
     transactions = dateSorter(transactions);
 
     return (
-        <Table striped bordered className="mt-4 w-50">
+        <Table striped bordered responsive className="mt-4 w-75 mx-auto">
             <thead className="thead-dark">
                 <tr>
                 <th scope="col">Date</th>
