@@ -1,4 +1,5 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
+import styles from "@/styles/categoryRow.module.css";
 
 const CategoryRow = ({ category, transactions }) => {
     let actualAmount = 0;
@@ -12,7 +13,7 @@ const CategoryRow = ({ category, transactions }) => {
     return (
         <tr>
             <th scope="row">{category.name}</th>
-            <td>{currencyFormatter.format(category.budget)}</td>
+            <td className={styles.budgetRow}>{currencyFormatter.format(category.budget)}</td>
             <td>{currencyFormatter.format(actualAmount)}</td>
             <td>{currencyFormatter.format(difference)}</td>
         </tr>

@@ -7,26 +7,24 @@ const SummaryTable = ({transactions, categories}) => {
     return (
         <>
             <h4 className={styles.title}>Summary by Category</h4>
-            <div className={styles.tableContainer}>
-                <Table striped bordered className="my-4 w-50">
-                    <thead className="thead-dark">
-                        <tr>
-                            <th scope="col" className="red">Category</th>
-                            <th scope="col">Budget</th>
-                            <th scope="col">Actual</th>
-                            <th scope="col">Difference</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {categories.map(category => (
-                            <CategoryRow key={category.id} category={category} transactions={transactions}/>
-                        ))}
-                    </tbody>
-                    <tfoot>
-                        <SummaryFooter categories={categories} transactions={transactions} />
-                    </tfoot>
-                </Table>
-            </div>
+            <Table striped bordered className="my-4 w-50">
+                <thead className="thead-dark">
+                    <tr>
+                        <th scope="col" className="red">Category</th>
+                        <th scope="col">Budget</th>
+                        <th scope="col">Actual</th>
+                        <th scope="col">Difference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {categories.map(category => (
+                        <CategoryRow key={category.id} category={category} transactions={transactions}/>
+                    ))}
+                </tbody>
+                <tfoot>
+                    <SummaryFooter categories={categories} transactions={transactions} />
+                </tfoot>
+            </Table>
         </>
     );
 };

@@ -17,7 +17,7 @@ const Month = () => {
             setCategories(res.data.categories);
         })
         .catch((err) => console.log(err));
-    });
+    }, []);
 
     const updateTransactions = (newTransaction) => {
         setTransactions([...transactions, newTransaction]);
@@ -26,8 +26,8 @@ const Month = () => {
     return (
         <>
             <SummaryTable transactions={transactions} categories={categories} />
-            <TransactionsTable transactions={transactions}/>
             <InputTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories}/>
+            <TransactionsTable transactions={transactions}/>
         </>
     );
 };
