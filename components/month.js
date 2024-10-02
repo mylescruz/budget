@@ -56,7 +56,7 @@ const Month = () => {
                     <Col><Button variant="primary" onClick={addTransaction}>Add Transaction</Button></Col>
                 </Row>
                 
-                {viewClicked && <Row>{tableContainer}</Row>}
+                {viewClicked && <>{tableContainer}</>}
                 {addClicked && <>{addModal}</>}
             </Container>
         </>
