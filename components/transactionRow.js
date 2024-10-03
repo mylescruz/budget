@@ -2,11 +2,12 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
 import TransactionDetails from "./transactionDetails";
+import styles from "@/styles/transactionRow.module.css";
 
-const TransactionRow = ({ transaction }) => {
+const TransactionRow = ({ transaction, categories, updateTransactions }) => {
     const [showDetails, setDetails] = useState(false);
 
-    let detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setDetails={setDetails}/>;
+    const detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setDetails={setDetails} categories={categories} updateTransactions={updateTransactions} />;
 
     const openDetails = () => {
         setDetails(true);
@@ -14,11 +15,11 @@ const TransactionRow = ({ transaction }) => {
 
     return (
         <>
-            <tr onClick={openDetails}>
+            <tr className={styles.pointer} onClick={openDetails}>
                 <td>{dateFormatter(transaction.date)}</td>
-                <td>{transaction.store}</td>
-                <td>{transaction.category}</td>
-                <td>{currencyFormatter.format(transaction.amount)}</td>
+                <td className={styles.overflow}>{transaction.store}</td>
+                <td className={styles.overflow}>{transaction.category}</td>
+                <td className={styles.overflow}>{currencyFormatter.format(transaction.amount)}</td>
             </tr>
 
             {showDetails && <>{detailsModal}</>}

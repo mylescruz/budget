@@ -1,19 +1,11 @@
 import { useState } from "react";
-import styles from "@/styles/inputTransaction.module.css";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
+import dateInfo from "@/helpers/dateInfo";
 
 const InputTransaction = ({transactions, updateTransactions, categories, show, setAddClicked}) => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-    const startOfMonth = new Date(`${currentMonth}/01/${currentYear}`);
-    const endOfMonth = new Date(currentYear, currentMonth, 0);
-    const minDate = startOfMonth.toISOString().split('T')[0];
-    const maxDate = endOfMonth.toISOString().split('T')[0];
-
     const emptyTransaction = {
         id: 0,
-        date: minDate,
+        date: dateInfo.minDate,
         store: "",
         items: "",
         category: "Rent",
@@ -61,19 +53,19 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
             
             <Form onSubmit={AddTransaction}>
                 <Modal.Body>
-                    <Form.Group className={styles.formInput}>
+                    <Form.Group className="formInput">
                         <Form.Control
                             id="date"
                             className="h-100"
                             type="date"
-                            min={minDate}
-                            max={maxDate}
+                            min={dateInfo.minDate}
+                            max={dateInfo.maxDate}
                             value={newTransaction.date}
                             onChange={handleInput}
                             required
                         ></Form.Control>
                     </Form.Group>
-                    <Form.Group className={styles.formInput}>
+                    <Form.Group className="formInput">
                         <Form.Control
                             id="store"
                             className="h-100"
@@ -84,7 +76,7 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
                             required
                         ></Form.Control>
                     </Form.Group>
-                    <Form.Group className={styles.formInput}>
+                    <Form.Group className="formInput">
                         <Form.Control
                             id="items"
                             className="h-100"
@@ -95,7 +87,7 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
                             required
                         ></Form.Control>
                     </Form.Group>
-                    <Form.Group className={styles.formInput}>
+                    <Form.Group className="formInput">
                         <Form.Select id="category" className="h-100" 
                         value={newTransaction.category}
                         onChange={handleInput}
@@ -106,7 +98,7 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
                             ))}
                         </Form.Select>
                     </Form.Group>
-                    <Form.Group className={styles.formInput}>
+                    <Form.Group className="formInput">
                         <Form.Control
                             id="amount"
                             className="h-100"
@@ -121,7 +113,7 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Form.Group className={styles.formInput}>
+                    <Form.Group className="formInput">
                         <Row>
                             <Col><Button variant="secondary" onClick={closeModal}>Close</Button></Col>
                             <Col><Button variant="primary" type="submit">Add</Button></Col>

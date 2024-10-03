@@ -1,0 +1,9 @@
+.pointer {
+    cursor: pointer;
+}
+
+.overflow {
+    max-width: 125px;
+    text-wrap: nowrap;
+    overflow-x: scroll;
+}

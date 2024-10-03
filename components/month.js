@@ -5,7 +5,6 @@ import TransactionsTable from "./transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 
-
 const Month = () => {
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -24,11 +23,26 @@ const Month = () => {
     }, []);
 
     const updateTransactions = (newTransaction) => {
-        setTransactions([...transactions, newTransaction]);
+        const existingTransactionIndex = transactions.findIndex(transaction => {
+            return transaction.id === newTransaction.id;
+        });
+
+        if (existingTransactionIndex !== -1) {
+            const updated = transactions.map(transaction => {
+                if (transaction.id === newTransaction.id)
+                    return newTransaction;
+                else
+                    return transaction;
+            });
+    
+            setTransactions(updated);
+        } else {
+            setTransactions([...transactions, newTransaction]);
+        }
     };
     
-    let addModal = <InputTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} show={addClicked} setAddClicked={setAddClicked}/>;
-    let tableContainer = <TransactionsTable transactions={transactions}/>;
+    const addModal = <InputTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} show={addClicked} setAddClicked={setAddClicked} />;
+    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} updateTransactions={updateTransactions}/>;
 
     const addTransaction = () => {
         setAddClicked(true);
