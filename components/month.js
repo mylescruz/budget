@@ -40,9 +40,18 @@ const Month = () => {
             setTransactions([...transactions, newTransaction]);
         }
     };
+
+    const removeTransaction = (transactionToRemove) => {
+        const updated = transactions.filter(transaction => {
+            return transaction.id !== transactionToRemove.id;
+        });
+        console.log(updated);
+
+        setTransactions(updated);
+    };
     
     const addModal = <InputTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} show={addClicked} setAddClicked={setAddClicked} />;
-    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} updateTransactions={updateTransactions}/>;
+    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
 
     const addTransaction = () => {
         setAddClicked(true);

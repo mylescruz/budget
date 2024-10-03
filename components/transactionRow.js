@@ -3,15 +3,31 @@ import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
 import TransactionDetails from "./transactionDetails";
 import styles from "@/styles/transactionRow.module.css";
+import DeleteTransaction from "./deleteTransactions";
+import EditTransaction from "./editTransaction";
 
-const TransactionRow = ({ transaction, categories, updateTransactions }) => {
-    const [showDetails, setDetails] = useState(false);
-
-    const detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setDetails={setDetails} categories={categories} updateTransactions={updateTransactions} />;
+const TransactionRow = ({ transaction, categories, updateTransactions, removeTransaction }) => {
+    const [showDetails, setShowDetails] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
 
     const openDetails = () => {
-        setDetails(true);
+        setShowDetails(true);
     };
+
+    const openDelete = () => {
+        setShowDetails(false);
+        setShowDelete(true);
+    };
+
+    const openEdit = () => {
+        setShowDetails(false);
+        setShowEdit(true);
+    };
+
+    const detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setShowDetails={setShowDetails} openDelete={openDelete} openEdit={openEdit} />;
+    const editModal = <EditTransaction transaction={transaction} showEdit={showEdit} setShowEdit={setShowEdit} setShowDetails={setShowDetails} categories={categories} updateTransactions={updateTransactions} />
+    const deleteModal = <DeleteTransaction transaction={transaction} showDelete={showDelete} setShowDelete={setShowDelete} setShowDetails={setShowDetails} removeTransaction={removeTransaction} />
 
     return (
         <>
@@ -22,7 +38,9 @@ const TransactionRow = ({ transaction, categories, updateTransactions }) => {
                 <td className={styles.overflow}>{currencyFormatter.format(transaction.amount)}</td>
             </tr>
 
-            {showDetails && <>{detailsModal}</>}
+            { showDetails && <>{detailsModal}</>}
+            { showEdit && <>{editModal}</>}
+            { showDelete && <>{deleteModal}</>}
         </>
     );
 };
