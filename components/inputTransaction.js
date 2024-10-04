@@ -5,7 +5,7 @@ import dateInfo from "@/helpers/dateInfo";
 const InputTransaction = ({transactions, updateTransactions, categories, show, setAddClicked}) => {
     const emptyTransaction = {
         id: 0,
-        date: dateInfo.minDate,
+        date: dateInfo.currentDate,
         store: "",
         items: "",
         category: "Rent",
