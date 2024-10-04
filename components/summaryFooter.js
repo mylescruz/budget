@@ -15,10 +15,10 @@ const SummaryFooter = ({ categories, transactions }) => {
 
     return (
         <tr>
-            <th scope="col">Total</th>
-            <td scope="col">{currencyFormatter.format(totalBudget)}</td>
-            <td scope="col">{currencyFormatter.format(totalActual)}</td>
-            <td scope="col">{currencyFormatter.format(totalDifference)}</td>
+            <th scope="col" className="bg-secondary text-white">Total</th>
+            <td scope="col" className="bg-secondary text-white">{currencyFormatter.format(totalBudget)}</td>
+            <td scope="col" className="bg-secondary text-white">{currencyFormatter.format(totalActual)}</td>
+            <td scope="col" className="bg-secondary text-white">{currencyFormatter.format(totalDifference)}</td>
         </tr>
     );
 };
