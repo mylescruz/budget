@@ -5,6 +5,7 @@ import TransactionDetails from "./transactionDetails";
 import styles from "@/styles/transactionRow.module.css";
 import DeleteTransaction from "./deleteTransactions";
 import EditTransaction from "./editTransaction";
+import { Button } from "react-bootstrap";
 
 const TransactionRow = ({ transaction, categories, updateTransactions, removeTransaction }) => {
     const [showDetails, setShowDetails] = useState(false);
@@ -23,7 +24,7 @@ const TransactionRow = ({ transaction, categories, updateTransactions, removeTra
     const openEdit = () => {
         setShowDetails(false);
         setShowEdit(true);
-    };
+    };    
 
     const detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setShowDetails={setShowDetails} openDelete={openDelete} openEdit={openEdit} />;
     const editModal = <EditTransaction transaction={transaction} showEdit={showEdit} setShowEdit={setShowEdit} setShowDetails={setShowDetails} categories={categories} updateTransactions={updateTransactions} />
@@ -31,11 +32,11 @@ const TransactionRow = ({ transaction, categories, updateTransactions, removeTra
 
     return (
         <>
-            <tr className={styles.pointer} onClick={openDetails}>
+            <tr className={styles.cell} onClick={openDetails}>
                 <td>{dateFormatter(transaction.date)}</td>
-                <td className={styles.overflow}>{transaction.store}</td>
-                <td className={styles.overflow}>{transaction.category}</td>
-                <td className={styles.overflow}>{currencyFormatter.format(transaction.amount)}</td>
+                <td>{transaction.store}</td>
+                <td>{transaction.category}</td>
+                <td>{currencyFormatter.format(transaction.amount)}</td>
             </tr>
 
             { showDetails && <>{detailsModal}</>}

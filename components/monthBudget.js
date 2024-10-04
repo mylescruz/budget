@@ -1,11 +1,11 @@
 import axios from "axios";
-import InputTransaction from "./inputTransaction";
+import AddTransaction from "./addTransaction";
 import SummaryTable from "./summaryTable";
 import TransactionsTable from "./transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 
-const Month = () => {
+const MonthBudget = () => {
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [viewClicked, setViewClicked] = useState(false);
@@ -49,23 +49,27 @@ const Month = () => {
 
         setTransactions(updated);
     };
-    
-    const addModal = <InputTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} show={addClicked} setAddClicked={setAddClicked} />;
-    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
+
+    const showTransactions = () => {
+        setViewClicked(true);
+        setViewText("Hide Transactions");
+    };
+
+    const toggleTransactions = () => {
+        if (viewClicked) {
+            setViewClicked(false);
+            setViewText("View Transactions");
+        } else {
+            showTransactions();
+        }
+    };
 
     const addTransaction = () => {
         setAddClicked(true);
     };
 
-    const showTransactions = () => {
-        if (viewClicked) {
-            setViewClicked(false);
-            setViewText("View Transactions");
-        } else {
-            setViewClicked(true);
-            setViewText("Hide Transactions");
-        }
-    };
+    const addModal = <AddTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} show={addClicked} setAddClicked={setAddClicked} showTransactions={showTransactions}/>;
+    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
 
     return (
         <>
@@ -75,7 +79,7 @@ const Month = () => {
                 </Row>
             
                 <Row className="mb-4 text-center">
-                    <Col><Button variant="secondary" onClick={showTransactions}>{viewText}</Button></Col>
+                    <Col><Button variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
                     <Col><Button variant="primary" onClick={addTransaction}>Add Transaction</Button></Col>
                 </Row>
                 
@@ -86,4 +90,4 @@ const Month = () => {
     );
 };
 
-export default Month;
+export default MonthBudget;

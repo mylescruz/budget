@@ -1,7 +1,7 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
-import styles from "@/styles/categoryRow.module.css";
+import styles from "@/styles/summaryRow.module.css";
 
-const CategoryRow = ({ category, transactions }) => {
+const SummaryRow = ({ category, transactions }) => {
     let actualAmount = 0;
     transactions.map(transaction => {
         if (transaction.category === category.name) {
@@ -20,4 +20,4 @@ const CategoryRow = ({ category, transactions }) => {
     );
 };
 
-export default CategoryRow;
+export default SummaryRow;

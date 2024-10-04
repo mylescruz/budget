@@ -1,11 +1,11 @@
 import { Table } from "react-bootstrap";
-import CategoryRow from "./categoryRow";
+import SummaryRow from "./summaryRow";
 import SummaryFooter from "./summaryFooter";
 
 const SummaryTable = ({transactions, categories}) => {
     return (
         <Table striped bordered responsive="sm" className="my-4 w-75 mx-auto">
-            <thead className="thead-dark">
+            <thead className="table-dark">
                 <tr>
                     <th scope="col" className="red">Category</th>
                     <th scope="col">Budget</th>
@@ -15,7 +15,7 @@ const SummaryTable = ({transactions, categories}) => {
             </thead>
             <tbody>
                 {categories.map(category => (
-                    <CategoryRow key={category.id} category={category} transactions={transactions}/>
+                    <SummaryRow key={category.id} category={category} transactions={transactions}/>
                 ))}
             </tbody>
             <tfoot>

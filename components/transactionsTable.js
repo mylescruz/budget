@@ -6,13 +6,13 @@ const TransactionsTable = ({transactions, categories, updateTransactions, remove
     transactions = dateSorter(transactions);
 
     return (
-        <Table striped bordered responsive className="mt-4 w-75 mx-auto">
-            <thead className="thead-dark">
+        <Table striped bordered responsive hover className="mt-4 w-75 mx-auto">
+            <thead className="table-dark">
                 <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Store</th>
-                <th scope="col">Category</th>
-                <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Store</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Amount</th  >
                 </tr>
             </thead>
             <tbody>

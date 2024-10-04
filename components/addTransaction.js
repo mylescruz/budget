@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 
-const InputTransaction = ({transactions, updateTransactions, categories, show, setAddClicked}) => {
+const AddTransaction = ({transactions, updateTransactions, categories, show, setAddClicked, showTransactions}) => {
     const emptyTransaction = {
         id: 0,
         date: dateInfo.currentDate,
@@ -38,6 +38,7 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
         updateTransactions(newTransaction);
         setTransaction(emptyTransaction);
         setAddClicked(false);
+        showTransactions();
     };
 
     const closeModal = () => {
@@ -125,4 +126,4 @@ const InputTransaction = ({transactions, updateTransactions, categories, show, s
     );
 };
 
-export default InputTransaction;
+export default AddTransaction;

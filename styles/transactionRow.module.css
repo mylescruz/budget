@@ -1,9 +1,12 @@
-.pointer {
-    cursor: pointer;
-}
-
-.overflow {
+.cell {
     max-width: 125px;
     text-wrap: nowrap;
     overflow-x: scroll;
+
+    &:hover {
+        cursor: pointer;
+        color: white !important;
+        /* font-weight: bold; */
+        background-color: lightblue !important;
+    }
 }
