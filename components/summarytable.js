@@ -7,9 +7,11 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
     const [editClicked, setEditClicked] = useState(false);
     const [saveClicked, setSaveClicked] = useState(false);
     const [updatedCategoryBudgets, setUpdatedCategoryBudgets] = useState([]);
+    const [updatedCategoryColors, setUpdatedCategoryColors] = useState([]);
 
     const handleEditClicked = () => {
         setUpdatedCategoryBudgets(categories);
+        setUpdatedCategoryColors(categories);
         setEditClicked(!editClicked);
         setSaveClicked(!saveClicked);
     };
@@ -18,6 +20,7 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
         setSaveClicked(!saveClicked);
         setEditClicked(!editClicked);
         setCategories(updatedCategoryBudgets);
+        setCategories(updatedCategoryColors);
     };
 
     return (
@@ -41,7 +44,7 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
             </thead>
             <tbody>
                 {categories.map(category => (
-                    <SummaryRow key={category.id} category={category} transactions={transactions} editClicked={editClicked} updatedCategoryBudgets={updatedCategoryBudgets} setUpdatedCategoryBudgets={setUpdatedCategoryBudgets}/>
+                    <SummaryRow key={category.id} category={category} transactions={transactions} editClicked={editClicked} updatedCategoryBudgets={updatedCategoryBudgets} setUpdatedCategoryBudgets={setUpdatedCategoryBudgets} updatedCategoryColors={updatedCategoryColors} setUpdatedCategoryColors={setUpdatedCategoryColors}/>
                 ))}
             </tbody>
             <tfoot>

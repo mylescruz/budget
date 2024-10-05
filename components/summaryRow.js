@@ -1,17 +1,11 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import styles from "@/styles/summaryRow.module.css";
 import { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 
-const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudgets, setUpdatedCategoryBudgets }) => {
+const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudgets, setUpdatedCategoryBudgets, updatedCategoryColors, setUpdatedCategoryColors }) => {
     const [newBudgetValue, setNewBudgetValue] = useState(category.budget);
-    // const [newActualValue, setNewActualValue] = useState(category.actual);
-
-    // useEffect(() => {
-        
-
-    //     setNewActualValue(actualAmount);
-    // },[transactions, category.name]);
+    const [colorValue, setColorValue] = useState(category.color);
 
     const handleNumInput = (e) => {
         const input = e.target.value;
@@ -40,17 +34,35 @@ const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudget
         setUpdatedCategoryBudgets(updated);
     };
 
-    // let actualAmount = 0;
-    // transactions.map(transaction => {
-    //     if (transaction.category === category.name) {
-    //         actualAmount += transaction.amount;
-    //     }
-    // });
+    const handleColorInput = (e) => {
+        const newColor = e.target.value;
+        setColorValue(newColor);
+
+        const updated = updatedCategoryColors.map(category => {
+            if (category.id === category.id) {
+                return {
+                    ...category, color:newColor
+                }
+            } else
+                return category;
+        });
+
+        setUpdatedCategoryColors(updated);
+    };
 
     const difference = category.budget - category.actual;
     return (
         <tr>
-            <th scope="row">{category.name}</th>
+            {! editClicked ?
+                <th scope="row">{category.name}</th>
+                :
+                <th scope="row">
+                    <Row>
+                        <Col>{category.name}</Col>
+                        <Col><Form.Control type="color" id={category.name} className="form-control-color" value={colorValue} onChange={handleColorInput}></Form.Control></Col>
+                    </Row>
+                </th>
+            }
             {!editClicked ? 
                 <td className={styles.budgetRow}>{currencyFormatter.format(category.budget)}</td>
                 :

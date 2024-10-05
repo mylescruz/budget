@@ -45,7 +45,6 @@ const MonthBudget = () => {
         const updatedTransactions = transactions.filter(transaction => {
             return transaction.id !== transactionToRemove.id;
         });
-        console.log(updatedTransactions);
 
         setTransactions(updatedTransactions);
     };
@@ -57,8 +56,6 @@ const MonthBudget = () => {
 
     const toggleTransactions = () => {
         if (viewClicked) {
-            console.log(categories);
-            // console.log(...categories);
             setViewClicked(false);
             setViewText("View Transactions");
         } else {
