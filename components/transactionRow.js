@@ -7,7 +7,7 @@ import DeleteTransaction from "./deleteTransactions";
 import EditTransaction from "./editTransaction";
 import { Button } from "react-bootstrap";
 
-const TransactionRow = ({ transaction, categories, updateTransactions, removeTransaction }) => {
+const TransactionRow = ({ transaction, categories, setCategories, updateTransactions, removeTransaction }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
@@ -27,7 +27,7 @@ const TransactionRow = ({ transaction, categories, updateTransactions, removeTra
     };    
 
     const detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setShowDetails={setShowDetails} openDelete={openDelete} openEdit={openEdit} />;
-    const editModal = <EditTransaction transaction={transaction} showEdit={showEdit} setShowEdit={setShowEdit} setShowDetails={setShowDetails} categories={categories} updateTransactions={updateTransactions} />
+    const editModal = <EditTransaction transaction={transaction} showEdit={showEdit} setShowEdit={setShowEdit} setShowDetails={setShowDetails} categories={categories} setCategories={setCategories} updateTransactions={updateTransactions} />
     const deleteModal = <DeleteTransaction transaction={transaction} showDelete={showDelete} setShowDelete={setShowDelete} setShowDetails={setShowDetails} removeTransaction={removeTransaction} />
 
     return (

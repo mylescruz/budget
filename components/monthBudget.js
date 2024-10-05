@@ -28,26 +28,26 @@ const MonthBudget = () => {
         });
 
         if (existingTransactionIndex !== -1) {
-            const updated = transactions.map(transaction => {
+            const updatedTransactions = transactions.map(transaction => {
                 if (transaction.id === newTransaction.id)
                     return newTransaction;
                 else
                     return transaction;
             });
     
-            setTransactions(updated);
+            setTransactions(updatedTransactions);
         } else {
             setTransactions([...transactions, newTransaction]);
         }
     };
 
     const removeTransaction = (transactionToRemove) => {
-        const updated = transactions.filter(transaction => {
+        const updatedTransactions = transactions.filter(transaction => {
             return transaction.id !== transactionToRemove.id;
         });
-        console.log(updated);
+        console.log(updatedTransactions);
 
-        setTransactions(updated);
+        setTransactions(updatedTransactions);
     };
 
     const showTransactions = () => {
@@ -70,8 +70,8 @@ const MonthBudget = () => {
         setAddClicked(true);
     };
 
-    const addModal = <AddTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} show={addClicked} setAddClicked={setAddClicked} showTransactions={showTransactions}/>;
-    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
+    const addModal = <AddTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} setCategories={setCategories} show={addClicked} setAddClicked={setAddClicked} showTransactions={showTransactions}/>;
+    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} setCategories={setCategories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
 
     return (
         <>

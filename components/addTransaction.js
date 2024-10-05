@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Form, Button, Modal, Col, Row } from "react-bootstrap";
+import { Form, Button, Modal, Col, Row, CardText } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
+import addToCategoryActual from "@/helpers/addToCategoryActual";
 
-const AddTransaction = ({transactions, updateTransactions, categories, show, setAddClicked, showTransactions}) => {
+const AddTransaction = ({transactions, updateTransactions, categories, setCategories, show, setAddClicked, showTransactions}) => {
     const emptyTransaction = {
         id: 0,
         date: dateInfo.currentDate,
@@ -36,6 +37,10 @@ const AddTransaction = ({transactions, updateTransactions, categories, show, set
 
         newTransaction.id = maxID + 1;
         updateTransactions(newTransaction);
+
+        const updatedCategories = addToCategoryActual(newTransaction, categories);
+        setCategories(updatedCategories);
+
         setTransaction(emptyTransaction);
         setAddClicked(false);
         showTransactions();

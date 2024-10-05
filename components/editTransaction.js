@@ -1,8 +1,9 @@
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import { useState } from "react";
+import editCategoryActual from "@/helpers/editCategoryActual";
 
-const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, categories, updateTransactions}) => {
+const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, categories, setCategories, updateTransactions}) => {
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
 
     const closeEdit = () => {
@@ -16,6 +17,12 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ca
         if (showEdit) {
             setEdittedTransaction(edittedTransaction);
             updateTransactions(edittedTransaction);
+
+            if (edittedTransaction.amount !== transaction.amount) {
+                const updatedCategories = editCategoryActual(edittedTransaction, transaction.amount, categories);
+                setCategories(updatedCategories);
+            }
+
             setShowEdit(false);
         } else {
             setShowEdit(true);

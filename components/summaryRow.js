@@ -1,11 +1,18 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import styles from "@/styles/summaryRow.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
 const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudgets, setUpdatedCategoryBudgets }) => {
     const [newBudgetValue, setNewBudgetValue] = useState(category.budget);
-    
+    // const [newActualValue, setNewActualValue] = useState(category.actual);
+
+    // useEffect(() => {
+        
+
+    //     setNewActualValue(actualAmount);
+    // },[transactions, category.name]);
+
     const handleNumInput = (e) => {
         const input = e.target.value;
 
@@ -27,20 +34,20 @@ const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudget
                     }
                 }
             } else
-                return cat;
+                return updatedCategory;
         });
 
         setUpdatedCategoryBudgets(updated);
     };
 
-    let actualAmount = 0;
-    transactions.map(transaction => {
-        if (transaction.category === category.name) {
-            actualAmount += transaction.amount;
-        }
-    });
+    // let actualAmount = 0;
+    // transactions.map(transaction => {
+    //     if (transaction.category === category.name) {
+    //         actualAmount += transaction.amount;
+    //     }
+    // });
 
-    const difference = category.budget - actualAmount;
+    const difference = category.budget - category.actual;
     return (
         <tr>
             <th scope="row">{category.name}</th>
@@ -49,7 +56,7 @@ const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudget
                 :
                 <td><Form.Control type="number" id={category.name} className="h-100 w-50" min="0" max="100000" step="1" value={newBudgetValue} onChange={handleNumInput}></Form.Control></td>
             }
-            <td>{currencyFormatter.format(actualAmount)}</td>
+            <td>{currencyFormatter.format(category.actual)}</td>
             <td>{currencyFormatter.format(difference)}</td>
         </tr>
     );
