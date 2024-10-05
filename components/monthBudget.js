@@ -57,6 +57,8 @@ const MonthBudget = () => {
 
     const toggleTransactions = () => {
         if (viewClicked) {
+            console.log(categories);
+            // console.log(...categories);
             setViewClicked(false);
             setViewText("View Transactions");
         } else {
@@ -75,7 +77,7 @@ const MonthBudget = () => {
         <>
             <Container className="w-100">
                 <Row>
-                    <Col><SummaryTable transactions={transactions} categories={categories} /></Col>
+                    <Col><SummaryTable transactions={transactions} categories={categories} setCategories={setCategories}/></Col>
                 </Row>
             
                 <Row className="mb-4 text-center">

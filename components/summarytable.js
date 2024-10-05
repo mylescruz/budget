@@ -4,28 +4,35 @@ import SummaryFooter from "./summaryFooter";
 import { useState } from "react";
 
 const SummaryTable = ({transactions, categories, setCategories}) => {
-    const [budgetClicked, setBudgetClicked] = useState(false);
-    const [budgetButtonText, setBudgetButtonText] = useState("Edit");
+    const [editClicked, setEditClicked] = useState(false);
+    const [saveClicked, setSaveClicked] = useState(false);
+    const [updatedCategoryBudgets, setUpdatedCategoryBudgets] = useState([]);
 
-    const toggleEditBudget = () => {
-        if (budgetClicked) {
-            setBudgetClicked(false);
-            setBudgetButtonText("Edit");
-        } else {
-            setBudgetClicked(true);
-            setBudgetButtonText("Save All");
-        }
+    const handleEditClicked = () => {
+        setUpdatedCategoryBudgets(categories);
+        setEditClicked(!editClicked);
+        setSaveClicked(!saveClicked);
+    };
+
+    const handleSaveClicked = () => {
+        setSaveClicked(!saveClicked);
+        setEditClicked(!editClicked);
+        setCategories(updatedCategoryBudgets);
     };
 
     return (
-        <Table striped bordered responsive="sm" className="my-4 w-75 mx-auto">
+        <Table striped bordered responsive className="my-4 w-75 mx-auto">
             <thead className="table-dark">
                 <tr>
                     <th scope="col" className="red">Category</th>
                     <th scope="col">
                         <Row>
                             <Col>Budget</Col>
-                            <Col className={budgetClicked ? "col-4" : "col-3"}><Button className="btn-sm text-nowrap" variant="secondary" onClick={toggleEditBudget}>{budgetButtonText}</Button></Col>
+                            {!editClicked ?
+                                <Col className="col-4"><Button className="btn-sm" variant="secondary" onClick={handleEditClicked}>Edit</Button></Col>
+                                :
+                                <Col className="col-5"><Button className="btn-sm text-nowrap" variant="primary" onClick={handleSaveClicked}>Save All</Button></Col>
+                            }
                         </Row>
                     </th>
                     <th scope="col">Actual</th>
@@ -34,7 +41,7 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
             </thead>
             <tbody>
                 {categories.map(category => (
-                    <SummaryRow key={category.id} category={category} transactions={transactions} setCategories={setCategories} budgetClicked={budgetClicked} />
+                    <SummaryRow key={category.id} category={category} transactions={transactions} editClicked={editClicked} updatedCategoryBudgets={updatedCategoryBudgets} setUpdatedCategoryBudgets={setUpdatedCategoryBudgets}/>
                 ))}
             </tbody>
             <tfoot>
