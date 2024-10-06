@@ -21,19 +21,19 @@ const SummaryTable = ({categories, setCategories}) => {
         <Table striped bordered responsive className="my-4 w-100 mx-auto">
             <thead className="table-dark">
                 <tr>
-                    <th scope="col" className="red">Category</th>
                     <th scope="col">
                         <Row>
-                            <Col>Budget</Col>
+                            <Col className="lg-col-6">Category</Col>
                             {!editClicked ?
-                                <Col className="col-4"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
+                                <Col className="md-col-3"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                                 :
-                                <Col className="col-5"><Button className="btn-sm text-nowrap" variant="primary" onClick={handleSaveAll}>Save All</Button></Col>
+                                <Col className="md-col-6"><Button className="btn-sm text-nowrap" variant="primary" onClick={handleSaveAll}>Save All</Button></Col>
                             }
                         </Row>
                     </th>
-                    <th scope="col">Actual</th>
-                    <th scope="col">Difference</th>
+                    <th scope="col" className="col-2">Budget</th>
+                    <th scope="col" className="col-2">Actual</th>
+                    <th scope="col" className="col-2">Difference</th>
                 </tr>
             </thead>
             <tbody>

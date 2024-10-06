@@ -5,6 +5,7 @@ import TransactionsTable from "./transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import SummaryPieChart from "./summaryPieChart";
+import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
 
 const MonthBudget = () => {
     const [transactions, setTransactions] = useState([]);
@@ -42,11 +43,6 @@ const MonthBudget = () => {
             setTransactions([...transactions, newTransaction]);
         }
 
-        // const updatedCategories = categories.map(category => {
-            
-        // };
-        // setCategories(updatedCategories);
-
         setPieValues(true);
     };
 
@@ -56,6 +52,14 @@ const MonthBudget = () => {
         });
 
         setTransactions(updatedTransactions);
+
+        const updatedCategories = deleteFromCategoryActual(transactionToRemove, categories);
+        setCategories(updatedCategories);
+        
+        if (updatedTransactions.length > 0)
+            setPieValues(true);
+        else
+            setPieValues(false);
     };
 
     const showTransactions = () => {

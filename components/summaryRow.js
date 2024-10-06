@@ -46,19 +46,19 @@ const SummaryRow = ({ category, editClicked, updatedCategories, setUpdatedCatego
     return (
         <tr>
             {! editClicked ?
-                <th scope="row">{category.name}</th>
+                <th scope="row" className={styles.cell}>{category.name}</th>
                 :
                 <th scope="row">
                     <Row>
-                        <Col className="col-3"><Form.Control type="color" id={category.name} className="form-control-color" value={colorValue} onChange={handleColorInput}></Form.Control></Col>
-                        <Col>{category.name}</Col>
+                        <Col className="col-4"><Form.Control type="color" id={category.name} className="form-control-color" value={colorValue} onChange={handleColorInput}></Form.Control></Col>
+                        <Col className="col-3 text-nowrap">{category.name}</Col>
                     </Row>
                 </th>
             }
             {!editClicked ? 
                 <td className={styles.budgetRow}>{currencyFormatter.format(category.budget)}</td>
                 :
-                <td><Form.Control type="number" id={category.name} className="w-75" min="0" max="100000" step="1" value={newBudgetValue} onChange={handleNumInput}></Form.Control></td>
+                <td><Form.Control type="number" id={category.name} className="w-100" min="0" max="100000" step="1" value={newBudgetValue} onChange={handleNumInput}></Form.Control></td>
             }
             <td>{currencyFormatter.format(category.actual)}</td>
             <td className={difference < 0 ? "text-danger font-weight-bold" : ""}>{currencyFormatter.format(difference)}</td>

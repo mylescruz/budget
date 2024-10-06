@@ -1,8 +1,8 @@
-const addToCategoryActual = (transaction, categories) => {
+const deleteFromCategoryActual = (transaction, categories) => {
     let newCategoryActual = 0;
     const updatedCategories = categories.map(category => {
         if (category.name === transaction.category) {
-            newCategoryActual = category.actual + transaction.amount;
+            newCategoryActual = category.actual - transaction.amount;
 
             return {...category, actual: newCategoryActual}
         }
@@ -13,4 +13,4 @@ const addToCategoryActual = (transaction, categories) => {
     return updatedCategories;
 }
 
-export default addToCategoryActual;
+export default deleteFromCategoryActual;
