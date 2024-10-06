@@ -25,23 +25,20 @@ const MonthBudget = () => {
         .catch((err) => console.log(err));
     }, []);
 
-    const updateTransactions = (newTransaction) => {
-        const existingTransactionIndex = transactions.findIndex(transaction => {
-            return transaction.id === newTransaction.id;
-        });
+    const addNewTransaction = (newTransaction) => {
+        setTransactions([...transactions, newTransaction]);
 
-        if (existingTransactionIndex !== -1) {
-            const updatedTransactions = transactions.map(transaction => {
-                if (transaction.id === newTransaction.id)
-                    return newTransaction;
-                else
-                    return transaction;
-            });
-    
-            setTransactions(updatedTransactions);
-        } else {
-            setTransactions([...transactions, newTransaction]);
-        }
+        setPieValues(true);
+    };
+
+    const editOldTransaction = (edittedTransaction) => {
+        const updatedTransactions = transactions.map(transaction => {
+            if (transaction.id === edittedTransaction.id)
+                return edittedTransaction;
+            else
+                return transaction;
+        });
+        setTransactions(updatedTransactions);
 
         setPieValues(true);
     };
@@ -80,8 +77,8 @@ const MonthBudget = () => {
         setAddClicked(true);
     };
 
-    const addModal = <AddTransaction transactions={transactions} updateTransactions={updateTransactions} categories={categories} setCategories={setCategories} show={addClicked} setAddClicked={setAddClicked} showTransactions={showTransactions}/>;
-    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} setCategories={setCategories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
+    const addModal = <AddTransaction transactions={transactions} addNewTransaction={addNewTransaction} categories={categories} setCategories={setCategories} show={addClicked} setAddClicked={setAddClicked} showTransactions={showTransactions}/>;
+    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} setCategories={setCategories} editOldTransaction={editOldTransaction} removeTransaction={removeTransaction}/>;
 
     return (
         <Container className="w-100">

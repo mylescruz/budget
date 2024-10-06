@@ -3,7 +3,7 @@ import { Form, Button, Modal, Col, Row, CardText } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 
-const AddTransaction = ({transactions, updateTransactions, categories, setCategories, show, setAddClicked, showTransactions}) => {
+const AddTransaction = ({transactions, addNewTransaction, categories, setCategories, show, setAddClicked, showTransactions}) => {
     const emptyTransaction = {
         id: 0,
         date: dateInfo.currentDate,
@@ -36,7 +36,7 @@ const AddTransaction = ({transactions, updateTransactions, categories, setCatego
             maxID = Math.max(...transactions.map(trans => trans.id));
 
         newTransaction.id = maxID + 1;
-        updateTransactions(newTransaction);
+        addNewTransaction(newTransaction);
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
         setCategories(updatedCategories);

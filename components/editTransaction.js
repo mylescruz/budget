@@ -3,7 +3,7 @@ import dateInfo from "@/helpers/dateInfo";
 import { useState } from "react";
 import editCategoryActual from "@/helpers/editCategoryActual";
 
-const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, categories, setCategories, updateTransactions}) => {
+const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, categories, setCategories, editOldTransaction}) => {
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
 
     const closeEdit = () => {
@@ -16,7 +16,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ca
 
         if (showEdit) {
             setEdittedTransaction(edittedTransaction);
-            updateTransactions(edittedTransaction);
+            editOldTransaction(edittedTransaction);
 
             const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
             setCategories(updatedCategories);
