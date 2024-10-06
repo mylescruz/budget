@@ -7,6 +7,7 @@ const TransactionsTable = ({transactions, categories, setCategories, updateTrans
 
     return (
         <Table striped bordered responsive hover className="mt-4 w-75 mx-auto">
+            <caption>*Click a transaction to view the details*</caption>
             <thead className="table-dark">
                 <tr>
                     <th>Date</th>

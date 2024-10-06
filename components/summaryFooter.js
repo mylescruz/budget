@@ -1,14 +1,12 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 
-const SummaryFooter = ({ categories, transactions }) => {
+const SummaryFooter = ({ categories }) => {
     let totalBudget = 0;
-    categories.forEach(item => {
-        totalBudget += item.budget;
-    });
-
     let totalActual = 0;
-    transactions.map(transaction => {
-        totalActual += transaction.amount;
+    
+    categories.forEach(category => {
+        totalBudget += category.budget;
+        totalActual += category.actual;
     });
 
     const totalDifference = totalBudget - totalActual;

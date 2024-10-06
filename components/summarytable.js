@@ -3,25 +3,18 @@ import SummaryRow from "./summaryRow";
 import SummaryFooter from "./summaryFooter";
 import { useState } from "react";
 
-const SummaryTable = ({transactions, categories, setCategories}) => {
+const SummaryTable = ({categories, setCategories}) => {
     const [editClicked, setEditClicked] = useState(false);
-    const [saveClicked, setSaveClicked] = useState(false);
-    const [updatedCategoryBudgets, setUpdatedCategoryBudgets] = useState([]);
-    const [updatedCategoryColors, setUpdatedCategoryColors] = useState([]);
+    const [updatedCategories, setUpdatedCategories] = useState([]);
 
-    const handleEditClicked = () => {
-        setUpdatedCategoryBudgets(categories);
-        setUpdatedCategoryColors(categories);
+    const handleEdit = () => {
+        setUpdatedCategories(categories);
         setEditClicked(!editClicked);
-        setSaveClicked(!saveClicked);
     };
 
-    const handleSaveClicked = () => {
-        setSaveClicked(!saveClicked);
+    const handleSaveAll = () => {
         setEditClicked(!editClicked);
-        setCategories(updatedCategoryBudgets);
-        setCategories(updatedCategoryColors);
-        console.log(categories);
+        setCategories(updatedCategories);
     };
 
     return (
@@ -33,9 +26,9 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
                         <Row>
                             <Col>Budget</Col>
                             {!editClicked ?
-                                <Col className="col-4"><Button className="btn-sm" variant="secondary" onClick={handleEditClicked}>Edit</Button></Col>
+                                <Col className="col-4"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                                 :
-                                <Col className="col-5"><Button className="btn-sm text-nowrap" variant="primary" onClick={handleSaveClicked}>Save All</Button></Col>
+                                <Col className="col-5"><Button className="btn-sm text-nowrap" variant="primary" onClick={handleSaveAll}>Save All</Button></Col>
                             }
                         </Row>
                     </th>
@@ -45,11 +38,11 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
             </thead>
             <tbody>
                 {categories.map(category => (
-                    <SummaryRow key={category.id} category={category} transactions={transactions} editClicked={editClicked} updatedCategoryBudgets={updatedCategoryBudgets} setUpdatedCategoryBudgets={setUpdatedCategoryBudgets} updatedCategoryColors={updatedCategoryColors} setUpdatedCategoryColors={setUpdatedCategoryColors}/>
+                    <SummaryRow key={category.id} category={category} editClicked={editClicked} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} />
                 ))}
             </tbody>
             <tfoot>
-                <SummaryFooter categories={categories} transactions={transactions} />
+                <SummaryFooter categories={categories} />
             </tfoot>
         </Table>
     );
