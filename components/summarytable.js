@@ -21,10 +21,11 @@ const SummaryTable = ({transactions, categories, setCategories}) => {
         setEditClicked(!editClicked);
         setCategories(updatedCategoryBudgets);
         setCategories(updatedCategoryColors);
+        console.log(categories);
     };
 
     return (
-        <Table striped bordered responsive className="my-4 w-75 mx-auto">
+        <Table striped bordered responsive className="my-4 w-100 mx-auto">
             <thead className="table-dark">
                 <tr>
                     <th scope="col" className="red">Category</th>

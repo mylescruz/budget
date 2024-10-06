@@ -4,6 +4,7 @@ import SummaryTable from "./summaryTable";
 import TransactionsTable from "./transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
+import SummaryPieChart from "./summaryPieChart";
 
 const MonthBudget = () => {
     const [transactions, setTransactions] = useState([]);
@@ -11,6 +12,7 @@ const MonthBudget = () => {
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addClicked, setAddClicked] = useState(false);
+    const [pieValues, setPieValues] = useState(false);
 
     useEffect(() => {
         axios
@@ -39,6 +41,8 @@ const MonthBudget = () => {
         } else {
             setTransactions([...transactions, newTransaction]);
         }
+
+        setPieValues(true);
     };
 
     const removeTransaction = (transactionToRemove) => {
@@ -71,21 +75,20 @@ const MonthBudget = () => {
     const tableContainer = <TransactionsTable transactions={transactions} categories={categories} setCategories={setCategories} updateTransactions={updateTransactions} removeTransaction={removeTransaction}/>;
 
     return (
-        <>
-            <Container className="w-100">
-                <Row>
-                    <Col><SummaryTable transactions={transactions} categories={categories} setCategories={setCategories}/></Col>
-                </Row>
+        <Container className="w-100">
+            <Row>
+                <Col><SummaryPieChart categories={categories} pieValues={pieValues} /></Col>
+                <Col><SummaryTable transactions={transactions} categories={categories} setCategories={setCategories}/></Col>
+            </Row>
+        
+            <Row className="mb-4 text-center">
+                <Col><Button variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
+                <Col><Button variant="primary" onClick={addTransaction}>Add Transaction</Button></Col>
+            </Row>
             
-                <Row className="mb-4 text-center">
-                    <Col><Button variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
-                    <Col><Button variant="primary" onClick={addTransaction}>Add Transaction</Button></Col>
-                </Row>
-                
-                {viewClicked && <>{tableContainer}</>}
-                {addClicked && <>{addModal}</>}
-            </Container>
-        </>
+            {viewClicked && <>{tableContainer}</>}
+            {addClicked && <>{addModal}</>}
+        </Container>
     );
 };
 

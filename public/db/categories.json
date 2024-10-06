@@ -3,84 +3,84 @@
         {
             "id": 1,
             "name": "Rent",
-            "color": "#000000",
+            "color": "#3058e8",
             "budget": 1200,
             "actual": 0
         },
         {
             "id": 2,
             "name": "Utilities",
-            "color": "#000000",
+            "color": "#b96431",
             "budget": 100,
             "actual": 0
         },
         {
             "id": 3,
             "name": "Internet/TV",
-            "color": "#000000",
+            "color": "#61bf01",
             "budget": 100,
             "actual": 0
         },
         {
             "id": 4,
             "name": "Phone",
-            "color": "#000000",
+            "color": "#acdee7",
             "budget": 120,
             "actual": 0
         },
         {
             "id": 5,
             "name": "Insurance",
-            "color": "#000000",
+            "color": "#bf3d64",
             "budget": 125,
             "actual": 0
         },
         {
             "id": 6,
             "name": "Car",
-            "color": "#000000",
+            "color": "#a126be",
             "budget": 300,
             "actual": 0
         },
         {
             "id": 7,
             "name": "Groceries",
-            "color": "#000000",
+            "color": "#fe6bee",
             "budget": 300,
             "actual": 0
         },
         {
             "id": 8,
             "name": "Necessities",
-            "color": "#000000",
+            "color": "#fa0725",
             "budget": 100,
             "actual": 0
         },
         {
             "id": 9,
             "name": "Subscriptions",
-            "color": "#000000",
+            "color": "#81fbaf",
             "budget": 50,
             "actual": 0
         },
         {
             "id": 10,
             "name": "Investments",
-            "color": "#000000",
+            "color": "#ead919",
             "budget": 500,
             "actual": 0
         },
         {
             "id": 11,
             "name": "Debts",
-            "color": "#000000",
+            "color": "#e57f29",
             "budget": 500,
             "actual": 0
         },
         {
             "id": 12,
             "name": "Guilt Free Spending",
-            "color": "#000000",
+            "color": "#930a29",
             "budget": 500,
             "actual": 0
         }

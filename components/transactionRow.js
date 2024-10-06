@@ -5,7 +5,6 @@ import TransactionDetails from "./transactionDetails";
 import styles from "@/styles/transactionRow.module.css";
 import DeleteTransaction from "./deleteTransactions";
 import EditTransaction from "./editTransaction";
-import { Button } from "react-bootstrap";
 
 const TransactionRow = ({ transaction, categories, setCategories, updateTransactions, removeTransaction }) => {
     const [showDetails, setShowDetails] = useState(false);

@@ -39,7 +39,7 @@ const SummaryRow = ({ category, transactions, editClicked, updatedCategoryBudget
         setColorValue(newColor);
 
         const updated = updatedCategoryColors.map(category => {
-            if (category.id === category.id) {
+            if (category.name === e.target.id) {
                 return {
                     ...category, color:newColor
                 }
