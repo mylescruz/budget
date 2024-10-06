@@ -3,7 +3,7 @@
 }
 
 .cell {
-    max-width: 135px;
+    max-width: 100px;
     text-wrap: nowrap;
     overflow-x: scroll;
 }

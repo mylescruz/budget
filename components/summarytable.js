@@ -15,6 +15,7 @@ const SummaryTable = ({categories, setCategories}) => {
     const handleSaveAll = () => {
         setEditClicked(!editClicked);
         setCategories(updatedCategories);
+        console.log(updatedCategories);
     };
 
     return (
