@@ -1,6 +1,6 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 
-const SummaryFooter = ({ categories }) => {
+const CategoryFooter = ({ categories }) => {
     let totalBudget = 0;
     let totalActual = 0;
     
@@ -21,4 +21,4 @@ const SummaryFooter = ({ categories }) => {
     );
 };
 
-export default SummaryFooter;
+export default CategoryFooter;

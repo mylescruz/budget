@@ -1,6 +1,6 @@
 import axios from "axios";
 import AddTransaction from "./addTransaction";
-import SummaryTable from "./summaryTable";
+import CategoryTable from "./categoryTable";
 import TransactionsTable from "./transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -14,6 +14,7 @@ const MonthBudget = () => {
     const [viewText, setViewText] = useState("View Transactions");
     const [addClicked, setAddClicked] = useState(false);
     const [pieValues, setPieValues] = useState(false);
+    const [editClicked, setEditClicked] = useState(false);
 
     useEffect(() => {
         axios
@@ -84,7 +85,7 @@ const MonthBudget = () => {
         <Container className="w-100">
             <Row>
                 <Col><SummaryPieChart categories={categories} pieValues={pieValues} /></Col>
-                <Col><SummaryTable transactions={transactions} categories={categories} setCategories={setCategories}/></Col>
+                <Col><CategoryTable categories={categories} setEditClicked={setEditClicked} /></Col>
             </Row>
         
             <Row className="mb-4 text-center">

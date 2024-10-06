@@ -113,13 +113,6 @@
                     "budget": 300,
                     "actual": 0,
                     "parent": "Guilt Free Spending"
-                },
-                {
-                    "id": 1,
-                    "name": "Boba",
-                    "budget": 100,
-                    "actual": 0,
-                    "parent": "Guilt Free Spending"
                 }
             ]
         }
