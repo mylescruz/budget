@@ -1,16 +1,21 @@
-const editCategoryActual = (transaction, oldAmount, categories) => {
-    let newCategoryActual = 0;
+const editCategoryActual = (edittedTransaction, oldTransaction, categories) => {
     const updatedCategories = categories.map(category => {
-        if (category.name === transaction.category) {
-            newCategoryActual = category.actual - oldAmount + transaction.amount;
+        let newCategoryActual = 0;
 
-            return {
-                ...category,
-                actual: newCategoryActual
-            }
+        if (category.name === oldTransaction.category) {
+            if (edittedTransaction.category === oldTransaction.category)
+                newCategoryActual = category.actual - oldTransaction.amount + edittedTransaction.amount;
+            else
+                newCategoryActual = category.actual - oldTransaction.amount;
+
+            return {...category, actual: newCategoryActual}
+        } else if (category.name === edittedTransaction.category) {
+            newCategoryActual = category.actual + edittedTransaction.amount;
+
+            return {...category, actual: newCategoryActual}
+        } else {
+            return category;
         }
-
-        return category;
     });
 
     return updatedCategories;

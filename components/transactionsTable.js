@@ -10,10 +10,10 @@ const TransactionsTable = ({transactions, categories, setCategories, updateTrans
             <caption>*Click a transaction to view the details*</caption>
             <thead className="table-dark">
                 <tr>
-                    <th>Date</th>
+                    <th className="col-1">Date</th>
                     <th>Store</th>
-                    <th>Category</th>
-                    <th>Amount</th>
+                    <th className="col-2">Category</th>
+                    <th className="col-1">Amount</th>
                 </tr>
             </thead>
             <tbody>

@@ -42,6 +42,11 @@ const MonthBudget = () => {
             setTransactions([...transactions, newTransaction]);
         }
 
+        // const updatedCategories = categories.map(category => {
+            
+        // };
+        // setCategories(updatedCategories);
+
         setPieValues(true);
     };
 

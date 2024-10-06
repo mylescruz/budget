@@ -18,10 +18,8 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ca
             setEdittedTransaction(edittedTransaction);
             updateTransactions(edittedTransaction);
 
-            if (edittedTransaction.amount !== transaction.amount) {
-                const updatedCategories = editCategoryActual(edittedTransaction, transaction.amount, categories);
-                setCategories(updatedCategories);
-            }
+            const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
+            setCategories(updatedCategories);
 
             setShowEdit(false);
         } else {
