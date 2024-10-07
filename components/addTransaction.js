@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Form, Button, Modal, Col, Row, CardText } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
+import SelectCategory from "./selectCategory";
 
 const AddTransaction = ({transactions, addNewTransaction, categories, setCategories, show, setAddClicked, showTransactions}) => {
     const emptyTransaction = {
@@ -39,6 +40,7 @@ const AddTransaction = ({transactions, addNewTransaction, categories, setCategor
         addNewTransaction(newTransaction);
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
+        console.log(updatedCategories);
         setCategories(updatedCategories);
 
         setTransaction(emptyTransaction);
@@ -100,7 +102,7 @@ const AddTransaction = ({transactions, addNewTransaction, categories, setCategor
                         required>
                             <option disabled>Choose a Category...</option>
                             {categories.map(category => (
-                                <option key={category.id} value={category.name}>{category.name}</option>
+                                <SelectCategory key={category.id} category={category} />
                             ))}
                         </Form.Select>
                     </Form.Group>
