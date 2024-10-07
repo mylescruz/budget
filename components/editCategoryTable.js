@@ -3,7 +3,6 @@ import EditCategoryRow from "./editCategoryRow";
 import { useState } from "react";
 
 const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
-    const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
     const [updatedCategories, setUpdatedCategories] = useState(categories);
 
     const updateCategoryTable = (e) => {
@@ -31,8 +30,8 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {categories.map(category => (
-                        <EditCategoryRow key={category.id} category={category} setAddSubcategoryClicked={setAddSubcategoryClicked} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} />
+                    {updatedCategories.map(category => (
+                        <EditCategoryRow key={category.id} category={category} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} />
                     ))}
                 </tbody>
             </Table>

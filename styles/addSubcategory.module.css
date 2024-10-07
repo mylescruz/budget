@@ -1,0 +1,12 @@
+.align {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.check {
+    &:hover {
+        cursor: pointer;
+        color: blue;
+    }
+}
