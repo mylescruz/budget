@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import SummaryPieChart from "./summaryPieChart";
 import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
+import EditCategoryTable from "./editCategoryTable";
 
 const MonthBudget = () => {
     const [transactions, setTransactions] = useState([]);
@@ -85,7 +86,11 @@ const MonthBudget = () => {
         <Container className="w-100">
             <Row>
                 <Col><SummaryPieChart categories={categories} pieValues={pieValues} /></Col>
-                <Col><CategoryTable categories={categories} setEditClicked={setEditClicked} /></Col>
+                <Col>{!editClicked ?
+                    <CategoryTable categories={categories} setEditClicked={setEditClicked} />
+                    :
+                    <EditCategoryTable categories={categories} setCategories={setCategories} setEditClicked={setEditClicked} />
+                }</Col>
             </Row>
         
             <Row className="mb-4 text-center">

@@ -110,7 +110,6 @@
                 {
                     "id": 0,
                     "name": "Food",
-                    "budget": 300,
                     "actual": 0,
                     "parent": "Guilt Free Spending"
                 }
