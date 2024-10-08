@@ -12,9 +12,9 @@ const CategoryTable = ({categories, setEditClicked}) => {
             <thead className="table-dark">
                 <tr>
                     <th scope="col">
-                        <Row>
-                            <Col className="col-9">Category</Col>
-                            <Col className="col-3"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
+                        <Row className="align">
+                            <Col>Category</Col>
+                            <Col className="text-end"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                         </Row>
                     </th>
                     <th scope="col" className="col-2">Budget</th>

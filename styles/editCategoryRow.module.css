@@ -1,6 +1,20 @@
+.align {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .plus {
     &:hover {
         cursor: pointer;
         color: blue;
+    }
+}
+
+.delete {
+    &:hover {
+        cursor: pointer;
+        color: red;
     }
 }

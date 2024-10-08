@@ -63,7 +63,7 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubc
                             id="name"
                             className="h-100"
                             type="text"
-                            placeholder="Name"
+                            placeholder="Add subcategory"
                             value={newSubcategory.name}
                             onChange={handleInput}
                             />

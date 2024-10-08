@@ -12,6 +12,14 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
         setCategories(updatedCategories);
     };
 
+    const removeCategory = (categoryToRemove) => {
+        const remainingCategories = updatedCategories.filter(category => {
+            return category.id !== categoryToRemove.id;
+        });
+
+        setUpdatedCategories(remainingCategories);
+    };
+
     return (
         <>
             <Form onSubmit={updateCategoryTable}>
@@ -24,14 +32,14 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                                 <Col className="col-4"><Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button></Col>
                             </Row>
                         </th>
-                        <th scope="col" className="col-3">Budget</th>
-                        <th scope="col" className="col-2">Color</th>
-                        <th scope="col" className="col-2">Subcategory</th>
+                        <th scope="col" className="col-2">Budget</th>
+                        <th scope="col" className="col-1">Color</th>
+                        <th scope="col" className="col-1">Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     {updatedCategories.map(category => (
-                        <EditCategoryRow key={category.id} category={category} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} />
+                        <EditCategoryRow key={category.id} category={category} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} removeCategory={removeCategory}/>
                     ))}
                 </tbody>
             </Table>
