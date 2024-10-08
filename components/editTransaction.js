@@ -2,6 +2,7 @@ import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import { useState } from "react";
 import editCategoryActual from "@/helpers/editCategoryActual";
+import SelectCategory from "./selectCategory";
 
 const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, categories, setCategories, editOldTransaction}) => {
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
@@ -88,7 +89,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ca
                             required>
                                 <option disabled>Choose a Category...</option>
                                 {categories.map(category => (
-                                    <option key={category.id} value={category.name}>{category.name}</option>
+                                    <SelectCategory key={category.id} category={category} />
                                 ))}
                             </Form.Select>
                         </Form.Group>
