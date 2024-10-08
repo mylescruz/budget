@@ -1,13 +1,29 @@
 const deleteFromCategoryActual = (transaction, categories) => {
-    let newCategoryActual = 0;
     const updatedCategories = categories.map(category => {
-        if (category.name === transaction.category) {
-            newCategoryActual = category.actual - transaction.amount;
+        let categoryTotal = category.actual;
 
-            return {...category, actual: newCategoryActual}
+        if (category.hasSubcategory) {
+            const updatedSubcategories = category.subcategories.map(subcategory => {
+                let subcategoryTotal = subcategory.actual;
+
+                if (subcategory.name === transaction.category) {
+                    subcategoryTotal -= transaction.amount;
+                    categoryTotal -= transaction.amount;
+
+                    return {...subcategory, actual: subcategoryTotal};
+                } else {
+                    return subcategory;
+                }
+            });
+
+            return {...category, actual: categoryTotal, subcategories: updatedSubcategories};
+        } else if (category.name === transaction.category && !category.hasSubcategory) {
+            categoryTotal -= transaction.amount;
+
+            return {...category, actual: categoryTotal}
+        } else {
+            return category;
         }
-
-        return category;
     });
 
     return updatedCategories;
