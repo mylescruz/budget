@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import styles from "@/styles/addSubcategory.module.css";
 
-const AddSubcategory = ({ category, categories, setUpdatedCategories, addSubcategoryClicked, setAddSubcategoryClicked }) => {
+const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubcategoryClicked }) => {
     const emptySubcategory = {
         id: 0,
         name: "",
@@ -14,10 +14,6 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, addSubcate
 
     const handleInput = (e) => {
         setNewSubcategory({ ...newSubcategory, [e.target.id]: e.target.value});
-    };
-
-    const closeSubcategory = () => {
-        setAddSubcategoryClicked(false);
     };
 
     const addToCategories = (e) => {
@@ -50,7 +46,7 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, addSubcate
         });
 
         setUpdatedCategories(updatedCategories);
-        closeSubcategory();
+        setAddSubcategoryClicked(false);
     };
 
     return (

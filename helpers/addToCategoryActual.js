@@ -1,8 +1,8 @@
 const addToCategoryActual = (transaction, categories) => {
-    let subcategoryTotal = 0;
-    let categoryTotal = 0;
-
     const updatedCategories = categories.map(category => {
+        let subcategoryTotal = 0;
+        let categoryTotal = 0;
+
         if (category.hasSubcategory) {
             const updatedSubcategories = category.subcategories.map(subcategory => {
                 if (subcategory.name === transaction.category) {
@@ -16,7 +16,7 @@ const addToCategoryActual = (transaction, categories) => {
             });
 
             return {...category, actual: categoryTotal, subcategories: updatedSubcategories};
-        } else if (category.name === transaction.category) {
+        } else if (category.name === transaction.category && !category.hasSubcategory) {
             categoryTotal = category.actual + transaction.amount;
 
             return {...category, actual: categoryTotal}
