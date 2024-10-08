@@ -16,6 +16,10 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubc
         setNewSubcategory({ ...newSubcategory, [e.target.id]: e.target.value});
     };
 
+    const cancelAddSubcategory = () => {
+        setAddSubcategoryClicked(false);
+    };
+
     const addToCategories = (e) => {
         e.preventDefault();
 
@@ -53,19 +57,22 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubc
         <tr>
             <td>
                 <Row className={styles.align}>
-                    <Col>
+                    <Col className="col-9">
                         <Form.Group className="formInput">
                             <Form.Control
                             id="name"
                             className="h-100"
                             type="text"
-                            placeholder="Subcategory name"
+                            placeholder="Name"
                             value={newSubcategory.name}
                             onChange={handleInput}
                             />
                         </Form.Group>
                     </Col>
-                    <Col className="col-2">
+                    <Col className="col-1">
+                        <i className={`bi bi-x-circle ${styles.cancel}`} onClick={cancelAddSubcategory}></i>
+                    </Col>
+                    <Col className="col-1">
                         <i className={`bi bi-check-circle ${styles.check}`} onClick={addToCategories}></i>
                     </Col>
                 </Row>
