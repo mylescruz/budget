@@ -4,7 +4,7 @@ import dateInfo from "@/helpers/dateInfo";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 
-const AddTransaction = ({transactions, addNewTransaction, categories, setCategories, show, setAddClicked, showTransactions}) => {
+const AddTransaction = ({transactions, addToTransactions, categories, setCategories, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const emptyTransaction = {
         id: 0,
         date: dateInfo.currentDate,
@@ -29,7 +29,7 @@ const AddTransaction = ({transactions, addNewTransaction, categories, setCategor
             setTransaction({ ...newTransaction, amount: parseFloat(input) });
     };
 
-    const AddTransaction = (e) => {
+    const AddNewTransaction = (e) => {
         e.preventDefault();
 
         let maxID = 0;
@@ -37,29 +37,28 @@ const AddTransaction = ({transactions, addNewTransaction, categories, setCategor
             maxID = Math.max(...transactions.map(trans => trans.id));
 
         newTransaction.id = maxID + 1;
-        addNewTransaction(newTransaction);
+        addToTransactions(newTransaction);
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
-        console.log(updatedCategories);
         setCategories(updatedCategories);
 
         setTransaction(emptyTransaction);
-        setAddClicked(false);
+        setAddTransactionClicked(false);
         showTransactions();
     };
 
     const closeModal = () => {
         setTransaction(emptyTransaction);
-        setAddClicked(false);
+        setAddTransactionClicked(false);
     }
 
     return (
-        <Modal show={show} onHide={closeModal} centered>
+        <Modal show={addTransactionClicked} onHide={closeModal} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Enter transaction information</Modal.Title>
             </Modal.Header>
             
-            <Form onSubmit={AddTransaction}>
+            <Form onSubmit={AddNewTransaction}>
                 <Modal.Body>
                     <Form.Group className="formInput">
                         <Form.Control

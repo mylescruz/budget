@@ -1,15 +1,27 @@
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
 import { useState } from "react";
+import styles from "@/styles/editCategoryTable.module.css";
+import AddCategory from "./addCategory";
 
 const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
     const [updatedCategories, setUpdatedCategories] = useState(categories);
+    const [addCategoryClicked, setAddCategoryClicked] = useState(false);
 
     const updateCategoryTable = (e) => {
         e.preventDefault();
 
         setEditClicked(false);
         setCategories(updatedCategories);
+    };
+
+    const addCategory = () => {
+        setAddCategoryClicked(true);
+    };
+
+    const addToCategories = (newCategory) => {
+        console.log(newCategory);
+        setUpdatedCategories([...updatedCategories, newCategory]);
     };
 
     const removeCategory = (categoryToRemove) => {
@@ -20,6 +32,8 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
         setUpdatedCategories(remainingCategories);
     };
 
+    const addCategoryModal = <AddCategory updatedCategories={updatedCategories} addToCategories={addToCategories} addCategoryClicked={addCategoryClicked} setAddCategoryClicked={setAddCategoryClicked} />;
+
     return (
         <>
             <Form onSubmit={updateCategoryTable}>
@@ -27,9 +41,10 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                 <thead className="table-dark">
                     <tr>
                         <th scope="col">
-                            <Row>
-                                <Col className="col-8">Category</Col>
-                                <Col className="col-4"><Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button></Col>
+                            <Row className="alignX">
+                                <Col>Category</Col>
+                                <Col className={styles.plus}><i className="bi bi-plus-circle-fill" onClick={addCategory}></i></Col>
+                                <Col className="text-end px-1"><Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button></Col>
                             </Row>
                         </th>
                         <th scope="col" className="col-2">Budget</th>
@@ -44,6 +59,8 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                 </tbody>
             </Table>
             </Form>
+
+            {addCategoryClicked && <>{addCategoryModal}</>}
         </>
     );
 };

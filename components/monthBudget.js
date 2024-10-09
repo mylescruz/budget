@@ -13,7 +13,7 @@ const MonthBudget = () => {
     const [categories, setCategories] = useState([]);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
-    const [addClicked, setAddClicked] = useState(false);
+    const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [pieValues, setPieValues] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
 
@@ -27,7 +27,7 @@ const MonthBudget = () => {
         .catch((err) => console.log(err));
     }, []);
 
-    const addNewTransaction = (newTransaction) => {
+    const addToTransactions = (newTransaction) => {
         setTransactions([...transactions, newTransaction]);
 
         setPieValues(true);
@@ -76,10 +76,10 @@ const MonthBudget = () => {
     };
 
     const addTransaction = () => {
-        setAddClicked(true);
+        setAddTransactionClicked(true);
     };
 
-    const addModal = <AddTransaction transactions={transactions} addNewTransaction={addNewTransaction} categories={categories} setCategories={setCategories} show={addClicked} setAddClicked={setAddClicked} showTransactions={showTransactions}/>;
+    const addTransactionModal = <AddTransaction transactions={transactions} addToTransactions={addToTransactions} categories={categories} setCategories={setCategories} addTransactionClicked={addTransactionClicked} setAddTransactionClicked={setAddTransactionClicked} showTransactions={showTransactions}/>;
     const tableContainer = <TransactionsTable transactions={transactions} categories={categories} setCategories={setCategories} editOldTransaction={editOldTransaction} removeTransaction={removeTransaction}/>;
 
     return (
@@ -99,7 +99,7 @@ const MonthBudget = () => {
             </Row>
             
             {viewClicked && <>{tableContainer}</>}
-            {addClicked && <>{addModal}</>}
+            {addTransactionClicked && <>{addTransactionModal}</>}
         </Container>
     );
 };
