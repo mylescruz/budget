@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
-import styles from "@/styles/editCategoryRow.module.css";
 
 const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, removeCategory }) => {
     const [categoryName, setCategoryName] = useState(category.name);
@@ -61,14 +60,14 @@ const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, re
         <>
             <tr>
                 <th scope="row" className="text-nowrap">
-                    <Row className={styles.align}>
+                    <Row className="alignX">
                         <Col><Form.Control type="text" name="name" className="w-100" value={categoryName} onChange={handleInput}></Form.Control></Col>
-                        <Col className="text-end"><i className={`bi bi-plus-circle ${styles.plus}`} onClick={addSubcategory}></i></Col>
+                        <Col className="text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
                 <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={newBudgetValue} onChange={handleBudgetInput}></Form.Control></td>
                 <td><Form.Control type="color" name="color" className="form-control-color" value={colorValue} onChange={handleInput}></Form.Control></td>
-                <td className={`text-center align-middle ${styles.delete}`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
+                <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
             </tr>
             {category.hasSubcategory && 
                 (category.subcategories.map(subcategory => (

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import styles from "@/styles/addSubcategory.module.css";
+import { Col, Form, Row } from "react-bootstrap";
 
 const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubcategoryClicked }) => {
     const emptySubcategory = {
@@ -56,7 +55,7 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubc
     return (
         <tr>
             <td>
-                <Row className={styles.align}>
+                <Row className="alignX">
                     <Col className="col-9">
                         <Form.Group className="formInput">
                             <Form.Control
@@ -70,10 +69,10 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubc
                         </Form.Group>
                     </Col>
                     <Col className="col-1">
-                        <i className={`bi bi-x-circle ${styles.cancel}`} onClick={cancelAddSubcategory}></i>
+                        <i className={`bi bi-x-circle cancel`} onClick={cancelAddSubcategory}></i>
                     </Col>
                     <Col className="col-1">
-                        <i className={`bi bi-check-circle ${styles.check}`} onClick={addToCategories}></i>
+                        <i className={`bi bi-check-circle check`} onClick={addToCategories}></i>
                     </Col>
                 </Row>
             </td>

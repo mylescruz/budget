@@ -5,8 +5,6 @@
 
     &:hover {
         cursor: pointer;
-        color: white !important;
-        /* font-weight: bold; */
-        background-color: lightblue !important;
+        font-weight: bold;
     }
 }

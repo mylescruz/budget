@@ -1,7 +1,6 @@
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
 import { useState } from "react";
-import styles from "@/styles/editCategoryTable.module.css";
 import AddCategory from "./addCategory";
 
 const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
@@ -42,9 +41,11 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                     <tr>
                         <th scope="col">
                             <Row className="alignX">
-                                <Col>Category</Col>
-                                <Col className={styles.plus}><i className="bi bi-plus-circle-fill" onClick={addCategory}></i></Col>
-                                <Col className="text-end px-1"><Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button></Col>
+                                <Col>Category <i className="bi bi-plus-circle-fill plus px-3" onClick={addCategory}></i></Col>
+                                {/* <Col className="plus text-start"></Col> */}
+                                <Col className="text-end px-1">
+                                    <Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button>
+                                </Col>
                             </Row>
                         </th>
                         <th scope="col" className="col-2">Budget</th>

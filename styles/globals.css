@@ -71,6 +71,38 @@ a {
 .plus {
   &:hover {
       cursor: pointer;
-      color: #0d6efd;
+      color: blue;
+      font-size: 1.25em;
+      transition: font-size 0.5s, color 0.5s;
+  }
+}
+
+.check {
+  &:hover {
+      cursor: pointer;
+      color: green;
+      font-size: 1.25em;
+      transition: font-size 0.5s, color 0.5s;
+    }
+}
+
+.cancel, .delete {
+  &:hover {
+      cursor: pointer;
+      color: red;
+      font-size: 1.25em;
+      transition: font-size 0.5s, color 0.5s;
+  }
+}
+
+.cellHover {
+  max-width: 125px;
+  text-wrap: nowrap;
+  overflow-x: scroll;
+
+  &:hover {
+      cursor: pointer;
+      color: white !important;
+      background-color: lightblue !important;
   }
 }

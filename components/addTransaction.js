@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Button, Modal, Col, Row, CardText } from "react-bootstrap";
+import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";

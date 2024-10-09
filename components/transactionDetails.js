@@ -1,7 +1,6 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
-import { useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Modal, Row } from "react-bootstrap";
 
 const TransactionDetails = ({transaction, showDetails, setShowDetails, openDelete, openEdit }) => {
     const closeDetails = () => {

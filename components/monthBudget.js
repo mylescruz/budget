@@ -95,7 +95,7 @@ const MonthBudget = () => {
         
             <Row className="mb-4 text-center">
                 <Col><Button variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
-                <Col><Button variant="primary" onClick={addTransaction}>Add Transaction</Button></Col>
+                <Col><Button variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
             </Row>
             
             {viewClicked && <>{tableContainer}</>}

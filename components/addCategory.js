@@ -93,42 +93,42 @@ const AddCategory = ({updatedCategories, addToCategories, addCategoryClicked, se
             <Form onSubmit={addNewCategory}>
                 <Modal.Body>
                     <Form.Group className="formInput">
+                        <Form.Label>Category name</Form.Label>
                         <Form.Control
                             id="name"
                             className="h-100"
                             type="text"
-                            placeholder="Category name"
+                            placeholder="Name"
                             value={newCategory.name}
                             onChange={handleInput}
                             required
-                        ></Form.Control>
+                        />
                     </Form.Group>
                     <Form.Group className="formInput">
+                        <Form.Label>Budget Amount</Form.Label>
                         <Form.Control
                             id="budget"
                             className="h-100"
                             type="number"
                             min="1"
                             step="1"
-                            placeholder="Budget amount"
+                            placeholder="$ Amount"
                             value={newCategory.budget}
                             onChange={handleNumInput}
                             required
-                        ></Form.Control>
-                    </Form.Group>
-                    <Form.Group as={Row} className="formInput">
-                        <Form.Label column>Color</Form.Label>
-                        <Col>
-                            <Form.Control
-                                id="color" 
-                                type="color" 
-                                className="form-control-color" 
-                                value={newCategory.color} 
-                                onChange={handleInput}
-                            />
-                        </Col>
+                        />
                     </Form.Group>
                     <Form.Group className="formInput">
+                        <Form.Label>Color</Form.Label>
+                        <Form.Control
+                            id="color" 
+                            type="color" 
+                            className="form-control-color" 
+                            value={newCategory.color} 
+                            onChange={handleInput}
+                        />
+                    </Form.Group>
+                    <Form.Group className="formInput alignX">
                         <Form.Check
                         reverse
                         id="hasSubcategory"
