@@ -1,17 +1,56 @@
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AddCategory from "./addCategory";
 
 const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
     const [updatedCategories, setUpdatedCategories] = useState(categories);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
+    const categoryValues = useRef([]);
 
     const updateCategoryTable = (e) => {
         e.preventDefault();
 
         setEditClicked(false);
-        setCategories(updatedCategories);
+
+        const updated = categories.map(category => {
+            const foundIndex = categoryValues.current.findIndex(cat => {
+                return cat.id === category.id;
+            });
+
+            if (foundIndex !== -1) {
+                return categoryValues.current[foundIndex];
+            } else {
+                return category;
+            }
+        });
+
+        setCategories(updated);
+    };
+
+    const updateCategoryValues = (category, property, input) => {   
+        const foundIndex = categoryValues.current.findIndex(cat => {
+            return cat.id === category.id;
+        });
+
+        let budgetValue = parseFloat(input);
+        if (isNaN(budgetValue))
+            budgetValue = 0;
+
+        if (foundIndex !== -1) {
+            const updatedValues = categoryValues.current[foundIndex];
+            if (property === 'budget') {
+                categoryValues.current[foundIndex] = {...updatedValues, [property]: budgetValue};
+            } else {
+                categoryValues.current[foundIndex] = {...updatedValues, [property]: input};
+            }
+        } else {
+            if (property === 'budget') {
+                categoryValues.current.push({...category, [property]: budgetValue});
+            } else {
+                categoryValues.current.push({...category, [property]: input});
+            }
+        }
     };
 
     const addCategory = () => {
@@ -42,7 +81,6 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                         <th scope="col">
                             <Row className="alignX">
                                 <Col>Category <i className="bi bi-plus-circle-fill plus px-3" onClick={addCategory}></i></Col>
-                                {/* <Col className="plus text-start"></Col> */}
                                 <Col className="text-end px-1">
                                     <Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button>
                                 </Col>
@@ -55,7 +93,7 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                 </thead>
                 <tbody>
                     {updatedCategories.map(category => (
-                        <EditCategoryRow key={category.id} category={category} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} removeCategory={removeCategory}/>
+                        <EditCategoryRow key={category.id} category={category} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>
                     ))}
                 </tbody>
             </Table>

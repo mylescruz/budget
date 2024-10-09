@@ -2,50 +2,33 @@ import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 
-const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, removeCategory }) => {
-    const [categoryName, setCategoryName] = useState(category.name);
-    const [newBudgetValue, setNewBudgetValue] = useState(category.budget);
-    const [colorValue, setColorValue] = useState(category.color);
+const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, removeCategory, updateCategoryValues }) => {
+    const [categoryValues, setCategoryValues] = useState({
+        name: category.name, 
+        budget: category.budget, 
+        color: category.color
+    });
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
 
     const handleBudgetInput = (e) => {
+        const property = e.target.name;
         const input = e.target.value;
 
         if (input == '')
-            setNewBudgetValue(input);
+            setCategoryValues({...categoryValues, [property]: input});
         else
-            setNewBudgetValue(parseFloat(input));
+            setCategoryValues({...categoryValues, [property]: parseFloat(input)});
 
-        const updated = updatedCategories.map(updatedCategory => {
-            if (updatedCategory.id === category.id) {
-                if (input == '')
-                    return {...updatedCategory, budget:input}
-                else
-                    return {...updatedCategory, budget:parseFloat(input)}
-            } else
-                return updatedCategory;
-        });
-
-        setUpdatedCategories(updated);
+        updateCategoryValues(category, property, input);
     };
 
     const handleInput = (e) => {
         const property = e.target.name;
         const input = e.target.value;
 
-        if (property === 'name')
-            setCategoryName(input);
-        else
-            setColorValue(input);
+        setCategoryValues({...categoryValues, [property]: input});
 
-        const updated = updatedCategories.map(updatedCategory => {
-            if (updatedCategory.id === category.id) {
-                return {...updatedCategory, [e.target.name]: input}
-            } else
-                return updatedCategory;
-        });
-
-        setUpdatedCategories(updated);
+        updateCategoryValues(category, property, input);
     };
 
     const addSubcategory = () => {
@@ -61,12 +44,12 @@ const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, re
             <tr>
                 <th scope="row" className="text-nowrap">
                     <Row className="alignX">
-                        <Col><Form.Control type="text" name="name" className="w-100" value={categoryName} onChange={handleInput}></Form.Control></Col>
+                        <Col><Form.Control type="text" name="name" className="w-100" value={categoryValues.name} onChange={handleInput}></Form.Control></Col>
                         <Col className="text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
-                <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={newBudgetValue} onChange={handleBudgetInput}></Form.Control></td>
-                <td><Form.Control type="color" name="color" className="form-control-color" value={colorValue} onChange={handleInput}></Form.Control></td>
+                <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={categoryValues.budget} onChange={handleBudgetInput}></Form.Control></td>
+                <td><Form.Control type="color" name="color" className="form-control-color" value={categoryValues.color} onChange={handleInput}></Form.Control></td>
                 <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
             </tr>
             {category.hasSubcategory && 
