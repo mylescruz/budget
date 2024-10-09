@@ -1,6 +1,6 @@
 import axios from "axios";
 import AddTransaction from "./addTransaction";
-import CategoryTable from "./categoryTable";
+import CategoryTable, { CategoryTableMemo } from "./categoryTable";
 import TransactionsTable from "./transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -87,7 +87,7 @@ const MonthBudget = () => {
             <Row>
                 <Col><SummaryPieChart categories={categories} pieValues={pieValues} /></Col>
                 <Col>{!editClicked ?
-                    <CategoryTable categories={categories} setEditClicked={setEditClicked} />
+                    <CategoryTableMemo categories={categories} setEditClicked={setEditClicked} />
                     :
                     <EditCategoryTable categories={categories} setCategories={setCategories} setEditClicked={setEditClicked} />
                 }</Col>

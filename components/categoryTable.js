@@ -1,6 +1,7 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
+import React from "react";
 
 const CategoryTable = ({categories, setEditClicked}) => {
     const handleEdit = () => {
@@ -34,4 +35,7 @@ const CategoryTable = ({categories, setEditClicked}) => {
     );
 };
 
+const CategoryTableMemo = React.memo(CategoryTable);
+
 export default CategoryTable;
+export { CategoryTableMemo };
