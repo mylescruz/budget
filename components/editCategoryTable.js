@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import AddCategory from "./addCategory";
 
 const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
-    const [updatedCategories, setUpdatedCategories] = useState(categories);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
 
@@ -58,19 +57,18 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
     };
 
     const addToCategories = (newCategory) => {
-        console.log(newCategory);
-        setUpdatedCategories([...updatedCategories, newCategory]);
+        setCategories([...categories, newCategory]);
     };
 
     const removeCategory = (categoryToRemove) => {
-        const remainingCategories = updatedCategories.filter(category => {
+        const remainingCategories = categories.filter(category => {
             return category.id !== categoryToRemove.id;
         });
 
-        setUpdatedCategories(remainingCategories);
+        setCategories(remainingCategories);
     };
 
-    const addCategoryModal = <AddCategory updatedCategories={updatedCategories} addToCategories={addToCategories} addCategoryClicked={addCategoryClicked} setAddCategoryClicked={setAddCategoryClicked} />;
+    const addCategoryModal = <AddCategory categories={categories} addToCategories={addToCategories} addCategoryClicked={addCategoryClicked} setAddCategoryClicked={setAddCategoryClicked} />;
 
     return (
         <>
@@ -92,8 +90,8 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {updatedCategories.map(category => (
-                        <EditCategoryRow key={category.id} category={category} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>
+                    {categories.map(category => (
+                        <EditCategoryRow key={category.id} category={category} categories={categories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>
                     ))}
                 </tbody>
             </Table>

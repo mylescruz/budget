@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, Button, Modal, Col, Row} from "react-bootstrap";
 
-const AddCategory = ({updatedCategories, addToCategories, addCategoryClicked, setAddCategoryClicked}) => {
+const AddCategory = ({categories, addToCategories, addCategoryClicked, setAddCategoryClicked}) => {
     const emptyCategory = {
         id: 0,
         name: "",
@@ -24,7 +24,6 @@ const AddCategory = ({updatedCategories, addToCategories, addCategoryClicked, se
     const [subcategoryChecked, setSubcategoryChecked] = useState(false);
     const [hasSubcategory, setHasSubcategory] = useState(newCategory.hasSubcategory);
 
-    console.log(newSubcategory);
     const handleInput = (e) => {
         setNewCategory({ ...newCategory, [e.target.id]: e.target.value});
     };
@@ -42,8 +41,6 @@ const AddCategory = ({updatedCategories, addToCategories, addCategoryClicked, se
         setNewSubcategory({ ...newSubcategory, name: e.target.value})
     };
 
-    let numSubcategory = 0;
-
     const handleChecked = (e) => {
         if (e.target.checked)
             setSubcategoryChecked(true);
@@ -59,8 +56,8 @@ const AddCategory = ({updatedCategories, addToCategories, addCategoryClicked, se
         e.preventDefault();
 
         let maxID = 0;
-        if (updatedCategories.length > 0)
-            maxID = Math.max(...updatedCategories.map(category => category.id));
+        if (categories.length > 0)
+            maxID = Math.max(...categories.map(category => category.id));
 
         newCategory.id = maxID + 1;
         addToCategories(newCategory);
@@ -144,7 +141,6 @@ const AddCategory = ({updatedCategories, addToCategories, addCategoryClicked, se
                         <Row className="alignX">
                             <Col>
                                 <Form.Control 
-                                    id={`subcategory-${numSubcategory}`}
                                     name="name"
                                     className="h-100"
                                     type="text"

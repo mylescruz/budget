@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 
-const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, removeCategory, updateCategoryValues }) => {
+const EditCategoryRow = ({ category, categories, setCategories, removeCategory, updateCategoryValues }) => {
     const [categoryValues, setCategoryValues] = useState({
         name: category.name, 
         budget: category.budget, 
@@ -63,7 +63,7 @@ const EditCategoryRow = ({ category, updatedCategories, setUpdatedCategories, re
                 )))
             }
             {addSubcategoryClicked &&
-                <AddSubcategory category={category} categories={updatedCategories} setUpdatedCategories={setUpdatedCategories} addSubcategoryClicked={addSubcategoryClicked} setAddSubcategoryClicked={setAddSubcategoryClicked} />
+                <AddSubcategory category={category} categories={categories} setCategories={setCategories} addSubcategoryClicked={addSubcategoryClicked} setAddSubcategoryClicked={setAddSubcategoryClicked} />
             }
         </>
     );
