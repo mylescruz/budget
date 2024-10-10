@@ -91,7 +91,7 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                 </thead>
                 <tbody>
                     {categories.map(category => (
-                        <EditCategoryRow key={category.id} category={category} categories={categories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>
+                        <EditCategoryRow key={category.id} category={category} categories={categories} setCategories={setCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>
                     ))}
                 </tbody>
             </Table>

@@ -63,7 +63,7 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
                 )))
             }
             {addSubcategoryClicked &&
-                <AddSubcategory category={category} categories={categories} setCategories={setCategories} addSubcategoryClicked={addSubcategoryClicked} setAddSubcategoryClicked={setAddSubcategoryClicked} />
+                <AddSubcategory category={category} categories={categories} setCategories={setCategories} setAddSubcategoryClicked={setAddSubcategoryClicked} />
             }
         </>
     );

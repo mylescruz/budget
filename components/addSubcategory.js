@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 
-const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubcategoryClicked }) => {
+const AddSubcategory = ({ category, categories, setCategories, setAddSubcategoryClicked }) => {
     const emptySubcategory = {
         id: 0,
         name: "",
@@ -48,7 +48,7 @@ const AddSubcategory = ({ category, categories, setUpdatedCategories, setAddSubc
             
         });
 
-        setUpdatedCategories(updatedCategories);
+        setCategories(updatedCategories);
         setAddSubcategoryClicked(false);
     };
 
