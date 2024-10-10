@@ -5,8 +5,7 @@ const AddSubcategory = ({ category, categories, setCategories, setAddSubcategory
     const emptySubcategory = {
         id: 0,
         name: "",
-        actual: 0,
-        parent: category.name
+        actual: 0
     };
 
     const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);

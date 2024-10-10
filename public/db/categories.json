@@ -1,27 +1,77 @@
 {
     "categories": [
         {
-            "id": 1,
-            "name": "Rent",
+            "id": 0,
+            "name": "Fixed Expenses",
             "color": "#3058e8",
-            "budget": 1200,
+            "budget": 2000,
+            "actual": 0,
+            "hasSubcategory": true,
+            "subcategories" : [
+                {
+                    "id": 0,
+                    "name": "Rent/Mortgage",
+                    "actual": 1000
+                },
+                {
+                    "id": 1,
+                    "name": "Car Insurance",
+                    "actual": 150
+                },
+                {
+                    "id": 2,
+                    "name": "Health Insurance",
+                    "actual": 100
+                },
+                {
+                    "id": 3,
+                    "name": "Phone",
+                    "actual": 100
+                },
+                {
+                    "id": 4,
+                    "name": "Internet",
+                    "actual": 50
+                },
+                {
+                    "id": 5,
+                    "name": "TV",
+                    "actual": 50
+                },
+                {
+                    "id": 6,
+                    "name": "Subscriptions",
+                    "actual": 20
+                },
+                {
+                    "id": 7,
+                    "name": "Debts",
+                    "actual": 500
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "Savings",
+            "color": "#b96431",
+            "budget": 500,
             "actual": 0,
             "hasSubcategory": false,
             "subcategories" : []
         },
         {
             "id": 2,
-            "name": "Utilities",
-            "color": "#b96431",
-            "budget": 100,
+            "name": "Investments",
+            "color": "#61bf01",
+            "budget": 500,
             "actual": 0,
             "hasSubcategory": false,
             "subcategories" : []
         },
         {
             "id": 3,
-            "name": "Internet/TV",
-            "color": "#61bf01",
+            "name": "Necessities",
+            "color": "#acdee7",
             "budget": 100,
             "actual": 0,
             "hasSubcategory": false,
@@ -29,25 +79,16 @@
         },
         {
             "id": 4,
-            "name": "Phone",
-            "color": "#acdee7",
-            "budget": 120,
+            "name": "Car",
+            "color": "#bf3d64",
+            "budget": 200,
             "actual": 0,
             "hasSubcategory": false,
             "subcategories" : []
         },
         {
             "id": 5,
-            "name": "Insurance",
-            "color": "#bf3d64",
-            "budget": 125,
-            "actual": 0,
-            "hasSubcategory": false,
-            "subcategories" : []
-        },
-        {
-            "id": 6,
-            "name": "Car",
+            "name": "Groceries",
             "color": "#a126be",
             "budget": 300,
             "actual": 0,
@@ -55,52 +96,7 @@
             "subcategories" : []
         },
         {
-            "id": 7,
-            "name": "Groceries",
-            "color": "#fe6bee",
-            "budget": 300,
-            "actual": 0,
-            "hasSubcategory": false,
-            "subcategories" : []
-        },
-        {
-            "id": 8,
-            "name": "Necessities",
-            "color": "#fa0725",
-            "budget": 100,
-            "actual": 0,
-            "hasSubcategory": false,
-            "subcategories" : []
-        },
-        {
-            "id": 9,
-            "name": "Subscriptions",
-            "color": "#81fbaf",
-            "budget": 50,
-            "actual": 0,
-            "hasSubcategory": false,
-            "subcategories" : []
-        },
-        {
-            "id": 10,
-            "name": "Investments",
-            "color": "#ead919",
-            "budget": 500,
-            "actual": 0,
-            "hasSubcategory": false,
-            "subcategories" : []
-        },
-        {
-            "id": 11,
-            "name": "Debts",
-            "color": "#e57f29",
-            "budget": 500,
-            "actual": 0,
-            "hasSubcategory": false,
-            "subcategories" : []
-        },
-        {
-            "id": 12,
+            "id": 6,
             "name": "Guilt Free Spending",
             "color": "#930a29",
             "budget": 500,
@@ -110,8 +106,27 @@
                 {
                     "id": 0,
                     "name": "Food",
-                    "actual": 0,
-                    "parent": "Guilt Free Spending"
+                    "actual": 0
+                },
+                {
+                    "id": 1,
+                    "name": "Entertainment",
+                    "actual": 0
+                },
+                {
+                    "id": 2,
+                    "name": "Miscellaneous",
+                    "actual": 0
+                },
+                {
+                    "id": 3,
+                    "name": "Family & Friends",
+                    "actual": 0
+                },
+                {
+                    "id": 4,
+                    "name": "Travel",
+                    "actual": 0
                 }
             ]
         }
