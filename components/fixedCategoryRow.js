@@ -3,6 +3,7 @@ import styles from "@/styles/categoryRow.module.css";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
+import FixedSubcategoryRow from "./fixedSubcategoryRow";
 
 const FixedCategoryRow = ({ category }) => {
     const hasSubcategory = category.hasSubcategory;
@@ -36,7 +37,7 @@ const FixedCategoryRow = ({ category }) => {
             </tr>
             {showSubcategories &&
                 category.subcategories.map(subcategory => (
-                    <SubcategoryRow key={subcategory.id} subcategory={subcategory} />
+                    <FixedSubcategoryRow key={subcategory.id} subcategory={subcategory} />
                 ))
             }
         </>

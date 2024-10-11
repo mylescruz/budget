@@ -22,12 +22,12 @@
                 {
                     "id": 0,
                     "name": "Car Insurance",
-                    "actual": 0
+                    "actual": 100
                 },
                 {
                     "id": 1,
                     "name": "Health Insurance",
-                    "actual": 0
+                    "actual": 100
                 }
             ]
         },
