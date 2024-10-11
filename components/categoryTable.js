@@ -2,6 +2,7 @@ import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
 import React from "react";
+import FixedCategoryRow from "./fixedCategoryRow";
 
 const CategoryTable = ({categories, setEditClicked}) => {
     const handleEdit = () => {
@@ -9,7 +10,7 @@ const CategoryTable = ({categories, setEditClicked}) => {
     };
 
     return (
-        <Table striped bordered responsive className="my-4 w-100 mx-auto">
+        <Table bordered responsive className="my-4 w-100 mx-auto">
             <thead className="table-dark">
                 <tr>
                     <th scope="col">
@@ -24,9 +25,19 @@ const CategoryTable = ({categories, setEditClicked}) => {
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <th className="bg-secondary text-white" colSpan={4}>Fixed Expenses</th>
+                </tr>
                 {categories.map(category => (
-                    <CategoryRow key={category.id} category={category} />
+                    (category.fixed && <FixedCategoryRow key={category.id} category={category} />)
                 ))}
+                <tr>
+                    <th className="bg-secondary text-white" colSpan={4}>Other Expenses</th>
+                </tr>
+                {categories.map(category => (
+                    (!category.fixed && <CategoryRow key={category.id} category={category} />)
+                ))}
+                
             </tbody>
             <tfoot>
                 <CategoryFooter categories={categories} />
