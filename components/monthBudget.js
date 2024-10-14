@@ -69,8 +69,22 @@ const MonthBudget = () => {
         setAddTransactionClicked(true);
     };
 
-    const addTransactionModal = <AddTransaction transactions={transactions} addToTransactions={addToTransactions} categories={categories} setCategories={setCategories} addTransactionClicked={addTransactionClicked} setAddTransactionClicked={setAddTransactionClicked} showTransactions={showTransactions}/>;
-    const tableContainer = <TransactionsTable transactions={transactions} categories={categories} setCategories={setCategories} editOldTransaction={editOldTransaction} removeTransaction={removeTransaction}/>;
+    const addTransactionsProps = {
+        transactions: transactions,
+        addToTransactions: addToTransactions,
+        categories: categories,
+        setCategories: setCategories,
+        addTransactionClicked: addTransactionClicked,
+        setAddTransactionClicked: setAddTransactionClicked,
+        showTransactions: showTransactions
+    }
+    const transactionsTableProps = {
+        transactions: transactions,
+        categories: categories,
+        setCategories: setCategories,
+        editOldTransaction: editOldTransaction,
+        removeTransaction: removeTransaction
+    };
 
     return (
         <Container className="w-100">
@@ -88,8 +102,8 @@ const MonthBudget = () => {
                 <Col><Button variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
             </Row>
             
-            {viewClicked && <>{tableContainer}</>}
-            {addTransactionClicked && <>{addTransactionModal}</>}
+            {viewClicked && <TransactionsTable {...transactionsTableProps} />}
+            {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
         </Container>
     );
 };

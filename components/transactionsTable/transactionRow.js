@@ -25,9 +25,30 @@ const TransactionRow = ({ transaction, categories, setCategories, editOldTransac
         setShowEdit(true);
     };    
 
-    const detailsModal = <TransactionDetails transaction={transaction} showDetails={showDetails} setShowDetails={setShowDetails} openDelete={openDelete} openEdit={openEdit} />;
-    const editModal = <EditTransaction transaction={transaction} showEdit={showEdit} setShowEdit={setShowEdit} setShowDetails={setShowDetails} categories={categories} setCategories={setCategories} editOldTransaction={editOldTransaction} />
-    const deleteModal = <DeleteTransaction transaction={transaction} showDelete={showDelete} setShowDelete={setShowDelete} setShowDetails={setShowDetails} removeTransaction={removeTransaction} />
+    const transactionDetailsProps = { transaction: transaction,
+        showDetails: showDetails,
+        setShowDetails: setShowDetails,
+        openDelete: openDelete,
+        openEdit: openEdit
+    };
+          
+    const editTransactionProps = {
+        transaction: transaction,
+        showEdit: showEdit,
+        setShowEdit: setShowEdit,
+        setShowDetails: setShowDetails,
+        categories: categories,
+        setCategories: setCategories,
+        editOldTransaction: editOldTransaction
+    };
+
+    const deleteTransactionProps = {
+        transaction: transaction,
+        showDelete: showDelete,
+        setShowDelete: setShowDelete,
+        setShowDetails: setShowDetails,
+        removeTransaction: removeTransaction
+    };
 
     return (
         <>
@@ -38,9 +59,9 @@ const TransactionRow = ({ transaction, categories, setCategories, editOldTransac
                 <td>{currencyFormatter.format(transaction.amount)}</td>
             </tr>
 
-            { showDetails && <>{detailsModal}</>}
-            { showEdit && <>{editModal}</>}
-            { showDelete && <>{deleteModal}</>}
+            { showDetails && <TransactionDetails {...transactionDetailsProps} />}
+            { showEdit && <EditTransaction {...editTransactionProps} />}
+            { showDelete && <DeleteTransaction {...deleteTransactionProps} />}
         </>
     );
 };

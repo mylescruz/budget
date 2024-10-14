@@ -55,7 +55,19 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
         setCategories(remainingCategories);
     };
 
-    const addCategoryModal = <AddCategory categories={categories} addToCategories={addToCategories} addCategoryClicked={addCategoryClicked} setAddCategoryClicked={setAddCategoryClicked} />;
+    const addCategoryProps = {
+        categories: categories,
+        addToCategories: addToCategories,
+        addCategoryClicked: addCategoryClicked,
+        setAddCategoryClicked: setAddCategoryClicked
+    };
+
+    const editCategoryProps = {
+        categories: categories,
+        setCategories: setCategories,
+        removeCategory: removeCategory,
+        updateCategoryValues: updateCategoryValues
+    };
 
     return (
         <>
@@ -81,19 +93,19 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                         <th className="bg-secondary text-white" colSpan={4}>Fixed Expenses</th>
                     </tr>
                     {categories.map(category => (
-                        (category.fixed && <EditCategoryRow key={category.id} category={category} categories={categories} setCategories={setCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>)
+                        (category.fixed && <EditCategoryRow key={category.id} category={category} {...editCategoryProps} />)
                     ))}
                     <tr>
                         <th className="bg-secondary text-white" colSpan={4}>Other Expenses</th>
                     </tr>
                     {categories.map(category => (
-                        (!category.fixed && <EditCategoryRow key={category.id} category={category} categories={categories} setCategories={setCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>)
+                        (!category.fixed && <EditCategoryRow key={category.id} category={category} {...editCategoryProps} />)
                     ))}
                 </tbody>
             </Table>
             </Form>
 
-            {addCategoryClicked && <>{addCategoryModal}</>}
+            {addCategoryClicked && <AddCategory {...addCategoryProps} />}
         </>
     );
 };
