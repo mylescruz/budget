@@ -1,12 +1,12 @@
 import axios from "axios";
-import AddTransaction from "./addTransaction";
-import CategoryTable, { CategoryTableMemo } from "./categoryTable";
-import TransactionsTable from "./transactionsTable";
+import AddTransaction from "./transactionsTable/addTransaction";
+import CategoryTable, { CategoryTableMemo } from "./categoryTable/categoryTable";
+import TransactionsTable from "./transactionsTable/transactionsTable";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import SummaryPieChart from "./summaryPieChart";
 import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
-import EditCategoryTable from "./editCategoryTable";
+import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 
 const MonthBudget = () => {
     const [transactions, setTransactions] = useState([]);
@@ -14,7 +14,6 @@ const MonthBudget = () => {
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
-    const [pieValues, setPieValues] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
 
     useEffect(() => {
@@ -29,8 +28,6 @@ const MonthBudget = () => {
 
     const addToTransactions = (newTransaction) => {
         setTransactions([...transactions, newTransaction]);
-
-        setPieValues(true);
     };
 
     const editOldTransaction = (edittedTransaction) => {
@@ -41,8 +38,6 @@ const MonthBudget = () => {
                 return transaction;
         });
         setTransactions(updatedTransactions);
-
-        setPieValues(true);
     };
 
     const removeTransaction = (transactionToRemove) => {
@@ -54,11 +49,6 @@ const MonthBudget = () => {
 
         const updatedCategories = deleteFromCategoryActual(transactionToRemove, categories);
         setCategories(updatedCategories);
-        
-        if (updatedTransactions.length > 0)
-            setPieValues(true);
-        else
-            setPieValues(false);
     };
 
     const showTransactions = () => {
@@ -85,7 +75,7 @@ const MonthBudget = () => {
     return (
         <Container className="w-100">
             <Row>
-                <Col><SummaryPieChart categories={categories} pieValues={pieValues} /></Col>
+                <Col><SummaryPieChart categories={categories} /></Col>
                 <Col>{!editClicked ?
                     <CategoryTableMemo categories={categories} setEditClicked={setEditClicked} />
                     :

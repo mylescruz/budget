@@ -1,8 +1,6 @@
 import { VictoryPie } from "victory";
 
-const SummaryPieChart = ({ pieValues, categories }) => {
-    let temporaryPieData = [{x: "Your Spending", y: 100}];
-    let temporaryPieColors = [["#6c757d"]];
+const SummaryPieChart = ({ categories }) => {
 
     let pieData = [];
     let colors = [];
@@ -34,37 +32,23 @@ const SummaryPieChart = ({ pieValues, categories }) => {
     });
 
     return (
-        <>
-            {pieValues ?
-                <VictoryPie
-                    data={pieData} 
-                    colorScale={colors}
-                    height={pieSize}
-                    labelPosition={({ index }) => index
-                        ? "centroid"
-                        : "startAngle"
-                    }
-                    style={
-                        {
-                            labels: {
-                                fontSize: 10
-                            }
-                            
-                        }
-                    }
-                />
-                :
-                <VictoryPie 
-                    data={temporaryPieData} 
-                    colorScale={temporaryPieColors}
-                    height={pieSize}
-                    labelPosition={({ index }) => index
-                        ? "centroid"
-                        : "startAngle"
-                    }
-                />
+        <VictoryPie
+            data={pieData} 
+            colorScale={colors}
+            height={pieSize}
+            labelPosition={({ index }) => index
+                ? "centroid"
+                : "startAngle"
             }
-        </>
+            style={
+                {
+                    labels: {
+                        fontSize: 10
+                    }
+                    
+                }
+            }
+        />
     );
 };
 
