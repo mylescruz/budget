@@ -39,13 +39,19 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
         if (foundIndex !== -1) {
             const updatedValues = categoryValues.current[foundIndex];
             if (property === 'budget') {
-                categoryValues.current[foundIndex] = {...updatedValues, [property]: budgetValue};
+                if (category.fixed)
+                    categoryValues.current[foundIndex] = {...updatedValues, budget: budgetValue, actual: budgetValue};
+                else
+                    categoryValues.current[foundIndex] = {...updatedValues, budget: budgetValue};
             } else {
                 categoryValues.current[foundIndex] = {...updatedValues, [property]: input};
             }
         } else {
             if (property === 'budget') {
-                categoryValues.current.push({...category, [property]: budgetValue});
+                if (category.fixed)
+                    categoryValues.current.push({...category, budget: budgetValue, actual: budgetValue});
+                else
+                    categoryValues.current.push({...category, budget: budgetValue});
             } else {
                 categoryValues.current.push({...category, [property]: input});
             }
@@ -90,8 +96,17 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                        <th className="bg-secondary text-white" colSpan={4}>Fixed Expenses</th>
+                    </tr>
                     {categories.map(category => (
-                        <EditCategoryRow key={category.id} category={category} categories={categories} setCategories={setCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>
+                        (category.fixed && <EditCategoryRow key={category.id} category={category} categories={categories} setCategories={setCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>)
+                    ))}
+                    <tr>
+                        <th className="bg-secondary text-white" colSpan={4}>Other Expenses</th>
+                    </tr>
+                    {categories.map(category => (
+                        (!category.fixed && <EditCategoryRow key={category.id} category={category} categories={categories} setCategories={setCategories} removeCategory={removeCategory} updateCategoryValues={updateCategoryValues}/>)
                     ))}
                 </tbody>
             </Table>

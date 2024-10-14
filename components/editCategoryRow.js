@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
+import EditSubcategoryRow from "./editSubcategoryRow";
 
 const EditCategoryRow = ({ category, categories, setCategories, removeCategory, updateCategoryValues }) => {
     const [categoryValues, setCategoryValues] = useState({
         name: category.name, 
+        color: category.color,
         budget: category.budget, 
-        color: category.color
+        fixed: category.fixed,
+        hasSubcategory: category.hasSubcategory,
+        subcategories: category.subcategories
     });
+
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
 
     const handleBudgetInput = (e) => {
@@ -31,6 +36,23 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
         updateCategoryValues(category, property, input);
     };
 
+    const updateSubcategories = (subcategory) => {
+        let budgetTotal = categoryValues.budget;
+        
+        let updatedSubcategories = categoryValues.subcategories.map(sub => {
+            if (sub.id === subcategory.id) {
+                budgetTotal = budgetTotal - sub.actual + subcategory.actual;
+                return {...sub, actual: subcategory.actual}
+            } else {
+                return sub;
+            }
+        });
+        
+        setCategoryValues({...categoryValues, budget: budgetTotal, subcategories: updatedSubcategories });
+        updateCategoryValues(category, "budget", budgetTotal);
+        updateCategoryValues(category, "subcategories", updatedSubcategories);
+    };
+
     const addSubcategory = () => {
         setAddSubcategoryClicked(true);
     };
@@ -48,22 +70,32 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
                         <Col className="text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
-                <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={categoryValues.budget} onChange={handleBudgetInput}></Form.Control></td>
+                {(category.hasSubcategory && category.fixed) ?
+                    <td><Form.Control type="number" name="budget" className="w-100" value={categoryValues.budget} disabled></Form.Control></td>
+                    :
+                    <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={categoryValues.budget} onChange={handleBudgetInput}></Form.Control></td>
+                }
                 <td><Form.Control type="color" name="color" className="form-control-color" value={categoryValues.color} onChange={handleInput}></Form.Control></td>
                 <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
             </tr>
             {category.hasSubcategory && 
-                (category.subcategories.map(subcategory => (
-                    <tr key={subcategory.id}>
-                        <td className="text-end">{subcategory.name}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>    
-                )))
+                (!category.fixed ? 
+                    (category.subcategories.map(subcategory => (
+                        <tr key={subcategory.id}>
+                            <td className="text-end">{subcategory.name}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>    
+                    ))) 
+                    : 
+                    (category.subcategories.map(subcategory => (
+                        <EditSubcategoryRow key={subcategory.id} subcategory={subcategory} updateSubcategories={updateSubcategories} />  
+                    )))
+                ) 
             }
             {addSubcategoryClicked &&
-                <AddSubcategory category={category} categories={categories} setCategories={setCategories} setAddSubcategoryClicked={setAddSubcategoryClicked} />
+                <AddSubcategory categoryValues={categoryValues} setCategoryValues={setCategoryValues} category={category} categories={categories} setCategories={setCategories} setAddSubcategoryClicked={setAddSubcategoryClicked} />
             }
         </>
     );
