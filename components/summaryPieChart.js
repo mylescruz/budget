@@ -1,7 +1,10 @@
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import { useContext } from "react";
 import { VictoryPie } from "victory";
 
-const SummaryPieChart = ({ categories }) => {
-
+const SummaryPieChart = () => {
+    const { categories } = useContext(CategoriesContext);
+    
     let pieData = [];
     let colors = [];
 

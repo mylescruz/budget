@@ -1,7 +1,10 @@
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 
-const CategoryFooter = ({ categories }) => {    
+const CategoryFooter = () => {   
+    const { categories } = useContext(CategoriesContext); 
+    
     const footerValues = useMemo(() => {
         let totalBudget = 0;
         let totalActual = 0;

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const AddTransaction = ({transactions, addToTransactions, categories, setCategories, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
+const AddTransaction = ({transactions, addToTransactions, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const emptyTransaction = {
         id: 0,
         date: dateInfo.currentDate,
@@ -14,6 +15,7 @@ const AddTransaction = ({transactions, addToTransactions, categories, setCategor
         amount: ""
     };
 
+    const { categories, setCategories } = useContext(CategoriesContext);
     const [newTransaction, setTransaction] = useState(emptyTransaction);
 
     const handleInput = (e) => {

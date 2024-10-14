@@ -1,10 +1,13 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
-import React from "react";
+import React, { useContext } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const CategoryTable = ({categories, setEditClicked}) => {
+const CategoryTable = ({ setEditClicked }) => {
+    const { categories } = useContext(CategoriesContext);
+
     const handleEdit = () => {
         setEditClicked(true);
     };
@@ -40,7 +43,7 @@ const CategoryTable = ({categories, setEditClicked}) => {
                 
             </tbody>
             <tfoot>
-                <CategoryFooter categories={categories} />
+                <CategoryFooter />
             </tfoot>
         </Table>
     );

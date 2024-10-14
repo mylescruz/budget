@@ -1,9 +1,11 @@
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import AddCategory from "./addCategory";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
+const EditCategoryTable = ({ setEditClicked }) => {
+    const { categories, setCategories } = useContext(CategoriesContext);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
 
@@ -56,15 +58,12 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
     };
 
     const addCategoryProps = {
-        categories: categories,
         addToCategories: addToCategories,
         addCategoryClicked: addCategoryClicked,
         setAddCategoryClicked: setAddCategoryClicked
     };
 
     const editCategoryProps = {
-        categories: categories,
-        setCategories: setCategories,
         removeCategory: removeCategory,
         updateCategoryValues: updateCategoryValues
     };

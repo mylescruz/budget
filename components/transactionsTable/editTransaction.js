@@ -1,10 +1,12 @@
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import editCategoryActual from "@/helpers/editCategoryActual";
 import SelectCategory from "./selectCategory";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, categories, setCategories, editOldTransaction}) => {
+const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, editOldTransaction}) => {
+    const { categories, setCategories } = useContext(CategoriesContext);
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
 
     const closeEdit = () => {

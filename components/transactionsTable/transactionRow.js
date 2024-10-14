@@ -1,12 +1,12 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import TransactionDetails from "./transactionDetails";
 import styles from "@/styles/transactionRow.module.css";
 import DeleteTransaction from "./deleteTransactions";
 import EditTransaction from "./editTransaction";
 
-const TransactionRow = ({ transaction, categories, setCategories, editOldTransaction, removeTransaction }) => {
+const TransactionRow = ({ transaction, editOldTransaction, removeTransaction }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
@@ -25,7 +25,8 @@ const TransactionRow = ({ transaction, categories, setCategories, editOldTransac
         setShowEdit(true);
     };    
 
-    const transactionDetailsProps = { transaction: transaction,
+    const transactionDetailsProps = { 
+        transaction: transaction,
         showDetails: showDetails,
         setShowDetails: setShowDetails,
         openDelete: openDelete,
@@ -37,8 +38,6 @@ const TransactionRow = ({ transaction, categories, setCategories, editOldTransac
         showEdit: showEdit,
         setShowEdit: setShowEdit,
         setShowDetails: setShowDetails,
-        categories: categories,
-        setCategories: setCategories,
         editOldTransaction: editOldTransaction
     };
 

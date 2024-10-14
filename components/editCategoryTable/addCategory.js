@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row} from "react-bootstrap";
 
-const AddCategory = ({categories, addToCategories, addCategoryClicked, setAddCategoryClicked}) => {
+const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicked}) => {
     const emptyCategory = {
         id: 0,
         name: "",
@@ -18,6 +19,7 @@ const AddCategory = ({categories, addToCategories, addCategoryClicked, setAddCat
         actual: 0
     }
 
+    const { categories } = useContext(CategoriesContext);
     const [newCategory, setNewCategory] = useState(emptyCategory);
     const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
     const [subcategoryChecked, setSubcategoryChecked] = useState(false);
