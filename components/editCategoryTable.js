@@ -27,34 +27,15 @@ const EditCategoryTable = ({ categories, setCategories, setEditClicked }) => {
         setCategories(updated);
     };
 
-    const updateCategoryValues = (category, property, input) => {   
-        const foundIndex = categoryValues.current.findIndex(cat => {
-            return cat.id === category.id;
+    const updateCategoryValues = (updatedCategory) => {
+        const foundIndex = categoryValues.current.findIndex(category => {
+            return category.id === updatedCategory.id;
         });
 
-        let budgetValue = parseFloat(input);
-        if (isNaN(budgetValue))
-            budgetValue = 0;
-
         if (foundIndex !== -1) {
-            const updatedValues = categoryValues.current[foundIndex];
-            if (property === 'budget') {
-                if (category.fixed)
-                    categoryValues.current[foundIndex] = {...updatedValues, budget: budgetValue, actual: budgetValue};
-                else
-                    categoryValues.current[foundIndex] = {...updatedValues, budget: budgetValue};
-            } else {
-                categoryValues.current[foundIndex] = {...updatedValues, [property]: input};
-            }
+            categoryValues.current[foundIndex] = updatedCategory;
         } else {
-            if (property === 'budget') {
-                if (category.fixed)
-                    categoryValues.current.push({...category, budget: budgetValue, actual: budgetValue});
-                else
-                    categoryValues.current.push({...category, budget: budgetValue});
-            } else {
-                categoryValues.current.push({...category, [property]: input});
-            }
+            categoryValues.current.push(updatedCategory);
         }
     };
 

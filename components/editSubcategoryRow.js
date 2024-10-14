@@ -5,7 +5,6 @@ const EditSubcategoryRow = ({ subcategory, updateSubcategories }) => {
     const [subcategoryValues, setSubcategoryValues] = useState(subcategory);
     
     const handleSubcategoryBudget = (e) => {
-        console.log(subcategoryValues);
         const input = e.target.value;
 
         if (input == '') {

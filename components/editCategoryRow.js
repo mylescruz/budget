@@ -3,21 +3,23 @@ import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 import EditSubcategoryRow from "./editSubcategoryRow";
 
-const EditCategoryRow = ({ category, categories, setCategories, removeCategory, updateCategoryValues }) => {
+const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => {
     const [edittedCategory, setEdittedCategory] = useState(category);
 
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
 
     const handleBudgetInput = (e) => {
-        const property = e.target.name;
         const input = e.target.value;
+        const actualValue = edittedCategory.fixed ? input : edittedCategory.actual;
 
-        if (input == '')
-            setEdittedCategory({...edittedCategory, [property]: input});
-        else
-            setEdittedCategory({...edittedCategory, [property]: parseFloat(input)});
-
-        updateCategoryValues(category, property, input);
+        if (input == '') {
+            setEdittedCategory({...edittedCategory, budget: input, actual: actualValue});
+            updateCategoryValues({...edittedCategory, budget: 0, actual: 0});
+        }
+        else {
+            setEdittedCategory({...edittedCategory, budget: parseFloat(input), actual: parseFloat(actualValue)});
+            updateCategoryValues({...edittedCategory, budget: parseFloat(input), actual: parseFloat(actualValue)});
+        }
     };
 
     const handleInput = (e) => {
@@ -25,14 +27,13 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
         const input = e.target.value;
 
         setEdittedCategory({...edittedCategory, [property]: input});
-
-        updateCategoryValues(category, property, input);
+        updateCategoryValues({...edittedCategory, [property]: input});
     };
 
     const updateSubcategories = (subcategory) => {
         let budgetTotal = edittedCategory.budget;
         
-        let updatedSubcategories = edittedCategory.subcategories.map(sub => {
+        const updatedSubcategories = edittedCategory.subcategories.map(sub => {
             if (sub.id === subcategory.id) {
                 budgetTotal = budgetTotal - sub.actual + subcategory.actual;
                 return {...sub, actual: subcategory.actual}
@@ -40,11 +41,11 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
                 return sub;
             }
         });
+
+        const actualTotal = edittedCategory.fixed ? budgetTotal : edittedCategory.actual;
         
-        setEdittedCategory({...edittedCategory, budget: budgetTotal, subcategories: updatedSubcategories });
-        updateCategoryValues(category, "budget", budgetTotal);
-        updateCategoryValues(category, "hasSubcategory", true);
-        updateCategoryValues(category, "subcategories", updatedSubcategories);
+        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
+        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
     };
 
     const addSubcategory = () => {
@@ -89,7 +90,7 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
                 ) 
             }
             {addSubcategoryClicked &&
-                <AddSubcategory edittedCategory={edittedCategory} setEdittedCategory={setEdittedCategory} category={category} categories={categories} setCategories={setCategories} setAddSubcategoryClicked={setAddSubcategoryClicked} />
+                <AddSubcategory edittedCategory={edittedCategory} setEdittedCategory={setEdittedCategory} updateCategoryValues={updateCategoryValues} setAddSubcategoryClicked={setAddSubcategoryClicked} />
             }
         </>
     );

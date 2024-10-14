@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 
-const AddSubcategory = ({ edittedCategory, setEdittedCategory, setAddSubcategoryClicked }) => {
+const AddSubcategory = ({ edittedCategory, setEdittedCategory, updateCategoryValues, setAddSubcategoryClicked }) => {
     const emptySubcategory = {
         id: 0,
         name: "",
@@ -18,7 +18,7 @@ const AddSubcategory = ({ edittedCategory, setEdittedCategory, setAddSubcategory
         setAddSubcategoryClicked(false);
     };
 
-    const addToCategories = (e) => {
+    const addToCategory = (e) => {
         e.preventDefault();
 
         if (newSubcategory.name === '')
@@ -28,8 +28,13 @@ const AddSubcategory = ({ edittedCategory, setEdittedCategory, setAddSubcategory
         if (edittedCategory.hasSubcategory) {
             maxID = Math.max(...edittedCategory.subcategories.map(subcategory => subcategory.id));
             setEdittedCategory({...edittedCategory, subcategories: [...edittedCategory.subcategories, {...newSubcategory, id: maxID + 1}]});
+            updateCategoryValues({...edittedCategory, subcategories: [...edittedCategory.subcategories, {...newSubcategory, id: maxID + 1}]});
         } else {
-            setEdittedCategory({...edittedCategory, budget: 0, hasSubcategory: true, subcategories: [{...newSubcategory, id: maxID}]});
+            const budgetValue = edittedCategory.fixed ? 0 : edittedCategory.budget;
+            const actualValue = edittedCategory.fixed ? budgetValue : edittedCategory.actual;
+
+            setEdittedCategory({...edittedCategory, budget: budgetValue, actual: actualValue, hasSubcategory: true, subcategories: [{...newSubcategory, id: maxID}]});
+            updateCategoryValues({...edittedCategory, budget: budgetValue, actual: actualValue, hasSubcategory: true, subcategories: [{...newSubcategory, id: maxID}]});
         }
 
         setAddSubcategoryClicked(false);
@@ -55,7 +60,7 @@ const AddSubcategory = ({ edittedCategory, setEdittedCategory, setAddSubcategory
                         <i className={`bi bi-x-circle cancel`} onClick={cancelAddSubcategory}></i>
                     </Col>
                     <Col className="col-1">
-                        <i className={`bi bi-check-circle check`} onClick={addToCategories}></i>
+                        <i className={`bi bi-check-circle check`} onClick={addToCategory}></i>
                     </Col>
                 </Row>
             </td>
