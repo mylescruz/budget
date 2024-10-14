@@ -30,13 +30,13 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
         updateCategoryValues({...edittedCategory, [property]: input});
     };
 
-    const updateSubcategories = (subcategory) => {
+    const updateSubcategory = (subcategory) => {
         let budgetTotal = edittedCategory.budget;
         
         const updatedSubcategories = edittedCategory.subcategories.map(sub => {
             if (sub.id === subcategory.id) {
                 budgetTotal = budgetTotal - sub.actual + subcategory.actual;
-                return {...sub, actual: subcategory.actual}
+                return {...sub, name: subcategory.name, actual: subcategory.actual}
             } else {
                 return sub;
             }
@@ -86,7 +86,7 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
             </tr>
             {edittedCategory.hasSubcategory &&      
                 (edittedCategory.subcategories.map(subcategory => (
-                    <EditSubcategoryRow key={subcategory.id} subcategory={subcategory} fixed={edittedCategory.fixed} updateSubcategories={updateSubcategories} deleteSubcategory={deleteSubcategory}/>  
+                    <EditSubcategoryRow key={subcategory.id} subcategory={subcategory} fixed={edittedCategory.fixed} updateSubcategory={updateSubcategory} deleteSubcategory={deleteSubcategory}/>  
                 )))
             }
             {addSubcategoryClicked &&

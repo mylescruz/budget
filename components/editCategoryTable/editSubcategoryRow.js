@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form } from "react-bootstrap";
 
-const EditSubcategoryRow = ({ subcategory, fixed, updateSubcategories, deleteSubcategory }) => {
+const EditSubcategoryRow = ({ subcategory, fixed, updateSubcategory, deleteSubcategory }) => {
     const [subcategoryValues, setSubcategoryValues] = useState(subcategory);
     
     const handleSubcategoryBudget = (e) => {
@@ -9,12 +9,19 @@ const EditSubcategoryRow = ({ subcategory, fixed, updateSubcategories, deleteSub
 
         if (input == '') {
             setSubcategoryValues({...subcategoryValues, actual: input});
-            updateSubcategories({...subcategoryValues, actual: 0});
+            updateSubcategory({...subcategoryValues, actual: 0});
         }
         else {
             setSubcategoryValues({...subcategoryValues, actual: parseFloat(input)});
-            updateSubcategories({...subcategoryValues, actual: parseFloat(input)});
+            updateSubcategory({...subcategoryValues, actual: parseFloat(input)});
         }
+    };
+
+    const handleInput = (e) => {
+        const input = e.target.value;
+
+        setSubcategoryValues({...subcategoryValues, name: input});
+        updateSubcategory({...subcategoryValues, name: input});
     };
 
     const removeSubcategory = () => {
@@ -23,10 +30,10 @@ const EditSubcategoryRow = ({ subcategory, fixed, updateSubcategories, deleteSub
 
     return (
         <tr>
-            <td className="text-end align-middle">{subcategoryValues.name}</td>
+            <td><Form.Control type="text" name="name" className="w-50 float-end text-end" value={subcategoryValues.name} onChange={handleInput}></Form.Control></td>
             <td>{fixed && <Form.Control type="number" name="actual" className="w-100" min="0" max="100000" step="1" value={subcategoryValues.actual} onChange={handleSubcategoryBudget} />}</td>
             <td></td>
-            <td className={`text-center align-middle delete`} onClick={removeSubcategory}><i className="bi bi-trash"></i></td>
+            <td className="text-center align-middle delete" onClick={removeSubcategory}><i className="bi bi-trash"></i></td>
         </tr>
     );
 };
