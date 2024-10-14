@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 
-const AddSubcategory = ({ category, categories, setCategories, setAddSubcategoryClicked }) => {
+const AddSubcategory = ({ edittedCategory, setEdittedCategory, setAddSubcategoryClicked }) => {
     const emptySubcategory = {
         id: 0,
         name: "",
@@ -25,29 +25,13 @@ const AddSubcategory = ({ category, categories, setCategories, setAddSubcategory
             return;
 
         let maxID = 0;
-        if (category.hasSubcategory)
-            maxID = Math.max(...category.subcategories.map(subCategory => subCategory.id));
+        if (edittedCategory.hasSubcategory) {
+            maxID = Math.max(...edittedCategory.subcategories.map(subcategory => subcategory.id));
+            setEdittedCategory({...edittedCategory, subcategories: [...edittedCategory.subcategories, {...newSubcategory, id: maxID + 1}]});
+        } else {
+            setEdittedCategory({...edittedCategory, budget: 0, hasSubcategory: true, subcategories: [{...newSubcategory, id: maxID}]});
+        }
 
-        const newID = maxID + 1;
-        setNewSubcategory({...newSubcategory, id: newID})
-
-        const updatedCategories = categories.map(oldCategory => {
-            if (oldCategory.id === category.id) {
-                return {
-                    ...oldCategory,
-                    hasSubcategory: true,
-                    subcategories: [
-                        ...oldCategory.subcategories,
-                        {...newSubcategory, id: newID}
-                    ]
-                }
-            } else {
-                return oldCategory;
-            }
-            
-        });
-
-        setCategories(updatedCategories);
         setAddSubcategoryClicked(false);
     };
 

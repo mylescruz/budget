@@ -4,14 +4,7 @@ import AddSubcategory from "./addSubcategory";
 import EditSubcategoryRow from "./editSubcategoryRow";
 
 const EditCategoryRow = ({ category, categories, setCategories, removeCategory, updateCategoryValues }) => {
-    const [categoryValues, setCategoryValues] = useState({
-        name: category.name, 
-        color: category.color,
-        budget: category.budget, 
-        fixed: category.fixed,
-        hasSubcategory: category.hasSubcategory,
-        subcategories: category.subcategories
-    });
+    const [edittedCategory, setEdittedCategory] = useState(category);
 
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
 
@@ -20,9 +13,9 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
         const input = e.target.value;
 
         if (input == '')
-            setCategoryValues({...categoryValues, [property]: input});
+            setEdittedCategory({...edittedCategory, [property]: input});
         else
-            setCategoryValues({...categoryValues, [property]: parseFloat(input)});
+            setEdittedCategory({...edittedCategory, [property]: parseFloat(input)});
 
         updateCategoryValues(category, property, input);
     };
@@ -31,15 +24,15 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
         const property = e.target.name;
         const input = e.target.value;
 
-        setCategoryValues({...categoryValues, [property]: input});
+        setEdittedCategory({...edittedCategory, [property]: input});
 
         updateCategoryValues(category, property, input);
     };
 
     const updateSubcategories = (subcategory) => {
-        let budgetTotal = categoryValues.budget;
+        let budgetTotal = edittedCategory.budget;
         
-        let updatedSubcategories = categoryValues.subcategories.map(sub => {
+        let updatedSubcategories = edittedCategory.subcategories.map(sub => {
             if (sub.id === subcategory.id) {
                 budgetTotal = budgetTotal - sub.actual + subcategory.actual;
                 return {...sub, actual: subcategory.actual}
@@ -48,8 +41,9 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
             }
         });
         
-        setCategoryValues({...categoryValues, budget: budgetTotal, subcategories: updatedSubcategories });
+        setEdittedCategory({...edittedCategory, budget: budgetTotal, subcategories: updatedSubcategories });
         updateCategoryValues(category, "budget", budgetTotal);
+        updateCategoryValues(category, "hasSubcategory", true);
         updateCategoryValues(category, "subcategories", updatedSubcategories);
     };
 
@@ -66,21 +60,21 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
             <tr>
                 <th scope="row" className="text-nowrap">
                     <Row className="alignX">
-                        <Col><Form.Control type="text" name="name" className="w-100" value={categoryValues.name} onChange={handleInput}></Form.Control></Col>
+                        <Col><Form.Control type="text" name="name" className="w-100" value={edittedCategory.name} onChange={handleInput}></Form.Control></Col>
                         <Col className="text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
-                {(category.hasSubcategory && category.fixed) ?
-                    <td><Form.Control type="number" name="budget" className="w-100" value={categoryValues.budget} disabled></Form.Control></td>
+                {(edittedCategory.hasSubcategory && edittedCategory.fixed) ?
+                    <td><Form.Control type="number" name="budget" className="w-100" value={edittedCategory.budget} disabled></Form.Control></td>
                     :
-                    <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={categoryValues.budget} onChange={handleBudgetInput}></Form.Control></td>
+                    <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="1" value={edittedCategory.budget} onChange={handleBudgetInput}></Form.Control></td>
                 }
-                <td><Form.Control type="color" name="color" className="form-control-color" value={categoryValues.color} onChange={handleInput}></Form.Control></td>
+                <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
                 <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
             </tr>
-            {category.hasSubcategory && 
-                (!category.fixed ? 
-                    (category.subcategories.map(subcategory => (
+            {edittedCategory.hasSubcategory && 
+                (!edittedCategory.fixed ? 
+                    (edittedCategory.subcategories.map(subcategory => (
                         <tr key={subcategory.id}>
                             <td className="text-end">{subcategory.name}</td>
                             <td></td>
@@ -89,13 +83,13 @@ const EditCategoryRow = ({ category, categories, setCategories, removeCategory, 
                         </tr>    
                     ))) 
                     : 
-                    (category.subcategories.map(subcategory => (
+                    (edittedCategory.subcategories.map(subcategory => (
                         <EditSubcategoryRow key={subcategory.id} subcategory={subcategory} updateSubcategories={updateSubcategories} />  
                     )))
                 ) 
             }
             {addSubcategoryClicked &&
-                <AddSubcategory categoryValues={categoryValues} setCategoryValues={setCategoryValues} category={category} categories={categories} setCategories={setCategories} setAddSubcategoryClicked={setAddSubcategoryClicked} />
+                <AddSubcategory edittedCategory={edittedCategory} setEdittedCategory={setEdittedCategory} category={category} categories={categories} setCategories={setCategories} setAddSubcategoryClicked={setAddSubcategoryClicked} />
             }
         </>
     );
