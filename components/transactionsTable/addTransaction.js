@@ -6,16 +6,21 @@ import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const AddTransaction = ({transactions, addToTransactions, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
+    const { categories, updateCategories } = useContext(CategoriesContext);
+
+    const firstNotFixed = categories.find(category => {
+        return !category.fixed;
+    });
+
     const emptyTransaction = {
         id: 0,
         date: dateInfo.currentDate,
         store: "",
         items: "",
-        category: "Rent",
+        category: firstNotFixed.name,
         amount: ""
     };
-
-    const { categories, setCategories } = useContext(CategoriesContext);
+    
     const [newTransaction, setTransaction] = useState(emptyTransaction);
 
     const handleInput = (e) => {
@@ -42,7 +47,7 @@ const AddTransaction = ({transactions, addToTransactions, addTransactionClicked,
         addToTransactions(newTransaction);
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
-        setCategories(updatedCategories);
+        updateCategories(updatedCategories);
 
         setTransaction(emptyTransaction);
         setAddTransactionClicked(false);

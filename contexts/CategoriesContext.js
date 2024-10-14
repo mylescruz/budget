@@ -4,10 +4,10 @@ import { createContext } from "react";
 export const CategoriesContext = createContext({});
 
 export const CategoriesProvider = ({children}) => {
-    const { categories, setCategories } = useCategories();
+    const { categories, updateCategories } = useCategories();
 
     return (
-        <CategoriesContext.Provider value={{ categories, setCategories }}>
+        <CategoriesContext.Provider value={{ categories, updateCategories }}>
             {children}
         </CategoriesContext.Provider>
     )

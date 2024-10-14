@@ -6,7 +6,7 @@ import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, editOldTransaction}) => {
-    const { categories, setCategories } = useContext(CategoriesContext);
+    const { categories, updateCategories } = useContext(CategoriesContext);
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
 
     const closeEdit = () => {
@@ -22,7 +22,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ed
             editOldTransaction(edittedTransaction);
 
             const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
-            setCategories(updatedCategories);
+            updateCategories(updatedCategories);
 
             setShowEdit(false);
         } else {

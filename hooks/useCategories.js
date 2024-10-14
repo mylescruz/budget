@@ -15,8 +15,28 @@ const useCategories = () => {
         }
         getCategories();
     }, [setCategories]);
+
+    const postCategories = async (updatedCategories) => {
+        try {
+            await fetch("/api/categories", {
+                method: "POST",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedCategories)
+            });
+        } catch (err) {
+            console.log("Error occurred while updating categories: ", err);
+        }
+    };
+
+    const updateCategories = (updatedCategories) => {
+        postCategories(updatedCategories);
+        setCategories(updatedCategories);
+    };
     
-    return { categories, setCategories };
+    return { categories, updateCategories };
 };
 
 export default useCategories;

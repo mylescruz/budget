@@ -9,7 +9,7 @@ import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 
 const InnerLayout = () => {
-    const { categories, setCategories } = useContext(CategoriesContext);
+    const { categories, updateCategories } = useContext(CategoriesContext);
     const [transactions, setTransactions] = useState([]);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
@@ -38,7 +38,7 @@ const InnerLayout = () => {
         setTransactions(updatedTransactions);
 
         const updatedCategories = deleteFromCategoryActual(transactionToRemove, categories);
-        setCategories(updatedCategories);
+        updateCategories(updatedCategories);
     };
 
     const showTransactions = () => {

@@ -3,6 +3,7 @@ import fs from "fs";
 
 const { promisify } = require('util');
 const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
 
 export default async function handler(req, res) {
     const method = req?.method;
@@ -22,5 +23,21 @@ export default async function handler(req, res) {
         } catch (err) {
             console.log("Error with get request: ", err);
         }
+    } else if (method === "POST") {
+        try {
+            const updatedCategories = req?.body;
+            writeFile(
+                fileName,
+                JSON.stringify({
+                    categories: updatedCategories
+                }, null, 2)
+            )
+            console.log("POST /api/categories status: 200");
+            res.status(200).json(updatedCategories);
+        } catch (err) {
+            console.log("Error with post request: ", err);
+        }
+    } else {
+        res.status(405).end(`Method ${method} not allowed`);
     }
 }
