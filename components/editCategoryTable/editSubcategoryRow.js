@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form } from "react-bootstrap";
 
-const EditSubcategoryRow = ({ subcategory, updateSubcategories }) => {
+const EditSubcategoryRow = ({ subcategory, fixed, updateSubcategories, deleteSubcategory }) => {
     const [subcategoryValues, setSubcategoryValues] = useState(subcategory);
     
     const handleSubcategoryBudget = (e) => {
@@ -17,12 +17,16 @@ const EditSubcategoryRow = ({ subcategory, updateSubcategories }) => {
         }
     };
 
+    const removeSubcategory = () => {
+        deleteSubcategory(subcategory);
+    };
+
     return (
         <tr>
             <td className="text-end align-middle">{subcategoryValues.name}</td>
-            <td><Form.Control type="number" name="actual" className="w-100" min="0" max="100000" step="1" value={subcategoryValues.actual} onChange={handleSubcategoryBudget}></Form.Control></td>
+            <td>{fixed && <Form.Control type="number" name="actual" className="w-100" min="0" max="100000" step="1" value={subcategoryValues.actual} onChange={handleSubcategoryBudget} />}</td>
             <td></td>
-            <td></td>
+            <td className={`text-center align-middle delete`} onClick={removeSubcategory}><i className="bi bi-trash"></i></td>
         </tr>
     );
 };

@@ -55,6 +55,17 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
     const deleteCategory = () => {
         removeCategory(category);
     };
+
+    const deleteSubcategory = (subcategory) => {
+        const updatedSubcategories = edittedCategory.subcategories.filter(sub => {
+            return sub.id !== subcategory.id;
+        });
+
+        const budgetTotal = edittedCategory.budget - subcategory.actual;
+
+        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: budgetTotal, subcategories: updatedSubcategories});
+        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: budgetTotal, subcategories: updatedSubcategories});
+    };
     
     return (
         <>
@@ -73,21 +84,10 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
                 <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
                 <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
             </tr>
-            {edittedCategory.hasSubcategory && 
-                (!edittedCategory.fixed ? 
-                    (edittedCategory.subcategories.map(subcategory => (
-                        <tr key={subcategory.id}>
-                            <td className="text-end">{subcategory.name}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>    
-                    ))) 
-                    : 
-                    (edittedCategory.subcategories.map(subcategory => (
-                        <EditSubcategoryRow key={subcategory.id} subcategory={subcategory} updateSubcategories={updateSubcategories} />  
-                    )))
-                ) 
+            {edittedCategory.hasSubcategory &&      
+                (edittedCategory.subcategories.map(subcategory => (
+                    <EditSubcategoryRow key={subcategory.id} subcategory={subcategory} fixed={edittedCategory.fixed} updateSubcategories={updateSubcategories} deleteSubcategory={deleteSubcategory}/>  
+                )))
             }
             {addSubcategoryClicked &&
                 <AddSubcategory edittedCategory={edittedCategory} setEdittedCategory={setEdittedCategory} updateCategoryValues={updateCategoryValues} setAddSubcategoryClicked={setAddSubcategoryClicked} />
