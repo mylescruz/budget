@@ -89,7 +89,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ca
                             required>
                                 <option disabled>Choose a Category...</option>
                                 {categories.map(category => (
-                                    <SelectCategory key={category.id} category={category} />
+                                    (!category.fixed && <SelectCategory key={category.id} category={category} />)
                                 ))}
                             </Form.Select>
                         </Form.Group>
