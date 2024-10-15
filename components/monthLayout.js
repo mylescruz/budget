@@ -13,14 +13,14 @@ import dateInfo from "@/helpers/dateInfo";
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
     const currentMonth = dateInfo.currentMonth;
-    const { transactions, setTransactions } = useTransactions(currentMonth);
+    const { transactions, setTransactions, updateTransactions } = useTransactions(currentMonth);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
 
     const addToTransactions = (newTransaction) => {
-        setTransactions([...transactions, newTransaction]);
+        updateTransactions(newTransaction);
     };
 
     const editOldTransaction = (edittedTransaction) => {

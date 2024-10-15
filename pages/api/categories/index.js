@@ -15,13 +15,13 @@ export default async function handler(req, res) {
     if (method === "GET") {
         try {
             if (!categories) {
-                res.status(400).send("Error: Request failed with status code 4040");
+                res.status(400).send("Error: Request failed with status code 404");
             } else {
                 console.log("GET /api/categories status: 200");
                 res.status(200).send(JSON.stringify(categories, null, 2));
             }
         } catch (err) {
-            console.log("Error with get request: ", err);
+            console.log("Error with get categories request: ", err);
         }
     } else if (method === "POST") {
         try {
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
             console.log("POST /api/categories status: 200");
             res.status(200).json(updatedCategories);
         } catch (err) {
-            console.log("Error with post request: ", err);
+            console.log("Error with post categories request: ", err);
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);

@@ -6,7 +6,7 @@ import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const CategoryTable = ({ setEditClicked }) => {
-    const { categories } = useContext(CategoriesContext);
+    const { categories, updateCategories } = useContext(CategoriesContext);
 
     const handleEdit = () => {
         setEditClicked(true);
