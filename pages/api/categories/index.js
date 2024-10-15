@@ -65,6 +65,29 @@ export default async function handler(req, res) {
         } catch (err) {
             console.log("Error with put categories request: ", err);
         }
+    } else if (method === "DELETE") {
+        try {
+            const categoryToDelete = req?.body;
+            const categories = await getCategoriesData();
+
+            if (!categories)
+                res.status(400).send("Error: Request failed with status code 404: No categories to delete from");
+
+            const updatedCategories = categories.filter(category => {
+                return category.id !== categoryToDelete.id;
+            });
+            
+            writeFile(
+                fileName,
+                JSON.stringify({
+                    categories: updatedCategories
+                }, null, 2)
+            )
+            console.log(`DELETE /api/categories status: 200`);
+            res.status(200).json(categoryToDelete);
+        } catch (err) {
+            console.log("Error with delete category request: ", err);
+        }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
     }

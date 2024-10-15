@@ -47,6 +47,21 @@ const useCategories = () => {
         }
     };
 
+    const deleteCategory = async (categoryToDelete) => {
+        try {
+            await fetch("/api/categories", {
+                method: "DELETE",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(categoryToDelete)
+            });
+        } catch (err) {
+            console.log("Error occurred while deleting a category: ", err);
+        }
+    };
+
     const addCategory = (newCategory) => {
         postCategory(newCategory);
         setCategories([...categories, newCategory]);
@@ -56,8 +71,17 @@ const useCategories = () => {
         putCategories(updatedCategories);
         setCategories(updatedCategories);
     };
+
+    const deleteFromCategories = (categoryToDelete) => {
+        deleteCategory(categoryToDelete);
+
+        const updatedCategories = categories.filter(category => {
+            return category.id !== categoryToDelete.id;
+        });
+        setCategories(updatedCategories);
+    };
     
-    return { categories, addCategory, updateCategories };
+    return { categories, addCategory, updateCategories, deleteFromCategories };
 };
 
 export default useCategories;

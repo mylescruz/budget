@@ -5,7 +5,7 @@ import AddCategory from "./addCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const EditCategoryTable = ({ setEditClicked }) => {
-    const { categories, addCategory, updateCategories } = useContext(CategoriesContext);
+    const { categories, addCategory, updateCategories, deleteFromCategories } = useContext(CategoriesContext);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
 
@@ -50,11 +50,7 @@ const EditCategoryTable = ({ setEditClicked }) => {
     };
 
     const removeCategory = (categoryToRemove) => {
-        const remainingCategories = categories.filter(category => {
-            return category.id !== categoryToRemove.id;
-        });
-
-        updateCategories(remainingCategories);
+        deleteFromCategories(categoryToRemove);
     };
 
     const addCategoryProps = {
