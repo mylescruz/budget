@@ -1,6 +1,7 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useState } from "react";
-import { Form, Button, Modal, Col, Row} from "react-bootstrap";
+import { Form, Button, Modal, Col, Row, FloatingLabel} from "react-bootstrap";
 
 const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicked}) => {
     const emptyCategory = {
@@ -9,6 +10,7 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
         color: "#000000",
         budget: "",
         actual: 0,
+        fixed: false,
         hasSubcategory: false,
         subcategories: []
     };
@@ -22,8 +24,7 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
     const { categories } = useContext(CategoriesContext);
     const [newCategory, setNewCategory] = useState(emptyCategory);
     const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
-    const [subcategoryChecked, setSubcategoryChecked] = useState(false);
-    const [hasSubcategory, setHasSubcategory] = useState(newCategory.hasSubcategory);
+    const [subcategoryTotal, setSubcategoryTotal] = useState(0);
 
     const handleInput = (e) => {
         setNewCategory({ ...newCategory, [e.target.id]: e.target.value});
@@ -42,12 +43,30 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
         setNewSubcategory({ ...newSubcategory, name: e.target.value})
     };
 
+    const handleSubcategoryBudget = (e) => {
+        const input = e.target.value;
+
+        if (input == '')
+            setNewSubcategory({ ...newSubcategory, actual: input });
+        else
+            setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
+    };
+
     const handleChecked = (e) => {
         if (e.target.checked)
-            setSubcategoryChecked(true);
-        else
-            setSubcategoryChecked(false);
+            setNewCategory({...newCategory, hasSubcategory: true});
+        else {
+            setNewCategory({...newCategory, hasSubcategory: false});
+            setNewCategory({...newCategory, subcategories: []});
+        }
     };
+
+    const handleFixed = (e) => {
+        if (e.target.checked)
+            setNewCategory({...newCategory, fixed: true});
+        else
+            setNewCategory({...newCategory, fixed: false});
+    }
 
     const closeModal = () => {
         setAddCategoryClicked(false);
@@ -56,28 +75,40 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
     const addNewCategory = (e) => {
         e.preventDefault();
 
+        if (!newCategory.hasSubcategory && newCategory.fixed)
+            newCategory.actual = newCategory.budget;
+
         let maxID = 0;
         if (categories.length > 0)
             maxID = Math.max(...categories.map(category => category.id));
-
         newCategory.id = maxID + 1;
+
         addToCategories(newCategory);
 
         closeModal();
     };
 
     const addToSubcategories = () => {
-        setHasSubcategory(true);
-
         let maxID = 0;
         if (newCategory.subcategories.length > 0)
             maxID = Math.max(...newCategory.subcategories.map(sub => sub.id));
         newSubcategory.id = maxID + 1;
 
-        setNewCategory({ ...newCategory, 
-            hasSubcategory: true,
-            subcategories: [...newCategory.subcategories, newSubcategory]
-        });
+        setSubcategoryTotal(subcategoryTotal + newSubcategory.actual);
+
+        if (newCategory.fixed) {
+            setNewCategory({ ...newCategory,
+                budget: subcategoryTotal + newSubcategory.actual, 
+                actual: subcategoryTotal + newSubcategory.actual,
+                hasSubcategory: true,
+                subcategories: [...newCategory.subcategories, newSubcategory]
+            });
+        } else {
+            setNewCategory({ ...newCategory, 
+                hasSubcategory: true,
+                subcategories: [...newCategory.subcategories, newSubcategory]
+            });
+        }
 
         setNewSubcategory(emptySubcategory);
     };
@@ -109,11 +140,11 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
                             className="h-100"
                             type="number"
                             min="1"
-                            step="1"
                             placeholder="$ Amount"
-                            value={newCategory.budget}
+                            value={(newCategory.hasSubcategory && newCategory.fixed) ? subcategoryTotal : newCategory.budget}
                             onChange={handleNumInput}
                             required
+                            disabled={(newCategory.hasSubcategory && newCategory.fixed)}
                         />
                     </Form.Group>
                     <Form.Group className="formInput">
@@ -129,6 +160,17 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
                     <Form.Group className="formInput alignX">
                         <Form.Check
                         reverse
+                        id="fixed"
+                        className="h-100"
+                        type="checkbox"
+                        label="Fixed?"
+                        value={newCategory.fixed}
+                        onChange={handleFixed}
+                        />
+                    </Form.Group>
+                    <Form.Group className="formInput alignX">
+                        <Form.Check
+                        reverse
                         id="hasSubcategory"
                         className="h-100"
                         type="checkbox"
@@ -137,31 +179,50 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
                         onChange={handleChecked}
                         />
                     </Form.Group>
-                    {subcategoryChecked &&
+                    {newCategory.hasSubcategory &&
                     <Form.Group className="formInput">
                         <Row className="alignX">
                             <Col>
+                                <FloatingLabel controlId="floatingName" label="Subcategory" className="small">
                                 <Form.Control 
                                     name="name"
-                                    className="h-100"
+                                    className=""
                                     type="text"
-                                    placeholder="Subcategory name"
+                                    placeholder="Subcategory"
                                     value={newSubcategory.name}
                                     onChange={handleSubcategoryInput}
                                 />
+                                </FloatingLabel>
                             </Col>
+                            { (newCategory.hasSubcategory && newCategory.fixed) &&
                             <Col>
-                                <i className="bi bi-plus-circle plus" onClick={addToSubcategories}></i>
+                                <FloatingLabel controlId="floatingInput" label="Budget">
+                                <Form.Control 
+                                    name="name"
+                                    className="w-100"
+                                    type="number"
+                                    placeholder="Budget"
+                                    value={newSubcategory.actual}
+                                    onChange={handleSubcategoryBudget}
+                                />
+                                </FloatingLabel>
                             </Col>
+                            }
+                            <Col>
+                                <i className="bi bi-plus-circle plus" onClick={addToSubcategories}></i>    
+                            </Col>
+                            
                         </Row>
+                        
                     </Form.Group>
                     }
-                    {hasSubcategory && 
+                    {newCategory.hasSubcategory && 
                         (newCategory.subcategories.map(subcategory => (
-                            <Row key={subcategory.id} className="mx-3">{subcategory.name}</Row> 
+                            <Row key={subcategory.id} className="mx-2">
+                                <Col className="text-start">{subcategory.name}{newCategory.fixed && `: ${currencyFormatter.format(subcategory.actual)}`}</Col>
+                            </Row> 
                         )))
                     }
-                    
                 </Modal.Body>
                 <Modal.Footer>
                     <Form.Group className="formInput">
