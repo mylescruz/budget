@@ -96,7 +96,7 @@
       "name": "Utilities",
       "color": "#ff80ca",
       "budget": 100,
-      "actual": 0,
+      "actual": 50.02,
       "fixed": false,
       "hasSubcategory": false,
       "subcategories": []
@@ -126,7 +126,7 @@
       "name": "Necessities",
       "color": "#c688ce",
       "budget": 100,
-      "actual": 0,
+      "actual": 3,
       "fixed": false,
       "hasSubcategory": false,
       "subcategories": []

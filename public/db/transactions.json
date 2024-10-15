@@ -1,3 +1,20 @@
 {
-  
+  "October": [
+    {
+      "id": 1,
+      "date": "2024-10-14",
+      "store": "BWP",
+      "items": "Electric Bill",
+      "category": "Utilities",
+      "amount": 50.02
+    },
+    {
+      "id": 2,
+      "date": "2024-10-14",
+      "store": "Target",
+      "items": "Soap",
+      "category": "Necessities",
+      "amount": 3
+    }
+  ]
 }
