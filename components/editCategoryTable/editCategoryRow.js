@@ -63,8 +63,8 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
 
         const budgetTotal = edittedCategory.budget - subcategory.actual;
 
-        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: budgetTotal, subcategories: updatedSubcategories});
-        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: budgetTotal, subcategories: updatedSubcategories});
+        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
+        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
     };
     
     return (
