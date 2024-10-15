@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const useCategories = () => {
     const [categories, setCategories] = useState([]);
-
+    
     useEffect(() => {
         const getCategories = async () => {
             try {
@@ -13,6 +13,7 @@ const useCategories = () => {
                 console.log("Error occured while retrieving categories: ", err);
             }
         }
+
         getCategories();
     }, [setCategories]);
 

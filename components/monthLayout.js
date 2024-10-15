@@ -7,10 +7,13 @@ import SummaryPieChart from "./summaryPieChart";
 import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
+import useTransactions from "@/hooks/useTransactions";
+import dateInfo from "@/helpers/dateInfo";
 
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
-    const [transactions, setTransactions] = useState([]);
+    const currentMonth = dateInfo.currentMonth;
+    const { transactions, setTransactions } = useTransactions(currentMonth);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
