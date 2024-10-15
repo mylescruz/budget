@@ -76,6 +76,30 @@ export default async function handler(req, res) {
         } catch (err) {
             console.log("Error with put transactions request: ", err);
         }
+    } else if (method === "DELETE") {
+        try {
+            const transactionToDelete = req?.body;
+            const transactions = await getTransactionData();
+
+            if (!transactions)
+                res.status(400).send("Error: Request failed with status code 404: No transactions to delete from");
+
+            const updated = transactions.filter(transaction => {
+                return transaction.id !== transactionToDelete.id;
+            });
+
+            const updatedTransactions = {};
+            updatedTransactions[month] = updated;
+            
+            writeFile(
+                fileName,
+                JSON.stringify(updatedTransactions, null, 2)
+            )
+            console.log(`DELETE /api/transactions/${month} status: 200`);
+            res.status(200).json(transactionToDelete);
+        } catch (err) {
+            console.log("Error with delete transactions request: ", err);
+        }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
     }

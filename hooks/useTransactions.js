@@ -52,6 +52,24 @@ const useTransactions = (month) => {
         }
     };
 
+    const deleteTransaction = async (transaction) => {
+        const date = new Date(transaction.date);
+        const month = date.toLocaleDateString('en-US', {month: 'long'});
+
+        try {
+            await fetch(`/api/transactions/${month}`, {
+                method: "DELETE",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(transaction)
+            });
+        } catch (err) {
+            console.log("Error occurred while deleting transaction: ", err);
+        }
+    };
+
     const addNewTransaction = (transaction) => {
         postTransaction(transaction);
         setTransactions([...transactions, transaction]);
@@ -68,8 +86,17 @@ const useTransactions = (month) => {
         });
         setTransactions(updatedTransactions);
     };
+
+    const deleteFromTransactions = (transactionToDelete) => {
+        deleteTransaction(transactionToDelete);
+
+        const updatedTransactions = transactions.filter(transaction => {
+            return transaction.id !== transactionToDelete.id;
+        });
+        setTransactions(updatedTransactions);
+    };
     
-    return { transactions, setTransactions, addNewTransaction, updateTransaction };
+    return { transactions, addNewTransaction, updateTransaction, deleteFromTransactions };
 };
 
 export default useTransactions;

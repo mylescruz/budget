@@ -13,7 +13,7 @@ import dateInfo from "@/helpers/dateInfo";
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
     const currentMonth = dateInfo.currentMonth;
-    const { transactions, setTransactions, addNewTransaction, updateTransaction } = useTransactions(currentMonth);
+    const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions } = useTransactions(currentMonth);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
@@ -27,14 +27,10 @@ const InnerLayout = () => {
         updateTransaction(edittedTransaction);
     };
 
-    const removeTransaction = (transactionToRemove) => {
-        const updatedTransactions = transactions.filter(transaction => {
-            return transaction.id !== transactionToRemove.id;
-        });
+    const removeTransaction = (transactionToDelete) => {
+        deleteFromTransactions(transactionToDelete);
 
-        setTransactions(updatedTransactions);
-
-        const updatedCategories = deleteFromCategoryActual(transactionToRemove, categories);
+        const updatedCategories = deleteFromCategoryActual(transactionToDelete, categories);
         updateCategories(updatedCategories);
     };
 
