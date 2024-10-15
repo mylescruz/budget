@@ -17,10 +17,25 @@ const useCategories = () => {
         getCategories();
     }, [setCategories]);
 
-    const postCategories = async (updatedCategories) => {
+    const postCategory = async (newCategory) => {
         try {
             await fetch("/api/categories", {
                 method: "POST",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newCategory)
+            });
+        } catch (err) {
+            console.log("Error occurred while adding a category: ", err);
+        }
+    };
+
+    const putCategories = async (updatedCategories) => {
+        try {
+            await fetch("/api/categories", {
+                method: "PUT",
                 headers: {
                     Accept: "application.json",
                     "Content-Type": "application/json"
@@ -32,12 +47,17 @@ const useCategories = () => {
         }
     };
 
+    const addCategory = (newCategory) => {
+        postCategory(newCategory);
+        setCategories([...categories, newCategory]);
+    };
+
     const updateCategories = (updatedCategories) => {
-        postCategories(updatedCategories);
+        putCategories(updatedCategories);
         setCategories(updatedCategories);
     };
     
-    return { categories, updateCategories };
+    return { categories, addCategory, updateCategories };
 };
 
 export default useCategories;

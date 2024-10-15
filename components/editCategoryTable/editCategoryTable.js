@@ -5,7 +5,7 @@ import AddCategory from "./addCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const EditCategoryTable = ({ setEditClicked }) => {
-    const { categories, updateCategories } = useContext(CategoriesContext);
+    const { categories, addCategory, updateCategories } = useContext(CategoriesContext);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
 
@@ -41,12 +41,12 @@ const EditCategoryTable = ({ setEditClicked }) => {
         }
     };
 
-    const addCategory = () => {
+    const addNewCategory = () => {
         setAddCategoryClicked(true);
     };
 
     const addToCategories = (newCategory) => {
-        updateCategories([...categories, newCategory]);
+        addCategory(newCategory);
     };
 
     const removeCategory = (categoryToRemove) => {
@@ -76,7 +76,7 @@ const EditCategoryTable = ({ setEditClicked }) => {
                     <tr>
                         <th scope="col">
                             <Row className="alignX">
-                                <Col>Category <i className="bi bi-plus-circle-fill plus px-3" onClick={addCategory}></i></Col>
+                                <Col>Category <i className="bi bi-plus-circle-fill plus px-3" onClick={addNewCategory}></i></Col>
                                 <Col className="text-end px-1">
                                     <Button className="btn-sm text-nowrap" variant="primary" type="submit">Save All</Button>
                                 </Col>
