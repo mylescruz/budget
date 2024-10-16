@@ -70,10 +70,10 @@ const InnerLayout = () => {
     return (
         <Container className="w-100">
             <Title month={dateInfo.currentMonth}/>
-            
+
             <Row className="summary-container mx-auto">
-                <Col className="col-sm-12 col-md-12 col-lg-6"><SummaryPieChart /></Col>
-                <Col className="col-sm-12 col-md-12 col-lg-6">
+                <Col><SummaryPieChart /></Col>
+                <Col>
                     {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
                         : <EditCategoryTable setEditClicked={setEditClicked} />}
                 </Col>

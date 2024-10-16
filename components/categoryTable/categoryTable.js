@@ -13,7 +13,7 @@ const CategoryTable = ({ setEditClicked }) => {
     };
 
     return (
-        <Table bordered responsive className="w-100">
+        <Table bordered className="categories-table">
             <thead className="table-dark">
                 <tr>
                     <th scope="col">

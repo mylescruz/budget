@@ -107,21 +107,10 @@ a {
   }
 }
 
-.grid-6 {
-  display: grid;
-  grid-column: 6;
-}
-
-.grid-12 {
-  display: grid;
-  grid-column: 12;
-}
-
 .summary-container {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .option-buttons {
@@ -132,8 +121,37 @@ a {
   width: 75%;
 }
 
+.categories-table {
+  width: 100%;
+}
+
+.pie-size {
+  width: 100%;
+  height: 100%;
+}
+
 @media (max-width: 575.98px) {
+  .summary-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
   .transactions-table {
     width: 93%;
   }
+
+  .categories-table {
+    font-size: 0.75em;
+  }
+
+  .pie-size {
+    height: 400px;
+  }
+}
+
+@media (min-width: 0px) and (max-width: 768px) { 
+  
 }

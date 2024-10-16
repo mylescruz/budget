@@ -1,5 +1,5 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { VictoryPie } from "victory";
 
 const SummaryPieChart = () => {
@@ -35,23 +35,24 @@ const SummaryPieChart = () => {
     });
 
     return (
-        <VictoryPie
-            data={pieData} 
-            colorScale={colors}
-            height={pieSize}
-            labelPosition={({ index }) => index
-                ? "centroid"
-                : "startAngle"
-            }
-            style={
-                {
-                    labels: {
-                        fontSize: 10
+        <svg className="pie-size">
+            <VictoryPie
+                standalone={false}
+                data={pieData} 
+                colorScale={colors}
+                height={pieSize}
+                labelPosition={"centroid"}
+                labelPlacement={"parallel"}
+                style={
+                    {
+                        labels: {
+                            fontSize: 8
+                        }
+                        
                     }
-                    
                 }
-            }
-        />
+            />
+        </svg>
     );
 };
 
