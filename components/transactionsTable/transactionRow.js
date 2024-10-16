@@ -1,6 +1,6 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import TransactionDetails from "./transactionDetails";
 import styles from "@/styles/transactionRow.module.css";
 import DeleteTransaction from "./deleteTransactions";

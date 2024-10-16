@@ -68,44 +68,16 @@ const AddTransaction = ({transactions, addToTransactions, addTransactionClicked,
             <Form onSubmit={AddNewTransaction}>
                 <Modal.Body>
                     <Form.Group className="formInput">
-                        <Form.Control
-                            id="date"
-                            className="h-100"
-                            type="date"
-                            min={dateInfo.minDate}
-                            max={dateInfo.maxDate}
-                            value={newTransaction.date}
-                            onChange={handleInput}
-                            required
-                        ></Form.Control>
+                        <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={newTransaction.date} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
-                        <Form.Control
-                            id="store"
-                            className="h-100"
-                            type="text"
-                            placeholder="Store/Restaurant"
-                            value={newTransaction.store}
-                            onChange={handleInput}
-                            required
-                        ></Form.Control>
+                        <Form.Control id="store" className="h-100" type="text" placeholder="Store/Restaurant" value={newTransaction.store} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
-                        <Form.Control
-                            id="items"
-                            className="h-100"
-                            type="text"
-                            placeholder="What was purchased?"
-                            value={newTransaction.items}
-                            onChange={handleInput}
-                            required
-                        ></Form.Control>
+                        <Form.Control id="items" className="h-100" type="text" placeholder="What was purchased?" value={newTransaction.items} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
-                        <Form.Select id="category" className="h-100" 
-                        value={newTransaction.category}
-                        onChange={handleInput}
-                        required>
+                        <Form.Select id="category" className="h-100" value={newTransaction.category} onChange={handleInput} required>
                             <option disabled>Choose a Category...</option>
                             {categories.map(category => (
                                 (!category.fixed && <SelectCategory key={category.id} category={category} />)
@@ -113,17 +85,7 @@ const AddTransaction = ({transactions, addToTransactions, addTransactionClicked,
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="formInput">
-                        <Form.Control
-                            id="amount"
-                            className="h-100"
-                            type="number"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="Amount"
-                            value={newTransaction.amount}
-                            onChange={handleNumInput}
-                            required
-                        ></Form.Control>
+                        <Form.Control id="amount" className="h-100" type="number" min="0.01" placeholder="Amount" value={newTransaction.amount} onChange={handleNumInput} required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>

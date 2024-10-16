@@ -123,88 +123,39 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
                 <Modal.Body>
                     <Form.Group className="formInput">
                         <Form.Label>Category name</Form.Label>
-                        <Form.Control
-                            id="name"
-                            className="h-100"
-                            type="text"
-                            placeholder="Name"
-                            value={newCategory.name}
-                            onChange={handleInput}
-                            required
-                        />
+                        <Form.Control id="name" className="h-100" type="text" placeholder="Name" value={newCategory.name} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Budget Amount</Form.Label>
-                        <Form.Control
-                            id="budget"
-                            className="h-100"
-                            type="number"
-                            min="1"
-                            placeholder="$ Amount"
+                        <Form.Control id="budget" className="h-100" type="number" min="1" 
                             value={(newCategory.hasSubcategory && newCategory.fixed) ? subcategoryTotal : newCategory.budget}
                             onChange={handleNumInput}
-                            required
                             disabled={(newCategory.hasSubcategory && newCategory.fixed)}
+                            required
                         />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Color</Form.Label>
-                        <Form.Control
-                            id="color" 
-                            type="color" 
-                            className="form-control-color" 
-                            value={newCategory.color} 
-                            onChange={handleInput}
-                        />
+                        <Form.Control id="color" type="color" className="form-control-color" value={newCategory.color} onChange={handleInput} />
                     </Form.Group>
                     <Form.Group className="formInput alignX">
-                        <Form.Check
-                        reverse
-                        id="fixed"
-                        className="h-100"
-                        type="checkbox"
-                        label="Fixed?"
-                        value={newCategory.fixed}
-                        onChange={handleFixed}
-                        />
+                        <Form.Check reverse id="fixed" className="h-100" type="checkbox" label="Fixed?" value={newCategory.fixed} onChange={handleFixed} />
                     </Form.Group>
                     <Form.Group className="formInput alignX">
-                        <Form.Check
-                        reverse
-                        id="hasSubcategory"
-                        className="h-100"
-                        type="checkbox"
-                        label="Subcategories?"
-                        value={newCategory.hasSubcategory}
-                        onChange={handleChecked}
-                        />
+                        <Form.Check reverse id="hasSubcategory" className="h-100" type="checkbox" label="Subcategories?" value={newCategory.hasSubcategory} onChange={handleChecked} />
                     </Form.Group>
                     {newCategory.hasSubcategory &&
                     <Form.Group className="formInput">
                         <Row className="alignX">
                             <Col>
                                 <FloatingLabel controlId="floatingName" label="Subcategory" className="small">
-                                <Form.Control 
-                                    name="name"
-                                    className=""
-                                    type="text"
-                                    placeholder="Subcategory"
-                                    value={newSubcategory.name}
-                                    onChange={handleSubcategoryInput}
-                                />
+                                    <Form.Control name="name" type="text" placeholder="Subcategory" value={newSubcategory.name} onChange={handleSubcategoryInput} />
                                 </FloatingLabel>
                             </Col>
                             { (newCategory.hasSubcategory && newCategory.fixed) &&
                             <Col>
                                 <FloatingLabel controlId="floatingInput" label="Budget">
-                                <Form.Control 
-                                    name="name"
-                                    className="w-100"
-                                    type="number"
-                                    placeholder="Budget"
-                                    value={newSubcategory.actual}
-                                    onChange={handleSubcategoryBudget}
-                                />
+                                    <Form.Control name="name" className="w-100" type="number" placeholder="Budget" value={newSubcategory.actual} onChange={handleSubcategoryBudget} />
                                 </FloatingLabel>
                             </Col>
                             }

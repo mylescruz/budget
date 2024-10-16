@@ -51,44 +51,16 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ed
                 <Form onSubmit={editTransaction}>
                     <Modal.Body>
                         <Form.Group className="formInput">
-                            <Form.Control
-                                id="date"
-                                className="h-100"
-                                type="date"
-                                min={dateInfo.minDate}
-                                max={dateInfo.maxDate}
-                                value={edittedTransaction.date}
-                                onChange={handleInput}
-                                required
-                            ></Form.Control>
+                            <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={edittedTransaction.date} onChange={handleInput} required />
                         </Form.Group>
                         <Form.Group className="formInput">
-                            <Form.Control
-                                id="store"
-                                className="h-100"
-                                type="text"
-                                placeholder="Store/Restaurant"
-                                value={edittedTransaction.store}
-                                onChange={handleInput}
-                                required
-                            ></Form.Control>
+                            <Form.Control id="store" className="h-100" type="text" placeholder="Store" value={edittedTransaction.store} onChange={handleInput} required />
                         </Form.Group>
                         <Form.Group className="formInput">
-                            <Form.Control
-                                id="items"
-                                className="h-100"
-                                type="text"
-                                placeholder="What was purchased?"
-                                value={edittedTransaction.items}
-                                onChange={handleInput}
-                                required
-                            ></Form.Control>
+                            <Form.Control id="items" className="h-100" type="text" placeholder="What was purchased?" value={edittedTransaction.items} onChange={handleInput} required />
                         </Form.Group>
                         <Form.Group className="formInput">
-                            <Form.Select id="category" className="h-100" 
-                            value={edittedTransaction.category}
-                            onChange={handleInput}
-                            required>
+                            <Form.Select id="category" className="h-100" value={edittedTransaction.category} onChange={handleInput} required>
                                 <option disabled>Choose a Category...</option>
                                 {categories.map(category => (
                                     (!category.fixed && <SelectCategory key={category.id} category={category} />)
@@ -96,17 +68,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ed
                             </Form.Select>
                         </Form.Group>
                         <Form.Group className="formInput">
-                            <Form.Control
-                                id="amount"
-                                className="h-100"
-                                type="number"
-                                min="0.01"
-                                step="0.01"
-                                placeholder="Amount"
-                                value={edittedTransaction.amount}
-                                onChange={handleNumInput}
-                                required
-                            ></Form.Control>
+                            <Form.Control id="amount" className="h-100" type="number" min="0.01" placeholder="Amount" value={edittedTransaction.amount} onChange={handleNumInput} required />
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>

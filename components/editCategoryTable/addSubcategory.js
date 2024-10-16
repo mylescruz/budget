@@ -46,14 +46,7 @@ const AddSubcategory = ({ edittedCategory, setEdittedCategory, updateCategoryVal
                 <Row className="alignX">
                     <Col className="col-9">
                         <Form.Group className="formInput">
-                            <Form.Control
-                            id="name"
-                            className="h-100"
-                            type="text"
-                            placeholder="Add subcategory"
-                            value={newSubcategory.name}
-                            onChange={handleInput}
-                            />
+                            <Form.Control id="name" className="h-100" type="text" placeholder="Add subcategory" value={newSubcategory.name} onChange={handleInput} />
                         </Form.Group>
                     </Col>
                     <Col className="col-1">
