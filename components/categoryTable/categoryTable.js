@@ -18,8 +18,8 @@ const CategoryTable = ({ setEditClicked }) => {
                 <tr>
                     <th scope="col">
                         <Row className="alignX">
-                            <Col>Category</Col>
-                            <Col className="text-end px-1"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
+                            <Col className="col-8">Category</Col>
+                            <Col className="col-1"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                         </Row>
                     </th>
                     <th scope="col" className="col-2">Budget</th>

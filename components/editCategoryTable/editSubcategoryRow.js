@@ -30,8 +30,8 @@ const EditSubcategoryRow = ({ subcategory, fixed, updateSubcategory, deleteSubca
 
     return (
         <tr>
-            <td><Form.Control type="text" name="name" className="w-50 float-end text-end" value={subcategoryValues.name} onChange={handleInput}></Form.Control></td>
-            <td>{fixed && <Form.Control type="number" name="actual" className="w-100" min="0" max="100000" step="0.01" value={subcategoryValues.actual} onChange={handleSubcategoryBudget} />}</td>
+            <td><Form.Control type="text" name="name" className="input-subcategory float-end text-end" value={subcategoryValues.name} onChange={handleInput}></Form.Control></td>
+            <td>{fixed && <Form.Control type="number" name="actual" className="input-number" min="0" max="100000" step="0.01" value={subcategoryValues.actual} onChange={handleSubcategoryBudget} />}</td>
             <td></td>
             <td className="text-center align-middle delete" onClick={removeSubcategory}><i className="bi bi-trash"></i></td>
         </tr>

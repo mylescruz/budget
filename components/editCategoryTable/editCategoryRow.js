@@ -72,14 +72,14 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
             <tr>
                 <th scope="row" className="text-nowrap">
                     <Row className="alignX">
-                        <Col><Form.Control type="text" name="name" className="w-100" value={edittedCategory.name} onChange={handleInput} /></Col>
-                        <Col className="text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
+                        <Col className="col-10"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
+                        <Col className="col-2 text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
                 {(edittedCategory.hasSubcategory && edittedCategory.fixed) ?
-                    <td><Form.Control type="number" name="budget" className="w-100" step="0.01" value={edittedCategory.budget} disabled /></td>
+                    <td><Form.Control type="number" name="budget" className="input-number" step="0.01" value={edittedCategory.budget} disabled /></td>
                     :
-                    <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="0.01" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
+                    <td><Form.Control type="number" name="budget" className="input-number" min="0" max="100000" step="0.01" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
                 }
                 <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
                 <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>

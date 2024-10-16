@@ -80,8 +80,8 @@ const InnerLayout = () => {
             </Row>
         
             <Row className="option-buttons text-center">
-                <Col><Button variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
-                <Col><Button variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
+                <Col><Button id="transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
+                <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
             </Row>
             
             {viewClicked && <TransactionsTable {...transactionsTableProps} />}

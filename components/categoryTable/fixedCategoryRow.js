@@ -18,16 +18,15 @@ const FixedCategoryRow = ({ category }) => {
             <tr>
                 <th scope="row" className={styles.cell}>
                     <Row>
-                        <Col className="col-10">{category.name}</Col>
-                        {hasSubcategory && 
-                            <Col className="col-2">
-                            {showSubcategories ? 
-                                <i className="bi bi-chevron-up" onClick={dropdownSubcategories}></i>
+                        <Col>{category.name}
+                            {hasSubcategory && 
+                            (showSubcategories ? 
+                                <i className="bi bi-chevron-up mx-1" onClick={dropdownSubcategories}></i>
                                 :
-                                <i className="bi bi-chevron-down" onClick={dropdownSubcategories}></i>
-                            }
-                            </Col>
+                                <i className="bi bi-chevron-down mx-1" onClick={dropdownSubcategories}></i>
+                            )
                         }
+                        </Col>
                     </Row>
                 </th>
                 <td className={styles.budgetRow}>{currencyFormatter.format(category.budget)}</td>
