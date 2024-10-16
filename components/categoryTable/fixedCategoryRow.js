@@ -2,7 +2,6 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import styles from "@/styles/categoryRow.module.css";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import SubcategoryRow from "./subcategoryRow";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 
 const FixedCategoryRow = ({ category }) => {

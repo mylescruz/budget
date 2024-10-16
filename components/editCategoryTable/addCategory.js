@@ -127,7 +127,7 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Budget Amount</Form.Label>
-                        <Form.Control id="budget" className="h-100" type="number" min="1" 
+                        <Form.Control id="budget" className="h-100" type="number" min="0.01" step="0.01"
                             value={(newCategory.hasSubcategory && newCategory.fixed) ? subcategoryTotal : newCategory.budget}
                             onChange={handleNumInput}
                             disabled={(newCategory.hasSubcategory && newCategory.fixed)}

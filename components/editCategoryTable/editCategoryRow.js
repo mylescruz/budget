@@ -77,9 +77,9 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
                     </Row>
                 </th>
                 {(edittedCategory.hasSubcategory && edittedCategory.fixed) ?
-                    <td><Form.Control type="number" name="budget" className="w-100" value={edittedCategory.budget} disabled /></td>
+                    <td><Form.Control type="number" name="budget" className="w-100" step="0.01" value={edittedCategory.budget} disabled /></td>
                     :
-                    <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
+                    <td><Form.Control type="number" name="budget" className="w-100" min="0" max="100000" step="0.01" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
                 }
                 <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
                 <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>

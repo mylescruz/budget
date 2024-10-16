@@ -68,7 +68,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, ed
                             </Form.Select>
                         </Form.Group>
                         <Form.Group className="formInput">
-                            <Form.Control id="amount" className="h-100" type="number" min="0.01" placeholder="Amount" value={edittedTransaction.amount} onChange={handleNumInput} required />
+                            <Form.Control id="amount" className="h-100" type="number" min="0.01" step="0.01" placeholder="Amount" value={edittedTransaction.amount} onChange={handleNumInput} required />
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
