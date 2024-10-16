@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-const useCategories = () => {
+const useCategories = (month) => {
     const [categories, setCategories] = useState([]);
     
     useEffect(() => {
         const getCategories = async () => {
             try {
-                const rsp = await fetch("/api/categories/");
+                const rsp = await fetch(`/api/categories/${month}`);
                 const result = await rsp.json();
                 setCategories(result);
             } catch (err) {
@@ -15,11 +15,11 @@ const useCategories = () => {
         }
 
         getCategories();
-    }, [setCategories]);
+    }, [month]);
 
     const postCategory = async (newCategory) => {
         try {
-            await fetch("/api/categories", {
+            await fetch(`/api/categories/${month}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -34,7 +34,7 @@ const useCategories = () => {
 
     const putCategories = async (updatedCategories) => {
         try {
-            await fetch("/api/categories", {
+            await fetch(`/api/categories/${month}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -49,7 +49,7 @@ const useCategories = () => {
 
     const deleteCategory = async (categoryToDelete) => {
         try {
-            await fetch("/api/categories", {
+            await fetch(`/api/categories/${month}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",

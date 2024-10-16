@@ -6,13 +6,14 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
 export default async function handler(req, res) {
+    const month = req?.query?.month;
     const method = req?.method;
     const fileName = path.resolve("./public/db/", "categories.json");
 
     async function getCategoriesData() {
         const fileData = await readFile(fileName);
-        const categories = JSON.parse(fileData).categories;
-        return categories;
+        const categories = JSON.parse(fileData);
+        return categories[month];
     }
     
     if (method === "GET") {
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
             if (!categories) {
                 res.status(400).send("Error: Request failed with status code 404");
             } else {
-                console.log("GET /api/categories status: 200");
+                console.log(`GET /api/categories/${month} status: 200`);
                 res.status(200).send(JSON.stringify(categories, null, 2));
             }
         } catch (err) {
@@ -33,11 +34,11 @@ export default async function handler(req, res) {
             const newCategory = req?.body;
             const categories = await getCategoriesData();
 
-            let updatedCategories = [];
+            const updatedCategories = {};
             if (!categories)
-                updatedCategories = [newCategory];
+                updatedCategories[month] = [newCategory];
             else
-                updatedCategories = [...categories, newCategory];
+                updatedCategories[month] = [...categories, newCategory];
 
             writeFile(
                 fileName,
@@ -45,23 +46,23 @@ export default async function handler(req, res) {
                     categories: updatedCategories
                 }, null, 2)
             )
-            console.log("POST /api/categories status: 200");
+            console.log(`POST /api/categories/${month} status: 200`);
             res.status(200).json(newCategory);
         } catch (err) {
             console.log("Error with post categories request: ", err);
         }
     } else if (method === "PUT") {
         try {
-            const updatedCategories = req?.body;
+            const edittedCategories = req?.body;
+            const updatedCategories = {};
+            updatedCategories[month] = edittedCategories;
 
             writeFile(
                 fileName,
-                JSON.stringify({
-                    categories: updatedCategories
-                }, null, 2)
+                JSON.stringify(updatedCategories, null, 2)
             )
-            console.log("PUT /api/categories status: 200");
-            res.status(200).json(updatedCategories);
+            console.log(`PUT /api/categories/${month} status: 200`);
+            res.status(200).json(edittedCategories);
         } catch (err) {
             console.log("Error with put categories request: ", err);
         }
@@ -73,17 +74,18 @@ export default async function handler(req, res) {
             if (!categories)
                 res.status(400).send("Error: Request failed with status code 404: No categories to delete from");
 
-            const updatedCategories = categories.filter(category => {
+            const updated = categories.filter(category => {
                 return category.id !== categoryToDelete.id;
             });
+
+            const updatedCategories = {};
+            updatedCategories[month] = updated;
             
             writeFile(
                 fileName,
-                JSON.stringify({
-                    categories: updatedCategories
-                }, null, 2)
+                JSON.stringify(updatedCategories, null, 2)
             )
-            console.log(`DELETE /api/categories status: 200`);
+            console.log(`DELETE /api/categories/${month} status: 200`);
             res.status(200).json(categoryToDelete);
         } catch (err) {
             console.log("Error with delete category request: ", err);
