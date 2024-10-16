@@ -9,6 +9,7 @@ import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
 import dateInfo from "@/helpers/dateInfo";
+import Title from "./title";
 
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
@@ -68,16 +69,17 @@ const InnerLayout = () => {
 
     return (
         <Container className="w-100">
-            <Row>
-                <Col><SummaryPieChart /></Col>
-                <Col>{!editClicked ?
-                    <CategoryTableMemo setEditClicked={setEditClicked} />
-                    :
-                    <EditCategoryTable setEditClicked={setEditClicked} />
-                }</Col>
+            <Title month={dateInfo.currentMonth}/>
+            
+            <Row className="summary-container mx-auto">
+                <Col className="col-sm-12 col-md-12 col-lg-6"><SummaryPieChart /></Col>
+                <Col className="col-sm-12 col-md-12 col-lg-6">
+                    {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
+                        : <EditCategoryTable setEditClicked={setEditClicked} />}
+                </Col>
             </Row>
         
-            <Row className="mb-4 text-center">
+            <Row className="option-buttons text-center">
                 <Col><Button variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
                 <Col><Button variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
             </Row>

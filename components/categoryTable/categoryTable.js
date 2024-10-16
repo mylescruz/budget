@@ -13,7 +13,7 @@ const CategoryTable = ({ setEditClicked }) => {
     };
 
     return (
-        <Table bordered responsive className="my-4 w-100 mx-auto">
+        <Table bordered responsive className="w-100">
             <thead className="table-dark">
                 <tr>
                     <th scope="col">
@@ -35,7 +35,7 @@ const CategoryTable = ({ setEditClicked }) => {
                     (category.fixed && <FixedCategoryRow key={category.id} category={category} />)
                 ))}
                 <tr>
-                    <th className="bg-secondary text-white" colSpan={4}>Other Expenses</th>
+                    <th className="bg-secondary text-white" colSpan={4}>Variable Expenses</th>
                 </tr>
                 {categories.map(category => (
                     (!category.fixed && <CategoryRow key={category.id} category={category} />)

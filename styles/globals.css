@@ -106,3 +106,34 @@ a {
       background-color: lightblue !important;
   }
 }
+
+.grid-6 {
+  display: grid;
+  grid-column: 6;
+}
+
+.grid-12 {
+  display: grid;
+  grid-column: 12;
+}
+
+.summary-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.option-buttons {
+  margin: 1em 0em 2em;
+}
+
+.transactions-table {
+  width: 75%;
+}
+
+@media (max-width: 575.98px) {
+  .transactions-table {
+    width: 93%;
+  }
+}

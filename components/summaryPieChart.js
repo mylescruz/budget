@@ -8,7 +8,7 @@ const SummaryPieChart = () => {
     let pieData = [];
     let colors = [];
 
-    const pieSize = 400;
+    const pieSize = 350;
 
     const totalActual = categories.reduce((sum, category) => sum + category.actual, 0);
 
