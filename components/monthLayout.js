@@ -72,8 +72,8 @@ const InnerLayout = () => {
             <Title month={dateInfo.currentMonth}/>
 
             <Row>
-                <Col className="col-12 col-sm-12 col-md-6"><SummaryPieChart /></Col>
-                <Col className="col-12 col-sm-12 col-md-6">
+                <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
+                <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
                     {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
                         : <EditCategoryTable setEditClicked={setEditClicked} />}
                 </Col>

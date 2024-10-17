@@ -43,16 +43,14 @@ const AddSubcategory = ({ edittedCategory, setEdittedCategory, updateCategoryVal
     return (
         <tr>
             <td>
-                <Row className="alignX">
-                    <Col className="col-8">
-                        <Form.Group>
-                            <Form.Control id="name" className="add-subcategory" type="text" placeholder="Subcategory" value={newSubcategory.name} onChange={handleInput} />
-                        </Form.Group>
+                <Row className="flex-start">
+                    <Col className="col-8 add-sub">
+                        <Form.Control id="name" className="add-subcategory" type="text" placeholder="Subcategory" value={newSubcategory.name} onChange={handleInput} />
                     </Col>
-                    <Col className="col-1">
+                    <Col className="col-1 cancel-sub">
                         <i className={`bi bi-x-circle cancel`} onClick={cancelAddSubcategory}></i>
                     </Col>
-                    <Col className="col-1">
+                    <Col className="col-1 check-sub">
                         <i className={`bi bi-check-circle check`} onClick={addToCategory}></i>
                     </Col>
                 </Row>

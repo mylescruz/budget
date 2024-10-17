@@ -70,7 +70,7 @@ const EditCategoryTable = ({ setEditClicked }) => {
             <Table striped bordered responsive className="mx-auto edit-categories-table">
                 <thead className="table-dark">
                     <tr>
-                        <th scope="col" className="col-7">
+                        <th scope="col" className="col-7 col-lg-6">
                             <Row className="alignX">
                                 <Col className="col-6">Category</Col>
                                 <Col className="col-2"><i className="bi bi-plus-circle-fill plus" onClick={addNewCategory}></i></Col>
@@ -79,9 +79,9 @@ const EditCategoryTable = ({ setEditClicked }) => {
                                 </Col>
                             </Row>
                         </th>
-                        <th scope="col" className="col-3">Budget</th>
-                        <th scope="col" className="col-1">Color</th>
-                        <th scope="col" className="col-1">Delete</th>
+                        <th scope="col" className="col-3 col-lg-2">Budget</th>
+                        <th scope="col" className="col-1 col-lg-1">Color</th>
+                        <th scope="col" className="col-1 col-lg-1">Delete</th>
                     </tr>
                 </thead>
                 <tbody>

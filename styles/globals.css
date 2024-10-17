@@ -68,6 +68,18 @@ a {
   justify-content: center;
 }
 
+.flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .plus {
   &:hover {
       cursor: pointer;
@@ -112,10 +124,19 @@ a {
   height: 100%;
 }
 
+#save-all-btn {
+  text-wrap: nowrap;
+}
+
+.input-subcategory {
+  width: 75%;
+}
+
 .option-buttons {
   margin: 1em 0em;
 }
 
+/* Extra-Small Device */
 @media (max-width: 575.99px) {
   .categories-table, .edit-categories-table {
     margin: 2em 0em;
@@ -137,7 +158,6 @@ a {
   }
 
   #save-all-btn {
-    text-wrap: nowrap;
     font-size: 0.75em;
   }
 
@@ -147,40 +167,90 @@ a {
   }
 
   .input-subcategory {
-    width: 75%;
     font-size: 0.9em;
   }
 
   .add-subcategory {
     width: 100%;
+    margin: 0em 0em 0em 1em;
     font-size: 0.9em;
   }
 
   .input-number {
     width: 100%;
     font-size: 0.9em;
+  } 
+
+  .add-sub {
+    width: 60%;
+    padding: 0;
+  }
+
+  .cancel-sub {
+    margin: 0em 0.25em 0em 1.25em;
+    padding: 0;
+  }
+
+  .check-sub {
+    margin: 0em 0.25em 0em 0.5em;
+    padding: 0;
   }
 }
 
-
+/* Small Device */
 @media (min-width: 576px) and (max-width: 767.99px) {
-
+  .input-subcategory {
+    width: 60%;
+  }
 }
 
+/* Medium Device */
 @media (min-width: 768px) and (max-width: 991.99px) {
+  .input-category {
+    width: 75%;
+  }
 
+  .input-subcategory {
+    width: 50%;
+  }
 }
 
+/* Large Device */
 @media (min-width: 992px) and (max-width: 1199.99px) {
+  .input-category {
+    width: 60%;
+  }
 
+  .input-subcategory {
+    width: 40%;
+  }
+
+  .input-number {
+    width: 100%;
+  } 
 }
+
 
 @media (min-width: 1200px) and (max-width: 1399.99px) {
+  .pie {
+    margin: 5em 0em;
+  }
 
+  .transactions-table {
+    margin: 2em 0em;
+    width: 75%;
+  }
 }
 
-@media (max-width: 1400px) {
+@media (min-width: 1400px) {
+  .pie {
+    margin: 5em 0em 0em;
+  }
 
+  .transactions-table {
+    margin: 2em 0em;
+    width: 75%;
+  }
 }
 
 /* .summary-container {

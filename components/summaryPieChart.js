@@ -35,7 +35,7 @@ const SummaryPieChart = () => {
     });
 
     return (
-        <svg width="100%" height={pieSize}>
+        <svg viewBox="0 0 400 400">
             <VictoryPie
                 standalone={false}
                 data={pieData} 
