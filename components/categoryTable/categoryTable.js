@@ -13,13 +13,13 @@ const CategoryTable = ({ setEditClicked }) => {
     };
 
     return (
-        <Table bordered className="categories-table">
+        <Table bordered className="categories-table mx-auto">
             <thead className="table-dark">
                 <tr>
                     <th scope="col">
                         <Row className="alignX">
                             <Col className="col-8">Category</Col>
-                            <Col className="col-1"><Button className="btn-sm" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
+                            <Col className="col-4"><Button className="btn-sm" id="edit-categories-btn" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                         </Row>
                     </th>
                     <th scope="col" className="col-2">Budget</th>

@@ -71,9 +71,9 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
         <>
             <tr>
                 <th scope="row" className="text-nowrap">
-                    <Row className="alignX">
-                        <Col className="col-10"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
-                        <Col className="col-2 text-end"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
+                    <Row className="alignX w-100">
+                        <Col className="col-9"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
+                        <Col className="col-1"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
                 {(edittedCategory.hasSubcategory && edittedCategory.fixed) ?

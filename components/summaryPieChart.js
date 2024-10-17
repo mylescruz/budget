@@ -1,5 +1,5 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { VictoryPie } from "victory";
 
 const SummaryPieChart = () => {
@@ -35,7 +35,7 @@ const SummaryPieChart = () => {
     });
 
     return (
-        <svg className="pie-size">
+        <svg width="100%" height={pieSize}>
             <VictoryPie
                 standalone={false}
                 data={pieData} 

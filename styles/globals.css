@@ -107,7 +107,83 @@ a {
   }
 }
 
-.summary-container {
+.pie-size {
+  width: 100%;
+  height: 100%;
+}
+
+.option-buttons {
+  margin: 1em 0em;
+}
+
+@media (max-width: 575.99px) {
+  .categories-table, .edit-categories-table {
+    margin: 2em 0em;
+    font-size: 0.8em;
+  }
+
+  #view-transactions-btn, #add-transaction-btn {
+    margin: 0em 0em 2em;
+    font-size: 0.9em;
+  }
+
+  .transactions-table {
+    margin: 0em 0em 3em;
+    font-size: 0.8em;
+  }
+
+  #edit-categories-btn {
+    font-size: 0.75em;
+  }
+
+  #save-all-btn {
+    text-wrap: nowrap;
+    font-size: 0.75em;
+  }
+
+  .input-category {
+    width: 100%;
+    font-size: 0.9em;
+  }
+
+  .input-subcategory {
+    width: 75%;
+    font-size: 0.9em;
+  }
+
+  .add-subcategory {
+    width: 100%;
+    font-size: 0.9em;
+  }
+
+  .input-number {
+    width: 100%;
+    font-size: 0.9em;
+  }
+}
+
+
+@media (min-width: 576px) and (max-width: 767.99px) {
+
+}
+
+@media (min-width: 768px) and (max-width: 991.99px) {
+
+}
+
+@media (min-width: 992px) and (max-width: 1199.99px) {
+
+}
+
+@media (min-width: 1200px) and (max-width: 1399.99px) {
+
+}
+
+@media (max-width: 1400px) {
+
+}
+
+/* .summary-container {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -125,10 +201,7 @@ a {
   width: 100%;
 }
 
-.pie-size {
-  width: 100%;
-  height: 100%;
-}
+
 
 .btn-sm {
   text-wrap: nowrap;
@@ -139,9 +212,65 @@ a {
 .add-subcategory {
   width: 100px;
   font-size: 1em;
+} */
+/* 
+@media (max-width: 389.99px) {
+  .summary-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pie-size {
+    width: 100%;
+    height: 400px;
+  }
+
+  .categories-table, .edit-categories-table {
+    font-size: 0.8em;
+  }
+
+  #transactions-btn, #add-transaction-btn {
+    font-size: 0.9em;
+  }
+
+  .transactions-table {
+    width: 93%;
+    font-size: 0.8em;
+  }
+
+  .input-category {
+    width: 90%;
+    font-size: 1em;
+  }
+
+  .input-subcategory {
+    width: 75%;
+    font-size: 1em;
+  }
+
+  .add-subcategory {
+    width: 75%;
+    font-size: 1em;
+  }
+
+  .input-number {
+    width: 100%;
+    font-size: 1em;
+  }
+
+  .btn-sm {
+    font-size: 0.8em;
+  }
+
+  .bi-trash {
+    font-size: 1.25em;
+  }
 }
 
-@media (max-width: 575.98px) {
+@media (min-width: 390px) and (max-width: 575.98px) {
   .summary-container {
     width: 100%;
     display: flex;
@@ -168,7 +297,7 @@ a {
   }
 
   .input-category {
-    width: 100%;
+    width: 90%;
     font-size: 1em;
   }
 
@@ -178,7 +307,7 @@ a {
   }
 
   .add-subcategory {
-    width: 100%;
+    width: 75%;
     font-size: 1em;
   }
 
@@ -195,3 +324,31 @@ a {
     font-size: 1.25em;
   }
 }
+
+@media (min-width: 575.99px) and (max-width: 767.98px) {
+  
+}
+
+@media (min-width: 767.99px) and (max-width: 991.98px) {
+  .summary-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pie-size {
+    height: 400px;
+  }
+
+  .categories-table {
+    font-size: 0.8em;
+  }
+
+  #transactions-btn, #add-transaction-btn {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 991.98px) {
+  
+} */

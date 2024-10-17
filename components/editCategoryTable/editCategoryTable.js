@@ -67,15 +67,15 @@ const EditCategoryTable = ({ setEditClicked }) => {
     return (
         <>
             <Form onSubmit={updateCategoryTable}>
-            <Table striped bordered responsive className="my-4 w-100 mx-auto edit-categories-table">
+            <Table striped bordered responsive className="mx-auto edit-categories-table">
                 <thead className="table-dark">
                     <tr>
                         <th scope="col" className="col-7">
                             <Row className="alignX">
-                                <Col className="col-4">Category</Col>
-                                <Col className="col-4"><i className="bi bi-plus-circle-fill plus px-1" onClick={addNewCategory}></i></Col>
+                                <Col className="col-6">Category</Col>
+                                <Col className="col-2"><i className="bi bi-plus-circle-fill plus" onClick={addNewCategory}></i></Col>
                                 <Col className="col-2">
-                                    <Button className="btn-sm" type="submit">Save All</Button>
+                                    <Button className="btn-sm" id="save-all-btn" type="submit">Save All</Button>
                                 </Col>
                             </Row>
                         </th>

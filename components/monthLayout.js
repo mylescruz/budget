@@ -71,16 +71,16 @@ const InnerLayout = () => {
         <Container className="w-100">
             <Title month={dateInfo.currentMonth}/>
 
-            <Row className="summary-container mx-auto">
-                <Col><SummaryPieChart /></Col>
-                <Col>
+            <Row>
+                <Col className="col-12 col-sm-12 col-md-6"><SummaryPieChart /></Col>
+                <Col className="col-12 col-sm-12 col-md-6">
                     {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
                         : <EditCategoryTable setEditClicked={setEditClicked} />}
                 </Col>
             </Row>
         
             <Row className="option-buttons text-center">
-                <Col><Button id="transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
+                <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
                 <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
             </Row>
             

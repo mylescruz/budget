@@ -16,17 +16,17 @@ const CategoryRow = ({ category }) => {
     return (
         <>
             <tr>
-                <th scope="row" className={styles.cell}>
+                <th scope="row">
                     <Row>
-                        <Col className="col-10">{category.name}</Col>
+                        <Col className={`col-9 ${styles.cell}`}>{category.name}</Col>
                         {hasSubcategory && 
-                            <Col className="col-2">
+                        <Col className="col-3">
                             {showSubcategories ? 
                                 <i className="bi bi-chevron-up" onClick={dropdownSubcategories}></i>
                                 :
                                 <i className="bi bi-chevron-down" onClick={dropdownSubcategories}></i>
                             }
-                            </Col>
+                        </Col>
                         }
                     </Row>
                 </th>
