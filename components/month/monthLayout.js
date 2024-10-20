@@ -11,6 +11,7 @@ import dateInfo from "@/helpers/dateInfo";
 import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
 import Header from "../header";
+import Footer from "../footer";
 
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
@@ -90,6 +91,7 @@ const InnerLayout = () => {
                 {viewClicked && <TransactionsTable {...transactionsTableProps} />}
                 {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
             </Container>
+            <Footer />
         </>
     );
 };

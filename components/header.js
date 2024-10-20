@@ -1,10 +1,10 @@
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Nav, Navbar } from "react-bootstrap";
 
 const Header = () => {
     return (
-        <Navbar expand="lg" bg="dark" data-bs-theme="dark">
+        <Navbar expand="lg" bg="dark" data-bs-theme="dark" sticky="top">
         <Container>
-            <Navbar.Brand href="#home">Type A Budgeting</Navbar.Brand>
+            <Navbar.Brand href="#home">Type-A Budgeting</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
