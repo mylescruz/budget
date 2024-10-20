@@ -1,4 +1,4 @@
-import MonthLayout from "@/components/monthLayout";
+import MonthLayout from "@/components/month/monthLayout";
 import "@/styles/globals.css";
 
 const App = () => {

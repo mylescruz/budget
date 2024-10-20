@@ -3,13 +3,14 @@ import CategoryTable, { CategoryTableMemo } from "./categoryTable/categoryTable"
 import TransactionsTable from "./transactionsTable/transactionsTable";
 import { useContext, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import SummaryPieChart from "./summaryPieChart";
 import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
 import dateInfo from "@/helpers/dateInfo";
 import Title from "./title";
+import SummaryPieChart from "./summaryPieChart";
+import Header from "../header";
 
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
@@ -68,25 +69,28 @@ const InnerLayout = () => {
     };
 
     return (
-        <Container className="w-100">
-            <Title month={dateInfo.currentMonth}/>
+        <>
+            <Header />
+            <Container className="w-100">
+                <Title month={dateInfo.currentMonth}/>
 
-            <Row>
-                <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
-                <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
-                    {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
-                        : <EditCategoryTable setEditClicked={setEditClicked} />}
-                </Col>
-            </Row>
-        
-            <Row className="option-buttons text-center">
-                <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
-                <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
-            </Row>
+                <Row>
+                    <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
+                    <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
+                        {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
+                            : <EditCategoryTable setEditClicked={setEditClicked} />}
+                    </Col>
+                </Row>
             
-            {viewClicked && <TransactionsTable {...transactionsTableProps} />}
-            {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
-        </Container>
+                <Row className="option-buttons text-center">
+                    <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
+                    <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
+                </Row>
+                
+                {viewClicked && <TransactionsTable {...transactionsTableProps} />}
+                {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
+            </Container>
+        </>
     );
 };
 
