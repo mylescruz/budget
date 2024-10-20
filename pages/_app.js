@@ -1,10 +1,16 @@
+import Footer from "@/components/footer";
+import Header from "@/components/header";
+import Home from "@/components/home";
 import MonthLayout from "@/components/month/monthLayout";
 import "@/styles/globals.css";
 
 const App = () => {
     return (
       <>
-        <MonthLayout />
+        <Header />
+        {/* <MonthLayout /> */}
+        <Home />
+        <Footer />
       </>
     );
   };

@@ -70,29 +70,25 @@ const InnerLayout = () => {
     };
 
     return (
-        <>
-            <Header />
-            <Container className="w-100">
-                <Title month={dateInfo.currentMonth}/>
+        <Container className="w-100">
+            <Title month={dateInfo.currentMonth}/>
 
-                <Row>
-                    <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
-                    <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
-                        {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
-                            : <EditCategoryTable setEditClicked={setEditClicked} />}
-                    </Col>
-                </Row>
+            <Row>
+                <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
+                <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
+                    {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} />
+                        : <EditCategoryTable setEditClicked={setEditClicked} />}
+                </Col>
+            </Row>
+        
+            <Row className="option-buttons text-center">
+                <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
+                <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
+            </Row>
             
-                <Row className="option-buttons text-center">
-                    <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
-                    <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
-                </Row>
-                
-                {viewClicked && <TransactionsTable {...transactionsTableProps} />}
-                {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
-            </Container>
-            <Footer />
-        </>
+            {viewClicked && <TransactionsTable {...transactionsTableProps} />}
+            {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
+        </Container>
     );
 };
 
