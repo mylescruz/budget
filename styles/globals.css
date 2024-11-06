@@ -136,6 +136,10 @@ a {
   margin: 1em 0em;
 }
 
+.income-table {
+  margin: 2em 0em;
+}
+
 /* Extra-Small Device */
 @media (max-width: 575.99px) {
   .categories-table, .edit-categories-table {
