@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-const useCategories = (month) => {
+const useCategories = (month, year) => {
     const [categories, setCategories] = useState([]);
     
     useEffect(() => {
         const getCategories = async () => {
             try {
-                const rsp = await fetch(`/api/categories/${month}`);
+                const rsp = await fetch(`/api/categories/${year}/${month}`);
                 const result = await rsp.json();
                 setCategories(result);
             } catch (err) {
@@ -15,11 +15,11 @@ const useCategories = (month) => {
         }
 
         getCategories();
-    }, [month]);
+    }, [month, year]);
 
     const postCategory = async (newCategory) => {
         try {
-            await fetch(`/api/categories/${month}`, {
+            await fetch(`/api/categories/${year}/${month}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -34,7 +34,7 @@ const useCategories = (month) => {
 
     const putCategories = async (updatedCategories) => {
         try {
-            await fetch(`/api/categories/${month}`, {
+            await fetch(`/api/categories/${year}/${month}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -49,7 +49,7 @@ const useCategories = (month) => {
 
     const deleteCategory = async (categoryToDelete) => {
         try {
-            await fetch(`/api/categories/${month}`, {
+            await fetch(`/api/categories/${year}/${month}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",

@@ -15,8 +15,7 @@ import Footer from "../footer";
 
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
-    const currentMonth = dateInfo.currentMonth;
-    const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions } = useTransactions(currentMonth);
+    const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);

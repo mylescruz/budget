@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-const useTransactions = (month) => {
+const useTransactions = (month, year) => {
     const [transactions, setTransactions] = useState([]);
 
     useEffect(() => {
         const getTransactions = async () => {
             try {
-                const rsp = await fetch(`/api/transactions/${month}`);
+                const rsp = await fetch(`/api/transactions/${year}/${month}`);
                 const result = await rsp.json();
                 setTransactions(result);
             } catch (err) {
@@ -14,14 +14,14 @@ const useTransactions = (month) => {
             }
         }
         getTransactions();
-    }, [month]);
+    }, [month, year]);
 
     const postTransaction = async (transaction) => {
         const date = new Date(transaction.date);
         const month = date.toLocaleDateString('en-US', {month: 'long'});
 
         try {
-            await fetch(`/api/transactions/${month}`, {
+            await fetch(`/api/transactions/${year}/${month}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -39,7 +39,7 @@ const useTransactions = (month) => {
         const month = date.toLocaleDateString('en-US', {month: 'long'});
 
         try {
-            await fetch(`/api/transactions/${month}`, {
+            await fetch(`/api/transactions/${year}/${month}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -57,7 +57,7 @@ const useTransactions = (month) => {
         const month = date.toLocaleDateString('en-US', {month: 'long'});
 
         try {
-            await fetch(`/api/transactions/${month}`, {
+            await fetch(`/api/transactions/${year}/${month}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
