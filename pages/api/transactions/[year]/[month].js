@@ -6,14 +6,21 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
 export default async function handler(req, res) {
-    const month = req?.query?.month;
+    const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
     const fileName = path.resolve(`./public/db/transactions/${year}/`, `${month}.json`);
 
     async function getTransactionData() {
-        const fileData = await readFile(fileName);
-        const transactions = JSON.parse(fileData);
+        let transactions = [];
+
+        if (fs.existsSync(fileName)) {
+            const fileData = await readFile(fileName);
+            transactions = JSON.parse(fileData);
+        } else {
+            writeFile(fileName, JSON.stringify(transactions, null, 2));
+        }
+
         return transactions;
     }
 
@@ -41,10 +48,8 @@ export default async function handler(req, res) {
             else
                 updatedTransactions = [...transactions, transaction];
             
-            writeFile(
-                fileName,
-                JSON.stringify(updatedTransactions, null, 2)
-            )
+            writeFile(fileName, JSON.stringify(updatedTransactions, null, 2));
+
             console.log(`POST /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(transaction);
         } catch (err) {
@@ -64,14 +69,9 @@ export default async function handler(req, res) {
                 else
                     return transaction;
             });
-
-            // const updatedTransactions = {};
-            // updatedTransactions[month] = updated;
             
-            writeFile(
-                fileName,
-                JSON.stringify(updatedTransactions, null, 2)
-            )
+            writeFile(fileName, JSON.stringify(updatedTransactions, null, 2));
+
             console.log(`PUT /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(edittedTransaction);
         } catch (err) {
@@ -88,14 +88,9 @@ export default async function handler(req, res) {
             const updatedTransactions = transactions.filter(transaction => {
                 return transaction.id !== transactionToDelete.id;
             });
-
-            // const updatedTransactions = {};
-            // updatedTransactions[month] = updated;
             
-            writeFile(
-                fileName,
-                JSON.stringify(updatedTransactions, null, 2)
-            )
+            writeFile(fileName, JSON.stringify(updatedTransactions, null, 2));
+
             console.log(`DELETE /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(transactionToDelete);
         } catch (err) {

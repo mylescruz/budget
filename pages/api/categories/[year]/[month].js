@@ -6,14 +6,25 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
 export default async function handler(req, res) {
-    const month = req?.query?.month;
+    const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
     const fileName = path.resolve(`./public/db/categories/${year}/`, `${month}.json`);
 
     async function getCategoriesData() {
-        const fileData = await readFile(fileName);
-        const categories = JSON.parse(fileData);
+        let categories;
+
+        if (fs.existsSync(fileName)) {
+            const fileData = await readFile(fileName);
+            categories = JSON.parse(fileData);
+        } else {
+            const defaultFile = path.resolve("./public/db/categories/", "default.json");
+            const fileData = await readFile(defaultFile);
+            categories = JSON.parse(fileData);
+
+            writeFile(fileName, JSON.stringify(categories, null, 2));
+        }
+        
         return categories;
     }
     
@@ -43,9 +54,7 @@ export default async function handler(req, res) {
 
             writeFile(
                 fileName,
-                JSON.stringify({
-                    categories: updatedCategories
-                }, null, 2)
+                JSON.stringify(updatedCategories, null, 2)
             )
             console.log(`POST /api/categories/${year}/${month} status: 200`);
             res.status(200).json(newCategory);
@@ -55,8 +64,6 @@ export default async function handler(req, res) {
     } else if (method === "PUT") {
         try {
             const edittedCategories = req?.body;
-            // const updatedCategories = {};
-            // updatedCategories[month] = edittedCategories;
 
             writeFile(
                 fileName,
@@ -78,14 +85,9 @@ export default async function handler(req, res) {
             const updatedCategories = categories.filter(category => {
                 return category.id !== categoryToDelete.id;
             });
-
-            // const updatedCategories = {};
-            // updatedCategories[month] = updated;
             
-            writeFile(
-                fileName,
-                JSON.stringify(updatedCategories, null, 2)
-            )
+            writeFile(fileName,JSON.stringify(updatedCategories, null, 2));
+            
             console.log(`DELETE /api/categories/${year}/${month} status: 200`);
             res.status(200).json(categoryToDelete);
         } catch (err) {
