@@ -1,24 +1,9 @@
+import usePaystubs from "@/hooks/usePaystubs";
 import IncomeTable from "./incomeTable";
+import dateInfo from "@/helpers/dateInfo";
 
 const IncomeLayout = () => {
-    const paystubs = [
-        {
-            id: 0,
-            date: "11/08/24",
-            company: "Google",
-            gross: 1000,
-            taxes: 250,
-            net: 750
-        },
-        {
-            id: 1,
-            date: "11/22/24",
-            company: "Google",
-            gross: 1000,
-            taxes: 250,
-            net: 750
-        }
-    ];
+    const { paystubs, addPaystub, updatePaystubs, deleteFromPaystubs } = usePaystubs(dateInfo.currentYear);
 
     return (
         <>

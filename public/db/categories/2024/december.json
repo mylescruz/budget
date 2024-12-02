@@ -1,0 +1,169 @@
+[
+  {
+    "id": 0,
+    "name": "Rent/Mortgage",
+    "color": "#3058e8",
+    "budget": 1000,
+    "actual": 1000,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 1,
+    "name": "Insurance",
+    "color": "#ff0000",
+    "budget": 200,
+    "actual": 200,
+    "fixed": true,
+    "hasSubcategory": true,
+    "subcategories": [
+      {
+        "id": 0,
+        "name": "Car Insurance",
+        "actual": 100
+      },
+      {
+        "id": 1,
+        "name": "Health Insurance",
+        "actual": 100
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Internet & TV",
+    "color": "#00ff00",
+    "budget": 50,
+    "actual": 50,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 3,
+    "name": "Phone",
+    "color": "#ffea00",
+    "budget": 50,
+    "actual": 50,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 4,
+    "name": "Subscriptions",
+    "color": "#c800ff",
+    "budget": 50,
+    "actual": 50,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 5,
+    "name": "Savings",
+    "color": "#00b3ff",
+    "budget": 500,
+    "actual": 500,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 6,
+    "name": "Investments",
+    "color": "#ff7b00",
+    "budget": 500,
+    "actual": 500,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 7,
+    "name": "Debts",
+    "color": "#0f8f18",
+    "budget": 500,
+    "actual": 500,
+    "fixed": true,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 8,
+    "name": "Utilities",
+    "color": "#ff80ca",
+    "budget": 100,
+    "actual": 0,
+    "fixed": false,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 9,
+    "name": "Car",
+    "color": "#000000",
+    "budget": 300,
+    "actual": 0,
+    "fixed": false,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 10,
+    "name": "Groceries",
+    "color": "#e2285f",
+    "budget": 300,
+    "actual": 0,
+    "fixed": false,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 11,
+    "name": "Necessities",
+    "color": "#c688ce",
+    "budget": 100,
+    "actual": 0,
+    "fixed": false,
+    "hasSubcategory": false,
+    "subcategories": []
+  },
+  {
+    "id": 12,
+    "name": "Guilt Free Spending",
+    "color": "#6cc17a",
+    "budget": 500,
+    "actual": 500,
+    "fixed": false,
+    "hasSubcategory": true,
+    "subcategories": [
+      {
+        "id": 0,
+        "name": "Food",
+        "actual": 0
+      },
+      {
+        "id": 1,
+        "name": "Entertainment",
+        "actual": 0
+      },
+      {
+        "id": 2,
+        "name": "Miscellaneous",
+        "actual": 0
+      },
+      {
+        "id": 3,
+        "name": "Family & Friends",
+        "actual": 0
+      },
+      {
+        "id": 4,
+        "name": "Travel",
+        "actual": 0
+      }
+    ]
+  }
+]
