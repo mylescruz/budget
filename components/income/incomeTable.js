@@ -1,4 +1,5 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
+import dateFormatter from "@/helpers/dateFormatter";
 import { useMemo } from "react";
 import { Table } from "react-bootstrap";
 
@@ -32,7 +33,7 @@ const IncomeTable = ({ paystubs }) => {
             <tbody>
                 {paystubs.map(paystub => (
                     <tr key={paystub.id}>
-                        <td>{paystub.date}</td>
+                        <td>{dateFormatter(paystub.date)}</td>
                         <td>{paystub.company}</td>
                         <td>{currencyFormatter.format(paystub.gross)}</td>
                         <td>{currencyFormatter.format(paystub.taxes)}</td>

@@ -62,7 +62,7 @@ const usePaystubs = (year) => {
         }
     };
 
-    const addPaystub = (newPaystub) => {
+    const addNewPaystub = (newPaystub) => {
         postPaystub(newPaystub);
         setPaystubs([...paystubs, newPaystub]);
     };
@@ -81,7 +81,7 @@ const usePaystubs = (year) => {
         setPaystubs(updatedPaystubs);
     };
     
-    return { paystubs, addPaystub, updatePaystubs, deleteFromPaystubs };
+    return { paystubs, addNewPaystub, updatePaystubs, deleteFromPaystubs };
 };
 
 export default usePaystubs;
