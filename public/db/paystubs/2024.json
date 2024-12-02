@@ -1,7 +1,7 @@
 [
   {
     "id": 0,
-    "date": "2024-11-08",
+    "date": "2024-12-01",
     "company": "Google",
     "gross": 1000,
     "taxes": 250,
@@ -9,7 +9,7 @@
   },
   {
     "id": 1,
-    "date": "2024-11-22",
+    "date": "2024-12-22",
     "company": "Google",
     "gross": 1250,
     "taxes": 250,
