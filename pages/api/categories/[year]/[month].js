@@ -35,7 +35,7 @@ export default async function handler(req, res) {
             return JSON.parse(categoriesData.Body.toString('utf-8'));
         } catch(err) {
             if (err.code === 'NoSuchKey') {
-                key = `mylescruz/categories/default.json`;
+                key = `mylescruz/categories/default_categories.json`;
 
                 const getDefaultParams = {
                     Bucket: BUCKET,
@@ -116,14 +116,23 @@ export default async function handler(req, res) {
             const categoryToDelete = req?.body;
             const categories = await getCategoriesData();
 
-            if (!categories)
-                res.status(400).send("Error: Request failed with status code 404: No categories to delete from");
-
             const updatedCategories = categories.filter(category => {
                 return category.id !== categoryToDelete.id;
             });
+
+            const key = `mylescruz/categories/${year}/${month}.json`;
+            const deleteParams = {
+                Bucket: BUCKET,
+                Key: key,
+                Body: JSON.stringify(updatedCategories, null, 2),
+                ContentType: "application/json"
+            };
             
-            writeFile(fileName,JSON.stringify(updatedCategories, null, 2));
+            try {
+                await s3.putObject(deleteParams).promise();
+            } catch(err) {
+                console.error("Error deleting category data from S3: ", err);
+            }
             
             console.log(`DELETE /api/categories/${year}/${month} status: 200`);
             res.status(200).json(categoryToDelete);
