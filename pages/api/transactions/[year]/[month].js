@@ -124,19 +124,24 @@ export default async function handler(req, res) {
             const transactionToDelete = req?.body;
             const transactions = await getTransactionData();
 
-            if (!transactions)
-                res.status(400).send("Error: Request failed with status code 404: No transactions to delete from");
-
             const updatedTransactions = transactions.filter(transaction => {
                 return transaction.id !== transactionToDelete.id;
             });
-            
-            writeFile(fileName, JSON.stringify(updatedTransactions, null, 2));
+
+            const deleteParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedTransactions, null, 2),
+                ContentType: "application/json"
+            };
+    
+            await s3.putObject(deleteParams).promise();
 
             console.log(`DELETE /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(transactionToDelete);
         } catch (err) {
             console.log("Error with delete transactions request: ", err);
+            res.status(400).send("Error: DELETE request failed with status code 404");
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
