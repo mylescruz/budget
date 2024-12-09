@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 
-const AddIncome = ({paystubs, addToPaystubs, addPaystubClicked, setAddPaystubClicked}) => {
+const AddPaystub = ({paystubs, addToPaystubs, addPaystubClicked, setAddPaystubClicked}) => {
     const emptyPaystub = {
         id: 0,
         date: dateInfo.currentDate,
@@ -89,4 +89,4 @@ const AddIncome = ({paystubs, addToPaystubs, addPaystubClicked, setAddPaystubCli
     );
 };
 
-export default AddIncome;
+export default AddPaystub;

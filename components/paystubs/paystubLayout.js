@@ -1,11 +1,11 @@
 import usePaystubs from "@/hooks/usePaystubs";
-import IncomeTable from "./incomeTable";
+import PaystubTable from "./paystubTable";
 import dateInfo from "@/helpers/dateInfo";
-import AddIncome from "./addIncome";
+import AddPaystub from "./addPaystub";
 import { Button, Col, Row } from "react-bootstrap";
 import { useState } from "react";
 
-const IncomeLayout = () => {
+const PaystubLayout = () => {
     const { paystubs, addNewPaystub } = usePaystubs(dateInfo.currentYear);
     const [addPaystubClicked, setAddPaystubClicked] = useState(false);
 
@@ -13,11 +13,11 @@ const IncomeLayout = () => {
         addNewPaystub(newPaystub);
     };
 
-    const addPaystub = () => {
+    const addPay = () => {
         setAddPaystubClicked(true);
     };
 
-    const addIncomeProps = {
+    const addPaystubProps = {
         paystubs: paystubs, 
         addToPaystubs: addToPaystubs,
         addPaystubClicked: addPaystubClicked,
@@ -27,14 +27,14 @@ const IncomeLayout = () => {
     return (
         <>
             <Row className="option-buttons text-center">
-                <Col><Button id="add-paystub-btn" variant="primary" onClick={addPaystub}>Add Paystub</Button></Col>
+                <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>
             </Row>
             
-            <IncomeTable paystubs={paystubs}/>
+            <PaystubTable paystubs={paystubs}/>
 
-            {addPaystubClicked && <AddIncome {...addIncomeProps} />}
+            {addPaystubClicked && <AddPaystub {...addPaystubProps} />}
         </>
     );
 };
 
-export default IncomeLayout;
+export default PaystubLayout;

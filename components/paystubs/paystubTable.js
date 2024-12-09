@@ -3,7 +3,7 @@ import dateFormatter from "@/helpers/dateFormatter";
 import { useMemo } from "react";
 import { Table } from "react-bootstrap";
 
-const IncomeTable = ({ paystubs }) => {
+const PaystubTable = ({ paystubs }) => {
     const footerValues = useMemo(() => {
         let totalGross = 0;
         let totalTaxes = 0;
@@ -54,4 +54,4 @@ const IncomeTable = ({ paystubs }) => {
     );
 };
 
-export default IncomeTable;
+export default PaystubTable;
