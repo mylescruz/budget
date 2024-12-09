@@ -1,10 +1,3 @@
-import path from "path";
-import fs from "fs";
-
-const { promisify } = require('util');
-const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
-
 const AWS = require('aws-sdk');
 
 AWS.config.update({
@@ -19,7 +12,6 @@ const BUCKET_NAME = process.env.BUCKET_NAME;
 export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
-    const fileName = path.resolve(`./public/db/paystubs/`, `${year}.json`);
     const userFolder = 'mylescruz';
     const key = `${userFolder}/paystubs/${year}.json`;
 
@@ -114,19 +106,24 @@ export default async function handler(req, res) {
             const paystubToDelete = req?.body;
             const paystubs = await getPaystubData();
 
-            if (!paystubs)
-                res.status(400).send("Error: Request failed with status code 404: No paystubs to delete from");
-
             const updatedPaystubs = paystubs.filter(paystub => {
                 return paystub.id !== paystubToDelete.id;
             });
-            
-            writeFile(fileName, JSON.stringify(updatedPaystubs, null, 2));
+
+            const deleteParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedPaystubs, null, 2),
+                ContentType: "application/json"
+            };
+
+            await s3.putObject(deleteParams).promise();
 
             console.log(`DELETE /api/paystubs/${year} status: 200`);
             res.status(200).json(paystubToDelete);
         } catch (err) {
-            console.log("Error with delete paystubs request: ", err);
+            console.log("Error with DELETE paystubs request: ", err);
+            res.status(404).send("Error: DELETE request failed with status code 404");
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
