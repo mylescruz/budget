@@ -5,36 +5,61 @@ const { promisify } = require('util');
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
+const AWS = require('aws-sdk');
+
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
+});
+
+const s3 = new AWS.S3();
+const BUCKET_NAME = process.env.BUCKET_NAME;
+
 export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
     const fileName = path.resolve(`./public/db/paystubs/`, `${year}.json`);
+    const userFolder = 'mylescruz';
+    const key = `${userFolder}/paystubs/${year}.json`;
 
     async function getPaystubData() {
-        let paystubs = [];
+        const getParams = {
+            Bucket: BUCKET_NAME,
+            Key: key
+        };
 
-        if (fs.existsSync(fileName)) {
-            const fileData = await readFile(fileName);
-            paystubs = JSON.parse(fileData);
-        } else {
-            writeFile(fileName, JSON.stringify(paystubs, null, 2));
+        try {
+            const paystubs = await s3.getObject(getParams).promise();
+            return JSON.parse(paystubs.Body.toString('utf-8'));
+        } catch (err) {
+            if (err.code === 'NoSuchKey') {
+                console.log(`Creating a new paystubs file for ${year}`);
+
+                const newPaystubs = [];
+                const createFileParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: key,
+                    Body: JSON.stringify(newPaystubs, null, 2),
+                    ContentType: "application/json"
+                };
+                await s3.putObject(createFileParams).promise();
+                return newPaystubs;
+            } else {
+                console.error("Error retrieving transactions from S3: ", err);
+            }
         }
-
-        return paystubs;
     }
 
     if (method === "GET") {
         try {
             const paystubs = await getPaystubData();
 
-            if (!paystubs) {
-                res.status(400).send("Error: Request failed with status code 404");
-            } else {
-                console.log(`GET /api/paystubs/${year} status: 200`);
-                res.status(200).send(JSON.stringify(paystubs, null, 2));
-            }
+            console.log(`GET /api/paystubs/${year} status: 200`);
+            res.status(200).send(JSON.stringify(paystubs, null, 2));
         } catch (err) {
-            console.log("Error with get paystubs request: ", err);
+            console.log("Error with GET paystubs request: ", err);
+            res.status(400).send("Error: GET request failed with status code 404");
         }
     } else if (method === "POST") {
         try {
