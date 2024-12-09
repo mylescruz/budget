@@ -5,6 +5,17 @@ const { promisify } = require('util');
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
+const AWS = require('aws-sdk');
+
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
+});
+
+const s3 = new AWS.S3();
+const BUCKET = process.env.BUCKET_NAME;
+
 export default async function handler(req, res) {
     const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
@@ -12,20 +23,31 @@ export default async function handler(req, res) {
     const fileName = path.resolve(`./public/db/categories/${year}/`, `${month}.json`);
 
     async function getCategoriesData() {
-        let categories;
+        let key = `mylescruz/categories/${year}/${month}.json`;
 
-        if (fs.existsSync(fileName)) {
-            const fileData = await readFile(fileName);
-            categories = JSON.parse(fileData);
-        } else {
-            const defaultFile = path.resolve("./public/db/categories/", "default.json");
-            const fileData = await readFile(defaultFile);
-            categories = JSON.parse(fileData);
+        const getParams = {
+            Bucket: BUCKET,
+            Key: key
+        };
 
-            writeFile(fileName, JSON.stringify(categories, null, 2));
+        try {
+            const categoriesData = await s3.getObject(getParams).promise();
+            return JSON.parse(categoriesData.Body.toString('utf-8'));
+        } catch(err) {
+            if (err.code === 'NoSuchKey') {
+                key = `mylescruz/categories/default.json`;
+
+                const getDefaultParams = {
+                    Bucket: BUCKET,
+                    Key: key
+                };
+
+                const defaultCategories = await s3.getObject(getDefaultParams).promise();
+                return JSON.parse(defaultCategories.Body.toString('utf-8'));
+            } else {
+                console.error("Error retrieving the categories data from S3: ", err);
+            }
         }
-        
-        return categories;
     }
     
     if (method === "GET") {
