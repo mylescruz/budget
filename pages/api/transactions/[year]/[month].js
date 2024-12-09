@@ -5,23 +5,50 @@ const { promisify } = require('util');
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 
+const AWS = require('aws-sdk');
+
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
+});
+
+const s3 = new AWS.S3();
+const BUCKET_NAME = process.env.BUCKET_NAME;
+
 export default async function handler(req, res) {
     const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
+    const userFolder = 'mylescruz';
     const fileName = path.resolve(`./public/db/transactions/${year}/`, `${month}.json`);
 
     async function getTransactionData() {
-        let transactions = [];
+        let key = `${userFolder}/transactions/${year}/${month}.json`;
 
-        if (fs.existsSync(fileName)) {
-            const fileData = await readFile(fileName);
-            transactions = JSON.parse(fileData);
-        } else {
-            writeFile(fileName, JSON.stringify(transactions, null, 2));
+        const getParams = {
+            Bucket: BUCKET_NAME,
+            Key: key
+        };
+
+        try {
+            const transactions = await s3.getObject(getParams).promise();
+            return JSON.parse(transactions.Body.toString('utf-8'));
+        } catch(err) {
+            if (err.code === 'NoSuchKey') {
+                const newTransactions = [];
+                const createFileParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: key,
+                    Body: JSON.stringify(newTransactions, null, 2),
+                    ContentType: "application/json"
+                };
+                await s3.putObject(createFileParams).promise();
+                return newTransactions;
+            } else {
+                console.error("Error retrieving transactions from S3: ", err);
+            }
         }
-
-        return transactions;
     }
 
     if (method === "GET") {
