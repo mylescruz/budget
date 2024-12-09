@@ -1,10 +1,3 @@
-import path from "path";
-import fs from "fs";
-
-const { promisify } = require('util');
-const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
-
 const AWS = require('aws-sdk');
 
 AWS.config.update({
@@ -21,11 +14,9 @@ export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
     const userFolder = 'mylescruz';
-    const fileName = path.resolve(`./public/db/transactions/${year}/`, `${month}.json`);
     const key = `${userFolder}/transactions/${year}/${month}.json`;
 
     async function getTransactionData() {
-
         const getParams = {
             Bucket: BUCKET_NAME,
             Key: key
@@ -57,25 +48,18 @@ export default async function handler(req, res) {
         try {
             const transactions = await getTransactionData();
 
-            if (!transactions) {
-                res.status(400).send("Error: Request failed with status code 404");
-            } else {
-                console.log(`GET /api/transactions/${year}/${month} status: 200`);
-                res.status(200).send(JSON.stringify(transactions, null, 2));
-            }
+            console.log(`GET /api/transactions/${year}/${month} status: 200`);
+            res.status(200).send(JSON.stringify(transactions, null, 2));
         } catch (err) {
-            console.log("Error with get transactions request: ", err);
+            console.log("Error with GET transactions request: ", err);
+            res.status(404).send("Error: GET request failed with status code 404");
         }
     } else if (method === "POST") {
         try {
-            const transaction = req?.body;
+            const newTransaction = req?.body;
             const transactions = await getTransactionData();
 
-            let updatedTransactions = [];
-            if (!transactions)
-                updatedTransactions = [transaction];
-            else
-                updatedTransactions = [...transactions, transaction];
+            const updatedTransactions = [...transactions, newTransaction];
 
             const postParams = {
                 Bucket: BUCKET_NAME,
@@ -87,10 +71,10 @@ export default async function handler(req, res) {
             await s3.putObject(postParams).promise();
 
             console.log(`POST /api/transactions/${year}/${month} status: 200`);
-            res.status(200).json(transaction);
+            res.status(200).json(newTransaction);
         } catch (err) {
-            console.log("Error with post transactions request: ", err);
-            res.status(400).json("Error with POST transaction");
+            console.log("Error with POST transactions request: ", err);
+            res.status(404).send("Error: POST request failed with status code 404");
         }
     } else if (method === "PUT") {
         try {
@@ -140,8 +124,8 @@ export default async function handler(req, res) {
             console.log(`DELETE /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(transactionToDelete);
         } catch (err) {
-            console.log("Error with delete transactions request: ", err);
-            res.status(400).send("Error: DELETE request failed with status code 404");
+            console.log("Error with DELETE transactions request: ", err);
+            res.status(404).send("Error: DELETE request failed with status code 404");
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
