@@ -1,10 +1,3 @@
-import path from "path";
-import fs from "fs";
-
-const { promisify } = require('util');
-const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
-
 const AWS = require('aws-sdk');
 
 AWS.config.update({
@@ -14,19 +7,21 @@ AWS.config.update({
 });
 
 const s3 = new AWS.S3();
-const BUCKET = process.env.BUCKET_NAME;
+const BUCKET_NAME = process.env.BUCKET_NAME;
+
+const defaultCategoriesFile = 'default_categories.json';
 
 export default async function handler(req, res) {
     const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
-    const fileName = path.resolve(`./public/db/categories/${year}/`, `${month}.json`);
+    const userFolder = 'mylescruz';
 
     async function getCategoriesData() {
-        let key = `mylescruz/categories/${year}/${month}.json`;
+        let key = `${userFolder}/categories/${year}/${month}.json`;
 
         const getParams = {
-            Bucket: BUCKET,
+            Bucket: BUCKET_NAME,
             Key: key
         };
 
@@ -35,7 +30,7 @@ export default async function handler(req, res) {
             return JSON.parse(categoriesData.Body.toString('utf-8'));
         } catch(err) {
             if (err.code === 'NoSuchKey') {
-                key = `mylescruz/categories/default_categories.json`;
+                key = `${userFolder}/categories/${defaultCategoriesFile}`;
 
                 const getDefaultParams = {
                     Bucket: BUCKET,
@@ -69,9 +64,9 @@ export default async function handler(req, res) {
             const categories = await getCategoriesData();
             const updatedCategories = [...categories, newCategory];
 
-            const key = `mylescruz/categories/${year}/${month}.json`;
+            const key = `${userFolder}/categories/${year}/${month}.json`;
             const postParams = {
-                Bucket: BUCKET,
+                Bucket: BUCKET_NAME,
                 Key: key,
                 Body: JSON.stringify(updatedCategories, null, 2),
                 ContentType: "application/json"
@@ -92,9 +87,9 @@ export default async function handler(req, res) {
         try {
             const edittedCategories = req?.body;
 
-            const key = `mylescruz/categories/${year}/${month}.json`;
+            const key = `${userFolder}/categories/${year}/${month}.json`;
             const putParams = {
-                Bucket: BUCKET,
+                Bucket: BUCKET_NAME,
                 Key: key,
                 Body: JSON.stringify(edittedCategories, null, 2),
                 ContentType: "application/json"
@@ -120,9 +115,9 @@ export default async function handler(req, res) {
                 return category.id !== categoryToDelete.id;
             });
 
-            const key = `mylescruz/categories/${year}/${month}.json`;
+            const key = `${userFolder}/categories/${year}/${month}.json`;
             const deleteParams = {
-                Bucket: BUCKET,
+                Bucket: BUCKET_NAME,
                 Key: key,
                 Body: JSON.stringify(updatedCategories, null, 2),
                 ContentType: "application/json"
