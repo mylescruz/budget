@@ -1,3 +1,4 @@
+import dateSorter from "@/helpers/dateSorter";
 import { useEffect, useState } from "react";
 
 const usePaystubs = (year) => {
@@ -8,7 +9,8 @@ const usePaystubs = (year) => {
             try {
                 const rsp = await fetch(`/api/paystubs/${year}`);
                 const result = await rsp.json();
-                setPaystubs(result);
+                const sortedPaystubs = dateSorter(result);
+                setPaystubs(sortedPaystubs);
             } catch (err) {
                 console.log("Error occured while retrieving paystubs: ", err);
             }
@@ -16,6 +18,11 @@ const usePaystubs = (year) => {
 
         getPaystubs();
     }, [year]);
+
+    const sortPaystubs = (paystubs) => {
+        const sortedPaystubs = dateSorter(paystubs);
+        setPaystubs(sortedPaystubs);
+    };
 
     const postPaystub = async (newPaystub) => {
         try {
@@ -64,12 +71,12 @@ const usePaystubs = (year) => {
 
     const addNewPaystub = (newPaystub) => {
         postPaystub(newPaystub);
-        setPaystubs([...paystubs, newPaystub]);
+        sortPaystubs([...paystubs, newPaystub]);
     };
 
     const updatePaystubs = (updatedPaystubs) => {
         putPaystubs(updatedPaystubs);
-        setPaystubs(updatedPaystubs);
+        sortPaystubs(updatedPaystubs);
     };
 
     const deleteFromPaystubs = (paystubToDelete) => {
@@ -78,7 +85,7 @@ const usePaystubs = (year) => {
         const updatedPaystubs = paystubs.filter(paystub => {
             return paystub.id !== paystubToDelete.id;
         });
-        setPaystubs(updatedPaystubs);
+        sortPaystubs(updatedPaystubs);
     };
     
     return { paystubs, addNewPaystub, updatePaystubs, deleteFromPaystubs };
