@@ -67,6 +67,33 @@ export default async function handler(req, res) {
             const paystubs = await getPaystubData();
             const updatedPaystubs = [...paystubs, newPaystub];
             
+            const postParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedPaystubs, null, 2),
+                ContentType: "application/json"
+            };
+
+            await s3.putObject(postParams).promise();
+
+            console.log(`POST /api/paystubs/${year} status: 200`);
+            res.status(200).json(newPaystub);
+        } catch (err) {
+            console.log("Error with POST paystubs request: ", err);
+            res.status(404).send("Error: POST request failed with status code 404");
+        }
+    } else if (method === "PUT") {
+        try {
+            const edittedPaystub = req?.body;
+            const paystubs = await getPaystubData();
+
+            const updatedPaystubs = paystubs.map(paystub => {
+                if (paystub.id === edittedPaystub.id)
+                    return edittedPaystub;
+                else
+                    return paystub;
+            });
+
             const putParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
@@ -76,33 +103,11 @@ export default async function handler(req, res) {
 
             await s3.putObject(putParams).promise();
 
-            console.log(`POST /api/paystubs/${year} status: 200`);
-            res.status(200).json(newPaystub);
-        } catch (err) {
-            console.log("Error with POST paystubs request: ", err);
-            res.status(400).send("Error: POST request failed with status code 404");
-        }
-    } else if (method === "PUT") {
-        try {
-            const edittedPaystub = req?.body;
-            const paystubs = await getPaystubData();
-
-            if (!paystubs)
-                res.status(400).send("Error: Request failed with status code 404: No paystubs to update");
-
-            const updatedPaystubs = paystubs.map(paystub => {
-                if (paystub.id === edittedPaystub.id)
-                    return edittedPaystub;
-                else
-                    return paystub;
-            });
-            
-            writeFile(fileName, JSON.stringify(updatedPaystubs, null, 2));
-
             console.log(`PUT /api/paystubs/${year} status: 200`);
             res.status(200).json(edittedPaystub);
         } catch (err) {
-            console.log("Error with put paystubs request: ", err);
+            console.log("Error with PUT paystubs request: ", err);
+            res.status(404).send("Error: PUT request failed with status code 404");
         }
     } else if (method === "DELETE") {
         try {
