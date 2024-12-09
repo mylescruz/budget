@@ -22,9 +22,9 @@ export default async function handler(req, res) {
     const method = req?.method;
     const userFolder = 'mylescruz';
     const fileName = path.resolve(`./public/db/transactions/${year}/`, `${month}.json`);
+    const key = `${userFolder}/transactions/${year}/${month}.json`;
 
     async function getTransactionData() {
-        let key = `${userFolder}/transactions/${year}/${month}.json`;
 
         const getParams = {
             Bucket: BUCKET_NAME,
@@ -74,13 +74,21 @@ export default async function handler(req, res) {
                 updatedTransactions = [transaction];
             else
                 updatedTransactions = [...transactions, transaction];
-            
-            writeFile(fileName, JSON.stringify(updatedTransactions, null, 2));
+
+            const postParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedTransactions, null, 2),
+                ContentType: "application/json"
+            };
+    
+            await s3.putObject(postParams).promise();
 
             console.log(`POST /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(transaction);
         } catch (err) {
             console.log("Error with post transactions request: ", err);
+            res.status(400).json("Error with POST transaction");
         }
     } else if (method === "PUT") {
         try {
