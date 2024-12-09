@@ -16,10 +16,9 @@ export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
     const userFolder = 'mylescruz';
+    const key = `${userFolder}/categories/${year}/${month}.json`;
 
     async function getCategoriesData() {
-        let key = `${userFolder}/categories/${year}/${month}.json`;
-
         const getParams = {
             Bucket: BUCKET_NAME,
             Key: key
@@ -30,11 +29,11 @@ export default async function handler(req, res) {
             return JSON.parse(categoriesData.Body.toString('utf-8'));
         } catch(err) {
             if (err.code === 'NoSuchKey') {
-                key = `${userFolder}/categories/${defaultCategoriesFile}`;
+                const defaultKey = `${userFolder}/categories/${defaultCategoriesFile}`;
 
                 const getDefaultParams = {
                     Bucket: BUCKET,
-                    Key: key
+                    Key: defaultKey
                 };
 
                 const defaultCategories = await s3.getObject(getDefaultParams).promise();
@@ -49,14 +48,11 @@ export default async function handler(req, res) {
         try {
             const categories = await getCategoriesData();
 
-            if (!categories) {
-                res.status(400).send("Error: Request failed with status code 404");
-            } else {
-                console.log(`GET /api/categories/${year}/${month} status: 200`);
-                res.status(200).send(JSON.stringify(categories, null, 2));
-            }
+            console.log(`GET /api/categories/${year}/${month} status: 200`);
+            res.status(200).send(JSON.stringify(categories, null, 2));
         } catch (err) {
             console.log("Error with get categories request: ", err);
+            res.status(404).send("Error: GET request failed with status code 404");
         }
     } else if (method === "POST") {
         try {
@@ -64,7 +60,6 @@ export default async function handler(req, res) {
             const categories = await getCategoriesData();
             const updatedCategories = [...categories, newCategory];
 
-            const key = `${userFolder}/categories/${year}/${month}.json`;
             const postParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
@@ -72,22 +67,18 @@ export default async function handler(req, res) {
                 ContentType: "application/json"
             };
 
-            try {
-                await s3.putObject(postParams).promise();
-            } catch(err) {
-                console.error("Error posting category data to S3: ", err);
-            }
+            await s3.putObject(postParams).promise();
             
             console.log(`POST /api/categories/${year}/${month} status: 200`);
             res.status(200).json(newCategory);
         } catch (err) {
-            console.log("Error with post categories request: ", err);
+            console.log("Error with POST categories request: ", err);
+            res.status(404).send("Error: POST request failed with status code 404");
         }
     } else if (method === "PUT") {
         try {
             const edittedCategories = req?.body;
 
-            const key = `${userFolder}/categories/${year}/${month}.json`;
             const putParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
@@ -95,16 +86,13 @@ export default async function handler(req, res) {
                 ContentType: "application/json"
             };
 
-            try {
-                await s3.putObject(putParams).promise();
-            } catch(err) {
-                console.error("Error putting category data to S3: ", err);
-            }
+            await s3.putObject(putParams).promise();
 
             console.log(`PUT /api/categories/${year}/${month} status: 200`);
             res.status(200).json(edittedCategories);
         } catch (err) {
-            console.log("Error with put categories request: ", err);
+            console.log("Error with PUT categories request: ", err);
+            res.status(404).send("Error: PUT request failed with status code 404");
         }
     } else if (method === "DELETE") {
         try {
@@ -115,7 +103,6 @@ export default async function handler(req, res) {
                 return category.id !== categoryToDelete.id;
             });
 
-            const key = `${userFolder}/categories/${year}/${month}.json`;
             const deleteParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
@@ -123,16 +110,13 @@ export default async function handler(req, res) {
                 ContentType: "application/json"
             };
             
-            try {
-                await s3.putObject(deleteParams).promise();
-            } catch(err) {
-                console.error("Error deleting category data from S3: ", err);
-            }
+            await s3.putObject(deleteParams).promise();
             
             console.log(`DELETE /api/categories/${year}/${month} status: 200`);
             res.status(200).json(categoryToDelete);
         } catch (err) {
-            console.log("Error with delete category request: ", err);
+            console.log("Error with DELETE category request: ", err);
+            res.status(404).send("Error: DELETE request failed with status code 404");
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
