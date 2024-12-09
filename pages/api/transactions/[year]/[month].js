@@ -36,6 +36,8 @@ export default async function handler(req, res) {
             return JSON.parse(transactions.Body.toString('utf-8'));
         } catch(err) {
             if (err.code === 'NoSuchKey') {
+                console.log(`Creating a new transactions file for ${month}`);
+
                 const newTransactions = [];
                 const createFileParams = {
                     Bucket: BUCKET_NAME,
@@ -95,22 +97,27 @@ export default async function handler(req, res) {
             const edittedTransaction = req?.body;
             const transactions = await getTransactionData();
 
-            if (!transactions)
-                res.status(400).send("Error: Request failed with status code 404: No transactions to update");
-
             const updatedTransactions = transactions.map(transaction => {
                 if (transaction.id === edittedTransaction.id)
                     return edittedTransaction;
                 else
                     return transaction;
             });
-            
-            writeFile(fileName, JSON.stringify(updatedTransactions, null, 2));
+
+            const putParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedTransactions, null, 2),
+                ContentType: "application/json"
+            };
+    
+            await s3.putObject(putParams).promise();
 
             console.log(`PUT /api/transactions/${year}/${month} status: 200`);
             res.status(200).json(edittedTransaction);
         } catch (err) {
-            console.log("Error with put transactions request: ", err);
+            console.log("Error with PUT transactions request: ", err);
+            res.status(404).send("Error: PUT request failed with status code 404");
         }
     } else if (method === "DELETE") {
         try {
