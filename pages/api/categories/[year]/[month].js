@@ -67,17 +67,22 @@ export default async function handler(req, res) {
         try {
             const newCategory = req?.body;
             const categories = await getCategoriesData();
+            const updatedCategories = [...categories, newCategory];
 
-            let updatedCategories = [];
-            if (!categories)
-                updatedCategories = [newCategory];
-            else
-                updatedCategories = [...categories, newCategory];
+            const key = `mylescruz/categories/${year}/${month}.json`;
+            const postParams = {
+                Bucket: BUCKET,
+                Key: key,
+                Body: JSON.stringify(updatedCategories, null, 2),
+                ContentType: "application/json"
+            };
 
-            writeFile(
-                fileName,
-                JSON.stringify(updatedCategories, null, 2)
-            )
+            try {
+                await s3.putObject(postParams).promise();
+            } catch(err) {
+                console.error("Error posting category data to S3: ", err);
+            }
+            
             console.log(`POST /api/categories/${year}/${month} status: 200`);
             res.status(200).json(newCategory);
         } catch (err) {
