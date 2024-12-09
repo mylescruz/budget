@@ -63,21 +63,24 @@ export default async function handler(req, res) {
         }
     } else if (method === "POST") {
         try {
-            const paystub = req?.body;
+            const newPaystub = req?.body;
             const paystubs = await getPaystubData();
-
-            let updatedPaystubs = [];
-            if (!paystubs)
-                updatedPaystubs = [paystub];
-            else
-                updatedPaystubs = [...paystubs, paystub];
+            const updatedPaystubs = [...paystubs, newPaystub];
             
-            writeFile(fileName, JSON.stringify(updatedPaystubs, null, 2));
+            const putParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedPaystubs, null, 2),
+                ContentType: "application/json"
+            };
+
+            await s3.putObject(putParams).promise();
 
             console.log(`POST /api/paystubs/${year} status: 200`);
-            res.status(200).json(paystub);
+            res.status(200).json(newPaystub);
         } catch (err) {
-            console.log("Error with post paystubs request: ", err);
+            console.log("Error with POST paystubs request: ", err);
+            res.status(400).send("Error: POST request failed with status code 404");
         }
     } else if (method === "PUT") {
         try {
