@@ -9,9 +9,9 @@ const App = () => {
     return (
       <>
         <Header />
-        {/* <MonthLayout /> */}
+        <MonthLayout />
         {/* <Home /> */}
-        <PaystubLayout />
+        {/* <PaystubLayout /> */}
         <Footer />
       </>
     );
