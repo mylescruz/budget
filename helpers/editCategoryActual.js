@@ -18,8 +18,10 @@ const editCategoryActual = (edittedTransaction, oldTransaction, categories) => {
 
                     return {...subcategory, actual: subcategoryTotal};
                 } else if (subcategory.name === edittedTransaction.category) {
-                    subcategoryTotal += edittedTransaction.amount;
-                    categoryTotal += edittedTransaction.amount;
+                    if (edittedTransaction.category !== oldTransaction.category) {
+                        subcategoryTotal += edittedTransaction.amount;
+                        categoryTotal += edittedTransaction.amount;
+                    }
 
                     return {...subcategory, actual: subcategoryTotal};
                 } else {
