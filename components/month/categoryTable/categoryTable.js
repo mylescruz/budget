@@ -1,14 +1,56 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import categorySorter from "@/helpers/categorySorter";
+import usePaystubs from "@/hooks/usePaystubs";
+import dateInfo from "@/helpers/dateInfo";
 
 const CategoryTable = ({ setEditClicked }) => {
     const { categories } = useContext(CategoriesContext);
+    const { paystubs } = usePaystubs(dateInfo.currentYear);
     const sortedCategories = categorySorter(categories);
+
+    const footerValues = useMemo(() => {
+        let totalActual = 0;
+        let totalBudget = 0;
+        categories.forEach(category => {
+            totalActual += category.actual;
+        });
+
+        paystubs.forEach(paystub => {
+            totalBudget += paystub.net
+        });
+
+        return {budget: totalBudget, actual: totalActual};
+    }, [categories, paystubs]);
+    // const footerValues = useMemo(() => {
+    //     let totalIncome = 0;
+    //     paystubs.map(paystub => {
+    //         const paystubDate = new Date(paystub.date);
+    //         const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
+    //         if (paystubMonth === dateInfo.currentMonth)
+    //             totalIncome += paystub.net;
+    //     });
+
+    //     let totalActual = 0;
+    //     let totalBudget = 0;
+    //     categories.forEach(category => {
+    //         if (category.name !== "Guilt Free Spending")
+    //             totalBudget += category.budget;
+
+    //         totalActual += category.actual;
+    //     });
+
+    //     const guiltFreeSpending = categories.find(category => {
+    //         return category.name === "Guilt Free Spending";
+    //     });
+    //     guiltFreeSpending.budget = totalIncome - totalBudget;
+
+    //     return {budget: totalBudget, actual: totalActual};
+    // }, [categories, paystubs]);
 
     const handleEdit = () => {
         setEditClicked(true);
@@ -45,7 +87,7 @@ const CategoryTable = ({ setEditClicked }) => {
                 
             </tbody>
             <tfoot>
-                <CategoryFooter />
+                <CategoryFooter footerValues={footerValues}/>
             </tfoot>
         </Table>
     );

@@ -5,8 +5,8 @@ import EditSubcategoryRow from "./editSubcategoryRow";
 
 const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => {
     const [edittedCategory, setEdittedCategory] = useState(category);
-
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
+    const dontDelete = "Guilt Free Spending";
 
     const handleBudgetInput = (e) => {
         const input = e.target.value;
@@ -72,17 +72,25 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
             <tr>
                 <th scope="row" className="text-nowrap">
                     <Row className="alignX w-100">
-                        <Col className="col-9"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
+                        {edittedCategory.name !== dontDelete ? 
+                            <Col className="col-9"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
+                            :
+                            <Col className="col-9 mt-2">{category.name}</Col>
+                        }
                         <Col className="col-1"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
                 </th>
-                {(edittedCategory.hasSubcategory && edittedCategory.fixed) ?
+                {((edittedCategory.hasSubcategory && edittedCategory.fixed) || edittedCategory.name === dontDelete) ?
                     <td><Form.Control type="number" name="budget" className="input-number" step="0.01" value={edittedCategory.budget} disabled /></td>
                     :
                     <td><Form.Control type="number" name="budget" className="input-number" min="0" max="100000" step="0.01" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
                 }
                 <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
-                <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
+                {edittedCategory.name !== dontDelete ? 
+                    <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
+                    :
+                    <td></td>
+                }
             </tr>
             {edittedCategory.hasSubcategory &&      
                 (edittedCategory.subcategories.map(subcategory => (

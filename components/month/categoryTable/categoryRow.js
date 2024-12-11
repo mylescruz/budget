@@ -7,7 +7,7 @@ import SubcategoryRow from "./subcategoryRow";
 const CategoryRow = ({ category }) => {
     const hasSubcategory = category.hasSubcategory;
     const [showSubcategories, setShowSubcategories] = useState(false);    
-
+    
     const dropdownSubcategories = () => {
         setShowSubcategories(!showSubcategories);
     };
@@ -30,9 +30,9 @@ const CategoryRow = ({ category }) => {
                         }
                     </Row>
                 </th>
-                <td className={styles.budgetRow}>{currencyFormatter.format(category.budget)}</td>
+                <td className={category.budget < 0 ? "text-danger fw-bold" : styles.budgetRow}>{currencyFormatter.format(category.budget)}</td>
                 <td>{currencyFormatter.format(category.actual)}</td>
-                <td className={difference < 0 ? "text-danger font-weight-bold" : ""}>{currencyFormatter.format(difference)}</td>
+                <td className={difference < 0 ? "text-danger fw-bold" : ""}>{currencyFormatter.format(difference)}</td>
             </tr>
             {showSubcategories &&
                 category.subcategories.map(subcategory => (
