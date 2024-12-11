@@ -34,10 +34,7 @@ const useTransactions = (month, year) => {
         }
     };
 
-    const putTransaction = async (edittedTransaction) => {
-        const date = new Date(edittedTransaction.date);
-        const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
-
+    const putTransaction = async (updatedTransactions) => {
         try {
             await fetch(`/api/transactions/${year}/${month}`, {
                 method: "PUT",
@@ -45,7 +42,7 @@ const useTransactions = (month, year) => {
                     Accept: "application.json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(edittedTransaction)
+                body: JSON.stringify(updatedTransactions)
             });
         } catch (err) {
             console.log("Error occurred while updating transactions: ", err);
@@ -76,14 +73,14 @@ const useTransactions = (month, year) => {
     };
 
     const updateTransaction = (edittedTransaction) => {
-        putTransaction(edittedTransaction);
-
         const updatedTransactions = transactions.map(transaction => {
             if (transaction.id === edittedTransaction.id)
                 return edittedTransaction;
             else
                 return transaction;
         });
+
+        putTransaction(updatedTransactions);
         setTransactions(updatedTransactions);
     };
 
