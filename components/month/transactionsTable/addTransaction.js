@@ -9,7 +9,7 @@ const AddTransaction = ({transactions, addToTransactions, addTransactionClicked,
     const { categories, updateCategories } = useContext(CategoriesContext);
 
     const firstNotFixed = categories.find(category => {
-        return !category.fixed;
+        return (!category.fixed && !category.hasSubcategory);
     });
 
     const emptyTransaction = {
