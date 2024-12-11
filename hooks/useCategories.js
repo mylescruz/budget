@@ -9,8 +9,7 @@ const useCategories = (month, year) => {
             try {
                 const rsp = await fetch(`/api/categories/${year}/${month}`);
                 const result = await rsp.json();
-                const sortedCategories = categorySorter(result);
-                setCategories(sortedCategories);
+                setCategories(result);
             } catch (err) {
                 console.log("Error occured while retrieving categories: ", err);
             }
@@ -66,14 +65,12 @@ const useCategories = (month, year) => {
 
     const addCategory = (newCategory) => {
         postCategory(newCategory);
-        const sortedCategories = categorySorter([...categories, newCategory]);
-        setCategories(sortedCategories);
+        setCategories([...categories, newCategory]);
     };
 
     const updateCategories = (updatedCategories) => {
         putCategories(updatedCategories);
-        const sortedCategories = categorySorter(updatedCategories);
-        setCategories(sortedCategories);
+        setCategories(updatedCategories);
     };
 
     const deleteFromCategories = (categoryToDelete) => {
@@ -82,8 +79,7 @@ const useCategories = (month, year) => {
         const updatedCategories = categories.filter(category => {
             return category.id !== categoryToDelete.id;
         });
-        const sortedCategories = categorySorter(updatedCategories);
-        setCategories(sortedCategories);
+        setCategories(updatedCategories);
     };
     
     return { categories, addCategory, updateCategories, deleteFromCategories };

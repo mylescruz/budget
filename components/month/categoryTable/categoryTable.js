@@ -4,9 +4,11 @@ import CategoryFooter from "./categoryFooter";
 import React, { useContext } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import categorySorter from "@/helpers/categorySorter";
 
 const CategoryTable = ({ setEditClicked }) => {
     const { categories } = useContext(CategoriesContext);
+    const sortedCategories = categorySorter(categories);
 
     const handleEdit = () => {
         setEditClicked(true);
@@ -31,13 +33,13 @@ const CategoryTable = ({ setEditClicked }) => {
                 <tr>
                     <th className="bg-secondary text-white" colSpan={4}>Fixed Expenses</th>
                 </tr>
-                {categories.map(category => (
+                {sortedCategories.map(category => (
                     (category.fixed && <FixedCategoryRow key={category.id} category={category} />)
                 ))}
                 <tr>
                     <th className="bg-secondary text-white" colSpan={4}>Variable Expenses</th>
                 </tr>
-                {categories.map(category => (
+                {sortedCategories.map(category => (
                     (!category.fixed && <CategoryRow key={category.id} category={category} />)
                 ))}
                 
