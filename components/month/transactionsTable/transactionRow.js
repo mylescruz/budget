@@ -55,7 +55,11 @@ const TransactionRow = ({ transaction, editOldTransaction, removeTransaction }) 
                 <td>{dateFormatter(transaction.date)}</td>
                 <td>{transaction.store}</td>
                 <td>{transaction.category}</td>
-                <td>{currencyFormatter.format(transaction.amount)}</td>
+                {transaction.amount > 0 ? 
+                        <td>{currencyFormatter.format(transaction.amount)}</td> 
+                        : 
+                        <td className="text-danger">({currencyFormatter.format(Math.abs(transaction.amount))})</td>
+                }
             </tr>
 
             { showDetails && <TransactionDetails {...transactionDetailsProps} />}

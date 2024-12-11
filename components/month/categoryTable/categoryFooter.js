@@ -37,7 +37,7 @@ const CategoryFooter = () => {
                 {totalDifference > 0 ? 
                     <span className="text-white">{currencyFormatter.format(totalDifference)}</span> 
                     : 
-                    <span className="text-danger fw-bold">({currencyFormatter.format(totalDifference)})</span>
+                    <span className="text-danger fw-bold">({currencyFormatter.format(Math.abs(totalDifference))})</span>
                 }
             </td>
         </tr>

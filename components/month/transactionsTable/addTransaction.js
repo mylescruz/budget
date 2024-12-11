@@ -85,7 +85,7 @@ const AddTransaction = ({transactions, addToTransactions, addTransactionClicked,
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="formInput">
-                        <Form.Control id="amount" className="h-100" type="number" min="0.01" step="0.01" placeholder="Amount" value={newTransaction.amount} onChange={handleNumInput} required />
+                        <Form.Control id="amount" className="h-100" type="number" step="0.01" placeholder="Amount" value={newTransaction.amount} onChange={handleNumInput} required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
