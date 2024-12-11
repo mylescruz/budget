@@ -1,3 +1,4 @@
+import categorySorter from "@/helpers/categorySorter";
 import { useEffect, useState } from "react";
 
 const useCategories = (month, year) => {
@@ -8,7 +9,8 @@ const useCategories = (month, year) => {
             try {
                 const rsp = await fetch(`/api/categories/${year}/${month}`);
                 const result = await rsp.json();
-                setCategories(result);
+                const sortedCategories = categorySorter(result);
+                setCategories(sortedCategories);
             } catch (err) {
                 console.log("Error occured while retrieving categories: ", err);
             }
@@ -64,12 +66,14 @@ const useCategories = (month, year) => {
 
     const addCategory = (newCategory) => {
         postCategory(newCategory);
-        setCategories([...categories, newCategory]);
+        const sortedCategories = categorySorter([...categories, newCategory]);
+        setCategories(sortedCategories);
     };
 
     const updateCategories = (updatedCategories) => {
         putCategories(updatedCategories);
-        setCategories(updatedCategories);
+        const sortedCategories = categorySorter(updatedCategories);
+        setCategories(sortedCategories);
     };
 
     const deleteFromCategories = (categoryToDelete) => {
@@ -78,7 +82,8 @@ const useCategories = (month, year) => {
         const updatedCategories = categories.filter(category => {
             return category.id !== categoryToDelete.id;
         });
-        setCategories(updatedCategories);
+        const sortedCategories = categorySorter(updatedCategories);
+        setCategories(sortedCategories);
     };
     
     return { categories, addCategory, updateCategories, deleteFromCategories };
