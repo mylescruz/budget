@@ -9,7 +9,7 @@ import dateInfo from "@/helpers/dateInfo";
 
 const EditCategoryTable = ({ setEditClicked }) => {
     const { categories, addCategory, updateCategories, deleteFromCategories } = useContext(CategoriesContext);
-    const { paystubs } = usePaystubs(dateInfo.currentYear);
+    const { paystubs, getTotalIncome } = usePaystubs(dateInfo.currentYear);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
 
@@ -30,7 +30,8 @@ const EditCategoryTable = ({ setEditClicked }) => {
             }
         });
 
-        const updatedCategories = updateGuiltFreeSpending(paystubs, updated);
+        const totalIncome = getTotalIncome(dateInfo.currentMonth);
+        const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
         updateCategories(updatedCategories);
     };
 

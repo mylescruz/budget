@@ -87,8 +87,21 @@ const usePaystubs = (year) => {
         });
         sortPaystubs(updatedPaystubs);
     };
+
+    const getTotalIncome = (givenMonth) => {
+        let totalIncome = 0;
+
+        paystubs.map(paystub => {
+            const paystubDate = new Date(paystub.date);
+            const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
+            if (paystubMonth === givenMonth)
+                totalIncome += paystub.net;
+        });
+        
+        return totalIncome;
+    }
     
-    return { paystubs, addNewPaystub, updatePaystubs, deleteFromPaystubs };
+    return { paystubs, addNewPaystub, updatePaystubs, deleteFromPaystubs, getTotalIncome };
 };
 
 export default usePaystubs;
