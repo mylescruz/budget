@@ -18,7 +18,7 @@ const useTransactions = (month, year) => {
 
     const postTransaction = async (transaction) => {
         const date = new Date(transaction.date);
-        const month = date.toLocaleDateString('en-US', {month: 'long'});
+        const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
             await fetch(`/api/transactions/${year}/${month}`, {
@@ -36,7 +36,7 @@ const useTransactions = (month, year) => {
 
     const putTransaction = async (edittedTransaction) => {
         const date = new Date(edittedTransaction.date);
-        const month = date.toLocaleDateString('en-US', {month: 'long'});
+        const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
             await fetch(`/api/transactions/${year}/${month}`, {
@@ -54,7 +54,7 @@ const useTransactions = (month, year) => {
 
     const deleteTransaction = async (transaction) => {
         const date = new Date(transaction.date);
-        const month = date.toLocaleDateString('en-US', {month: 'long'});
+        const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
             await fetch(`/api/transactions/${year}/${month}`, {

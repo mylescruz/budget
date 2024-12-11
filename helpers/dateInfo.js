@@ -7,7 +7,7 @@ const endOfMonth = new Date(currentYear, currentMonth, 0);
 
 const dateInfo = {
     currentDate: localDate.toISOString().split('T')[0],
-    currentMonth: currentDate.toLocaleDateString('en-US', {month: 'long'}),
+    currentMonth: currentDate.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'}),
     currentYear: currentYear,
     minDate: startOfMonth.toISOString().split('T')[0],
     maxDate: endOfMonth.toISOString().split('T')[0]
