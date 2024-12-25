@@ -7,6 +7,7 @@ const AddPaystub = ({paystubs, addToPaystubs, addPaystubClicked, setAddPaystubCl
         id: 0,
         date: dateInfo.currentDate,
         company: "",
+        description: "",
         gross: 0,
         taxes: 0,
         net: 0
@@ -61,7 +62,11 @@ const AddPaystub = ({paystubs, addToPaystubs, addPaystubClicked, setAddPaystubCl
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Company</Form.Label>
-                        <Form.Control id="company" className="h-100" type="text" value={paystub.store} onChange={handleInput} required />
+                        <Form.Control id="company" className="h-100" type="text" value={paystub.company} onChange={handleInput} required />
+                    </Form.Group>
+                    <Form.Group className="formInput">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control id="description" className="h-100" type="text" value={paystub.description} placeholder="Optional" onChange={handleInput} />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Gross Income</Form.Label>

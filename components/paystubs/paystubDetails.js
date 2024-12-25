@@ -15,6 +15,7 @@ const PaystubDetails = ({ paystub, showDetails, setShowDetails }) => {
             <Modal.Body>
                 <Row className="m-2">Date: {dateFormatter(paystub.date)}</Row>
                 <Row className="m-2">Company: {paystub.company}</Row>
+                <Row className="m-2">Description: {paystub.description}</Row>
                 <Row className="m-2">Net Pay: {currencyFormatter.format(paystub.net)}</Row>
                 <Row className="m-2">Taxes: {currencyFormatter.format(paystub.taxes)}</Row>
                 <Row className="m-2">Gross Pay: {currencyFormatter.format(paystub.gross)}</Row>

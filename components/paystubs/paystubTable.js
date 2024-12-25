@@ -24,7 +24,7 @@ const PaystubTable = ({ paystubs }) => {
         <Table bordered className="w-75 mx-auto income-table">
             <thead className="table-dark">
                 <tr>
-                    <th scope="col">Date Paid</th>
+                    <th scope="col">Date</th>
                     <th scope="col">Company</th>
                     <th scope="col">Gross Income</th>
                     <th scope="col">Taxes Deducted</th>
