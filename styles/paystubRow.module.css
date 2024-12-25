@@ -1,0 +1,10 @@
+.cell {
+    max-width: 125px;
+    text-wrap: nowrap;
+    overflow-x: scroll;
+
+    &:hover {
+        cursor: pointer;
+        font-weight: bold;
+    }
+}

@@ -2,6 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useMemo } from "react";
 import { Table } from "react-bootstrap";
+import PaystubRow from "./paystubRow";
 
 const PaystubTable = ({ paystubs }) => {
     const footerValues = useMemo(() => {
@@ -32,13 +33,7 @@ const PaystubTable = ({ paystubs }) => {
             </thead>
             <tbody>
                 {paystubs.map(paystub => (
-                    <tr key={paystub.id}>
-                        <td>{dateFormatter(paystub.date)}</td>
-                        <td>{paystub.company}</td>
-                        <td>{currencyFormatter.format(paystub.gross)}</td>
-                        <td>{currencyFormatter.format(paystub.taxes)}</td>
-                        <td>{currencyFormatter.format(paystub.net)}</td>
-                    </tr>
+                    <PaystubRow key={paystub.id} paystub={paystub} />
                 ))}
             </tbody>
             <tfoot>

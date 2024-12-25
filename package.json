@@ -16,7 +16,7 @@
     "fs": "^0.0.1-security",
     "json-server": "^1.0.0-beta.3",
     "mini-css-extract-plugin": "^2.9.2",
-    "next": "14.2.13",
+    "next": "^14.2.21",
     "react": "^18",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18",

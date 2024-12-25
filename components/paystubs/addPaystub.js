@@ -60,7 +60,7 @@ const AddPaystub = ({paystubs, addToPaystubs, addPaystubClicked, setAddPaystubCl
                         <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={paystub.date} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
-                        <Form.Label>Company worked for</Form.Label>
+                        <Form.Label>Company</Form.Label>
                         <Form.Control id="company" className="h-100" type="text" value={paystub.store} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
