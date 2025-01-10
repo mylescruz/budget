@@ -29,15 +29,25 @@ export default async function handler(req, res) {
             return JSON.parse(categoriesData.Body.toString('utf-8'));
         } catch(err) {
             if (err.code === 'NoSuchKey') {
-                const defaultKey = `${userFolder}/categories/${defaultCategoriesFile}`;
+                const defaultKey = `default/${defaultCategoriesFile}`;
 
                 const getDefaultParams = {
-                    Bucket: BUCKET,
+                    Bucket: BUCKET_NAME,
                     Key: defaultKey
                 };
 
                 const defaultCategories = await s3.getObject(getDefaultParams).promise();
-                return JSON.parse(defaultCategories.Body.toString('utf-8'));
+                const newCategories = JSON.parse(defaultCategories.Body.toString('utf-8'));
+
+                const createFileParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: key,
+                    Body: JSON.stringify(newCategories, null, 2),
+                    ContentType: "application/json"
+                };
+                await s3.putObject(createFileParams).promise();
+
+                return newCategories;
             } else {
                 console.error("Error retrieving the categories data from S3: ", err);
             }
