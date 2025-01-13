@@ -2,7 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
-const PaystubDetails = ({ paystub, showDetails, setShowDetails, showEdit, setShowEdit }) => {
+const PaystubDetails = ({ paystub, showDetails, setShowDetails, showEdit, setShowEdit, showDelete, setShowDelete }) => {
     const closeDetails = () => {
         setShowDetails(false);
     };
@@ -10,6 +10,11 @@ const PaystubDetails = ({ paystub, showDetails, setShowDetails, showEdit, setSho
     const openEdit = () => {
         setShowDetails(false);
         setShowEdit(true);
+    };
+
+    const openDelete = () => {
+        setShowDetails(false);
+        setShowDelete(true);
     };
 
     return (
@@ -27,7 +32,7 @@ const PaystubDetails = ({ paystub, showDetails, setShowDetails, showEdit, setSho
             </Modal.Body> 
             <Modal.Footer>
                 <Row>
-                    <Col><Button variant="danger">Delete</Button></Col>
+                    <Col><Button variant="danger" onClick={openDelete}>Delete</Button></Col>
                     <Col><Button variant="info" onClick={openEdit}>Edit</Button></Col>
                 </Row>
             </Modal.Footer>

@@ -6,7 +6,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import { useState } from "react";
 
 const PaystubLayout = () => {
-    const { paystubs, addNewPaystub, updatePaystub } = usePaystubs(dateInfo.currentYear);
+    const { paystubs, addNewPaystub, updatePaystub, deleteFromPaystubs } = usePaystubs(dateInfo.currentYear);
     const [addPaystubClicked, setAddPaystubClicked] = useState(false);
 
     const addToPaystubs = (newPaystub) => {
@@ -34,7 +34,7 @@ const PaystubLayout = () => {
                 <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>
             </Row>
             
-            <PaystubTable paystubs={paystubs} editOldPaystub={editOldPaystub} />
+            <PaystubTable paystubs={paystubs} editOldPaystub={editOldPaystub} deleteFromPaystubs={deleteFromPaystubs} />
 
             {addPaystubClicked && <AddPaystub {...addPaystubProps} />}
         </>

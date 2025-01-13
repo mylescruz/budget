@@ -4,10 +4,12 @@ import { useState } from "react";
 import PaystubDetails from "./paystubDetails";
 import styles from "@/styles/paystubRow.module.css";
 import EditPaystub from "./editPaystub";
+import DeletePaystub from "./deletePaystub";
 
-const PaystubRow = ({ paystub, editOldPaystub }) => {
+const PaystubRow = ({ paystub, editOldPaystub, deleteFromPaystubs }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
 
     const openDetails = () => {
         setShowDetails(true);
@@ -18,7 +20,9 @@ const PaystubRow = ({ paystub, editOldPaystub }) => {
         showDetails: showDetails,
         setShowDetails: setShowDetails,
         showEdit: showEdit,
-        setShowEdit: setShowEdit
+        setShowEdit: setShowEdit,
+        showDelete: showDelete,
+        setShowDelete: setShowDelete
     };
 
     const editPaystubProps = {
@@ -27,7 +31,15 @@ const PaystubRow = ({ paystub, editOldPaystub }) => {
         showEdit: showEdit,
         setShowEdit: setShowEdit,
         setShowDetails: setShowDetails
-    }
+    };
+
+    const deletePaystubProps = {
+        paystub: paystub,
+        deleteFromPaystubs: deleteFromPaystubs,
+        showDelete: showDelete,
+        setShowDelete: setShowDelete,
+        setShowDetails: setShowDetails
+    };
 
     return (
         <>
@@ -41,6 +53,7 @@ const PaystubRow = ({ paystub, editOldPaystub }) => {
 
             { showDetails && <PaystubDetails {...paystubDetailsProps} />}
             { showEdit && <EditPaystub {...editPaystubProps} /> }
+            { showDelete && <DeletePaystub {...deletePaystubProps} /> }
         </>
     );
 };

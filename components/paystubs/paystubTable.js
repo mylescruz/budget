@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Table } from "react-bootstrap";
 import PaystubRow from "./paystubRow";
 
-const PaystubTable = ({ paystubs, editOldPaystub }) => {
+const PaystubTable = ({ paystubs, editOldPaystub, deleteFromPaystubs }) => {
     const footerValues = useMemo(() => {
         let totalGross = 0;
         let totalTaxes = 0;
@@ -32,7 +32,7 @@ const PaystubTable = ({ paystubs, editOldPaystub }) => {
             </thead>
             <tbody>
                 {paystubs.map(paystub => (
-                    <PaystubRow key={paystub.id} paystub={paystub} editOldPaystub={editOldPaystub} />
+                    <PaystubRow key={paystub.id} paystub={paystub} editOldPaystub={editOldPaystub} deleteFromPaystubs={deleteFromPaystubs} />
                 ))}
             </tbody>
             <tfoot>
