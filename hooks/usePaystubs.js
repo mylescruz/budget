@@ -19,11 +19,6 @@ const usePaystubs = (year) => {
         getPaystubs();
     }, [year]);
 
-    const sortPaystubs = (paystubs) => {
-        const sortedPaystubs = dateSorter(paystubs);
-        setPaystubs(sortedPaystubs);
-    };
-
     const postPaystub = async (newPaystub) => {
         try {
             await fetch(`/api/paystubs/${year}`, {
@@ -39,7 +34,7 @@ const usePaystubs = (year) => {
         }
     };
 
-    const putPaystubs = async (updatedPaystubs) => {
+    const putPaystub = async (edittedPaystub) => {
         try {
             await fetch(`/api/paystubs/${year}`, {
                 method: "PUT",
@@ -47,7 +42,7 @@ const usePaystubs = (year) => {
                     Accept: "application.json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(updatedPaystubs)
+                body: JSON.stringify(edittedPaystub)
             });
         } catch (err) {
             console.log("Error occurred while updating paystubs: ", err);
@@ -71,12 +66,20 @@ const usePaystubs = (year) => {
 
     const addNewPaystub = (newPaystub) => {
         postPaystub(newPaystub);
-        sortPaystubs([...paystubs, newPaystub]);
+        setPaystubs([...paystubs, newPaystub]);
     };
 
-    const updatePaystubs = (updatedPaystubs) => {
-        putPaystubs(updatedPaystubs);
-        sortPaystubs(updatedPaystubs);
+    const updatePaystub = (edittedPaystub) => {
+        putPaystub(edittedPaystub);
+
+        const updatedPaystubs = paystubs.map(paystub => {
+            if (paystub.id === edittedPaystub.id)
+                return edittedPaystub;
+            else
+                return paystub;
+        });
+
+        setPaystubs(updatedPaystubs);
     };
 
     const deleteFromPaystubs = (paystubToDelete) => {
@@ -85,7 +88,7 @@ const usePaystubs = (year) => {
         const updatedPaystubs = paystubs.filter(paystub => {
             return paystub.id !== paystubToDelete.id;
         });
-        sortPaystubs(updatedPaystubs);
+        setPaystubs(updatedPaystubs);
     };
 
     const getTotalIncome = (givenMonth) => {
@@ -101,7 +104,7 @@ const usePaystubs = (year) => {
         return totalIncome;
     }
     
-    return { paystubs, addNewPaystub, updatePaystubs, deleteFromPaystubs, getTotalIncome };
+    return { paystubs, addNewPaystub, updatePaystub, deleteFromPaystubs, getTotalIncome };
 };
 
 export default usePaystubs;
