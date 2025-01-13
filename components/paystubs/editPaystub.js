@@ -1,9 +1,8 @@
-import currencyFormatter from "@/helpers/currencyFormatter";
 import dateInfo from "@/helpers/dateInfo";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
-const EditPaystub = ({ paystub, showEdit, setShowEdit, setShowDetails }) => {
+const EditPaystub = ({ paystub, editOldPaystub, showEdit, setShowEdit, setShowDetails }) => {
     const [edittedPaystub, setEdittedPaystub] = useState(paystub);
 
     const handleInput = (e) => {
@@ -27,7 +26,8 @@ const EditPaystub = ({ paystub, showEdit, setShowEdit, setShowDetails }) => {
     const editPaystub = (e) => {
         e.preventDefault();
 
-        closeEdit();     
+        editOldPaystub(edittedPaystub);
+        setShowEdit(false);  
     };
 
     return (

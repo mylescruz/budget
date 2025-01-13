@@ -5,7 +5,7 @@ import PaystubDetails from "./paystubDetails";
 import styles from "@/styles/paystubRow.module.css";
 import EditPaystub from "./editPaystub";
 
-const PaystubRow = ({ paystub }) => {
+const PaystubRow = ({ paystub, editOldPaystub }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
 
@@ -23,6 +23,7 @@ const PaystubRow = ({ paystub }) => {
 
     const editPaystubProps = {
         paystub: paystub,
+        editOldPaystub: editOldPaystub,
         showEdit: showEdit,
         setShowEdit: setShowEdit,
         setShowDetails: setShowDetails
