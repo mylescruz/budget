@@ -12,6 +12,7 @@ const Header = () => {
                 <Nav.Link as={Link} href="/">Home</Nav.Link>
                 <Nav.Link as={Link} href="/budget">Budget</Nav.Link>
                 <Nav.Link as={Link} href="/income">Income</Nav.Link>
+                <Nav.Link as={Link} href="/history">History</Nav.Link>
             </Nav>
             </Navbar.Collapse>
         </Container>
