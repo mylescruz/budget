@@ -2,7 +2,7 @@ import dateInfo from "@/helpers/dateInfo";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
-const EditPaystub = ({ paystub, editOldPaystub, showEdit, setShowEdit, setShowDetails }) => {
+const EditPaystub = ({ paystub, updatePaystub, showEdit, setShowEdit, setShowDetails }) => {
     const [edittedPaystub, setEdittedPaystub] = useState(paystub);
 
     const handleInput = (e) => {
@@ -27,8 +27,8 @@ const EditPaystub = ({ paystub, editOldPaystub, showEdit, setShowEdit, setShowDe
         e.preventDefault();
 
         edittedPaystub.taxes = edittedPaystub.gross-edittedPaystub.net;
-        
-        editOldPaystub(edittedPaystub);
+
+        updatePaystub(edittedPaystub);
         setShowEdit(false);  
     };
 

@@ -2,7 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
-const PaystubDetails = ({ paystub, showDetails, setShowDetails, showEdit, setShowEdit, showDelete, setShowDelete }) => {
+const PaystubDetails = ({ paystub, showDetails, setShowDetails, setShowEdit, setShowDelete }) => {
     const closeDetails = () => {
         setShowDetails(false);
     };
