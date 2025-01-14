@@ -26,6 +26,8 @@ const EditPaystub = ({ paystub, editOldPaystub, showEdit, setShowEdit, setShowDe
     const editPaystub = (e) => {
         e.preventDefault();
 
+        edittedPaystub.taxes = edittedPaystub.gross-edittedPaystub.net;
+        
         editOldPaystub(edittedPaystub);
         setShowEdit(false);  
     };
