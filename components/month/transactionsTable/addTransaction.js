@@ -5,7 +5,7 @@ import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const AddTransaction = ({transactions, addToTransactions, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
+const AddTransaction = ({transactions, addNewTransaction, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, updateCategories } = useContext(CategoriesContext);
 
     const firstNotFixed = categories.find(category => {
@@ -44,7 +44,7 @@ const AddTransaction = ({transactions, addToTransactions, addTransactionClicked,
             maxID = Math.max(...transactions.map(trans => trans.id));
 
         newTransaction.id = maxID + 1;
-        addToTransactions(newTransaction);
+        addNewTransaction(newTransaction);
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
         updateCategories(updatedCategories);

@@ -10,8 +10,6 @@ import useTransactions from "@/hooks/useTransactions";
 import dateInfo from "@/helpers/dateInfo";
 import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
-import Header from "../header";
-import Footer from "../footer";
 
 const InnerLayout = () => {
     const { categories, updateCategories } = useContext(CategoriesContext);
@@ -20,14 +18,6 @@ const InnerLayout = () => {
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
-
-    const addToTransactions = (newTransaction) => {
-        addNewTransaction(newTransaction);
-    };
-
-    const editOldTransaction = (edittedTransaction) => {
-        updateTransaction(edittedTransaction);
-    };
 
     const removeTransaction = (transactionToDelete) => {
         deleteFromTransactions(transactionToDelete);
@@ -56,13 +46,13 @@ const InnerLayout = () => {
 
     const transactionsTableProps = {
         transactions: transactions,
-        editOldTransaction: editOldTransaction,
+        updateTransaction: updateTransaction,
         removeTransaction: removeTransaction
     };
 
     const addTransactionsProps = {
         transactions: transactions,
-        addToTransactions: addToTransactions,
+        addNewTransaction: addNewTransaction,
         addTransactionClicked: addTransactionClicked,
         setAddTransactionClicked: setAddTransactionClicked,
         showTransactions: showTransactions

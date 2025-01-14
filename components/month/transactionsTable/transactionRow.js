@@ -6,7 +6,7 @@ import styles from "@/styles/transactionRow.module.css";
 import DeleteTransaction from "./deleteTransactions";
 import EditTransaction from "./editTransaction";
 
-const TransactionRow = ({ transaction, editOldTransaction, removeTransaction }) => {
+const TransactionRow = ({ transaction, updateTransaction, removeTransaction }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
@@ -38,7 +38,7 @@ const TransactionRow = ({ transaction, editOldTransaction, removeTransaction }) 
         showEdit: showEdit,
         setShowEdit: setShowEdit,
         setShowDetails: setShowDetails,
-        editOldTransaction: editOldTransaction
+        updateTransaction: updateTransaction
     };
 
     const deleteTransactionProps = {
