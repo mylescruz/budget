@@ -18,16 +18,6 @@ const useCategories = (month, year) => {
         getCategories();
     }, [month, year]);
 
-    const getSummary = async (summaryYear) => {
-        try {
-            const rsp = await fetch(`/api/categories/${summaryYear}/summary`);
-            const result = await rsp.json();
-            return result;
-        } catch (err) {
-            console.log("Error occurred while getting the category summary: ", err);
-        }
-    };
-
     const postCategory = async (newCategory) => {
         try {
             await fetch(`/api/categories/${year}/${month}`, {
@@ -91,12 +81,8 @@ const useCategories = (month, year) => {
         });
         setCategories(updatedCategories);
     };
-
-    const getCategoriesSummary = (summaryYear) => {
-        return getSummary(summaryYear);
-    };
     
-    return { categories, addCategory, updateCategories, deleteFromCategories, getCategoriesSummary };
+    return { categories, addCategory, updateCategories, deleteFromCategories };
 };
 
 export default useCategories;
