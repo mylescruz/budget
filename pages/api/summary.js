@@ -76,6 +76,33 @@ export default async function handler(req, res) {
             console.log("Error with POST summary request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");
         }
+    } else if (method === "PUT") {
+        try {
+            const edittedSummary = req?.body;
+            const summary = await getCategoriesSummary();
+
+            const updatedSummary = summary.map(currentSummary => {
+                if (currentSummary.id === edittedSummary.id)
+                    return edittedSummary;
+                else
+                    return currentSummary;
+            });
+
+            const putParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedSummary, null, 2),
+                ContentType: "application/json"
+            };
+
+            await s3.putObject(putParams).promise();
+
+            console.log(`PUT /api/summary status: 200`);
+            res.status(200).json(edittedSummary);
+        } catch (err) {
+            console.log("Error with PUT summary request: ", err);
+            res.status(404).send("Error: PUT request failed with status code 404");
+        }
     } else {
         res.status(405).end(`Method ${method} not allowed`);
     }

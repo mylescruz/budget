@@ -32,13 +32,41 @@ const useSummary = () => {
         }
     };
 
+    const putSummary = async (edittedSummary) => {
+        try {
+            await fetch(`/api/summary`, {
+                method: "POST",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(edittedSummary)
+            });
+        } catch (err) {
+            console.log("Error occurred while editting a month's summary: ", err);
+        }
+    };
+
     const addToSummary = (newSummary) => {
         postSummary(newSummary);
 
         setSummary([...summary, newSummary]);
     };
 
-    return { summary, addToSummary };
+    const editSummary = (edittedSummary) => {
+        putSummary(edittedSummary);
+
+        const updatedSummary = summary.map(currentSummary => {
+            if (currentSummary.id === edittedSummary.id)
+                return edittedSummary;
+            else
+                return currentSummary;
+        });
+        
+        setSummary(updatedSummary);
+    };
+
+    return { summary, addToSummary, editSummary };
 };
 
 export default useSummary;
