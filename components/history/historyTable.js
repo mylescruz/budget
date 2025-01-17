@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Table } from "react-bootstrap";
 
 const HistoryTable = () => {
-    const { summary } = useSummary(dateInfo.currentYear);
+    const { summary } = useSummary();
 
     return (
         <Table bordered className="w-75 mx-auto">
@@ -13,15 +13,16 @@ const HistoryTable = () => {
                     <th scope="col">Month</th>
                     <th scope="col">Budget</th>
                     <th scope="col">Actual</th>
-                    <th scope="col">Difference</th>
+                    <th scope="col">Leftover</th>
                 </tr>
             </thead>
             <tbody>
                 {summary.map(month => (
-                    <tr key={month.month}>
-                        <td>{month.month}</td>
+                    <tr key={month.id}>
+                        <td>{month.month} {month.year}</td>
                         <td>{month.budget}</td>
-                        <td>{month.actual}</td>
+                        <td>{month.spent}</td>
+                        <td>{month.leftover}</td>
                     </tr>
                 ))}                
             </tbody>

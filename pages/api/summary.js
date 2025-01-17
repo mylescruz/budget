@@ -10,10 +10,9 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 export default async function handler(req, res) {
-    const year = req?.query?.year;
     const method = req?.method;
     const userFolder = 'mylescruz';
-    const key = `${userFolder}/categories/${year}/summary.json`;
+    const key = `${userFolder}/summary.json`;
 
     async function getCategoriesSummary() {
         const getParams = {
@@ -26,7 +25,7 @@ export default async function handler(req, res) {
             return JSON.parse(categoriesSummary.Body.toString('utf-8'));
         } catch (err) {
             if (err.code === 'NoSuchKey') {
-                console.log(`Creating a new summary file for ${year}`);
+                console.log(`Creating a new summary file for ${userFolder}`);
 
                 const newSummary = [];
 
@@ -50,7 +49,7 @@ export default async function handler(req, res) {
         try {
             const summary = await getCategoriesSummary();
 
-            console.log(`GET /api/category/${year}/summary status: 200`);
+            console.log(`GET /api/summary status: 200`);
             res.status(200).send(JSON.stringify(summary, null, 2));
         } catch (err) {
             console.log("Error with GET summary request: ", err);
@@ -71,8 +70,8 @@ export default async function handler(req, res) {
 
             await s3.putObject(postParams).promise();
             
-            console.log(`POST /api/categories/${year}/summary status: 200`);
-            res.status(200).json(newCategory);
+            console.log(`POST /api/summary status: 200`);
+            res.status(200).json(newSummary);
         } catch (err) {
             console.log("Error with POST summary request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");

@@ -38,7 +38,7 @@ const CategoryTable = ({ setEditClicked }) => {
                     </th>
                     <th scope="col" className="col-2">Budget</th>
                     <th scope="col" className="col-2">Actual</th>
-                    <th scope="col" className="col-2">Difference</th>
+                    <th scope="col" className="col-2">Leftover</th>
                 </tr>
             </thead>
             <tbody>

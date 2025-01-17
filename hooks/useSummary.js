@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-const useSummary = (year) => {
+const useSummary = () => {
     const [summary, setSummary] = useState([]);
     
     useEffect(() => {
         const getSummary = async () => {
             try {
-                const rsp = await fetch(`/api/categories/${year}/summary`);
+                const rsp = await fetch(`/api/summary`);
                 const result = await rsp.json();
                 setSummary(result);
             } catch (err) {
@@ -15,11 +15,11 @@ const useSummary = (year) => {
         }
 
         getSummary();
-    }, [year]);
+    }, []);
 
     const postSummary = async (newSummary) => {
         try {
-            await fetch(`/api/categories/${year}/summary`, {
+            await fetch(`/api/summary`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
