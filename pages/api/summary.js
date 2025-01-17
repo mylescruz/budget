@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     const userFolder = 'mylescruz';
     const key = `${userFolder}/summary.json`;
 
-    async function getCategoriesSummary() {
+    async function getSummaryData() {
         const getParams = {
             Bucket: BUCKET_NAME,
             Key: key
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
     if (method === "GET") {
         try {
-            const summary = await getCategoriesSummary();
+            const summary = await getSummaryData();
 
             console.log(`GET /api/summary status: 200`);
             res.status(200).send(JSON.stringify(summary, null, 2));
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     } else if (method === "POST") {
         try {
             const newSummary = req?.body;
-            const summary = await getCategoriesSummary();
+            const summary = await getSummaryData();
             const updatedSummary = [...summary, newSummary];
 
             const postParams = {
@@ -79,7 +79,7 @@ export default async function handler(req, res) {
     } else if (method === "PUT") {
         try {
             const edittedSummary = req?.body;
-            const summary = await getCategoriesSummary();
+            const summary = await getSummaryData();
 
             const updatedSummary = summary.map(currentSummary => {
                 if (currentSummary.id === edittedSummary.id)
@@ -102,6 +102,30 @@ export default async function handler(req, res) {
         } catch (err) {
             console.log("Error with PUT summary request: ", err);
             res.status(404).send("Error: PUT request failed with status code 404");
+        }
+    } else if (method === "DELETE") {
+        try {
+            const summaryToDelete = req?.body;
+            const summary = await getSummaryData();
+
+            const updatedSummary = summary.filter(currentSummary => {
+                return currentSummary.id !== summaryToDelete.id;
+            });
+
+            const deleteParams = {
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: JSON.stringify(updatedSummary, null, 2),
+                ContentType: "application/json"
+            };
+            
+            await s3.putObject(deleteParams).promise();
+            
+            console.log(`DELETE /api/summary status: 200`);
+            res.status(200).json(summaryToDelete);
+        } catch (err) {
+            console.log("Error with DELETE summary request: ", err);
+            res.status(404).send("Error: DELETE request failed with status code 404");
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);

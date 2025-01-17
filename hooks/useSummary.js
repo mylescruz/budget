@@ -6,7 +6,7 @@ const useSummary = () => {
     useEffect(() => {
         const getSummary = async () => {
             try {
-                const rsp = await fetch(`/api/summary`);
+                const rsp = await fetch("/api/summary");
                 const result = await rsp.json();
                 setSummary(result);
             } catch (err) {
@@ -19,7 +19,7 @@ const useSummary = () => {
 
     const postSummary = async (newSummary) => {
         try {
-            await fetch(`/api/summary`, {
+            await fetch("/api/summary", {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -34,7 +34,7 @@ const useSummary = () => {
 
     const putSummary = async (edittedSummary) => {
         try {
-            await fetch(`/api/summary`, {
+            await fetch("/api/summary", {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -44,6 +44,21 @@ const useSummary = () => {
             });
         } catch (err) {
             console.log("Error occurred while editting a month's summary: ", err);
+        }
+    };
+
+    const deleteSummary = async (summaryToDelete) => {
+        try {
+            await fetch("/api/summary", {
+                method: "DELETE",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(summaryToDelete)
+            });
+        } catch (err) {
+            console.log("Error occurred while deleting a summary: ", err);
         }
     };
 
@@ -66,7 +81,17 @@ const useSummary = () => {
         setSummary(updatedSummary);
     };
 
-    return { summary, addToSummary, editSummary };
+    const deleteFromSummary = (summaryToDelete) => {
+        deleteSummary(summaryToDelete);
+
+        const updatedSummary = summary.filter(currentSummary => {
+            return currentSummary.id !== summaryToDelete.id;
+        });
+
+        setSummary(updatedSummary);
+    };
+
+    return { summary, addToSummary, editSummary, deleteFromSummary };
 };
 
 export default useSummary;
