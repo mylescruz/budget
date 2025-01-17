@@ -4,7 +4,7 @@ const useSummary = (year) => {
     const [summary, setSummary] = useState([]);
     
     useEffect(() => {
-        const getCategories = async () => {
+        const getSummary = async () => {
             try {
                 const rsp = await fetch(`/api/categories/${year}/summary`);
                 const result = await rsp.json();
@@ -14,10 +14,31 @@ const useSummary = (year) => {
             }
         }
 
-        getCategories();
+        getSummary();
     }, [year]);
 
-    return { summary };
+    const postSummary = async (newSummary) => {
+        try {
+            await fetch(`/api/categories/${year}/summary`, {
+                method: "POST",
+                headers: {
+                    Accept: "application.json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newSummary)
+            });
+        } catch (err) {
+            console.log("Error occurred while adding to the summary: ", err);
+        }
+    };
+
+    const addToSummary = (newSummary) => {
+        postSummary(newSummary);
+
+        setSummary([...summary, newSummary]);
+    };
+
+    return { summary, addToSummary };
 };
 
 export default useSummary;
