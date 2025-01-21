@@ -1,4 +1,3 @@
-import categorySorter from "@/helpers/categorySorter";
 import { useEffect, useState } from "react";
 
 const useCategories = (month, year) => {
@@ -20,7 +19,7 @@ const useCategories = (month, year) => {
 
     const postCategory = async (newCategory) => {
         try {
-            await fetch(`/api/categories/${year}/${month}`, {
+            const rsp = await fetch(`/api/categories/${year}/${month}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -28,6 +27,9 @@ const useCategories = (month, year) => {
                 },
                 body: JSON.stringify(newCategory)
             });
+
+            const result = await rsp.json();
+            setCategories(result);
         } catch (err) {
             console.log("Error occurred while adding a category: ", err);
         }
@@ -35,7 +37,7 @@ const useCategories = (month, year) => {
 
     const putCategories = async (updatedCategories) => {
         try {
-            await fetch(`/api/categories/${year}/${month}`, {
+            const rsp = await fetch(`/api/categories/${year}/${month}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -43,6 +45,9 @@ const useCategories = (month, year) => {
                 },
                 body: JSON.stringify(updatedCategories)
             });
+
+            const result = await rsp.json();
+            setCategories(result);
         } catch (err) {
             console.log("Error occurred while updating categories: ", err);
         }
@@ -50,7 +55,7 @@ const useCategories = (month, year) => {
 
     const deleteCategory = async (categoryToDelete) => {
         try {
-            await fetch(`/api/categories/${year}/${month}`, {
+            const rsp = await fetch(`/api/categories/${year}/${month}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
@@ -58,31 +63,15 @@ const useCategories = (month, year) => {
                 },
                 body: JSON.stringify(categoryToDelete)
             });
+
+            const result = await rsp.json();
+            setCategories(result);
         } catch (err) {
             console.log("Error occurred while deleting a category: ", err);
         }
     };
-
-    const addCategory = (newCategory) => {
-        postCategory(newCategory);
-        setCategories([...categories, newCategory]);
-    };
-
-    const updateCategories = (updatedCategories) => {
-        putCategories(updatedCategories);
-        setCategories(updatedCategories);
-    };
-
-    const deleteFromCategories = (categoryToDelete) => {
-        deleteCategory(categoryToDelete);
-
-        const updatedCategories = categories.filter(category => {
-            return category.id !== categoryToDelete.id;
-        });
-        setCategories(updatedCategories);
-    };
     
-    return { categories, addCategory, updateCategories, deleteFromCategories };
+    return { categories, postCategory, putCategories, deleteCategory };
 };
 
 export default useCategories;

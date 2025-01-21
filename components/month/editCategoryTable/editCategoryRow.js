@@ -3,7 +3,7 @@ import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 import EditSubcategoryRow from "./editSubcategoryRow";
 
-const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => {
+const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => {
     const [edittedCategory, setEdittedCategory] = useState(category);
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
     const dontDelete = "Guilt Free Spending";
@@ -52,8 +52,8 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
         setAddSubcategoryClicked(true);
     };
 
-    const deleteCategory = () => {
-        removeCategory(category);
+    const removeCategory = () => {
+        deleteCategory(category);
     };
 
     const deleteSubcategory = (subcategory) => {
@@ -87,7 +87,7 @@ const EditCategoryRow = ({ category, removeCategory, updateCategoryValues }) => 
                 }
                 <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
                 {edittedCategory.name !== dontDelete ? 
-                    <td className={`text-center align-middle delete`} onClick={deleteCategory}><i className="bi bi-trash"></i></td>
+                    <td className={`text-center align-middle delete`} onClick={removeCategory}><i className="bi bi-trash"></i></td>
                     :
                     <td></td>
                 }

@@ -3,7 +3,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row, FloatingLabel} from "react-bootstrap";
 
-const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicked}) => {
+const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked}) => {
     const emptyCategory = {
         id: 0,
         name: "",
@@ -83,7 +83,7 @@ const AddCategory = ({ addToCategories, addCategoryClicked, setAddCategoryClicke
             maxID = Math.max(...categories.map(category => category.id));
         newCategory.id = maxID + 1;
 
-        addToCategories(newCategory);
+        postCategory(newCategory);
 
         closeModal();
     };

@@ -5,10 +5,10 @@ import { createContext } from "react";
 export const CategoriesContext = createContext({});
 
 export const CategoriesProvider = ({children}) => {
-    const { categories, addCategory, updateCategories, deleteFromCategories } = useCategories(dateInfo.currentMonth, dateInfo.currentYear);
+    const { categories, postCategory, putCategories, deleteCategory } = useCategories(dateInfo.currentMonth, dateInfo.currentYear);
 
     return (
-        <CategoriesContext.Provider value={{ categories, addCategory, updateCategories, deleteFromCategories }}>
+        <CategoriesContext.Provider value={{ categories, postCategory, putCategories, deleteCategory }}>
             {children}
         </CategoriesContext.Provider>
     )

@@ -12,7 +12,7 @@ import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
 
 const InnerLayout = () => {
-    const { categories, updateCategories } = useContext(CategoriesContext);
+    const { categories, putCategories } = useContext(CategoriesContext);
     const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
@@ -23,7 +23,7 @@ const InnerLayout = () => {
         deleteFromTransactions(transactionToDelete);
 
         const updatedCategories = deleteFromCategoryActual(transactionToDelete, categories);
-        updateCategories(updatedCategories);
+        putCategories(updatedCategories);
     };
 
     const showTransactions = () => {

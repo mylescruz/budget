@@ -80,7 +80,7 @@ export default async function handler(req, res) {
             await s3.putObject(postParams).promise();
             
             console.log(`POST /api/categories/${year}/${month} status: 200`);
-            res.status(200).json(newCategory);
+            res.status(200).json(updatedCategories);
         } catch (err) {
             console.log("Error with POST categories request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");
@@ -123,7 +123,7 @@ export default async function handler(req, res) {
             await s3.putObject(deleteParams).promise();
             
             console.log(`DELETE /api/categories/${year}/${month} status: 200`);
-            res.status(200).json(categoryToDelete);
+            res.status(200).json(updatedCategories);
         } catch (err) {
             console.log("Error with DELETE category request: ", err);
             res.status(404).send("Error: DELETE request failed with status code 404");

@@ -8,7 +8,7 @@ import usePaystubs from "@/hooks/usePaystubs";
 import dateInfo from "@/helpers/dateInfo";
 
 const EditCategoryTable = ({ setEditClicked }) => {
-    const { categories, addCategory, updateCategories, deleteFromCategories } = useContext(CategoriesContext);
+    const { categories, postCategory, putCategories, deleteCategory } = useContext(CategoriesContext);
     const { paystubs, getTotalIncome } = usePaystubs(dateInfo.currentYear);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
@@ -32,7 +32,7 @@ const EditCategoryTable = ({ setEditClicked }) => {
 
         const totalIncome = getTotalIncome(dateInfo.currentMonth);
         const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
-        updateCategories(updatedCategories);
+        putCategories(updatedCategories);
     };
 
     const updateCategoryValues = (updatedCategory) => {
@@ -51,22 +51,14 @@ const EditCategoryTable = ({ setEditClicked }) => {
         setAddCategoryClicked(true);
     };
 
-    const addToCategories = (newCategory) => {
-        addCategory(newCategory);
-    };
-
-    const removeCategory = (categoryToRemove) => {
-        deleteFromCategories(categoryToRemove);
-    };
-
     const addCategoryProps = {
-        addToCategories: addToCategories,
+        postCategory: postCategory,
         addCategoryClicked: addCategoryClicked,
         setAddCategoryClicked: setAddCategoryClicked
     };
 
     const editCategoryProps = {
-        removeCategory: removeCategory,
+        deleteCategory: deleteCategory,
         updateCategoryValues: updateCategoryValues
     };
 
