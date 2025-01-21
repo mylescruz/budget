@@ -12,119 +12,119 @@ const BUCKET_NAME = process.env.BUCKET_NAME;
 export default async function handler(req, res) {
     const method = req?.method;
     const userFolder = 'mylescruz';
-    const key = `${userFolder}/summary.json`;
+    const key = `${userFolder}/history.json`;
 
-    async function getSummaryData() {
+    async function getHistoryData() {
         const getParams = {
             Bucket: BUCKET_NAME,
             Key: key
         };
 
         try {
-            const categoriesSummary = await s3.getObject(getParams).promise();
-            return JSON.parse(categoriesSummary.Body.toString('utf-8'));
+            const history = await s3.getObject(getParams).promise();
+            return JSON.parse(history.Body.toString('utf-8'));
         } catch (err) {
             if (err.code === 'NoSuchKey') {
-                console.log(`Creating a new summary file for ${userFolder}`);
+                console.log(`Creating a new history file for ${userFolder}`);
 
-                const newSummary = [];
+                const newHistory = [];
 
                 const createFileParams = {
                     Bucket: BUCKET_NAME,
                     Key: key,
-                    Body: JSON.stringify(newSummary, null, 2),
+                    Body: JSON.stringify(newHistory, null, 2),
                     ContentType: "application/json"
                 };
 
                 await s3.putObject(createFileParams).promise();
                 
-                return newSummary;
+                return newHistory;
             } else {
-                console.error("Error retrieving the categories summary from S3: ", err);
+                console.error("Error retrieving the user's history from S3: ", err);
             }
         }
     }
 
     if (method === "GET") {
         try {
-            const summary = await getSummaryData();
+            const history = await getHistoryData();
 
-            console.log(`GET /api/summary status: 200`);
-            res.status(200).send(JSON.stringify(summary, null, 2));
+            console.log(`GET /api/history status: 200`);
+            res.status(200).send(JSON.stringify(history, null, 2));
         } catch (err) {
-            console.log("Error with GET summary request: ", err);
+            console.log("Error with GET history request: ", err);
             res.status(400).send("Error: GET request failed with status code 404");
         }
     } else if (method === "POST") {
         try {
-            const newSummary = req?.body;
-            const summary = await getSummaryData();
-            const updatedSummary = [...summary, newSummary];
+            const newHistory = req?.body;
+            const history = await getHistoryData();
+            const updatedHistory = [...history, newHistory];
 
             const postParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
-                Body: JSON.stringify(updatedSummary, null, 2),
+                Body: JSON.stringify(updatedHistory, null, 2),
                 ContentType: "application/json"
             };
 
             await s3.putObject(postParams).promise();
             
-            console.log(`POST /api/summary status: 200`);
-            res.status(200).json(newSummary);
+            console.log(`POST /api/history status: 200`);
+            res.status(200).json(newHistory);
         } catch (err) {
-            console.log("Error with POST summary request: ", err);
+            console.log("Error with POST history request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");
         }
     } else if (method === "PUT") {
         try {
-            const edittedSummary = req?.body;
-            const summary = await getSummaryData();
+            const edittedHistory = req?.body;
+            const history = await getHistoryData();
 
-            const updatedSummary = summary.map(currentSummary => {
-                if (currentSummary.id === edittedSummary.id)
-                    return edittedSummary;
+            const updatedHistory = history.map(currentHistory => {
+                if (currentHistory.id === edittedHistory.id)
+                    return edittedHistory;
                 else
-                    return currentSummary;
+                    return currentHistory;
             });
 
             const putParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
-                Body: JSON.stringify(updatedSummary, null, 2),
+                Body: JSON.stringify(updatedHistory, null, 2),
                 ContentType: "application/json"
             };
 
             await s3.putObject(putParams).promise();
 
-            console.log(`PUT /api/summary status: 200`);
-            res.status(200).json(edittedSummary);
+            console.log(`PUT /api/history status: 200`);
+            res.status(200).json(edittedHistory);
         } catch (err) {
-            console.log("Error with PUT summary request: ", err);
+            console.log("Error with PUT history request: ", err);
             res.status(404).send("Error: PUT request failed with status code 404");
         }
     } else if (method === "DELETE") {
         try {
-            const summaryToDelete = req?.body;
-            const summary = await getSummaryData();
+            const historyToDelete = req?.body;
+            const history = await getHistoryData();
 
-            const updatedSummary = summary.filter(currentSummary => {
-                return currentSummary.id !== summaryToDelete.id;
+            const updatedHistory = history.filter(currentHistory => {
+                return currentHistory.id !== historyToDelete.id;
             });
 
             const deleteParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
-                Body: JSON.stringify(updatedSummary, null, 2),
+                Body: JSON.stringify(updatedHistory, null, 2),
                 ContentType: "application/json"
             };
             
             await s3.putObject(deleteParams).promise();
             
-            console.log(`DELETE /api/summary status: 200`);
-            res.status(200).json(summaryToDelete);
+            console.log(`DELETE /api/history status: 200`);
+            res.status(200).json(historyToDelete);
         } catch (err) {
-            console.log("Error with DELETE summary request: ", err);
+            console.log("Error with DELETE history request: ", err);
             res.status(404).send("Error: DELETE request failed with status code 404");
         }
     } else {

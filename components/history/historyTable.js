@@ -1,10 +1,10 @@
 import dateInfo from "@/helpers/dateInfo";
-import useSummary from "@/hooks/useSummary";
+import useHistory from "@/hooks/useHistory";
 import { useState } from "react";
 import { Table } from "react-bootstrap";
 
 const HistoryTable = () => {
-    const { summary } = useSummary();
+    const { history } = useHistory();
 
     return (
         <Table bordered className="w-75 mx-auto">
@@ -17,11 +17,11 @@ const HistoryTable = () => {
                 </tr>
             </thead>
             <tbody>
-                {summary.map(month => (
+                {history.map(month => (
                     <tr key={month.id}>
                         <td>{month.month} {month.year}</td>
                         <td>{month.budget}</td>
-                        <td>{month.spent}</td>
+                        <td>{month.actual}</td>
                         <td>{month.leftover}</td>
                     </tr>
                 ))}                
