@@ -13,7 +13,7 @@ import SummaryPieChart from "./summaryPieChart";
 
 const InnerLayout = () => {
     const { categories, putCategories } = useContext(CategoriesContext);
-    const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
+    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);

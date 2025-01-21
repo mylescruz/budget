@@ -75,34 +75,8 @@ const useTransactions = (month, year) => {
             console.log("Error occurred while deleting a transaction: ", err);
         }
     };
-
-    const addNewTransaction = (transaction) => {
-        postTransaction(transaction);
-        setTransactions([...transactions, transaction]);
-    };
-
-    const updateTransaction = (edittedTransaction) => {
-        const updatedTransactions = transactions.map(transaction => {
-            if (transaction.id === edittedTransaction.id)
-                return edittedTransaction;
-            else
-                return transaction;
-        });
-
-        putTransaction(edittedTransaction);
-        setTransactions(updatedTransactions);
-    };
-
-    const deleteFromTransactions = (transactionToDelete) => {
-        deleteTransaction(transactionToDelete);
-
-        const updatedTransactions = transactions.filter(transaction => {
-            return transaction.id !== transactionToDelete.id;
-        });
-        setTransactions(updatedTransactions);
-    };
     
-    return { transactions, addNewTransaction, updateTransaction, deleteFromTransactions, postTransaction, putTransaction, deleteTransaction };
+    return { transactions, postTransaction, putTransaction, deleteTransaction };
 };
 
 export default useTransactions;
