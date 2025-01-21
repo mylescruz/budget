@@ -13,14 +13,14 @@ import SummaryPieChart from "./summaryPieChart";
 
 const InnerLayout = () => {
     const { categories, putCategories } = useContext(CategoriesContext);
-    const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
+    const { transactions, addNewTransaction, updateTransaction, deleteFromTransactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
 
     const removeTransaction = (transactionToDelete) => {
-        deleteFromTransactions(transactionToDelete);
+        deleteTransaction(transactionToDelete);
 
         const updatedCategories = deleteFromCategoryActual(transactionToDelete, categories);
         putCategories(updatedCategories);
@@ -46,13 +46,13 @@ const InnerLayout = () => {
 
     const transactionsTableProps = {
         transactions: transactions,
-        updateTransaction: updateTransaction,
+        putTransaction: putTransaction,
         removeTransaction: removeTransaction
     };
 
     const addTransactionsProps = {
         transactions: transactions,
-        addNewTransaction: addNewTransaction,
+        postTransaction: postTransaction,
         addTransactionClicked: addTransactionClicked,
         setAddTransactionClicked: setAddTransactionClicked,
         showTransactions: showTransactions

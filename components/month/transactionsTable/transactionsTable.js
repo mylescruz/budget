@@ -2,7 +2,7 @@ import { Table } from "react-bootstrap";
 import TransactionRow from "./transactionRow";
 import dateSorter from "@/helpers/dateSorter";
 
-const TransactionsTable = ({transactions, updateTransaction, removeTransaction}) => {
+const TransactionsTable = ({transactions, putTransaction, removeTransaction}) => {
     transactions = dateSorter(transactions);
 
     return (
@@ -18,7 +18,7 @@ const TransactionsTable = ({transactions, updateTransaction, removeTransaction})
             </thead>
             <tbody>
                 {transactions.map(transaction => (
-                    <TransactionRow key={transaction.id} transaction={transaction} updateTransaction={updateTransaction} removeTransaction={removeTransaction} />
+                    <TransactionRow key={transaction.id} transaction={transaction} putTransaction={putTransaction} removeTransaction={removeTransaction} />
                 ))}
             </tbody>
         </Table>

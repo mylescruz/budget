@@ -16,54 +16,63 @@ const useTransactions = (month, year) => {
         getTransactions();
     }, [month, year]);
 
-    const postTransaction = async (transaction) => {
-        const date = new Date(transaction.date);
+    const postTransaction = async (newTransaction) => {
+        const date = new Date(newTransaction.date);
         const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
-            await fetch(`/api/transactions/${year}/${month}`, {
+            const rsp = await fetch(`/api/transactions/${year}/${month}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(transaction)
+                body: JSON.stringify(newTransaction)
             });
+
+            const result = await rsp.json();
+            setTransactions(result);
         } catch (err) {
-            console.log("Error occurred while updating transactions: ", err);
+            console.log("Error occurred while adding a transaction: ", err);
         }
     };
 
-    const putTransaction = async (updatedTransactions) => {
+    const putTransaction = async (edittedTransaction) => {
         try {
-            await fetch(`/api/transactions/${year}/${month}`, {
+            const rsp = await fetch(`/api/transactions/${year}/${month}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(updatedTransactions)
+                body: JSON.stringify(edittedTransaction)
             });
+
+            const result = await rsp.json();
+            setTransactions(result);
         } catch (err) {
-            console.log("Error occurred while updating transactions: ", err);
+            console.log("Error occurred while updating a transaction: ", err);
         }
     };
 
-    const deleteTransaction = async (transaction) => {
-        const date = new Date(transaction.date);
+    const deleteTransaction = async (transactionToDelete) => {
+        const date = new Date(transactionToDelete.date);
         const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
-            await fetch(`/api/transactions/${year}/${month}`, {
+            const rsp = await fetch(`/api/transactions/${year}/${month}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(transaction)
+                body: JSON.stringify(transactionToDelete)
             });
+
+            const result = await rsp.json();
+            setTransactions(result);
         } catch (err) {
-            console.log("Error occurred while deleting transaction: ", err);
+            console.log("Error occurred while deleting a transaction: ", err);
         }
     };
 
@@ -80,7 +89,7 @@ const useTransactions = (month, year) => {
                 return transaction;
         });
 
-        putTransaction(updatedTransactions);
+        putTransaction(edittedTransaction);
         setTransactions(updatedTransactions);
     };
 
@@ -93,7 +102,7 @@ const useTransactions = (month, year) => {
         setTransactions(updatedTransactions);
     };
     
-    return { transactions, addNewTransaction, updateTransaction, deleteFromTransactions };
+    return { transactions, addNewTransaction, updateTransaction, deleteFromTransactions, postTransaction, putTransaction, deleteTransaction };
 };
 
 export default useTransactions;

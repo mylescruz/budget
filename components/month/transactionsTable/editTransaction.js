@@ -5,7 +5,7 @@ import editCategoryActual from "@/helpers/editCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, updateTransaction}) => {
+const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, putTransaction}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
 
@@ -14,12 +14,12 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, up
         setShowDetails(true);
     };
 
-    const editTransaction = (e) => {
+    const editTheTransaction = (e) => {
         e.preventDefault();
 
         if (showEdit) {
             setEdittedTransaction(edittedTransaction);
-            updateTransaction(edittedTransaction);
+            putTransaction(edittedTransaction);
 
             const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
             putCategories(updatedCategories);
@@ -48,7 +48,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, up
                 <Modal.Header>
                     <Modal.Title>Edit Transaction</Modal.Title>
                 </Modal.Header>
-                <Form onSubmit={editTransaction}>
+                <Form onSubmit={editTheTransaction}>
                     <Modal.Body>
                         <Form.Group className="formInput">
                             <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={edittedTransaction.date} onChange={handleInput} required />

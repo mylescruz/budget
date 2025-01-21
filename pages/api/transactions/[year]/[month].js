@@ -71,14 +71,22 @@ export default async function handler(req, res) {
             await s3.putObject(postParams).promise();
 
             console.log(`POST /api/transactions/${year}/${month} status: 200`);
-            res.status(200).json(newTransaction);
+            res.status(200).json(updatedTransactions);
         } catch (err) {
             console.log("Error with POST transactions request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");
         }
     } else if (method === "PUT") {
         try {
-            const updatedTransactions = req?.body;
+            const edittedTransaction = req?.body;
+            const transactions = await getTransactionData();
+
+            const updatedTransactions = transactions.map(transaction => {
+                if (transaction.id === edittedTransaction.id)
+                    return edittedTransaction;
+                else
+                    return transaction;
+            });
 
             const putParams = {
                 Bucket: BUCKET_NAME,
@@ -114,7 +122,7 @@ export default async function handler(req, res) {
             await s3.putObject(deleteParams).promise();
 
             console.log(`DELETE /api/transactions/${year}/${month} status: 200`);
-            res.status(200).json(transactionToDelete);
+            res.status(200).json(updatedTransactions);
         } catch (err) {
             console.log("Error with DELETE transactions request: ", err);
             res.status(404).send("Error: DELETE request failed with status code 404");
