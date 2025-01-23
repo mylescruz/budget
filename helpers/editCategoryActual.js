@@ -1,4 +1,7 @@
 const editCategoryActual = (edittedTransaction, oldTransaction, categories) => {
+    console.log(`Original transaction: ${oldTransaction.category}-${oldTransaction.amount}`);
+    console.log(`Editted transaction: ${edittedTransaction.category}-${edittedTransaction.amount}`);
+
     const updatedCategories = categories.map(category => {
         let categoryTotal = category.actual;
 
@@ -21,6 +24,9 @@ const editCategoryActual = (edittedTransaction, oldTransaction, categories) => {
                     if (edittedTransaction.category !== oldTransaction.category) {
                         subcategoryTotal += edittedTransaction.amount;
                         categoryTotal += edittedTransaction.amount;
+                    } else {
+                        subcategoryTotal = subcategoryTotal - oldTransaction.amount + edittedTransaction.amount;
+                        categoryTotal = categoryTotal - oldTransaction.amount + edittedTransaction.amount;
                     }
 
                     return {...subcategory, actual: subcategoryTotal};
