@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
     const userFolder = 'mylescruz';
-    const key = `${userFolder}/categories/${year}/${month}.json`;
+    const key = `${userFolder}/categories/${year}/categories-${month}${year}.json`;
 
     async function getCategoriesData() {
         const getParams = {
