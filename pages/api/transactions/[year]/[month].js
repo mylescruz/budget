@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
     const userFolder = 'mylescruz';
-    const key = `${userFolder}/transactions/${year}/${month}.json`;
+    const key = `${userFolder}/transactions/${year}/transactions-${month}${year}.json`;
 
     async function getTransactionData() {
         const getParams = {
