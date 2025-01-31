@@ -7,13 +7,12 @@ import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
-import dateInfo from "@/helpers/dateInfo";
 import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
 
-const InnerLayout = () => {
+const InnerBudgetLayout = ({ month, year }) => {
     const { categories, putCategories } = useContext(CategoriesContext);
-    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(dateInfo.currentMonth, dateInfo.currentYear);
+    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(month, year);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
@@ -60,7 +59,7 @@ const InnerLayout = () => {
 
     return (
         <Container className="w-100">
-            <Title month={dateInfo.currentMonth}/>
+            <Title month={month}/>
 
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
@@ -81,12 +80,12 @@ const InnerLayout = () => {
     );
 };
 
-const MonthLayout = ({ props }) => {
+const BudgetLayout = ({ month, year }) => {
     return (
-        <CategoriesProvider>
-            <InnerLayout {...props} />
+        <CategoriesProvider month={month} year={year}>
+            <InnerBudgetLayout month={month} year={year} />
         </CategoriesProvider>
     );
 };
 
-export default MonthLayout;
+export default BudgetLayout;

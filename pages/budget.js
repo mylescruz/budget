@@ -1,7 +1,11 @@
-import MonthLayout from "@/components/month/monthLayout";
+import BudgetLayout from "@/components/budget/budgetLayout";
+import dateInfo from "@/helpers/dateInfo";
 
 export default function Budget() {
+    const month = dateInfo.currentMonth;
+    const year = dateInfo.currentYear;
+
     return (
-        <MonthLayout/>
+        <BudgetLayout month={month} year={year} />
     );
 };
