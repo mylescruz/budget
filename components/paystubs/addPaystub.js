@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 
-const AddPaystub = ({paystubs, addNewPaystub, addPaystubClicked, setAddPaystubClicked}) => {
+const AddPaystub = ({paystubs, yearInfo, addNewPaystub, addPaystubClicked, setAddPaystubClicked}) => {
     const emptyPaystub = {
         id: 0,
         date: dateInfo.currentDate,
@@ -58,7 +58,7 @@ const AddPaystub = ({paystubs, addNewPaystub, addPaystubClicked, setAddPaystubCl
                 <Modal.Body>
                     <Form.Group className="formInput">
                         <Form.Label>Pay Date</Form.Label>
-                        <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={paystub.date} onChange={handleInput} required />
+                        <Form.Control id="date" className="h-100" type="date" min={yearInfo.startOfYear} max={yearInfo.endOfYear} value={paystub.date} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Company</Form.Label>
