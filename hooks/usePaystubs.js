@@ -21,7 +21,7 @@ const usePaystubs = (year) => {
 
     const postPaystub = async (newPaystub) => {
         try {
-            await fetch(`/api/paystubs/${year}`, {
+            const rsp = await fetch(`/api/paystubs/${year}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -29,6 +29,9 @@ const usePaystubs = (year) => {
                 },
                 body: JSON.stringify(newPaystub)
             });
+
+            const result = rsp.json();
+            setPaystubs(result);
         } catch (err) {
             console.log("Error occurred while adding a paystub: ", err);
         }
@@ -36,7 +39,7 @@ const usePaystubs = (year) => {
 
     const putPaystub = async (edittedPaystub) => {
         try {
-            await fetch(`/api/paystubs/${year}`, {
+            const rsp = await fetch(`/api/paystubs/${year}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -44,6 +47,9 @@ const usePaystubs = (year) => {
                 },
                 body: JSON.stringify(edittedPaystub)
             });
+
+            const result = rsp.json();
+            setPaystubs(result);
         } catch (err) {
             console.log("Error occurred while updating paystubs: ", err);
         }
@@ -51,7 +57,7 @@ const usePaystubs = (year) => {
 
     const deletePaystub = async (paystubToDelete) => {
         try {
-            await fetch(`/api/paystubs/${year}`, {
+            const rsp = await fetch(`/api/paystubs/${year}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
@@ -59,39 +65,15 @@ const usePaystubs = (year) => {
                 },
                 body: JSON.stringify(paystubToDelete)
             });
+
+            const result = rsp.json();
+            setPaystubs(result);
         } catch (err) {
             console.log("Error occurred while deleting a paystub: ", err);
         }
     };
 
-    const addNewPaystub = (newPaystub) => {
-        postPaystub(newPaystub);
-        setPaystubs([...paystubs, newPaystub]);
-    };
-
-    const updatePaystub = (edittedPaystub) => {
-        putPaystub(edittedPaystub);
-
-        const updatedPaystubs = paystubs.map(paystub => {
-            if (paystub.id === edittedPaystub.id)
-                return edittedPaystub;
-            else
-                return paystub;
-        });
-
-        setPaystubs(updatedPaystubs);
-    };
-
-    const deleteFromPaystubs = (paystubToDelete) => {
-        deletePaystub(paystubToDelete);
-
-        const updatedPaystubs = paystubs.filter(paystub => {
-            return paystub.id !== paystubToDelete.id;
-        });
-        setPaystubs(updatedPaystubs);
-    };
-
-    const getTotalIncome = (givenMonth) => {
+    const getMonthIncome = (givenMonth) => {
         let totalIncome = 0;
 
         paystubs.map(paystub => {
@@ -104,7 +86,7 @@ const usePaystubs = (year) => {
         return totalIncome;
     }
     
-    return { paystubs, addNewPaystub, updatePaystub, deleteFromPaystubs, getTotalIncome };
+    return { paystubs, postPaystub, putPaystub, deletePaystub, getMonthIncome };
 };
 
 export default usePaystubs;

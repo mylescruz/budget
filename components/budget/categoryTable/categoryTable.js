@@ -1,7 +1,7 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import categorySorter from "@/helpers/categorySorter";
@@ -9,7 +9,7 @@ import usePaystubs from "@/hooks/usePaystubs";
 
 const CategoryTable = ({ setEditClicked, month, year }) => {
     const { categories } = useContext(CategoriesContext);
-    const { getTotalIncome } = usePaystubs(year);
+    const { getMonthIncome } = usePaystubs(year);
     const sortedCategories = categorySorter(categories);
 
     const footerValues = useMemo(() => {
@@ -18,8 +18,8 @@ const CategoryTable = ({ setEditClicked, month, year }) => {
             totalActual += category.actual;
         });
 
-        return {budget: getTotalIncome(month), actual: totalActual};
-    }, [categories, getTotalIncome, month]);
+        return {budget: getMonthIncome(month), actual: totalActual};
+    }, [categories, getMonthIncome, month]);
 
     const handleEdit = () => {
         setEditClicked(true);

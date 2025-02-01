@@ -69,7 +69,7 @@ export default async function handler(req, res) {
             await s3.putObject(postParams).promise();
 
             console.log(`POST /api/paystubs/${year} status: 200`);
-            res.status(200).json(newPaystub);
+            res.status(200).json(updatedPaystubs);
         } catch (err) {
             console.log("Error with POST paystubs request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
             await s3.putObject(putParams).promise();
 
             console.log(`PUT /api/paystubs/${year} status: 200`);
-            res.status(200).json(edittedPaystub);
+            res.status(200).json(updatedPaystubs);
         } catch (err) {
             console.log("Error with PUT paystubs request: ", err);
             res.status(404).send("Error: PUT request failed with status code 404");
@@ -120,7 +120,7 @@ export default async function handler(req, res) {
             await s3.putObject(deleteParams).promise();
 
             console.log(`DELETE /api/paystubs/${year} status: 200`);
-            res.status(200).json(paystubToDelete);
+            res.status(200).json(updatedPaystubs);
         } catch (err) {
             console.log("Error with DELETE paystubs request: ", err);
             res.status(404).send("Error: DELETE request failed with status code 404");
