@@ -1,9 +1,6 @@
-import useHistory from "@/hooks/useHistory";
 import { Table } from "react-bootstrap";
 
-const HistoryTable = () => {
-    const { history } = useHistory();
-
+const HistoryTable = ({ history }) => {
     return (
         <Table bordered className="w-75 mx-auto">
             <thead className="table-dark">

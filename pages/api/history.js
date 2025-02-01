@@ -71,7 +71,7 @@ export default async function handler(req, res) {
             await s3.putObject(postParams).promise();
             
             console.log(`POST /api/history status: 200`);
-            res.status(200).json(newHistory);
+            res.status(200).json(updatedHistory);
         } catch (err) {
             console.log("Error with POST history request: ", err);
             res.status(404).send("Error: POST request failed with status code 404");
@@ -98,7 +98,7 @@ export default async function handler(req, res) {
             await s3.putObject(putParams).promise();
 
             console.log(`PUT /api/history status: 200`);
-            res.status(200).json(edittedHistory);
+            res.status(200).json(updatedHistory);
         } catch (err) {
             console.log("Error with PUT history request: ", err);
             res.status(404).send("Error: PUT request failed with status code 404");
@@ -122,7 +122,7 @@ export default async function handler(req, res) {
             await s3.putObject(deleteParams).promise();
             
             console.log(`DELETE /api/history status: 200`);
-            res.status(200).json(historyToDelete);
+            res.status(200).json(updatedHistory);
         } catch (err) {
             console.log("Error with DELETE history request: ", err);
             res.status(404).send("Error: DELETE request failed with status code 404");

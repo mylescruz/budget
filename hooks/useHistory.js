@@ -19,7 +19,7 @@ const useHistory = () => {
 
     const postHistory = async (newHistory) => {
         try {
-            await fetch("/api/history", {
+            const rsp = await fetch("/api/history", {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -27,6 +27,9 @@ const useHistory = () => {
                 },
                 body: JSON.stringify(newHistory)
             });
+
+            const result = await rsp.json();
+            setHistory(result);
         } catch (err) {
             console.log("Error occurred while adding to the user's history: ", err);
         }
@@ -34,7 +37,7 @@ const useHistory = () => {
 
     const putHistory = async (edittedHistory) => {
         try {
-            await fetch("/api/history", {
+            const rsp = await fetch("/api/history", {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -42,6 +45,9 @@ const useHistory = () => {
                 },
                 body: JSON.stringify(edittedHistory)
             });
+
+            const result = await rsp.json();
+            setHistory(result);
         } catch (err) {
             console.log("Error occurred while editting a month's history: ", err);
         }
@@ -49,7 +55,7 @@ const useHistory = () => {
 
     const deleteHistory = async (historyToDelete) => {
         try {
-            await fetch("/api/history", {
+            const rsp = await fetch("/api/history", {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
@@ -57,41 +63,15 @@ const useHistory = () => {
                 },
                 body: JSON.stringify(historyToDelete)
             });
+
+            const result = await rsp.json();
+            setHistory(result);
         } catch (err) {
             console.log("Error occurred while deleting a user's history: ", err);
         }
     };
 
-    const addToHistory = (newHistory) => {
-        postHistory(newHistory);
-
-        setHistory([...history, newHistory]);
-    };
-
-    const editHistory = (edittedHistory) => {
-        putHistory(edittedHistory);
-
-        const updatedHistory = history.map(currentHistory => {
-            if (currentHistory.id === edittedHistory.id)
-                return edittedHistory;
-            else
-                return currentHistory;
-        });
-        
-        setHistory(updatedHistory);
-    };
-
-    const deleteFromHistory = (historyToDelete) => {
-        deleteHistory(historyToDelete);
-
-        const updatedHistory = history.filter(currentHistory => {
-            return currentHistory.id !== historyToDelete.id;
-        });
-
-        setHistory(updatedHistory);
-    };
-
-    return { history, addToHistory, editHistory, deleteFromHistory };
+    return { history, postHistory, putHistory, deleteHistory };
 };
 
 export default useHistory;
