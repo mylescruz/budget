@@ -6,11 +6,10 @@ import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import categorySorter from "@/helpers/categorySorter";
 import usePaystubs from "@/hooks/usePaystubs";
-import dateInfo from "@/helpers/dateInfo";
 
-const CategoryTable = ({ setEditClicked }) => {
+const CategoryTable = ({ setEditClicked, month, year }) => {
     const { categories } = useContext(CategoriesContext);
-    const { getTotalIncome } = usePaystubs(dateInfo.currentYear);
+    const { getTotalIncome } = usePaystubs(year);
     const sortedCategories = categorySorter(categories);
 
     const footerValues = useMemo(() => {
@@ -19,8 +18,8 @@ const CategoryTable = ({ setEditClicked }) => {
             totalActual += category.actual;
         });
 
-        return {budget: getTotalIncome(dateInfo.currentMonth), actual: totalActual};
-    }, [categories, getTotalIncome]);
+        return {budget: getTotalIncome(month), actual: totalActual};
+    }, [categories, getTotalIncome, month]);
 
     const handleEdit = () => {
         setEditClicked(true);

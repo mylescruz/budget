@@ -1,11 +1,10 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
-import dateInfo from "@/helpers/dateInfo";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const AddTransaction = ({transactions, postTransaction, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
+const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
 
     const firstNotFixed = categories.find(category => {
@@ -14,7 +13,7 @@ const AddTransaction = ({transactions, postTransaction, addTransactionClicked, s
 
     const emptyTransaction = {
         id: 0,
-        date: dateInfo.currentDate,
+        date: monthInfo.startOfMonthDate,
         store: "",
         items: "",
         category: firstNotFixed.name,
@@ -68,7 +67,7 @@ const AddTransaction = ({transactions, postTransaction, addTransactionClicked, s
             <Form onSubmit={AddNewTransaction}>
                 <Modal.Body>
                     <Form.Group className="formInput">
-                        <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={newTransaction.date} onChange={handleInput} required />
+                        <Form.Control id="date" className="h-100" type="date" min={monthInfo.startOfMonthDate} max={monthInfo.endOfMonthDate} value={newTransaction.date} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Control id="store" className="h-100" type="text" placeholder="Store/Restaurant" value={newTransaction.store} onChange={handleInput} required />

@@ -1,6 +1,4 @@
-import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
-import { useState } from "react";
 import { Table } from "react-bootstrap";
 
 const HistoryTable = () => {

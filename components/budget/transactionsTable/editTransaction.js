@@ -1,11 +1,10 @@
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import dateInfo from "@/helpers/dateInfo";
 import { useContext, useState } from "react";
 import editCategoryActual from "@/helpers/editCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, putTransaction}) => {
+const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShowDetails, putTransaction}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
 
@@ -51,7 +50,7 @@ const EditTransaction = ({transaction, showEdit, setShowEdit, setShowDetails, pu
                 <Form onSubmit={editTheTransaction}>
                     <Modal.Body>
                         <Form.Group className="formInput">
-                            <Form.Control id="date" className="h-100" type="date" min={dateInfo.minDate} max={dateInfo.maxDate} value={edittedTransaction.date} onChange={handleInput} required />
+                            <Form.Control id="date" className="h-100" type="date" min={monthInfo.startOfMonthDate} max={monthInfo.endOfMonthDate} value={edittedTransaction.date} onChange={handleInput} required />
                         </Form.Group>
                         <Form.Group className="formInput">
                             <Form.Control id="store" className="h-100" type="text" placeholder="Store" value={edittedTransaction.store} onChange={handleInput} required />
