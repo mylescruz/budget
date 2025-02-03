@@ -3,9 +3,13 @@ import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import usePaystubs from "@/hooks/usePaystubs";
+import useHistory from "@/hooks/useHistory";
 
 const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
+    const { getMonthIncome } = usePaystubs(monthInfo.year);
+    const { history, putHistory } = useHistory();
 
     const firstNotFixed = categories.find(category => {
         return (!category.fixed && !category.hasSubcategory);
@@ -46,6 +50,24 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
         postTransaction(newTransaction);
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
+        let totalActual = 0;
+        updatedCategories.forEach(category => {
+            totalActual += category.actual;
+        });
+
+        const income = getMonthIncome(monthInfo.monthName);
+        
+        const currentMonth = history.find(currentMonth => {
+            return (currentMonth.month === monthInfo.monthName && currentMonth.year === monthInfo.year);
+        });
+    
+        currentMonth.budget = income;
+        currentMonth.actual = totalActual;
+        currentMonth.leftover = income - totalActual;
+
+        console.log(currentMonth);
+
+        putHistory(currentMonth);
         putCategories(updatedCategories);
 
         setTransaction(emptyTransaction);

@@ -18,7 +18,9 @@ const CategoryTable = ({ setEditClicked, month, year }) => {
             totalActual += category.actual;
         });
 
-        return {budget: getMonthIncome(month), actual: totalActual};
+        const income = getMonthIncome(month);
+
+        return {budget: income, actual: totalActual};
     }, [categories, getMonthIncome, month]);
 
     const handleEdit = () => {
