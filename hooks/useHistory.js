@@ -38,7 +38,7 @@ const useHistory = () => {
     const putHistory = async (edittedHistory) => {
         try {
             const rsp = await fetch("/api/history", {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     Accept: "application.json",
                     "Content-Type": "application/json"
