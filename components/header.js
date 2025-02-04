@@ -9,7 +9,6 @@ const Header = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-                <Nav.Link as={Link} href="/">Home</Nav.Link>
                 <Nav.Link as={Link} href="/budget">Budget</Nav.Link>
                 <Nav.Link as={Link} href="/income">Income</Nav.Link>
                 <Nav.Link as={Link} href="/history">History</Nav.Link>
