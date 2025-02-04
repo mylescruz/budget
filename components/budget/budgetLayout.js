@@ -7,7 +7,6 @@ import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
-import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
 import useHistory from "@/hooks/useHistory";
 import updateHistoryActual from "@/helpers/updateHistoryActual";
@@ -67,7 +66,9 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
     return (
         <Container className="w-100">
-            <Title month={monthInfo.month}/>
+            <header className="container my-4">
+                <h1 className="text-center">{monthInfo.month} Budget</h1>
+            </header>
 
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
