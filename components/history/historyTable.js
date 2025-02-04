@@ -1,5 +1,7 @@
 import { Table } from "react-bootstrap";
 import currencyFormatter from "@/helpers/currencyFormatter";
+import Link from "next/link";
+import getMonthInfo from "@/helpers/getMonthInfo";
 
 const HistoryTable = ({ history }) => {
     return (
@@ -15,7 +17,7 @@ const HistoryTable = ({ history }) => {
             <tbody>
                 {history.map(month => (
                     <tr key={month.id}>
-                        <td>{month.month} {month.year}</td>
+                        <td><Link href={{pathname:'/history/[month]', query: {month: month.month, year: month.year}}}>{month.month} {month.year}</Link></td>
                         <td>{currencyFormatter.format(month.budget)}</td>
                         <td>{currencyFormatter.format(month.actual)}</td>
                         <td>{currencyFormatter.format(month.leftover)}</td>

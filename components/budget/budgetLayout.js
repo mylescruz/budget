@@ -67,7 +67,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     return (
         <Container className="w-100">
             <header className="container my-4">
-                <h1 className="text-center">{monthInfo.month} Budget</h1>
+                <h1 className="text-center">{monthInfo.month} {monthInfo.year} Budget</h1>
             </header>
 
             <Row>
