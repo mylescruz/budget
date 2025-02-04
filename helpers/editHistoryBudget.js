@@ -1,5 +1,5 @@
-const updateHistoryBudget = (paystub, history) => {
-    const paystubDate = new Date(paystub.date);
+const editHistoryBudget = (newPaystub, oldPaystub, history) => {
+    const paystubDate = new Date(newPaystub.date);
     const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
     const paystubYear = paystubDate.getFullYear();
 
@@ -7,9 +7,9 @@ const updateHistoryBudget = (paystub, history) => {
         return currentMonth.month === paystubMonth && currentMonth.year === paystubYear;
     });
 
-    foundMonth.budget += paystub.net;
+    foundMonth.budget = foundMonth.budget + newPaystub.net - oldPaystub.net;
 
     return foundMonth;
 };
 
-export default updateHistoryBudget;
+export default editHistoryBudget;

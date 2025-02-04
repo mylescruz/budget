@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
-import updateHistoryBudget from "@/helpers/updateHistoryBudget";
+import addToHistoryBudget from "@/helpers/addToHistoryBudget";
 
 const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddPaystubClicked}) => {
     const emptyPaystub = {
@@ -42,7 +42,7 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
         paystub.taxes = paystub.gross - paystub.net;
         postPaystub(paystub);
 
-        const paystubMonth = updateHistoryBudget(paystub, history);
+        const paystubMonth = addToHistoryBudget(paystub, history);
         putHistory(paystubMonth);
 
         setPaystub(emptyPaystub);

@@ -1,8 +1,11 @@
+import editHistoryBudget from "@/helpers/editHistoryBudget";
+import useHistory from "@/hooks/useHistory";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
     const [edittedPaystub, setEdittedPaystub] = useState(paystub);
+    const { history, putHistory } = useHistory();
 
     const handleInput = (e) => {
         setEdittedPaystub({ ...edittedPaystub, [e.target.id]: e.target.value});
@@ -28,6 +31,10 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
         edittedPaystub.taxes = edittedPaystub.gross-edittedPaystub.net;
 
         putPaystub(edittedPaystub);
+
+        const paystubMonth = editHistoryBudget(edittedPaystub, paystub, history);
+        putHistory(paystubMonth);
+
         setShowEdit(false);  
     };
 
