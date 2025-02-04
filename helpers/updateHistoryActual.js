@@ -1,22 +1,19 @@
-const updateMonthDetails = (updatedCategories, history, getMonthIncome, monthInfo) => {
+const updateHistoryActual = (updatedCategories, history, monthInfo) => {
     let totalActual = 0;
     updatedCategories.forEach(category => {
         totalActual += category.actual;
     });
 
-    const income = getMonthIncome(monthInfo.monthName);
-
     const currentMonth = history.find(currentMonth => {
         return (currentMonth.month === monthInfo.monthName && currentMonth.year === monthInfo.year);
     });
 
-    currentMonth.budget = income;
     currentMonth.actual = totalActual;
-    currentMonth.leftover = income - totalActual;
+    currentMonth.leftover = currentMonth.budget - totalActual;
 
     console.log(currentMonth);
 
     return currentMonth;
 };
 
-export default updateMonthDetails;
+export default updateHistoryActual;

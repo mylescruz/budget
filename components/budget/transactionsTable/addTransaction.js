@@ -3,13 +3,11 @@ import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import usePaystubs from "@/hooks/usePaystubs";
 import useHistory from "@/hooks/useHistory";
-import updateMonthDetails from "@/helpers/updateMonthDetails";
+import updateHistoryActual from "@/helpers/updateHistoryActual";
 
 const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
-    const { getMonthIncome } = usePaystubs(monthInfo.year);
     const { history, putHistory } = useHistory();
 
     const firstNotFixed = categories.find(category => {
@@ -53,7 +51,7 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
         const updatedCategories = addToCategoryActual(newTransaction, categories);
         putCategories(updatedCategories);
 
-        const updatedMonth = updateMonthDetails(updatedCategories, history, getMonthIncome, monthInfo);
+        const updatedMonth = updateHistoryActual(updatedCategories, history, monthInfo);
         putHistory(updatedMonth);
 
         setTransaction(emptyTransaction);

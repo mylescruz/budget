@@ -4,13 +4,11 @@ import editCategoryActual from "@/helpers/editCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import useHistory from "@/hooks/useHistory";
-import updateMonthDetails from "@/helpers/updateMonthDetails";
-import usePaystubs from "@/hooks/usePaystubs";
+import updateHistoryActual from "@/helpers/updateHistoryActual";
 
 const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShowDetails, putTransaction}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
-    const { getMonthIncome } = usePaystubs(monthInfo.year);
     const { history, putHistory } = useHistory();
 
     const closeEdit = () => {
@@ -28,7 +26,7 @@ const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShow
             const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
             putCategories(updatedCategories);
 
-            const updatedMonth = updateMonthDetails(updatedCategories, history, getMonthIncome, monthInfo);
+            const updatedMonth = updateHistoryActual(updatedCategories, history, monthInfo);
             putHistory(updatedMonth);
 
             setShowEdit(false);

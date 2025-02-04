@@ -11,7 +11,7 @@ import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import useHistory from "@/hooks/useHistory";
-import usePaystubs from "@/hooks/usePaystubs";
+import updateHistoryActual from "@/helpers/updateHistoryActual";
 
 const InnerBudgetLayout = ({ month, year }) => {
     const { categories, putCategories } = useContext(CategoriesContext);
@@ -22,7 +22,6 @@ const InnerBudgetLayout = ({ month, year }) => {
     const [editClicked, setEditClicked] = useState(false);
     const monthInfo = getMonthInfo(month, year);
     const { history, putHistory } = useHistory();
-    const { getMonthIncome } = usePaystubs(monthInfo.year);
 
     const removeTransaction = (transactionToDelete) => {
         deleteTransaction(transactionToDelete);
@@ -30,7 +29,7 @@ const InnerBudgetLayout = ({ month, year }) => {
         const updatedCategories = deleteFromCategoryActual(transactionToDelete, categories);
         putCategories(updatedCategories);
 
-        const updatedMonth = updateMonthDetails(updatedCategories, history, getMonthIncome, monthInfo);
+        const updatedMonth = updateHistoryActual(updatedCategories, history, monthInfo);
         putHistory(updatedMonth);
     };
 
