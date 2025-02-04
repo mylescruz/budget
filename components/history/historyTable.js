@@ -1,4 +1,5 @@
 import { Table } from "react-bootstrap";
+import currencyFormatter from "@/helpers/currencyFormatter";
 
 const HistoryTable = ({ history }) => {
     return (
@@ -15,9 +16,9 @@ const HistoryTable = ({ history }) => {
                 {history.map(month => (
                     <tr key={month.id}>
                         <td>{month.month} {month.year}</td>
-                        <td>{month.budget}</td>
-                        <td>{month.actual}</td>
-                        <td>{month.leftover}</td>
+                        <td>{currencyFormatter.format(month.budget)}</td>
+                        <td>{currencyFormatter.format(month.actual)}</td>
+                        <td>{currencyFormatter.format(month.leftover)}</td>
                     </tr>
                 ))}                
             </tbody>
