@@ -1,6 +1,10 @@
+import deleteFromHistoryBudget from "@/helpers/deleteFromHistoryBudget";
+import useHistory from "@/hooks/useHistory";
 import { Button, Modal } from "react-bootstrap";
 
 const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setShowDetails }) => {
+    const { history, putHistory } = useHistory();
+
     const closeDelete = () => {
         setShowDelete(false);
         setShowDetails(true);
@@ -8,6 +12,9 @@ const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setS
 
     const confirmDelete = () => {
         deletePaystub(paystub);
+
+        const paystubMonth = deleteFromHistoryBudget(paystub, history);
+        putHistory(paystubMonth);
     };
 
     return (
