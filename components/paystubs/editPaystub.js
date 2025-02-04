@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
-const EditPaystub = ({ paystub, updatePaystub, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
+const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
     const [edittedPaystub, setEdittedPaystub] = useState(paystub);
 
     const handleInput = (e) => {
@@ -27,7 +27,7 @@ const EditPaystub = ({ paystub, updatePaystub, yearInfo, showEdit, setShowEdit, 
 
         edittedPaystub.taxes = edittedPaystub.gross-edittedPaystub.net;
 
-        updatePaystub(edittedPaystub);
+        putPaystub(edittedPaystub);
         setShowEdit(false);  
     };
 

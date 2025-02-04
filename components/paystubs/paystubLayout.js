@@ -6,7 +6,7 @@ import { useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
 
 const PaystubLayout = ({ year }) => {
-    const { paystubs, addNewPaystub, updatePaystub, deleteFromPaystubs } = usePaystubs(year);
+    const { paystubs, postPaystub, putPaystub, deletePaystub } = usePaystubs(year);
     const [addPaystubClicked, setAddPaystubClicked] = useState(false);
     const yearInfo = getYearInfo(year);
 
@@ -17,7 +17,7 @@ const PaystubLayout = ({ year }) => {
     const addPaystubProps = {
         paystubs: paystubs,
         yearInfo: yearInfo,
-        addNewPaystub: addNewPaystub,
+        postPaystub: postPaystub,
         addPaystubClicked: addPaystubClicked,
         setAddPaystubClicked:  setAddPaystubClicked
     };
@@ -28,7 +28,7 @@ const PaystubLayout = ({ year }) => {
                 <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>
             </Row>
             
-            <PaystubTable paystubs={paystubs} updatePaystub={updatePaystub} deleteFromPaystubs={deleteFromPaystubs} year={yearInfo} />
+            <PaystubTable paystubs={paystubs} putPaystub={putPaystub} deletePaystub={deletePaystub} year={yearInfo} />
 
             {addPaystubClicked && <AddPaystub {...addPaystubProps} />}
         </>

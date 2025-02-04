@@ -1,13 +1,13 @@
 import { Button, Modal } from "react-bootstrap";
 
-const DeletePaystub = ({ paystub, deleteFromPaystubs, showDelete, setShowDelete, setShowDetails }) => {
+const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setShowDetails }) => {
     const closeDelete = () => {
         setShowDelete(false);
         setShowDetails(true);
     };
 
     const confirmDelete = () => {
-        deleteFromPaystubs(paystub);
+        deletePaystub(paystub);
     };
 
     return (

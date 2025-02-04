@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 
-const AddPaystub = ({paystubs, yearInfo, addNewPaystub, addPaystubClicked, setAddPaystubClicked}) => {
+const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddPaystubClicked}) => {
     const emptyPaystub = {
         id: 0,
         date: dateInfo.currentDate,
@@ -37,7 +37,7 @@ const AddPaystub = ({paystubs, yearInfo, addNewPaystub, addPaystubClicked, setAd
 
         paystub.id = maxID + 1;
         paystub.taxes = paystub.gross - paystub.net;
-        addNewPaystub(paystub);
+        postPaystub(paystub);
 
         setPaystub(emptyPaystub);
         setAddPaystubClicked(false);
