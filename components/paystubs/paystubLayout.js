@@ -28,7 +28,7 @@ const PaystubLayout = ({ year }) => {
                 <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>
             </Row>
             
-            <PaystubTable paystubs={paystubs} putPaystub={putPaystub} deletePaystub={deletePaystub} year={yearInfo} />
+            <PaystubTable paystubs={paystubs} putPaystub={putPaystub} deletePaystub={deletePaystub} yearInfo={yearInfo} />
 
             {addPaystubClicked && <AddPaystub {...addPaystubProps} />}
         </>

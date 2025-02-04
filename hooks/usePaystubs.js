@@ -30,8 +30,9 @@ const usePaystubs = (year) => {
                 body: JSON.stringify(newPaystub)
             });
 
-            const result = rsp.json();
-            setPaystubs(result);
+            const result = await rsp.json();
+            const sortedPaystubs = dateSorter(result);
+            setPaystubs(sortedPaystubs);
         } catch (err) {
             console.log("Error occurred while adding a paystub: ", err);
         }
@@ -48,8 +49,9 @@ const usePaystubs = (year) => {
                 body: JSON.stringify(edittedPaystub)
             });
 
-            const result = rsp.json();
-            setPaystubs(result);
+            const result = await rsp.json();
+            const sortedPaystubs = dateSorter(result);
+            setPaystubs(sortedPaystubs);
         } catch (err) {
             console.log("Error occurred while updating paystubs: ", err);
         }
@@ -66,8 +68,9 @@ const usePaystubs = (year) => {
                 body: JSON.stringify(paystubToDelete)
             });
 
-            const result = rsp.json();
-            setPaystubs(result);
+            const result = await rsp.json();
+            const sortedPaystubs = dateSorter(result);
+            setPaystubs(sortedPaystubs);
         } catch (err) {
             console.log("Error occurred while deleting a paystub: ", err);
         }
