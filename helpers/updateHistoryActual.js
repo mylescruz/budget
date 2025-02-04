@@ -5,7 +5,7 @@ const updateHistoryActual = (updatedCategories, history, monthInfo) => {
     });
 
     const currentMonth = history.find(currentMonth => {
-        return (currentMonth.month === monthInfo.monthName && currentMonth.year === monthInfo.year);
+        return (currentMonth.month === monthInfo.month && currentMonth.year === monthInfo.year);
     });
 
     currentMonth.actual = totalActual;

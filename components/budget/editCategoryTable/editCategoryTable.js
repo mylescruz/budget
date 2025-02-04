@@ -6,9 +6,9 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import usePaystubs from "@/hooks/usePaystubs";
 
-const EditCategoryTable = ({ setEditClicked, month, year }) => {
+const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
     const { categories, postCategory, putCategories, deleteCategory } = useContext(CategoriesContext);
-    const { paystubs, getMonthIncome } = usePaystubs(year);
+    const { getMonthIncome } = usePaystubs(monthInfo.year);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
     const categoryValues = useRef([]);
 
@@ -29,7 +29,7 @@ const EditCategoryTable = ({ setEditClicked, month, year }) => {
             }
         });
 
-        const totalIncome = getMonthIncome(month);
+        const totalIncome = getMonthIncome(monthInfo);
         const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
         putCategories(updatedCategories);
     };

@@ -73,13 +73,14 @@ const usePaystubs = (year) => {
         }
     };
 
-    const getMonthIncome = (givenMonth) => {
+    const getMonthIncome = (monthInfo) => {
         let totalIncome = 0;
 
         paystubs.map(paystub => {
             const paystubDate = new Date(paystub.date);
             const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
-            if (paystubMonth === givenMonth)
+            const paystubYear = paystubDate.getFullYear();
+            if (paystubMonth === monthInfo.month && paystubYear === monthInfo.year)
                 totalIncome += paystub.net;
         });
         

@@ -9,18 +9,16 @@ import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesCont
 import useTransactions from "@/hooks/useTransactions";
 import Title from "./title";
 import SummaryPieChart from "./summaryPieChart";
-import getMonthInfo from "@/helpers/getMonthInfo";
 import useHistory from "@/hooks/useHistory";
 import updateHistoryActual from "@/helpers/updateHistoryActual";
 
-const InnerBudgetLayout = ({ month, year }) => {
+const InnerBudgetLayout = ({ monthInfo }) => {
     const { categories, putCategories } = useContext(CategoriesContext);
-    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(month, year);
+    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(monthInfo.month, monthInfo.year);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
-    const monthInfo = getMonthInfo(month, year);
     const { history, putHistory } = useHistory();
 
     const removeTransaction = (transactionToDelete) => {
@@ -69,13 +67,13 @@ const InnerBudgetLayout = ({ month, year }) => {
 
     return (
         <Container className="w-100">
-            <Title month={month}/>
+            <Title month={monthInfo.month}/>
 
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
-                    {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} month={month} year={year} />
-                        : <EditCategoryTable setEditClicked={setEditClicked} month={month} year={year} />}
+                    {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} monthInfo={monthInfo} />
+                        : <EditCategoryTable setEditClicked={setEditClicked} monthInfo={monthInfo} />}
                 </Col>
             </Row>
         
@@ -90,10 +88,11 @@ const InnerBudgetLayout = ({ month, year }) => {
     );
 };
 
-const BudgetLayout = ({ month, year }) => {
+const BudgetLayout = ({ monthInfo }) => {
+
     return (
-        <CategoriesProvider month={month} year={year}>
-            <InnerBudgetLayout month={month} year={year} />
+        <CategoriesProvider monthInfo={monthInfo} >
+            <InnerBudgetLayout monthInfo={monthInfo} />
         </CategoriesProvider>
     );
 };

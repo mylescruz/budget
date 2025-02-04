@@ -4,7 +4,7 @@ const getMonthInfo = (month, year) => {
     const endOfMonth = new Date(year, monthNumber, 0);
 
     const monthInfo = {
-        monthName: month,
+        month: month,
         monthNumber: monthNumber,
         year: year,
         startOfMonthDate: startOfMonth.toISOString().split('T')[0],
