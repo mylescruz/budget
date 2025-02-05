@@ -24,7 +24,11 @@ const PaystubLayout = ({ year }) => {
 
     return (
         <>
-            <Row className="option-buttons text-center">
+            <header className="container my-4">
+                <h1 className="text-center">{year} Income</h1>
+            </header>
+
+            <Row className="text-center">
                 <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>
             </Row>
             
