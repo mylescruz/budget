@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 const useHistory = () => {
     const [history, setHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(true);
     
     useEffect(() => {
         const getHistory = async () => {
@@ -9,6 +10,7 @@ const useHistory = () => {
                 const rsp = await fetch("/api/history");
                 const result = await rsp.json();
                 setHistory(result);
+                setHistoryLoading(false);
             } catch (err) {
                 console.log("Error occurred while getting the user's history: ", err);
             }
@@ -30,6 +32,7 @@ const useHistory = () => {
 
             const result = await rsp.json();
             setHistory(result);
+            setHistoryLoading(false);
         } catch (err) {
             console.log("Error occurred while adding to the user's history: ", err);
         }
@@ -48,6 +51,7 @@ const useHistory = () => {
 
             const result = await rsp.json();
             setHistory(result);
+            setHistoryLoading(false);
         } catch (err) {
             console.log("Error occurred while editting a month's history: ", err);
         }
@@ -66,12 +70,13 @@ const useHistory = () => {
 
             const result = await rsp.json();
             setHistory(result);
+            setHistoryLoading(false);
         } catch (err) {
             console.log("Error occurred while deleting a user's history: ", err);
         }
     };
 
-    return { history, postHistory, putHistory, deleteHistory };
+    return { history, historyLoading, postHistory, putHistory, deleteHistory };
 };
 
 export default useHistory;
