@@ -1,0 +1,9 @@
+.table {
+    margin: 1em 0em 3em;
+}
+
+.cell {
+    &:hover {
+        font-weight: bold;
+    }
+}
