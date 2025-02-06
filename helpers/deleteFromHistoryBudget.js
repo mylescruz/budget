@@ -8,6 +8,7 @@ const deleteFromHistoryBudget = (paystub, history) => {
     });
 
     foundMonth.budget -= paystub.net;
+    foundMonth.leftover = foundMonth.budget - foundMonth.actual;
 
     return foundMonth;
 };

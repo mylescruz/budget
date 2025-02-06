@@ -8,6 +8,7 @@ const editHistoryBudget = (newPaystub, oldPaystub, history) => {
     });
 
     foundMonth.budget = foundMonth.budget + newPaystub.net - oldPaystub.net;
+    foundMonth.leftover = foundMonth.budget - foundMonth.actual;
 
     return foundMonth;
 };
