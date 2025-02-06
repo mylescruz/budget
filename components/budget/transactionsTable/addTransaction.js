@@ -4,7 +4,6 @@ import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import useHistory from "@/hooks/useHistory";
-import updateHistoryActual from "@/helpers/updateHistoryActual";
 
 const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
@@ -50,9 +49,6 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
 
         const updatedCategories = addToCategoryActual(newTransaction, categories);
         putCategories(updatedCategories);
-
-        const updatedMonth = updateHistoryActual(updatedCategories, history, monthInfo);
-        putHistory(updatedMonth);
 
         setTransaction(emptyTransaction);
         setAddTransactionClicked(false);

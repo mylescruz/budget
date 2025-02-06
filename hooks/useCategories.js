@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 const useCategories = (month, year) => {
     const [categories, setCategories] = useState([]);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
     
     useEffect(() => {
         const getCategories = async () => {
@@ -9,6 +10,7 @@ const useCategories = (month, year) => {
                 const rsp = await fetch(`/api/categories/${year}/${month}`);
                 const result = await rsp.json();
                 setCategories(result);
+                setCategoriesLoading(false);
             } catch (err) {
                 console.log("Error occured while retrieving categories: ", err);
             }
@@ -30,6 +32,7 @@ const useCategories = (month, year) => {
 
             const result = await rsp.json();
             setCategories(result);
+            setCategoriesLoading(false);
         } catch (err) {
             console.log("Error occurred while adding a category: ", err);
         }
@@ -48,6 +51,7 @@ const useCategories = (month, year) => {
 
             const result = await rsp.json();
             setCategories(result);
+            setCategoriesLoading(false);
         } catch (err) {
             console.log("Error occurred while updating categories: ", err);
         }
@@ -66,12 +70,13 @@ const useCategories = (month, year) => {
 
             const result = await rsp.json();
             setCategories(result);
+            setCategoriesLoading(false);
         } catch (err) {
             console.log("Error occurred while deleting a category: ", err);
         }
     };
     
-    return { categories, postCategory, putCategories, deleteCategory };
+    return { categories, categoriesLoading, postCategory, putCategories, deleteCategory };
 };
 
 export default useCategories;

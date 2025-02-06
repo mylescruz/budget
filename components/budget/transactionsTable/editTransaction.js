@@ -4,7 +4,6 @@ import editCategoryActual from "@/helpers/editCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import useHistory from "@/hooks/useHistory";
-import updateHistoryActual from "@/helpers/updateHistoryActual";
 
 const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShowDetails, putTransaction}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
@@ -25,9 +24,6 @@ const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShow
 
             const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
             putCategories(updatedCategories);
-
-            const updatedMonth = updateHistoryActual(updatedCategories, history, monthInfo);
-            putHistory(updatedMonth);
 
             setShowEdit(false);
         } else {

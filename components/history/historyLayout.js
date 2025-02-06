@@ -30,8 +30,6 @@ const HistoryLayout = () => {
                 return currentMonth.month === dateInfo.currentMonth && currentMonth.year === dateInfo.currentYear;
             });
 
-            console.log("Found month: ", foundMonth);
-
             return foundMonth !== undefined;
         };
 

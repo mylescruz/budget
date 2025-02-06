@@ -6,11 +6,37 @@ import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import categorySorter from "@/helpers/categorySorter";
 import usePaystubs from "@/hooks/usePaystubs";
+import useHistory from "@/hooks/useHistory";
 
 const CategoryTable = ({ setEditClicked, monthInfo }) => {
-    const { categories } = useContext(CategoriesContext);
+    const { categories, categoriesLoading } = useContext(CategoriesContext);
     const { getMonthIncome } = usePaystubs(monthInfo.year);
     const sortedCategories = categorySorter(categories);
+    const { history, historyLoading, putHistory } = useHistory();
+
+    useEffect(() => {
+        const updateHistoryValues = async () => {
+            let totalActual = 0;
+            categories.forEach(category => {
+                totalActual += category.actual;
+            });
+
+            const foundMonth = history.find(currentMonth => {
+                return currentMonth.month === monthInfo.month && currentMonth.year === monthInfo.year;
+            });
+
+            if (foundMonth) {
+                foundMonth.actual = totalActual;
+                foundMonth.leftover = foundMonth.budget - totalActual;
+
+                putHistory(foundMonth);
+            }
+        };
+
+        if (!categoriesLoading && !historyLoading) {
+            updateHistoryValues();
+        }
+    }, [categories]);
 
     const footerValues = useMemo(() => {
         let totalActual = 0;
@@ -64,7 +90,4 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     );
 };
 
-const CategoryTableMemo = React.memo(CategoryTable);
-
 export default CategoryTable;
-export { CategoryTableMemo };

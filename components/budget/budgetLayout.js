@@ -1,5 +1,5 @@
 import AddTransaction from "./transactionsTable/addTransaction";
-import CategoryTable, { CategoryTableMemo } from "./categoryTable/categoryTable";
+import CategoryTable from "./categoryTable/categoryTable";
 import TransactionsTable from "./transactionsTable/transactionsTable";
 import { useContext, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -8,8 +8,6 @@ import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
 import SummaryPieChart from "./summaryPieChart";
-import useHistory from "@/hooks/useHistory";
-import updateHistoryActual from "@/helpers/updateHistoryActual";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
     const { categories, putCategories } = useContext(CategoriesContext);
@@ -18,16 +16,12 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
-    const { history, putHistory } = useHistory();
 
     const removeTransaction = (transactionToDelete) => {
         deleteTransaction(transactionToDelete);
 
         const updatedCategories = deleteFromCategoryActual(transactionToDelete, categories);
         putCategories(updatedCategories);
-
-        const updatedMonth = updateHistoryActual(updatedCategories, history, monthInfo);
-        putHistory(updatedMonth);
     };
 
     const showTransactions = () => {
@@ -73,7 +67,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
-                    {!editClicked ? <CategoryTableMemo setEditClicked={setEditClicked} monthInfo={monthInfo} />
+                    {!editClicked ? <CategoryTable setEditClicked={setEditClicked} monthInfo={monthInfo} />
                         : <EditCategoryTable setEditClicked={setEditClicked} monthInfo={monthInfo} />}
                 </Col>
             </Row>
