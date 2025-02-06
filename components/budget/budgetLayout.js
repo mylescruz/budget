@@ -17,13 +17,6 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
 
-    const removeTransaction = (transactionToDelete) => {
-        deleteTransaction(transactionToDelete);
-
-        const updatedCategories = deleteFromCategoryActual(transactionToDelete, categories);
-        putCategories(updatedCategories);
-    };
-
     const showTransactions = () => {
         setViewClicked(true);
         setViewText("Hide Transactions");
@@ -45,7 +38,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     const transactionsTableProps = {
         transactions: transactions,
         putTransaction: putTransaction,
-        removeTransaction: removeTransaction,
+        deleteTransaction: deleteTransaction,
         monthInfo: monthInfo
     };
 

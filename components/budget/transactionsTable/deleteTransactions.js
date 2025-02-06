@@ -1,13 +1,21 @@
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
+import { useContext } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeleteTransaction = ({ transaction, showDelete, setShowDelete, setShowDetails, removeTransaction}) => {
+const DeleteTransaction = ({ transaction, showDelete, setShowDelete, setShowDetails, deleteTransaction}) => {
+    const { categories, putCategories } = useContext(CategoriesContext);
+
     const closeDelete = () => {
         setShowDelete(false);
         setShowDetails(true);
     };
 
     const confirmDelete = () => {
-        removeTransaction(transaction);
+        deleteTransaction(transaction);
+
+        const updatedCategories = deleteFromCategoryActual(transaction, categories);
+        putCategories(updatedCategories);
     };
 
     return (

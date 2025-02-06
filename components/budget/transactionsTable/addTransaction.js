@@ -3,11 +3,9 @@ import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import addToCategoryActual from "@/helpers/addToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import useHistory from "@/hooks/useHistory";
 
 const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
-    const { history, putHistory } = useHistory();
 
     const firstNotFixed = categories.find(category => {
         return (!category.fixed && !category.hasSubcategory);

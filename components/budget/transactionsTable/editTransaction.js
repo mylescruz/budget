@@ -3,12 +3,10 @@ import { useContext, useState } from "react";
 import editCategoryActual from "@/helpers/editCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import useHistory from "@/hooks/useHistory";
 
 const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShowDetails, putTransaction}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
     const [edittedTransaction, setEdittedTransaction] = useState(transaction);
-    const { history, putHistory } = useHistory();
 
     const closeEdit = () => {
         setShowEdit(false);
