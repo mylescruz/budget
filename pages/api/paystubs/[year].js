@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const year = req?.query?.year;
     const method = req?.method;
     const userFolder = 'mylescruz';
-    const key = `${userFolder}/paystubs/paystubs-${year}.json`;
+    const key = `${userFolder}/paystubs/paystubs-${userFolder}-${year}.json`;
 
     async function getPaystubData() {
         const getParams = {
