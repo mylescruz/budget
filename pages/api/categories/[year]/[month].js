@@ -29,25 +29,79 @@ export default async function handler(req, res) {
             return JSON.parse(categoriesData.Body.toString('utf-8'));
         } catch(err) {
             if (err.code === 'NoSuchKey') {
-                const defaultKey = `default/${defaultCategoriesFile}`;
+                try {
+                    // Check if there is a category file for the last month
+                    const givenMonth = new Date(`${month} 01, ${year}`);
+                    const monthNumber = givenMonth.getMonth();
+                    let previousMonthNumber = monthNumber - 1;
+                    let yearToCheck = year;
+                    if (monthNumber === 0) {
+                        previousMonthNumber = 11;
+                        yearToCheck -= 1;
+                    }
 
-                const getDefaultParams = {
-                    Bucket: BUCKET_NAME,
-                    Key: defaultKey
-                };
+                    const previousMonthDate = new Date(yearToCheck, previousMonthNumber);
+                    const previousMonth = previousMonthDate.toLocaleDateString('en-US', {month: 'long'}).toLowerCase();
+                    
+                    const previousMonthKey = `${userFolder}/categories/${yearToCheck}/categories-${userFolder}-${previousMonth}${yearToCheck}.json`;
+                    
+                    const previousMonthParams = {
+                        Bucket: BUCKET_NAME,
+                        Key: previousMonthKey
+                    };
 
-                const defaultCategories = await s3.getObject(getDefaultParams).promise();
-                const newCategories = JSON.parse(defaultCategories.Body.toString('utf-8'));
+                    const categoriesData = await s3.getObject(previousMonthParams).promise();
+                    const previousCategories = JSON.parse(categoriesData.Body.toString('utf-8'));
 
-                const createFileParams = {
-                    Bucket: BUCKET_NAME,
-                    Key: key,
-                    Body: JSON.stringify(newCategories, null, 2),
-                    ContentType: "application/json"
-                };
-                await s3.putObject(createFileParams).promise();
+                    const newMonthCategories = previousCategories.map(category => {
+                        if (category.fixed) {
+                            return category
+                        } else {
+                            if (category.hasSubcategory) {
+                                const newSubcategories = category.subcategories.map(subcategory => {
+                                    return {...subcategory, actual: 0};
+                                });
+                                
+                                return {...category, actual: 0, subcategories: newSubcategories};
+                            } else {
+                                return {...category, actual: 0}
+                            }
+                        }
+                    });
 
-                return newCategories;
+                    const createFileParams = {
+                        Bucket: BUCKET_NAME,
+                        Key: key,
+                        Body: JSON.stringify(newMonthCategories, null, 2),
+                        ContentType: "application/json"
+                    };
+                    await s3.putObject(createFileParams).promise();
+
+                    return newMonthCategories;
+                } catch (error) {
+                    if (error.code === 'NoSuchKey') {
+                        // If no other files, use the default categories
+                        const defaultKey = `default/${defaultCategoriesFile}`;
+
+                        const getDefaultParams = {
+                            Bucket: BUCKET_NAME,
+                            Key: defaultKey
+                        };
+
+                        const defaultCategories = await s3.getObject(getDefaultParams).promise();
+                        const newCategories = JSON.parse(defaultCategories.Body.toString('utf-8'));
+
+                        const createFileParams = {
+                            Bucket: BUCKET_NAME,
+                            Key: key,
+                            Body: JSON.stringify(newCategories, null, 2),
+                            ContentType: "application/json"
+                        };
+                        await s3.putObject(createFileParams).promise();
+
+                        return newCategories;
+                    }
+                }
             } else {
                 console.error("Error retrieving the categories data from S3: ", err);
             }

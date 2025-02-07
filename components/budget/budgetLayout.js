@@ -1,16 +1,14 @@
 import AddTransaction from "./transactionsTable/addTransaction";
 import CategoryTable from "./categoryTable/categoryTable";
 import TransactionsTable from "./transactionsTable/transactionsTable";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
-import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
+import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
 import SummaryPieChart from "./summaryPieChart";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
-    const { categories, putCategories } = useContext(CategoriesContext);
     const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(monthInfo.month, monthInfo.year);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
