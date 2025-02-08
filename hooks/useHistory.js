@@ -76,7 +76,15 @@ const useHistory = () => {
         }
     };
 
-    return { history, historyLoading, postHistory, putHistory, deleteHistory };
+    const getMonthHistory = (monthInfo) => {
+        const foundMonth = history.find(currentMonth => {
+            return currentMonth.month === monthInfo.month && currentMonth.year === monthInfo.year;
+        });
+
+        return foundMonth;
+    };
+
+    return { history, historyLoading, postHistory, putHistory, deleteHistory, getMonthHistory };
 };
 
 export default useHistory;

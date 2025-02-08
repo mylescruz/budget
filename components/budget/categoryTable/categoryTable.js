@@ -12,7 +12,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     const { categories, categoriesLoading } = useContext(CategoriesContext);
     const { getMonthIncome } = usePaystubs(monthInfo.year);
     const sortedCategories = categorySorter(categories);
-    const { history, historyLoading, putHistory } = useHistory();
+    const { historyLoading, putHistory, getMonthHistory } = useHistory();
 
     useEffect(() => {
         const updateHistoryValues = async () => {
@@ -21,9 +21,8 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
                 totalActual += category.actual;
             });
 
-            const foundMonth = history.find(currentMonth => {
-                return currentMonth.month === monthInfo.month && currentMonth.year === monthInfo.year;
-            });
+            const foundMonth = getMonthHistory(monthInfo);
+            console.log(foundMonth);
 
             if (foundMonth) {
                 foundMonth.actual = totalActual;

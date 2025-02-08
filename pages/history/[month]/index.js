@@ -7,7 +7,7 @@ export default function HistoryMonth() {
     const router = useRouter();
 
     const month = router.query.month;
-    const year = router.query.year;
+    const year = parseInt(router.query.year);
 
     if (!month) {
         return (

@@ -3,9 +3,10 @@ import HistoryTable from "./historyTable";
 import useHistory from "@/hooks/useHistory";
 import { useEffect } from "react";
 import dateInfo from "@/helpers/dateInfo";
+import getMonthInfo from "@/helpers/getMonthInfo";
 
 const HistoryLayout = () => {
-    const { history, historyLoading, postHistory } = useHistory();
+    const { history, historyLoading, postHistory, getMonthHistory } = useHistory();
 
     useEffect(() => {
         const addNewHistoryMonth = async () => {
@@ -26,9 +27,8 @@ const HistoryLayout = () => {
         };
 
         const monthInHistory = () => {
-            const foundMonth = history.find(currentMonth => {
-                return currentMonth.month === dateInfo.currentMonth && currentMonth.year === dateInfo.currentYear;
-            });
+            const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
+            const foundMonth = getMonthHistory(monthInfo);
 
             return foundMonth !== undefined;
         };
@@ -36,7 +36,7 @@ const HistoryLayout = () => {
         if (!historyLoading && !monthInHistory())
             addNewHistoryMonth();
 
-    },[history, historyLoading, postHistory]);
+    },[history, historyLoading, postHistory, getMonthHistory]);
 
     return (
         <>
