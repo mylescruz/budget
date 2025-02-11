@@ -1,16 +1,17 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import categorySorter from "@/helpers/categorySorter";
 import usePaystubs from "@/hooks/usePaystubs";
 import useHistory from "@/hooks/useHistory";
+import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 
 const CategoryTable = ({ setEditClicked, monthInfo }) => {
-    const { categories, categoriesLoading } = useContext(CategoriesContext);
-    const { getMonthIncome } = usePaystubs(monthInfo.year);
+    const { categories, categoriesLoading, putCategories } = useContext(CategoriesContext);
+    const { paystubs, paystubsLoading, getMonthIncome } = usePaystubs(monthInfo.year);
     const sortedCategories = categorySorter(categories);
     const { historyLoading, putHistory, getMonthHistory } = useHistory();
 
@@ -35,7 +36,20 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
         if (!categoriesLoading && !historyLoading) {
             updateHistoryValues();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categories]);
+
+    useEffect(() => {
+        // Update the Guilt Free Spending Category when paystubs changes
+        if (!paystubsLoading && !categoriesLoading) {
+            const income = getMonthIncome(monthInfo);
+
+            console.log("Updating guilt free spending");
+            const updatedCategories = updateGuiltFreeSpending(income, categories);
+            putCategories(updatedCategories);
+        }
+            
+    }, [paystubs]);
 
     const footerValues = useMemo(() => {
         let totalActual = 0;

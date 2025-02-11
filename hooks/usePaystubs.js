@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 const usePaystubs = (year) => {
     const [paystubs, setPaystubs] = useState([]);
+    const [paystubsLoading, setPaystubsLoading] = useState(true);
     
     useEffect(() => {
         const getPaystubs = async () => {
@@ -11,6 +12,7 @@ const usePaystubs = (year) => {
                 const result = await rsp.json();
                 const sortedPaystubs = dateSorter(result);
                 setPaystubs(sortedPaystubs);
+                setPaystubsLoading(false);
             } catch (err) {
                 console.log("Error occured while retrieving paystubs: ", err);
             }
@@ -33,6 +35,7 @@ const usePaystubs = (year) => {
             const result = await rsp.json();
             const sortedPaystubs = dateSorter(result);
             setPaystubs(sortedPaystubs);
+            setPaystubsLoading(false);
         } catch (err) {
             console.log("Error occurred while adding a paystub: ", err);
         }
@@ -52,6 +55,7 @@ const usePaystubs = (year) => {
             const result = await rsp.json();
             const sortedPaystubs = dateSorter(result);
             setPaystubs(sortedPaystubs);
+            setPaystubsLoading(false);
         } catch (err) {
             console.log("Error occurred while updating paystubs: ", err);
         }
@@ -71,6 +75,7 @@ const usePaystubs = (year) => {
             const result = await rsp.json();
             const sortedPaystubs = dateSorter(result);
             setPaystubs(sortedPaystubs);
+            setPaystubsLoading(false);
         } catch (err) {
             console.log("Error occurred while deleting a paystub: ", err);
         }
@@ -90,7 +95,7 @@ const usePaystubs = (year) => {
         return totalIncome;
     }
     
-    return { paystubs, postPaystub, putPaystub, deletePaystub, getMonthIncome };
+    return { paystubs, paystubsLoading, postPaystub, putPaystub, deletePaystub, getMonthIncome };
 };
 
 export default usePaystubs;
