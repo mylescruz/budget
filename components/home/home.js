@@ -1,13 +1,18 @@
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import Dashboard from "./dashboard";
 import { Button, Card } from "react-bootstrap";
 
 const Home = () => {
+    const { data: session } = useSession();
+
     const userSignIn = async () => {
         await signIn({ callbackUrl: '/'});
     };
 
-    return (
-        <>
+    if (session) {
+        return <Dashboard />;
+    } else {
+        return (
             <Card className="w-50 mx-auto my-4 bg-secondary-subtle">
                 <Card.Body>
                     <h2>The Type-A Budget</h2>
@@ -16,8 +21,8 @@ const Home = () => {
                     <Button variant="dark" className="w-10 my-3" onClick={userSignIn}>Sign in</Button>
                 </Card.Body>
             </Card>
-        </>
-    );
+        );
+    }
 };
 
 export default Home;
