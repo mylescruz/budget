@@ -116,7 +116,7 @@ export default async function handler(req, res) {
             res.status(200).send(JSON.stringify(categories, null, 2));
         } catch (err) {
             console.log("Error with get categories request: ", err);
-            res.status(404).send("Error: GET request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else if (method === "POST") {
         try {
@@ -137,7 +137,7 @@ export default async function handler(req, res) {
             res.status(200).json(updatedCategories);
         } catch (err) {
             console.log("Error with POST categories request: ", err);
-            res.status(404).send("Error: POST request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else if (method === "PUT") {
         try {
@@ -156,7 +156,7 @@ export default async function handler(req, res) {
             res.status(200).json(edittedCategories);
         } catch (err) {
             console.log("Error with PUT categories request: ", err);
-            res.status(404).send("Error: PUT request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else if (method === "DELETE") {
         try {
@@ -180,7 +180,7 @@ export default async function handler(req, res) {
             res.status(200).json(updatedCategories);
         } catch (err) {
             console.log("Error with DELETE category request: ", err);
-            res.status(404).send("Error: DELETE request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else {
         res.status(405).end(`Method ${method} not allowed`);

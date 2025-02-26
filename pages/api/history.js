@@ -53,7 +53,7 @@ export default async function handler(req, res) {
             res.status(200).send(JSON.stringify(history, null, 2));
         } catch (err) {
             console.log("Error with GET history request: ", err);
-            res.status(400).send("Error: GET request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else if (method === "POST") {
         try {
@@ -74,7 +74,7 @@ export default async function handler(req, res) {
             res.status(200).json(updatedHistory);
         } catch (err) {
             console.log("Error with POST history request: ", err);
-            res.status(404).send("Error: POST request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else if (method === "PUT") {
         try {
@@ -101,7 +101,7 @@ export default async function handler(req, res) {
             res.status(200).json(updatedHistory);
         } catch (err) {
             console.log("Error with PUT history request: ", err);
-            res.status(404).send("Error: PUT request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else if (method === "DELETE") {
         try {
@@ -125,9 +125,9 @@ export default async function handler(req, res) {
             res.status(200).json(updatedHistory);
         } catch (err) {
             console.log("Error with DELETE history request: ", err);
-            res.status(404).send("Error: DELETE request failed with status code 404");
+            res.status(500).send(`${method} request failed: ${err}`);
         }
     } else {
-        res.status(405).end(`Method ${method} not allowed`);
+        res.status(400).send("Invalid request method");
     }
 }

@@ -49,6 +49,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
             putCategories(updatedCategories);
         }
             
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paystubs]);
 
     const footerValues = useMemo(() => {
