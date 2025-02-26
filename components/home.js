@@ -1,26 +1,20 @@
-import { Button, Card, Col, FloatingLabel, Form, Row } from "react-bootstrap";
+import { signIn } from "next-auth/react";
+import { Button, Card } from "react-bootstrap";
 
 const Home = () => {
+    const userSignIn = async () => {
+        await signIn({ callbackUrl: '/'});
+    };
+
     return (
         <>
-            <h1 className="text-center my-4">Type-A Budgeting</h1>
-            <p className="mx-auto my-4 w-25">A budget app for type-A people who want to track their finances down to the cent. Login to see where you&#39;re allocating your money.</p>
-
-            <Card className="w-25 mx-auto">
-            <Card.Body>
-                <Form>
-                    <FloatingLabel controlId="email" label="Email address" className="mb-3">
-                        <Form.Control type="email" placeholder="name@example.com" />
-                    </FloatingLabel>
-                    <FloatingLabel controlId="password" label="Password">
-                        <Form.Control type="password" placeholder="Password" />
-                    </FloatingLabel>
-                    <Button type="submit" variant="primary" className="w-100 my-3 float-end">Sign in</Button>
-                </Form>
-                <Row>
-                    <Col><p className="float-end">Create account</p></Col>
-                </Row>
-            </Card.Body>
+            <Card className="w-50 mx-auto my-4 bg-secondary-subtle">
+                <Card.Body>
+                    <h2>The Type-A Budget</h2>
+                    <p className="my-3 fs-5">A budget for people who want to track their finances down to the cent. <br /> Login to see where you&#39;re allocating your money!</p>
+                    
+                    <Button variant="dark" className="w-10 my-3" onClick={userSignIn}>Sign in</Button>
+                </Card.Body>
             </Card>
         </>
     );
