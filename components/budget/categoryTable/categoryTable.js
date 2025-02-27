@@ -8,12 +8,15 @@ import categorySorter from "@/helpers/categorySorter";
 import usePaystubs from "@/hooks/usePaystubs";
 import useHistory from "@/hooks/useHistory";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
+import { useSession } from "next-auth/react";
 
 const CategoryTable = ({ setEditClicked, monthInfo }) => {
+    const { data: session } = useSession();
+
     const { categories, categoriesLoading, putCategories } = useContext(CategoriesContext);
-    const { paystubs, paystubsLoading, getMonthIncome } = usePaystubs(monthInfo.year);
+    const { paystubs, paystubsLoading, getMonthIncome } = usePaystubs(session.user.username, monthInfo.year);
     const sortedCategories = categorySorter(categories);
-    const { historyLoading, putHistory, getMonthHistory } = useHistory();
+    const { historyLoading, putHistory, getMonthHistory } = useHistory(session.user.username);
 
     useEffect(() => {
         const updateHistoryValues = async () => {

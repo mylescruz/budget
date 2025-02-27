@@ -12,11 +12,11 @@ const BUCKET_NAME = process.env.BUCKET_NAME;
 const defaultCategoriesFile = 'default_categories.json';
 
 export default async function handler(req, res) {
+    const username = req?.query?.username;
     const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
-    const userFolder = 'mylescruz';
-    const key = `${userFolder}/categories/${year}/categories-${userFolder}-${month}${year}.json`;
+    const key = `${username}/categories/${year}/categories-${username}-${month}${year}.json`;
 
     async function getCategoriesData() {
         const getParams = {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
                     const previousMonthDate = new Date(yearToCheck, previousMonthNumber);
                     const previousMonth = previousMonthDate.toLocaleDateString('en-US', {month: 'long'}).toLowerCase();
                     
-                    const previousMonthKey = `${userFolder}/categories/${yearToCheck}/categories-${userFolder}-${previousMonth}${yearToCheck}.json`;
+                    const previousMonthKey = `${username}/categories/${yearToCheck}/categories-${username}-${previousMonth}${yearToCheck}.json`;
                     
                     const previousMonthParams = {
                         Bucket: BUCKET_NAME,

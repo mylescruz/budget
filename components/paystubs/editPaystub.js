@@ -1,11 +1,14 @@
 import editHistoryBudget from "@/helpers/editHistoryBudget";
 import useHistory from "@/hooks/useHistory";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
+    const { data: session } = useSession();
+
     const [edittedPaystub, setEdittedPaystub] = useState(paystub);
-    const { history, putHistory } = useHistory();
+    const { history, putHistory } = useHistory(session.user.username);
 
     const handleInput = (e) => {
         setEdittedPaystub({ ...edittedPaystub, [e.target.id]: e.target.value});

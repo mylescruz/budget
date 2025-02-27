@@ -1,9 +1,12 @@
 import deleteFromHistoryBudget from "@/helpers/deleteFromHistoryBudget";
 import useHistory from "@/hooks/useHistory";
+import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
 
 const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setShowDetails }) => {
-    const { history, putHistory } = useHistory();
+    const { data: session } = useSession();
+
+    const { history, putHistory } = useHistory(session.user.username);
 
     const closeDelete = () => {
         setShowDelete(false);

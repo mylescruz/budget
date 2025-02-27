@@ -3,8 +3,11 @@ import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
 import addToHistoryBudget from "@/helpers/addToHistoryBudget";
+import { useSession } from "next-auth/react";
 
 const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddPaystubClicked}) => {
+    const { data: session } = useSession();
+
     const emptyPaystub = {
         id: 0,
         date: dateInfo.currentDate,
@@ -16,7 +19,7 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
     };
     
     const [paystub, setPaystub] = useState(emptyPaystub);
-    const { history, putHistory } = useHistory();
+    const { history, putHistory } = useHistory(session.user.username);
 
     const handleInput = (e) => {
         setPaystub({ ...paystub, [e.target.id]: e.target.value});
