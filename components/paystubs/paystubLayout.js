@@ -4,11 +4,21 @@ import AddPaystub from "./addPaystub";
 import { Button, Col, Row } from "react-bootstrap";
 import { useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const PaystubLayout = ({ year }) => {
-    const { paystubs, postPaystub, putPaystub, deletePaystub } = usePaystubs(year);
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    const { paystubs, postPaystub, putPaystub, deletePaystub } = usePaystubs(session.user.username, year);
     const [addPaystubClicked, setAddPaystubClicked] = useState(false);
     const yearInfo = getYearInfo(year);
+
+    if (!session) {
+        // If no session, redirect to the home page
+        router.push('/');
+    }
 
     const addPay = () => {
         setAddPaystubClicked(true);

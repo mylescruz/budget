@@ -10,10 +10,10 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 export default async function handler(req, res) {
+    const username = req?.query?.username;
     const year = req?.query?.year;
     const method = req?.method;
-    const userFolder = 'mylescruz';
-    const key = `${userFolder}/paystubs/paystubs-${userFolder}-${year}.json`;
+    const key = `${username}/paystubs/paystubs-${username}-${year}.json`;
 
     async function getPaystubData() {
         const getParams = {

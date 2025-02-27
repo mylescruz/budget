@@ -1,14 +1,14 @@
 import dateSorter from "@/helpers/dateSorter";
 import { useEffect, useState } from "react";
 
-const usePaystubs = (year) => {
+const usePaystubs = (username, year) => {
     const [paystubs, setPaystubs] = useState([]);
     const [paystubsLoading, setPaystubsLoading] = useState(true);
     
     useEffect(() => {
         const getPaystubs = async () => {
             try {
-                const rsp = await fetch(`/api/paystubs/${year}`);
+                const rsp = await fetch(`/api/paystubs/${username}/${year}`);
                 const result = await rsp.json();
                 const sortedPaystubs = dateSorter(result);
                 setPaystubs(sortedPaystubs);
@@ -19,11 +19,11 @@ const usePaystubs = (year) => {
         }
 
         getPaystubs();
-    }, [year]);
+    }, [username, year]);
 
     const postPaystub = async (newPaystub) => {
         try {
-            const rsp = await fetch(`/api/paystubs/${year}`, {
+            const rsp = await fetch(`/api/paystubs/${username}/${year}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -43,7 +43,7 @@ const usePaystubs = (year) => {
 
     const putPaystub = async (edittedPaystub) => {
         try {
-            const rsp = await fetch(`/api/paystubs/${year}`, {
+            const rsp = await fetch(`/api/paystubs/${username}/${year}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -63,7 +63,7 @@ const usePaystubs = (year) => {
 
     const deletePaystub = async (paystubToDelete) => {
         try {
-            const rsp = await fetch(`/api/paystubs/${year}`, {
+            const rsp = await fetch(`/api/paystubs/${username}/${year}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
