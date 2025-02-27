@@ -1,10 +1,17 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { Button, Card, Col, Row } from "react-bootstrap";
 
 const Dashboard = () => {
     const { data: session } = useSession();
+    const router = useRouter();
 
+    // If no session, redirect back to home page
+    if (!session) {
+        router.push('/');
+    }
+    
     return (
         <>
             <Card className="w-50 mx-auto my-4 bg-secondary-subtle">
