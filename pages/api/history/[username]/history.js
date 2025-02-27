@@ -10,9 +10,9 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 export default async function handler(req, res) {
+    const username = req?.query?.username;
     const method = req?.method;
-    const userFolder = 'mylescruz';
-    const key = `${userFolder}/history/history-${userFolder}.json`;
+    const key = `${username}/history/history-${username}.json`;
 
     async function getHistoryData() {
         const getParams = {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
             return JSON.parse(history.Body.toString('utf-8'));
         } catch (err) {
             if (err.code === 'NoSuchKey') {
-                console.log(`Creating a new history file for ${userFolder}`);
+                console.log(`Creating a new history file for ${username}`);
 
                 const newHistory = [];
 

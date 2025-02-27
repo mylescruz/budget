@@ -4,9 +4,19 @@ import useHistory from "@/hooks/useHistory";
 import { useEffect } from "react";
 import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const HistoryLayout = () => {
-    const { history, historyLoading, postHistory, getMonthHistory } = useHistory();
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    const { history, historyLoading, postHistory, getMonthHistory } = useHistory(session.user.username);
+
+    if (!session) {
+        // If no session, redirect to the home page
+        router.push('/');
+    }
 
     useEffect(() => {
         const addNewHistoryMonth = async () => {

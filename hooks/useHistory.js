@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-const useHistory = () => {
+const useHistory = (username) => {
     const [history, setHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
     
     useEffect(() => {
         const getHistory = async () => {
             try {
-                const rsp = await fetch("/api/history");
+                const rsp = await fetch(`/api/history/${username}/history`);
                 const result = await rsp.json();
                 setHistory(result);
                 setHistoryLoading(false);
@@ -17,11 +17,11 @@ const useHistory = () => {
         }
 
         getHistory();
-    }, []);
+    }, [username]);
 
     const postHistory = async (newHistory) => {
         try {
-            const rsp = await fetch("/api/history", {
+            const rsp = await fetch(`/api/history/${username}/history`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -40,7 +40,7 @@ const useHistory = () => {
 
     const putHistory = async (edittedHistory) => {
         try {
-            const rsp = await fetch("/api/history", {
+            const rsp = await fetch(`/api/history/${username}/history`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -59,7 +59,7 @@ const useHistory = () => {
 
     const deleteHistory = async (historyToDelete) => {
         try {
-            const rsp = await fetch("/api/history", {
+            const rsp = await fetch(`/api/history/${username}/history`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
