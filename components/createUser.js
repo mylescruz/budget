@@ -1,4 +1,5 @@
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 
@@ -21,6 +22,7 @@ const CreateUser = () => {
     const [validEmail, setValidEmail] = useState(validated);
     const [validPassword, setValidPassword] = useState(validated);
     const [validMatch, setValidMatch] = useState(validated);
+    const router = useRouter();
 
     const handleInput = (e) => {
         setNewUser({...newUser, [e.target.id]: e.target.value});
@@ -45,7 +47,7 @@ const CreateUser = () => {
 
     const createUserS3 = async (newUser) => {
         try {
-            const res = await fetch(`/api/user/${newUser.username}`, {
+            await fetch(`/api/user/${newUser.username}`, {
                 method: 'POST',
                 headers: {
                     Accept: "application.json",
@@ -53,21 +55,17 @@ const CreateUser = () => {
                 },
                 body: JSON.stringify(newUser)
             });
-
-            await res.json();
         } catch (err) {
-            console.log("Error creating user: ", err);
+            window.alert('Error creating user. Please try again');
+            router.push('/createaccount');
         }
     };
 
     const createNewUser = async (e) => {
         e.preventDefault();
 
-        console.log("Creating user");
-
         // Check if entered email is valid
         if (!checkEmail(newUser.email)) {
-            console.log("Didnt pass email check");
             setValidEmail({valid: false, error: 'Not a valid email address'});
             return;
         } else {
@@ -77,7 +75,6 @@ const CreateUser = () => {
         // Check if the username is already taken
         const userExists = await checkUsername(newUser.username);
         if (userExists) {
-            console.log("Didnt pass username check");
             setValidUsername({valid: false, error: 'Username is already taken'});
             return;
         } else {
@@ -86,7 +83,6 @@ const CreateUser = () => {
 
         // Check if entered password is valid
         if (!checkPassword(newUser.password)) {
-            console.log("Didnt pass password check");
             setValidPassword({valid: false, error: 'A password must have a minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character'});
             return;
         } else {
@@ -95,7 +91,6 @@ const CreateUser = () => {
 
         // Check if entered password and password confirmation match
         if (newUser.password !== newUser.confirmPassword) {
-            console.log("Didnt pass match check");
             setValidMatch({valid: false, error: 'Passwords do not match'});
             return;
         } else {
@@ -105,7 +100,8 @@ const CreateUser = () => {
         // Add the user to S3
         await createUserS3(newUser);
 
-        // Redirect to sign in page
+        window.alert('User created successfully! Please login to your account.');
+
         signIn();
     };
 
