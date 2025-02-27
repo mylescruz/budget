@@ -8,11 +8,12 @@ export default function HistoryMonth() {
 
     const month = router.query.month;
     const year = parseInt(router.query.year);
-    const monthInfo = getMonthInfo(month, year);
 
     if (!month) {
         return <Spinner animation="border" variant="primary" className="mx-auto" />;
     } else {
+        const monthInfo = getMonthInfo(month, year);
+        
         return <HistoryBudget monthInfo={monthInfo} />;
     }
 };
