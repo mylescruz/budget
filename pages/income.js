@@ -9,12 +9,7 @@ export default function Income() {
     const year = dateInfo.currentYear;
 
     if (status === 'loading') {
-        return (
-            <>
-                <h1 className="text-center">Loading user income</h1>
-                <Spinner animation="border" variant="primary" className="mx-auto" />
-            </>
-        );
+        return <Spinner animation="border" variant="primary" className="mx-auto" />;
     } else {
         return <PaystubLayout year={year} />;
     }

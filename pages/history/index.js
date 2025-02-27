@@ -6,15 +6,8 @@ export default function History() {
     const { status } = useSession();
 
     if (status === 'loading') {
-        return (
-            <>
-                <h1 className="text-center">Loading user history</h1>
-                <Spinner animation="border" variant="primary" className="mx-auto" />
-            </>
-        )
+        return <Spinner animation="border" variant="primary" className="mx-auto" />;
+    } else {
+        return <HistoryLayout/>;
     }
-
-    return (
-        <HistoryLayout/>
-    );
 };

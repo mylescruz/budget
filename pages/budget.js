@@ -12,15 +12,8 @@ export default function Budget() {
     const monthInfo = getMonthInfo(month, year);
     
     if (status === 'loading') {
-        return (
-            <>
-                <h1 className="text-center">Loading budget</h1>
-                <Spinner animation="border" variant="primary" className="mx-auto" />
-            </>
-        );
+        return <Spinner animation="border" variant="primary" className="mx-auto" />;
+    } else {
+        return <BudgetLayout monthInfo={monthInfo} />;
     }
-
-    return (
-        <BudgetLayout monthInfo={monthInfo} />
-    );
 };
