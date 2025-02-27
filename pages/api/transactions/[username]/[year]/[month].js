@@ -10,11 +10,11 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 export default async function handler(req, res) {
+    const username = req?.query?.username;
     const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
-    const userFolder = 'mylescruz';
-    const key = `${userFolder}/transactions/${year}/transactions-${userFolder}-${month}${year}.json`;
+    const key = `${username}/transactions/${year}/transactions-${username}-${month}${year}.json`;
 
     async function getTransactionData() {
         const getParams = {

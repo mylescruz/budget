@@ -7,13 +7,23 @@ import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
 import SummaryPieChart from "./summaryPieChart";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
-    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(monthInfo.month, monthInfo.year);
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
+
+    if (!session) {
+        // If no session, redirect to the home page
+        router.push('/');
+    }
 
     const showTransactions = () => {
         setViewClicked(true);

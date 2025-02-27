@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-const useTransactions = (month, year) => {
+const useTransactions = (username, month, year) => {
     const [transactions, setTransactions] = useState([]);
 
     useEffect(() => {
         const getTransactions = async () => {
             try {
-                const rsp = await fetch(`/api/transactions/${year}/${month}`);
+                const rsp = await fetch(`/api/transactions/${username}/${year}/${month}`);
                 const result = await rsp.json();
                 setTransactions(result);
             } catch (err) {
@@ -14,14 +14,14 @@ const useTransactions = (month, year) => {
             }
         }
         getTransactions();
-    }, [month, year]);
+    }, [username, month, year]);
 
     const postTransaction = async (newTransaction) => {
         const date = new Date(newTransaction.date);
         const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
-            const rsp = await fetch(`/api/transactions/${year}/${month}`, {
+            const rsp = await fetch(`/api/transactions/${username}/${year}/${month}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -39,7 +39,7 @@ const useTransactions = (month, year) => {
 
     const putTransaction = async (edittedTransaction) => {
         try {
-            const rsp = await fetch(`/api/transactions/${year}/${month}`, {
+            const rsp = await fetch(`/api/transactions/${username}/${year}/${month}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
@@ -60,7 +60,7 @@ const useTransactions = (month, year) => {
         const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
 
         try {
-            const rsp = await fetch(`/api/transactions/${year}/${month}`, {
+            const rsp = await fetch(`/api/transactions/${username}/${year}/${month}`, {
                 method: "DELETE",
                 headers: {
                     Accept: "application.json",
