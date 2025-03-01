@@ -22,7 +22,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
         const updateHistoryValues = async () => {
             let totalActual = 0;
             categories.forEach(category => {
-                totalActual += category.actual;
+                totalActual += parseFloat(category.actual);
             });
 
             const foundMonth = getMonthHistory(monthInfo);
@@ -56,7 +56,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     const footerValues = useMemo(() => {
         let totalActual = 0;
         categories.forEach(category => {
-            totalActual += category.actual;
+            totalActual += parseFloat(category.actual);
         });
 
         const income = getMonthIncome(monthInfo);

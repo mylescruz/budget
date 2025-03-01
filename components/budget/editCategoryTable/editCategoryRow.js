@@ -42,10 +42,10 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
             }
         });
 
-        const actualTotal = edittedCategory.fixed ? budgetTotal : edittedCategory.actual;
+        const actualTotal = edittedCategory.fixed ? parseFloat(budgetTotal) : edittedCategory.actual;
         
-        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
-        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
+        setEdittedCategory({...edittedCategory, budget: parseFloat(budgetTotal), actual: parseFloat(actualTotal), hasSubcategory: true, subcategories: updatedSubcategories });
+        updateCategoryValues({...edittedCategory, budget: parseFloat(budgetTotal), actual: parseFloat(actualTotal), hasSubcategory: true, subcategories: updatedSubcategories });
     };
 
     const addSubcategory = () => {
