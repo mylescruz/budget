@@ -2,7 +2,6 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
 import PaystubDetails from "./paystubDetails";
-import styles from "@/styles/paystubRow.module.css";
 import EditPaystub from "./editPaystub";
 import DeletePaystub from "./deletePaystub";
 
@@ -42,12 +41,12 @@ const PaystubRow = ({ paystub, putPaystub, deletePaystub, yearInfo }) => {
 
     return (
         <>
-            <tr className={styles.cell} onClick={openDetails}>
-                <td>{dateFormatter(paystub.date)}</td>
-                <td>{paystub.company}</td>
-                <td>{currencyFormatter.format(paystub.gross)}</td>
-                <td>{currencyFormatter.format(paystub.taxes)}</td>
-                <td>{currencyFormatter.format(paystub.net)}</td>
+            <tr className={`d-flex`} onClick={openDetails}>
+                <td className="col-3 col-md-2">{dateFormatter(paystub.date)}</td>
+                <td className="col-6 col-md-4 cell">{paystub.company}</td>
+                <td className="d-none d-md-block col-md-2">{currencyFormatter.format(paystub.gross)}</td>
+                <td className="d-none d-md-block col-md-2">{currencyFormatter.format(paystub.taxes)}</td>
+                <td className="col-3 col-md-2">{currencyFormatter.format(paystub.net)}</td>
             </tr>
 
             { showDetails && <PaystubDetails {...paystubDetailsProps} />}

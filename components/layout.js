@@ -3,11 +3,12 @@ import Header from "./header";
 
 export default function Layout({ children }) {
     return (
-        <>
+        <div className="page-layout">
             <Header/>
-            <br/><br/>
-            <main>{children}</main>
+            <main className="content">
+                {children}
+            </main>
             <Footer/>
-        </>
+        </div>
     );
 };

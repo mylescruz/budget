@@ -9,11 +9,11 @@ const TransactionsTable = ({transactions, putTransaction, deleteTransaction, mon
         <Table striped bordered responsive hover className="transactions-table mx-auto">
             <caption>*Click a transaction to view the details</caption>
             <thead className="table-dark">
-                <tr>
-                    <th className="col-1">Date</th>
-                    <th className="col-8">Store</th>
-                    <th className="col-2">Category</th>
-                    <th className="col-1">Amount</th>
+                <tr className="d-flex">
+                    <th className="col-2">Date</th>
+                    <th className="col-7 col-sm-4">Store</th>
+                    <th className="d-none d-sm-block col-sm-3">Category</th>
+                    <th className="col-3 col-sm-3">Amount</th>
                 </tr>
             </thead>
             <tbody>

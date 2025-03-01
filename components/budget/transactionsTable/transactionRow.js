@@ -52,14 +52,14 @@ const TransactionRow = ({ transaction, putTransaction, deleteTransaction, monthI
 
     return (
         <>
-            <tr className={styles.cell} onClick={openDetails}>
-                <td>{dateFormatter(transaction.date)}</td>
-                <td>{transaction.store}</td>
-                <td>{transaction.category}</td>
+            <tr className="d-flex" onClick={openDetails}>
+                <td className="col-2">{dateFormatter(transaction.date)}</td>
+                <td className={`col-7 col-sm-4 ${styles.cell}`}>{transaction.store}</td>
+                <td className={`d-none d-sm-block col-sm-3`}>{transaction.category}</td>
                 {transaction.amount > 0 ? 
-                        <td>{currencyFormatter.format(transaction.amount)}</td> 
+                        <td className="col-3 col-sm-3">{currencyFormatter.format(transaction.amount)}</td> 
                         : 
-                        <td className="text-danger">({currencyFormatter.format(Math.abs(transaction.amount))})</td>
+                        <td className="col-3 col-sm-3 text-danger">({currencyFormatter.format(Math.abs(transaction.amount))})</td>
                 }
             </tr>
 

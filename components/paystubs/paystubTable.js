@@ -20,14 +20,15 @@ const PaystubTable = ({ paystubs, putPaystub, deletePaystub, yearInfo }) => {
     }, [paystubs]);
 
     return (
-        <Table bordered className="w-75 mx-auto income-table">
+        <Table bordered className="mx-auto income-table">
+            <caption>*Click a paystub to view the details</caption>
             <thead className="table-dark">
-                <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Company</th>
-                    <th scope="col">Gross Income</th>
-                    <th scope="col">Taxes Deducted</th>
-                    <th scope="col">Net Income</th>
+                <tr className="d-flex">
+                    <th className="col-3 col-md-2">Date</th>
+                    <th className="col-6 col-md-4">Company</th>
+                    <th className="d-none d-md-block col-md-2">Gross Income</th>
+                    <th className="d-none d-md-block col-md-2">Taxes</th>
+                    <th className="col-3 col-md-2">Net Income</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,12 +37,12 @@ const PaystubTable = ({ paystubs, putPaystub, deletePaystub, yearInfo }) => {
                 ))}
             </tbody>
             <tfoot>
-                <tr>
-                    <th scope="col">Total</th>
-                    <th scope="col"></th>
-                    <th scope="col">{currencyFormatter.format(footerValues.totalGross)}</th>
-                    <th scope="col">{currencyFormatter.format(footerValues.totalTaxes)}</th>
-                    <th scope="col">{currencyFormatter.format(footerValues.totalNet)}</th>
+                <tr className="d-flex">
+                    <th className="col-3 col-md-2">Total</th>
+                    <th className="col-6 col-md-4"></th>
+                    <th className="d-none d-md-block col-md-2">{currencyFormatter.format(footerValues.totalGross)}</th>
+                    <th className="d-none d-md-block col-md-2">{currencyFormatter.format(footerValues.totalTaxes)}</th>
+                    <th className="col-3 col-md-2">{currencyFormatter.format(footerValues.totalNet)}</th>
                 </tr>
             </tfoot>
         </Table>

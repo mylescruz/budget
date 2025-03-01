@@ -50,9 +50,7 @@ const HistoryLayout = () => {
 
     return (
         <>
-            <Row className="content-margin">
-                <Col className="text-center"><h1>History</h1></Col>
-            </Row>
+            <h1 className="my-3 text-center">History</h1>
 
             <HistoryTable history={history} />
         </>

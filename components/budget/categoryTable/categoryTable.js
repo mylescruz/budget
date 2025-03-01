@@ -26,7 +26,6 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
             });
 
             const foundMonth = getMonthHistory(monthInfo);
-            console.log(foundMonth);
 
             if (foundMonth) {
                 foundMonth.actual = totalActual;
@@ -47,7 +46,6 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
         if (!paystubsLoading && !categoriesLoading) {
             const income = getMonthIncome(monthInfo);
 
-            console.log("Updating guilt free spending");
             const updatedCategories = updateGuiltFreeSpending(income, categories);
             putCategories(updatedCategories);
         }
@@ -73,32 +71,31 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     return (
         <Table bordered className="categories-table mx-auto">
             <thead className="table-dark">
-                <tr>
-                    <th scope="col">
+                <tr className="d-flex">
+                    <th className="col-6">
                         <Row className="alignX">
-                            <Col className="col-8">Category</Col>
-                            <Col className="col-4"><Button className="btn-sm" id="edit-categories-btn" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
+                            <Col xs={9} sm={9} md={9}>Category</Col>
+                            <Col xs={2} sm={2} md={2}><Button className="btn-sm" id="edit-categories-btn" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                         </Row>
                     </th>
-                    <th scope="col" className="col-2">Budget</th>
-                    <th scope="col" className="col-2">Actual</th>
-                    <th scope="col" className="col-2">Leftover</th>
+                    <th className={"col-2 cell"}>Budget</th>
+                    <th className={"col-2 cell"}>Actual</th>
+                    <th className={"col-2 cell"}>Leftover</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th className="bg-secondary text-white" colSpan={4}>Fixed Expenses</th>
+                    <th className="bg-secondary text-white" colSpan={1}>Fixed Expenses</th>
                 </tr>
                 {sortedCategories.map(category => (
                     (category.fixed && <FixedCategoryRow key={category.id} category={category} />)
                 ))}
                 <tr>
-                    <th className="bg-secondary text-white" colSpan={4}>Variable Expenses</th>
+                    <th className="bg-secondary text-white" colSpan={1}>Variable Expenses</th>
                 </tr>
                 {sortedCategories.map(category => (
                     (!category.fixed && <CategoryRow key={category.id} category={category} />)
                 ))}
-                
             </tbody>
             <tfoot>
                 <CategoryFooter footerValues={footerValues}/>

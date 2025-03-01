@@ -1,9 +1,0 @@
-.budgetRow {
-    font-weight: bold;
-}
-
-.cell {
-    max-width: 90%;
-    text-wrap: nowrap;
-    overflow-x: scroll;
-}

@@ -70,12 +70,12 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
     return (
         <>
             <tr>
-                <th scope="row" className="text-nowrap">
+                <th className="text-nowrap">
                     <Row className="alignX w-100">
                         {edittedCategory.name !== dontDelete ? 
                             <Col className="col-9"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
                             :
-                            <Col className="col-9 mt-2">{category.name}</Col>
+                            <Col className="col-9 mt-2 cell">{category.name}</Col>
                         }
                         <Col className="col-1"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
                     </Row>
