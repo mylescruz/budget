@@ -1,3 +1,6 @@
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
+
 const AWS = require('aws-sdk');
 
 AWS.config.update({
@@ -12,7 +15,18 @@ const BUCKET_NAME = process.env.BUCKET_NAME;
 const defaultCategoriesFile = 'default_categories.json';
 
 export default async function handler(req, res) {
+    const session = await getServerSession(req, res, authOptions);
+
+    if (!session) {
+        return res.status(401).send("Must login to view your data!");
+    }
+
     const username = req?.query?.username;
+
+    if (session.user.username !== username) {
+        return res.status(401).send("Access denied to this user's data");
+    }
+
     const month = req?.query?.month.toLowerCase();
     const year = req?.query?.year;
     const method = req?.method;
