@@ -1,4 +1,4 @@
-const deleteFromHistoryBudget = (paystub, history) => {
+const addIncomeToHistoryBudget = (paystub, history) => {
     const paystubDate = new Date(paystub.date);
     const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
     const paystubYear = paystubDate.getFullYear();
@@ -7,10 +7,10 @@ const deleteFromHistoryBudget = (paystub, history) => {
         return currentMonth.month === paystubMonth && currentMonth.year === paystubYear;
     });
 
-    foundMonth.budget -= paystub.net;
+    foundMonth.budget += paystub.net;
     foundMonth.leftover = foundMonth.budget - foundMonth.actual;
 
     return foundMonth;
 };
 
-export default deleteFromHistoryBudget;
+export default addIncomeToHistoryBudget;

@@ -1,4 +1,4 @@
-const editCategoryActual = (edittedTransaction, oldTransaction, categories) => {
+const editTransactionForCategoryActual = (edittedTransaction, oldTransaction, categories) => {
     const updatedCategories = categories.map(category => {
         let categoryTotal = category.actual;
 
@@ -52,4 +52,4 @@ const editCategoryActual = (edittedTransaction, oldTransaction, categories) => {
     return updatedCategories;
 }
 
-export default editCategoryActual;
+export default editTransactionForCategoryActual;

@@ -1,6 +1,6 @@
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useContext, useState } from "react";
-import editCategoryActual from "@/helpers/editCategoryActual";
+import editTransactionForCategoryActual from "@/helpers/editTransactionForCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
@@ -20,7 +20,7 @@ const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShow
             setEdittedTransaction(edittedTransaction);
             putTransaction(edittedTransaction);
 
-            const updatedCategories = editCategoryActual(edittedTransaction, transaction, categories);
+            const updatedCategories = editTransactionForCategoryActual(edittedTransaction, transaction, categories);
             putCategories(updatedCategories);
 
             setShowEdit(false);

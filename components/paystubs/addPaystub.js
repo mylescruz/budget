@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
-import addToHistoryBudget from "@/helpers/addToHistoryBudget";
+import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
 import { useSession } from "next-auth/react";
 
 const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddPaystubClicked}) => {
@@ -45,7 +45,7 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
         paystub.taxes = (paystub.gross - paystub.net).toFixed(2);
         postPaystub(paystub);
 
-        const paystubMonth = addToHistoryBudget(paystub, history);
+        const paystubMonth = addIncomeToHistoryBudget(paystub, history);
         putHistory(paystubMonth);
 
         setPaystub(emptyPaystub);

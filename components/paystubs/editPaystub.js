@@ -1,4 +1,4 @@
-import editHistoryBudget from "@/helpers/editHistoryBudget";
+import editIncomeForHistoryBudget from "@/helpers/editIncomeForHistoryBudget";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -35,7 +35,7 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
 
         putPaystub(edittedPaystub);
 
-        const paystubMonth = editHistoryBudget(edittedPaystub, paystub, history);
+        const paystubMonth = editIncomeForHistoryBudget(edittedPaystub, paystub, history);
         putHistory(paystubMonth);
 
         setShowEdit(false);  

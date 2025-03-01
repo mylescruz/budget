@@ -1,4 +1,4 @@
-import deleteFromHistoryBudget from "@/helpers/deleteFromHistoryBudget";
+import deleteIncomeFromHistoryBudget from "@/helpers/deleteIncomeFromHistoryBudget";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
@@ -16,7 +16,7 @@ const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setS
     const confirmDelete = () => {
         deletePaystub(paystub);
 
-        const paystubMonth = deleteFromHistoryBudget(paystub, history);
+        const paystubMonth = deleteIncomeFromHistoryBudget(paystub, history);
         putHistory(paystubMonth);
     };
 

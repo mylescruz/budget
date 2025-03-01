@@ -1,5 +1,5 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import deleteFromCategoryActual from "@/helpers/deleteFromCategoryActual";
+import deleteTransactionFromCategoryActual from "@/helpers/deleteTransactionFromCategoryActual";
 import { useContext } from "react";
 import { Button, Modal } from "react-bootstrap";
 
@@ -14,7 +14,7 @@ const DeleteTransaction = ({ transaction, showDelete, setShowDelete, setShowDeta
     const confirmDelete = () => {
         deleteTransaction(transaction);
 
-        const updatedCategories = deleteFromCategoryActual(transaction, categories);
+        const updatedCategories = deleteTransactionFromCategoryActual(transaction, categories);
         putCategories(updatedCategories);
     };
 

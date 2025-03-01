@@ -1,4 +1,4 @@
-const deleteFromCategoryActual = (transaction, categories) => {
+const addTransactionToCategoryActual = (transaction, categories) => {
     const updatedCategories = categories.map(category => {
         let categoryTotal = category.actual;
 
@@ -7,8 +7,8 @@ const deleteFromCategoryActual = (transaction, categories) => {
                 let subcategoryTotal = subcategory.actual;
 
                 if (subcategory.name === transaction.category) {
-                    subcategoryTotal -= transaction.amount;
-                    categoryTotal -= transaction.amount;
+                    subcategoryTotal += transaction.amount;
+                    categoryTotal += transaction.amount;
 
                     return {...subcategory, actual: subcategoryTotal};
                 } else {
@@ -18,7 +18,7 @@ const deleteFromCategoryActual = (transaction, categories) => {
 
             return {...category, actual: categoryTotal, subcategories: updatedSubcategories};
         } else if (category.name === transaction.category && !category.hasSubcategory) {
-            categoryTotal -= transaction.amount;
+            categoryTotal += transaction.amount;
 
             return {...category, actual: categoryTotal}
         } else {
@@ -29,4 +29,4 @@ const deleteFromCategoryActual = (transaction, categories) => {
     return updatedCategories;
 }
 
-export default deleteFromCategoryActual;
+export default addTransactionToCategoryActual;

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
-import addToCategoryActual from "@/helpers/addToCategoryActual";
+import addTransactionToCategoryActual from "@/helpers/addTransactionToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
@@ -45,7 +45,7 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
         newTransaction.id = maxID + 1;
         postTransaction(newTransaction);
 
-        const updatedCategories = addToCategoryActual(newTransaction, categories);
+        const updatedCategories = addTransactionToCategoryActual(newTransaction, categories);
         putCategories(updatedCategories);
 
         setTransaction(emptyTransaction);
