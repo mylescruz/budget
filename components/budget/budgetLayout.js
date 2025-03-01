@@ -61,7 +61,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
     return (
         <Container className="w-100">
-            <h1 className="text-center mb-4">{monthInfo.month} {monthInfo.year}</h1>
+            <h1 className="text-center my-4">{monthInfo.month} {monthInfo.year}</h1>
 
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>

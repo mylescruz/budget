@@ -35,7 +35,7 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
         
         const updatedSubcategories = edittedCategory.subcategories.map(sub => {
             if (sub.id === subcategory.id) {
-                budgetTotal = budgetTotal - sub.actual + subcategory.actual;
+                budgetTotal = (budgetTotal - sub.actual + subcategory.actual).toFixed(2);
                 return {...sub, name: subcategory.name, actual: subcategory.actual}
             } else {
                 return sub;

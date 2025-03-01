@@ -31,7 +31,7 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
     const editPaystub = (e) => {
         e.preventDefault();
 
-        edittedPaystub.taxes = edittedPaystub.gross-edittedPaystub.net;
+        edittedPaystub.taxes = (edittedPaystub.gross-edittedPaystub.net).toFixed(2);
 
         putPaystub(edittedPaystub);
 
@@ -70,7 +70,7 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Taxes taken out</Form.Label>
-                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={edittedPaystub.gross-edittedPaystub.net} disabled required />
+                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(edittedPaystub.gross-edittedPaystub.net).toFixed(2)} disabled required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>

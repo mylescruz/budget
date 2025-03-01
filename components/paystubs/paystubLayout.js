@@ -34,7 +34,7 @@ const PaystubLayout = ({ year }) => {
 
     return (
         <>
-            <h1 className="text-center my-2">{year} Income</h1>
+            <h1 className="text-center my-4">{year} Income</h1>
 
             <Row className="text-center">
                 <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>

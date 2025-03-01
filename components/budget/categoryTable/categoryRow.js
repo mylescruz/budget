@@ -18,7 +18,7 @@ const CategoryRow = ({ category }) => {
         setShowSubcategories(!showSubcategories);
     };
 
-    const difference = category.budget - category.actual;
+    const difference = (category.budget - category.actual).toFixed(2);
     return (
         <>
             <tr className="d-flex">

@@ -50,7 +50,7 @@ const HistoryLayout = () => {
 
     return (
         <>
-            <h1 className="my-3 text-center">History</h1>
+            <h1 className="my-4 text-center">History</h1>
 
             <HistoryTable history={history} />
         </>

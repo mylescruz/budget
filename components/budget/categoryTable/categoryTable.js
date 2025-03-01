@@ -29,7 +29,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
 
             if (foundMonth) {
                 foundMonth.actual = totalActual;
-                foundMonth.leftover = foundMonth.budget - totalActual;
+                foundMonth.leftover = (foundMonth.budget - totalActual).toFixed(2);
 
                 putHistory(foundMonth);
             }

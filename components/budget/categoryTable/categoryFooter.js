@@ -1,7 +1,7 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 
 const CategoryFooter = ({footerValues}) => {   
-    const totalDifference = footerValues.budget - footerValues.actual;
+    const totalDifference = (footerValues.budget - footerValues.actual).toFixed(2);
 
     return (
         <tr className="d-flex">

@@ -10,8 +10,10 @@ const updateGuiltFreeSpending = (totalIncome, categories) => {
     });
 
     const updatedCategories = categories.map(category => {
-        if (category.name === "Guilt Free Spending")
-            return {...category, budget: totalIncome - totalBudget};
+        if (category.name === "Guilt Free Spending") {
+            const budget = (totalIncome - totalBudget).toFixed(2);
+            return {...category, budget: budget};
+        }
         else
             return category;
     });

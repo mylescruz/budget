@@ -42,7 +42,7 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
             maxID = Math.max(...paystubs.map(paystub => paystub.id));
 
         paystub.id = maxID + 1;
-        paystub.taxes = paystub.gross - paystub.net;
+        paystub.taxes = (paystub.gross - paystub.net).toFixed(2);
         postPaystub(paystub);
 
         const paystubMonth = addToHistoryBudget(paystub, history);
@@ -87,7 +87,7 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Taxes taken out</Form.Label>
-                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={paystub.gross-paystub.net} disabled required />
+                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(paystub.gross-paystub.net).toFixed(2)} disabled required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
