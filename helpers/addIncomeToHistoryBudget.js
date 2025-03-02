@@ -8,7 +8,7 @@ const addIncomeToHistoryBudget = (paystub, history) => {
     });
 
     foundMonth.budget += paystub.net;
-    foundMonth.leftover = foundMonth.budget - foundMonth.actual;
+    foundMonth.leftover = parseFloat((foundMonth.budget - foundMonth.actual).toFixed(2));
 
     return foundMonth;
 };

@@ -94,12 +94,12 @@ const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked})
             maxID = Math.max(...newCategory.subcategories.map(sub => sub.id));
         newSubcategory.id = maxID + 1;
 
-        setSubcategoryTotal(subcategoryTotal + newSubcategory.actual);
+        setSubcategoryTotal(parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2)));
 
         if (newCategory.fixed) {
             setNewCategory({ ...newCategory,
-                budget: subcategoryTotal + newSubcategory.actual, 
-                actual: subcategoryTotal + newSubcategory.actual,
+                budget: parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2)), 
+                actual: parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2)),
                 hasSubcategory: true,
                 subcategories: [...newCategory.subcategories, newSubcategory]
             });

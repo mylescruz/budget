@@ -6,6 +6,7 @@ import monthFormatter from "@/helpers/monthFormatter";
 const HistoryTable = ({ history }) => {
     return (
         <Table bordered hover className={"w-75 mx-auto history-table"}>
+            <caption>*Click a month to view its budget</caption>
             <thead className="table-dark">
                 <tr>
                     <th>Month</th>
@@ -16,8 +17,8 @@ const HistoryTable = ({ history }) => {
             </thead>
             <tbody>
                 {history.map(month => (
-                    <tr key={month.id} className="click">
-                        <td><Link href={{pathname:'/history/[month]', query: {month: month.month, year: month.year}}}>{monthFormatter(`${month.month}/01/${month.year}`)}</Link></td>
+                    <tr key={month.id}>
+                        <td className="click"><Link href={{pathname:'/history/[month]', query: {month: month.month, year: month.year}}}>{monthFormatter(`${month.month} 01, ${month.year}`)}</Link></td>
                         <td>{currencyFormatter.format(month.budget)}</td>
                         <td>{currencyFormatter.format(month.actual)}</td>
                         {month.leftover >= 0 ? 

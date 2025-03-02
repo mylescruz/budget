@@ -4,15 +4,15 @@ const updateGuiltFreeSpending = (totalIncome, categories) => {
 
     categories.forEach(category => {
         if (category.name !== "Guilt Free Spending")
-            totalBudget += parseFloat(category.budget);
+            totalBudget += category.budget;
 
-        totalActual += parseFloat(category.actual);
+        totalActual += category.actual;
     });
 
     const updatedCategories = categories.map(category => {
         if (category.name === "Guilt Free Spending") {
-            const budget = totalIncome - totalBudget.toFixed(2);
-            return {...category, budget: parseFloat(budget)};
+            const budget = parseFloat(totalIncome - totalBudget.toFixed(2));
+            return {...category, budget: budget};
         }
         else
             return category;

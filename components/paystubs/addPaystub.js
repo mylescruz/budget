@@ -42,7 +42,7 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
             maxID = Math.max(...paystubs.map(paystub => paystub.id));
 
         paystub.id = maxID + 1;
-        paystub.taxes = (paystub.gross - paystub.net).toFixed(2);
+        paystub.taxes = parseFloat((paystub.gross - paystub.net).toFixed(2));
         postPaystub(paystub);
 
         const paystubMonth = addIncomeToHistoryBudget(paystub, history);

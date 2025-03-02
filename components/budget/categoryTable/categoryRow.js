@@ -4,9 +4,9 @@ import { Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
 const guiltFree = "Guilt Free Spending";
 
-const Link = ({ id, children, title }) => (
+const PopUp = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-      <a href="#">{children}</a>
+      <span>{children}</span>
     </OverlayTrigger>
 );
 
@@ -18,7 +18,7 @@ const CategoryRow = ({ category }) => {
         setShowSubcategories(!showSubcategories);
     };
 
-    const difference = (category.budget - category.actual).toFixed(2);
+    const difference = parseFloat((category.budget - category.actual).toFixed(2));
     return (
         <>
             <tr className="d-flex">
@@ -27,9 +27,9 @@ const CategoryRow = ({ category }) => {
                         <Col xs={9} sm={10} className="cell">
                             {category.name}
                             {category.name === guiltFree &&
-                                <Link title="The money you can spend on whatever you want after all other expenses have been covered" id="t-1">
+                                <PopUp title="The money you can spend on whatever you want after all other expenses have been covered" id="t-1">
                                     <span> &#9432;</span>
-                                </Link>
+                                </PopUp>
                             }
                         </Col>
                         {hasSubcategory && 

@@ -28,8 +28,8 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
             const foundMonth = getMonthHistory(monthInfo);
 
             if (foundMonth) {
-                foundMonth.actual = totalActual;
-                foundMonth.leftover = (foundMonth.budget - totalActual).toFixed(2);
+                foundMonth.actual = parseFloat(totalActual.toFixed(2));
+                foundMonth.leftover = parseFloat((foundMonth.budget - totalActual).toFixed(2));
 
                 putHistory(foundMonth);
             }

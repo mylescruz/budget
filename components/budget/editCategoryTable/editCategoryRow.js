@@ -35,17 +35,17 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
         
         const updatedSubcategories = edittedCategory.subcategories.map(sub => {
             if (sub.id === subcategory.id) {
-                budgetTotal = (budgetTotal - sub.actual + subcategory.actual).toFixed(2);
+                budgetTotal = parseFloat((budgetTotal - sub.actual + subcategory.actual).toFixed(2));
                 return {...sub, name: subcategory.name, actual: subcategory.actual}
             } else {
                 return sub;
             }
         });
 
-        const actualTotal = edittedCategory.fixed ? parseFloat(budgetTotal) : edittedCategory.actual;
+        const actualTotal = edittedCategory.fixed ? budgetTotal : edittedCategory.actual;
         
-        setEdittedCategory({...edittedCategory, budget: parseFloat(budgetTotal), actual: parseFloat(actualTotal), hasSubcategory: true, subcategories: updatedSubcategories });
-        updateCategoryValues({...edittedCategory, budget: parseFloat(budgetTotal), actual: parseFloat(actualTotal), hasSubcategory: true, subcategories: updatedSubcategories });
+        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
+        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
     };
 
     const addSubcategory = () => {
@@ -61,7 +61,7 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
             return sub.id !== subcategory.id;
         });
 
-        const budgetTotal = edittedCategory.budget - subcategory.actual;
+        const budgetTotal = parseFloat((edittedCategory.budget - subcategory.actual).toFixed(2));
 
         setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
         updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});

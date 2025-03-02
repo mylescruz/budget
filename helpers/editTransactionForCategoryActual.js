@@ -16,7 +16,7 @@ const editTransactionForCategoryActual = (edittedTransaction, oldTransaction, ca
                         categoryTotal -= oldTransaction.amount;
                     }
 
-                    return {...subcategory, actual: subcategoryTotal};
+                    return {...subcategory, actual: parseFloat(subcategoryTotal.toFixed(2))};
                 } else if (subcategory.name === edittedTransaction.category) {
                     if (edittedTransaction.category !== oldTransaction.category) {
                         subcategoryTotal += edittedTransaction.amount;
@@ -26,24 +26,24 @@ const editTransactionForCategoryActual = (edittedTransaction, oldTransaction, ca
                         categoryTotal = categoryTotal - oldTransaction.amount + edittedTransaction.amount;
                     }
 
-                    return {...subcategory, actual: subcategoryTotal};
+                    return {...subcategory, actual: parseFloat(subcategoryTotal.toFixed(2))};
                 } else {
                     return subcategory;
                 }
             });
 
-            return {...category, actual: categoryTotal, subcategories: updatedSubcategories};
+            return {...category, actual: parseFloat(categoryTotal.toFixed(2)), subcategories: updatedSubcategories};
         } else if (category.name === oldTransaction.category && !category.hasSubcategory) {
             if (edittedTransaction.category === oldTransaction.category)
                 categoryTotal = category.actual - oldTransaction.amount + edittedTransaction.amount;
             else
                 categoryTotal -= oldTransaction.amount;
 
-            return {...category, actual: categoryTotal};
+            return {...category, actual: parseFloat(categoryTotal.toFixed(2))};
         } else if (category.name === edittedTransaction.category) {
             categoryTotal += edittedTransaction.amount;
 
-            return {...category, actual: categoryTotal}
+            return {...category, actual: parseFloat(categoryTotal.toFixed(2))}
         } else {
             return category;
         }

@@ -31,7 +31,7 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
     const editPaystub = (e) => {
         e.preventDefault();
 
-        edittedPaystub.taxes = (edittedPaystub.gross-edittedPaystub.net).toFixed(2);
+        edittedPaystub.taxes = parseFloat((edittedPaystub.gross-edittedPaystub.net).toFixed(2));
 
         putPaystub(edittedPaystub);
 
