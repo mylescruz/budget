@@ -56,6 +56,10 @@ a {
   margin: 3.5em 0em 2em;
 }
 
+.loading-spinner {
+  min-height: 100vh;
+}
+
 .formInput {
   margin: 0.5em 0.5em;
 }
@@ -97,6 +101,13 @@ a {
   overflow-x: scroll;
 }
 
+.click {
+  &:hover {
+    cursor: pointer;
+    font-weight: bold;
+  }
+}
+
 .plus {
   &:hover {
       cursor: pointer;
@@ -136,9 +147,17 @@ a {
   }
 }
 
+.info-text {
+  width: 90%;
+}
+
 .pie-size {
   width: 100%;
   height: 100%;
+}
+
+.pie {
+  margin: 2em 0em;
 }
 
 #save-all-btn {
@@ -156,6 +175,10 @@ a {
 .income-table {
   margin: 2em 0em;
   width: 90%;
+}
+
+.history-table {
+  margin: 1em 0em 3em;
 }
 
 .content-margin {
@@ -243,6 +266,10 @@ a {
 
 /* Large Device */
 @media (min-width: 992px) and (max-width: 1199.99px) {
+  .pie {
+    margin: 2em 0em;
+  }
+
   .input-category {
     width: 60%;
   }
@@ -259,7 +286,7 @@ a {
 
 @media (min-width: 1200px) and (max-width: 1399.99px) {
   .pie {
-    margin: 5em 0em;
+    margin: 2em 0em;
   }
 
   .transactions-table {
@@ -274,7 +301,7 @@ a {
 
 @media (min-width: 1400px) {
   .pie {
-    margin: 5em 0em 0em;
+    margin: 2em 0em 0em;
   }
 
   .transactions-table {

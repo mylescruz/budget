@@ -41,7 +41,7 @@ const PaystubRow = ({ paystub, putPaystub, deletePaystub, yearInfo }) => {
 
     return (
         <>
-            <tr className={`d-flex`} onClick={openDetails}>
+            <tr className={`d-flex click`} onClick={openDetails}>
                 <td className="col-3 col-md-2">{dateFormatter(paystub.date)}</td>
                 <td className="col-6 col-md-4 cell">{paystub.company}</td>
                 <td className="d-none d-md-block col-md-2">{currencyFormatter.format(paystub.gross)}</td>

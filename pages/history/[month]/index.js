@@ -10,7 +10,11 @@ export default function HistoryMonth() {
     const year = parseInt(router.query.year);
 
     if (!month) {
-        return <Spinner animation="border" variant="primary" className="mx-auto" />;
+        return (
+            <div className="d-flex justify-content-center align-items-center loading-spinner">
+                <Spinner animation="border" variant="primary"/>
+            </div>
+        );
     } else {
         const monthInfo = getMonthInfo(month, year);
         

@@ -12,7 +12,11 @@ export default function Budget() {
     const monthInfo = getMonthInfo(month, year);
     
     if (status === 'loading') {
-        return <Spinner animation="border" variant="primary" className="mx-auto" />;
+        return (
+            <div className="d-flex justify-content-center align-items-center loading-spinner">
+                <Spinner animation="border" variant="primary"/>
+            </div>
+        );
     } else {
         return <BudgetLayout monthInfo={monthInfo} />;
     }

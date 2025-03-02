@@ -6,7 +6,11 @@ export default function CreateAccount() {
     const { status } = useSession();
 
     if (status === 'loading') {
-        return <Spinner animation="border" variant="primary" className="mx-auto" />;
+        return (
+            <div className="d-flex justify-content-center align-items-center loading-spinner">
+                <Spinner animation="border" variant="primary"/>
+            </div>
+        );
     } else {
         return <CreateUser />;
     }

@@ -34,10 +34,13 @@ const PaystubLayout = ({ year }) => {
 
     return (
         <>
-            <h1 className="text-center my-4">{year} Income</h1>
+            <aside className="info-text text-center my-4 mx-auto">
+                <h1>{year} Income</h1>
+                <p>View and add your paychecks for the current year. View your gross and net income and see how much taxes have been taken out.</p>
+            </aside>
 
             <Row className="text-center">
-                <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paystub</Button></Col>
+                <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paycheck</Button></Col>
             </Row>
             
             <PaystubTable paystubs={paystubs} putPaystub={putPaystub} deletePaystub={deletePaystub} yearInfo={yearInfo} />

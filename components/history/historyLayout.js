@@ -50,7 +50,10 @@ const HistoryLayout = () => {
 
     return (
         <>
-            <h1 className="my-4 text-center">History</h1>
+            <aside className="info-text text-center my-4 mx-auto">
+                <h1>History</h1>
+                <p>View your budget versus what you actually spent for previous months.</p>
+            </aside>
 
             <HistoryTable history={history} />
         </>

@@ -1,12 +1,11 @@
 import { Table } from "react-bootstrap";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import Link from "next/link";
-import styles from "@/styles/historyTable.module.css";
 import monthFormatter from "@/helpers/monthFormatter";
 
 const HistoryTable = ({ history }) => {
     return (
-        <Table bordered hover className={`w-75 mx-auto ${styles.table}`}>
+        <Table bordered hover className={"w-75 mx-auto history-table"}>
             <thead className="table-dark">
                 <tr>
                     <th>Month</th>
@@ -17,7 +16,7 @@ const HistoryTable = ({ history }) => {
             </thead>
             <tbody>
                 {history.map(month => (
-                    <tr key={month.id} className={styles.cell}>
+                    <tr key={month.id} className="click">
                         <td><Link href={{pathname:'/history/[month]', query: {month: month.month, year: month.year}}}>{monthFormatter(`${month.month}/01/${month.year}`)}</Link></td>
                         <td>{currencyFormatter.format(month.budget)}</td>
                         <td>{currencyFormatter.format(month.actual)}</td>

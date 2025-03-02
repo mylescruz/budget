@@ -61,7 +61,10 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
     return (
         <Container className="w-100">
-            <h1 className="text-center my-4">{monthInfo.month} {monthInfo.year}</h1>
+            <aside className="info-text mx-auto text-center my-4">
+                <h1 className="text-center">{monthInfo.month} {monthInfo.year}</h1>
+                <p className="fs-6">Set your budget for your fixed and variable expenses. Log all your transactions made this month. See how much you spent based on the category.</p>
+            </aside>
 
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 pie"><SummaryPieChart /></Col>
