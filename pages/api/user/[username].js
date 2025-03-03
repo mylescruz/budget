@@ -1,14 +1,16 @@
+// API Endpoint for a user information
+
+// Initializing the encryption for the user's password using bcrypt
 const bcyrpt = require('bcrypt');
 const saltRounds = 10;
 
+// Configuring AWS SDK to connect to Amazon S3
 const AWS = require('aws-sdk');
-
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION
 });
-
 const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
@@ -16,9 +18,10 @@ export default async function handler(req, res) {
     const method = req?.method;
     const username = req?.query?.username;
 
+    // S3 key for the file's location
     const key = `${username}/info-${username}.json`;
 
-    // Get new userId based off the previous users
+    // Function to get a new userId based off the previous users
     async function getNewUserId() {
         const rsp = await fetch(`${process.env.NEXTAUTH_URL}/api/user/users`);
         const users = await rsp.json();
@@ -31,7 +34,7 @@ export default async function handler(req, res) {
         return parseInt(maxID) + 1;
     };
 
-    // Post the new user to the user index
+    // Function to add the new user to the user index in S3
     async function postUserToIndex(user) {
         await fetch(`${process.env.NEXTAUTH_URL}/api/user/users`, {
             method: "POST",
@@ -44,25 +47,29 @@ export default async function handler(req, res) {
     };
 
     if (method === 'GET') {
+        // Return the user based on the username from S3
         try {
+            // A user's file parameters for S3
             const userParams = {
                 Bucket: BUCKET_NAME,
                 Key: key
             };
 
-            // Verify if the user exists by checking the info-username.json file
+            // Returns an object if the user already exists and throws an error if they do not
             await s3.headObject(userParams).promise();
+
+            // Send an object stating the user exists
             res.status(200).json({ exists: true });
         } catch (err) {
             if (err.code === 'NotFound') {
-                // If user doesn't exist, the user can successfully use that username
+                // If user doesn't exist, the user can sign up using that username
                 res.status(200).json({ exists: false });
             } else {
                 res.status(500).send(`${method} request failed: ${err}`);
             }
         }
     } else if (method === 'POST') {
-        // Creating a new user
+        // Add a new user in S3
         try {
             const user = req?.body;
 
@@ -75,7 +82,7 @@ export default async function handler(req, res) {
             // Assign a timestamp for when the user created their profile
             const createdDate = new Date().toUTCString();
 
-            // Add a user's file to their personal folder
+            // The data that a user's info file will contain
             const userInfo = {
                 id: newUserId,
                 name: user.name,
@@ -85,6 +92,7 @@ export default async function handler(req, res) {
                 created_ts: createdDate
             };
 
+            // User's info file parameters for S3
             const userInfoParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
@@ -92,22 +100,26 @@ export default async function handler(req, res) {
                 ContentType: "application/json"
             };
 
+            // Place the user's info file in the user's folder in S3
             await s3.putObject(userInfoParams).promise();
 
-            // Add this new user to the users index
+            // The data that the user's index will contain about the user
             const newUser = {
                 id: newUserId,
                 username: user.username,
                 email: user.email,
                 created_ts: createdDate
             };
+
+            // Add the user to the user's index in S3
             await postUserToIndex(newUser);
 
+            // Send a success status message in the response
             res.status(200).send("User created successfully!");
         } catch (err) {
             res.status(500).send(`${method} request failed: ${err}`);
         }
     } else {
-        res.status(400).send("Invalid request method");
+        res.status(405).send(`Method ${method} not allowed`);
     }
 };

@@ -8,15 +8,18 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const PaystubLayout = ({ year }) => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
+
+    // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
     const { paystubs, postPaystub, putPaystub, deletePaystub } = usePaystubs(session.user.username, year);
     const [addPaystubClicked, setAddPaystubClicked] = useState(false);
     const yearInfo = getYearInfo(year);
 
+    // If there is no user session, redirect to the home page
     if (!session) {
-        // If no session, redirect to the home page
         router.push('/');
     }
 

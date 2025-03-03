@@ -1,3 +1,5 @@
+// Returns an object that gives all the date info for the given month
+
 const getMonthInfo = (month, year) => {
     const monthNumber = new Date(`${month} 01, ${year}`).getMonth() + 1;
     const startOfMonth = new Date(`${monthNumber}/01/${year}`);

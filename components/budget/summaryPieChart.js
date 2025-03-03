@@ -1,3 +1,5 @@
+// Uses the Victory, 3rd Party Library, to display a Pie Chart of the percentages spent on each category
+
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext } from "react";
 import { VictoryPie } from "victory";
@@ -35,7 +37,7 @@ const SummaryPieChart = () => {
     });
 
     return (
-        <svg viewBox="0 -75 450 450">
+        <svg viewBox="0 -75 400 400">
             <VictoryPie
                 standalone={false}
                 data={pieData} 

@@ -4,6 +4,7 @@ import { Table } from "react-bootstrap";
 import PaystubRow from "./paystubRow";
 
 const PaystubTable = ({ paystubs, putPaystub, deletePaystub, yearInfo }) => {
+    // Sets the table's total gross income, taxes and net income
     const footerValues = useMemo(() => {
         let totalGross = 0;
         let totalTaxes = 0;

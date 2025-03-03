@@ -16,6 +16,7 @@ const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShow
     const editTheTransaction = (e) => {
         e.preventDefault();
 
+        // If the EditTransaction Modal is showing, update the transaction and then close the modal
         if (showEdit) {
             setEdittedTransaction(edittedTransaction);
             putTransaction(edittedTransaction);

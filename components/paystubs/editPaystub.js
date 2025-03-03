@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
     const [edittedPaystub, setEdittedPaystub] = useState(paystub);
@@ -33,8 +34,10 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
 
         edittedPaystub.taxes = parseFloat((edittedPaystub.gross-edittedPaystub.net).toFixed(2));
 
+        // Edits a paystub in the paystubs array by sending a PUT request to the API
         putPaystub(edittedPaystub);
 
+        // Updates the budget value for the given month in the history array by sending a PUT request to the API
         const paystubMonth = editIncomeForHistoryBudget(edittedPaystub, paystub, history);
         putHistory(paystubMonth);
 

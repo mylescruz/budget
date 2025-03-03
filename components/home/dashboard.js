@@ -4,10 +4,13 @@ import { useRouter } from "next/router";
 import { Button, Card, Col, Row } from "react-bootstrap";
 
 const Dashboard = () => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
+
+    // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
-    // If no session, redirect back to home page
+    // If there is no user session, redirect to the home page
     if (!session) {
         router.push('/');
     }

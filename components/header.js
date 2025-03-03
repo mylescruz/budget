@@ -3,12 +3,15 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 const Header = () => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
+    // A user accesses the login page using the signIn function provided by NextAuth.js
     const userSignIn = async () => {
         await signIn({ callbackUrl: '/'});
     };
 
+    // A user is logged out using the signOut function provided by NextAuth.js
     const userSignOut = async () => {
         await signOut({ callbackUrl: '/'});
     };

@@ -12,6 +12,7 @@ const CreateUser = () => {
         confirmPassword: ""
     };
 
+    // Error validation object that checks if an object is valid and returns an error if not
     const validated = {
         valid: true,
         error: ''
@@ -28,6 +29,10 @@ const CreateUser = () => {
         setNewUser({...newUser, [e.target.id]: e.target.value});
     };
 
+    /* 
+        Checks if the given username already exists
+        Sends a GET request to the API and checks if there is a user returned
+    */
     const checkUsername = async (username) => {
         const res = await fetch(`/api/user/${username}`);
         const user = await res.json();
@@ -35,16 +40,19 @@ const CreateUser = () => {
         return user.exists;
     };
 
+    // Checks if the given email is in valid email format
     const checkEmail = (email) => {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
         return regex.test(email);
     };
 
+    // Checks if the given password matches the required format
     const checkPassword = (password) => {
         const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%&*?])[a-zA-Z0-9!@#$%&*?]{8,}$/;
         return regex.test(password);
     };
 
+    // Creates the new user by sending a POST request to the API
     const createUserS3 = async (newUser) => {
         try {
             await fetch(`/api/user/${newUser.username}`, {
@@ -61,6 +69,7 @@ const CreateUser = () => {
         }
     };
 
+    // Does all the validation checks to make sure the given input matches all the criteria
     const createNewUser = async (e) => {
         e.preventDefault();
 
@@ -102,6 +111,7 @@ const CreateUser = () => {
 
         window.alert('User created successfully! Please login to your account.');
 
+        // Redirects the user to the signIn page to login with the new credentials
         signIn();
     };
 

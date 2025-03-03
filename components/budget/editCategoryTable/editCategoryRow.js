@@ -6,6 +6,8 @@ import EditSubcategoryRow from "./editSubcategoryRow";
 const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => {
     const [edittedCategory, setEdittedCategory] = useState(category);
     const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
+
+    // The only category that cannot be deleted
     const dontDelete = "Guilt Free Spending";
 
     const handleBudgetInput = (e) => {
@@ -33,6 +35,7 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
     const updateSubcategory = (subcategory) => {
         let budgetTotal = edittedCategory.budget;
         
+        // Map through each subcategory and remove the current subcategory actual value and add the new value to the budget
         const updatedSubcategories = edittedCategory.subcategories.map(sub => {
             if (sub.id === subcategory.id) {
                 budgetTotal = parseFloat((budgetTotal - sub.actual + subcategory.actual).toFixed(2));
@@ -42,6 +45,10 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
             }
         });
 
+        /* 
+            If the category is fixed, set the actual equal to the budget
+            If not, keep it set to the category's current actual value
+        */
         const actualTotal = edittedCategory.fixed ? budgetTotal : edittedCategory.actual;
         
         setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: true, subcategories: updatedSubcategories });
@@ -53,16 +60,20 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
     };
 
     const removeCategory = () => {
+        // Removes a category from the categories array by sending a DELETE request to the API
         deleteCategory(category);
     };
 
     const deleteSubcategory = (subcategory) => {
+        // Remove the requested subcategory from the category's subcategories array
         const updatedSubcategories = edittedCategory.subcategories.filter(sub => {
             return sub.id !== subcategory.id;
         });
 
+        // Update the category's budget to remove the subcategory's actual value
         const budgetTotal = parseFloat((edittedCategory.budget - subcategory.actual).toFixed(2));
 
+        // Updates the category's budget and actual value and set the hasSubcategory flag based on if there are any subcategories left
         setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
         updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
     };

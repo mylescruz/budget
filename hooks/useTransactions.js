@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const useTransactions = (username, month, year) => {
     const [transactions, setTransactions] = useState([]);
 
+    // GET request that returns the user's transaction based on the username, year and month
     useEffect(() => {
         const getTransactions = async () => {
             try {
@@ -16,6 +17,8 @@ const useTransactions = (username, month, year) => {
         getTransactions();
     }, [username, month, year]);
 
+    // POST request that adds a new transaction based on the username, year and month
+    // Then it sets the transactions array to the array returned by the response
     const postTransaction = async (newTransaction) => {
         const date = new Date(newTransaction.date);
         const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});
@@ -37,6 +40,8 @@ const useTransactions = (username, month, year) => {
         }
     };
 
+    // PUT request that updates a transaction based on the username, year and month
+    // Then it sets the transactions array to the array returned by the response
     const putTransaction = async (edittedTransaction) => {
         try {
             const rsp = await fetch(`/api/transactions/${username}/${year}/${month}`, {
@@ -55,6 +60,8 @@ const useTransactions = (username, month, year) => {
         }
     };
 
+    // DELETE request that deletes a transaction based on the username, year and month
+    // Then it sets the transactions array to the array returned by the response
     const deleteTransaction = async (transactionToDelete) => {
         const date = new Date(transactionToDelete.date);
         const month = date.toLocaleDateString('en-US', {month: 'long', timeZone: 'UTC'});

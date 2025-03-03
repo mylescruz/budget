@@ -11,7 +11,7 @@ const FixedCategoryRow = ({ category }) => {
         setShowSubcategories(!showSubcategories);
     };
 
-    const difference = parseFloat((category.budget-category.actual).toFixed(2));
+    const [difference, setDifference] = useState(category.budget - category.actual);
 
     return (
         <>

@@ -11,6 +11,7 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { useSession } from "next-auth/react";
 
 const CategoryTable = ({ setEditClicked, monthInfo }) => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
     const { categories, categoriesLoading, putCategories } = useContext(CategoriesContext);
@@ -18,6 +19,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     const sortedCategories = categorySorter(categories);
     const { historyLoading, putHistory, getMonthHistory } = useHistory(session.user.username);
 
+    // Updates the budget and the money actual spent in the history array when the categories array changes
     useEffect(() => {
         const updateHistoryValues = async () => {
             let totalActual = 0;
@@ -27,6 +29,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
 
             const foundMonth = getMonthHistory(monthInfo);
 
+            // Updates the given month's actual and leftover value by sending a PUT request to the API
             if (foundMonth) {
                 foundMonth.actual = parseFloat(totalActual.toFixed(2));
                 foundMonth.leftover = parseFloat((foundMonth.budget - totalActual).toFixed(2));
@@ -41,11 +44,12 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categories]);
 
+    // Updates the Guilt Free Spending budget when the paystubs array changes
     useEffect(() => {
-        // Update the Guilt Free Spending Category when paystubs changes
         if (!paystubsLoading && !categoriesLoading) {
             const income = getMonthIncome(monthInfo);
 
+            // Updates the categories by sending a PUT request to the API
             const updatedCategories = updateGuiltFreeSpending(income, categories);
             putCategories(updatedCategories);
         }
@@ -53,6 +57,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paystubs]);
 
+    // Sets the table's total budget and actual spent values
     const footerValues = useMemo(() => {
         let totalActual = 0;
         categories.forEach(category => {

@@ -11,6 +11,7 @@ export default function HistoryMonth() {
     const month = router.query.month;
     const year = parseInt(router.query.year);
 
+    // Create a loading indicator while check on the status of a user's session
     if (!month || status === 'loading') {
         return (
             <div className="d-flex justify-content-center align-items-center loading-spinner">

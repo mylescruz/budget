@@ -1,6 +1,7 @@
 import Footer from "./footer";
 import Header from "./header";
 
+// The main component that sets the layout for the webpage
 export default function Layout({ children }) {
     return (
         <div className="page-layout">

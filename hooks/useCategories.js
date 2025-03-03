@@ -4,6 +4,7 @@ const useCategories = (username, month, year) => {
     const [categories, setCategories] = useState([]);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
     
+    // GET request that returns all the categories based on the username, year and month
     useEffect(() => {
         const getCategories = async () => {
             try {
@@ -19,6 +20,8 @@ const useCategories = (username, month, year) => {
         getCategories();
     }, [username, month, year]);
 
+    // POST request that adds a new category based on the username, year and month
+    // Then it sets the categories array to the array returned by the response
     const postCategory = async (newCategory) => {
         try {
             const rsp = await fetch(`/api/categories/${username}/${year}/${month}`, {
@@ -38,6 +41,8 @@ const useCategories = (username, month, year) => {
         }
     };
 
+    // PUT request that updates all the categories based on the username, year and month
+    // Then it sets the categories array to the array returned by the response
     const putCategories = async (updatedCategories) => {
         try {
             const rsp = await fetch(`/api/categories/${username}/${year}/${month}`, {
@@ -57,6 +62,8 @@ const useCategories = (username, month, year) => {
         }
     };
 
+    // DELETE request that deletes a category based on the username, year and month
+    // Then it sets the categories array to the array returned by the response
     const deleteCategory = async (categoryToDelete) => {
         try {
             const rsp = await fetch(`/api/categories/${username}/${year}/${month}`, {

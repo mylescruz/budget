@@ -4,12 +4,15 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import Link from "next/link";
 
 const Home = () => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
+    // A user accesses the login page using the signIn function provided by NextAuth.js
     const userSignIn = async () => {
         await signIn({ callbackUrl: '/'});
     };
 
+    // If there is an user session, load the dashboard component or show the main home screen
     if (session) {
         return <Dashboard />;
     } else {

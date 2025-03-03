@@ -1,5 +1,7 @@
 import { Html, Head, Main, NextScript } from "next/document";
 
+// The two links are React Bootstrap stylesheet and JS functions
+
 export default function Document() {
   return (
     <Html lang="en">

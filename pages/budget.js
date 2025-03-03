@@ -11,6 +11,7 @@ export default function Budget() {
     const year = dateInfo.currentYear;
     const monthInfo = getMonthInfo(month, year);
     
+    // Create a loading indicator while check on the status of a user's session
     if (status === 'loading') {
         return (
             <div className="d-flex justify-content-center align-items-center loading-spinner">

@@ -8,11 +8,17 @@ import usePaystubs from "@/hooks/usePaystubs";
 import { useSession } from "next-auth/react";
 
 const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
     const { categories, postCategory, putCategories, deleteCategory } = useContext(CategoriesContext);
     const { getMonthIncome } = usePaystubs(session.user.username, monthInfo.year);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
+
+    /* 
+        categoryValues is a reference array set up to update all the categories at the same time
+        It needs to survive the re-renders that occur each time a category changes
+    */
     const categoryValues = useRef([]);
 
     const updateCategoryTable = (e) => {
@@ -20,6 +26,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
         setEditClicked(false);
 
+        // Maps through the categories array and if the category matches an editted category in categoryValues, replace that category
         const updated = categories.map(category => {
             const foundIndex = categoryValues.current.findIndex(cat => {
                 return cat.id === category.id;
@@ -34,6 +41,8 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
         const totalIncome = getMonthIncome(monthInfo);
         const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
+        
+        // Updates the categories array with the editted categories by sending a PUT request to the API
         putCategories(updatedCategories);
     };
 

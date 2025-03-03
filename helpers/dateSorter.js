@@ -1,3 +1,5 @@
+// Sorts the dates in an array
+
 const dateSorter = (givenArray) => {
     givenArray.sort((a,b) => {
         if (a.date > b.date)

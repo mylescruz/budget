@@ -1,31 +1,37 @@
-const bcrypt = require('bcrypt');
-const AWS = require('aws-sdk');
+// API Endpoint to authorize a user's credentials
 
+const bcrypt = require('bcrypt');
+
+// Configuring AWS SDK to connect to Amazon S3
+const AWS = require('aws-sdk');
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION
 });
-
 const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 export default async function handler(req, res) {
     const method = req?.method;
 
-    // Get the user information that matches the username provided
+    // Function to get the user's info that matches the username provided
     async function getUser(username) {
+        // S3 key for the file's location
         const key = `${username}/info-${username}.json`;
+
+        // A user's file parameters for S3
         const userParams = {
             Bucket: BUCKET_NAME,
             Key: key
         };
 
+        // Get the user data from S3
         const user = await s3.getObject(userParams).promise();
         return JSON.parse(user.Body.toString('utf-8'));
     }
 
-    // Use bcrypt to check the encrypted password
+    // Function to compare the given password with the stored encrypted password
     async function checkHashedPassword(password, hashedPassword) {
         try {
             return await bcrypt.compare(password, hashedPassword);
@@ -36,35 +42,38 @@ export default async function handler(req, res) {
     }
 
     if (method === 'POST') {
+        // Validate a user's credentials with the inputted credentials
         try {
             const credentials = req?.body;
             const user = await getUser(credentials.username);
 
-            // Check if password given matches the stored password
+            // Check if the passwords match
             const passwordsMatch = await checkHashedPassword(credentials.password, user.password_hash);
 
             if (passwordsMatch) {
+                // If the passwords match, send back certain user data
                 const verifiedUser = {
                     id: user.id,
                     name: user.name,
                     email: user.email,
                     username: user.username
                 };
+                
+                // Sending back the verified user object in the response
                 res.status(200).json(verifiedUser);
             } else {
-                console.log("Invalid user credentials");
+                // If the passwords don't match, send back a null object signifying invalid credentials
                 res.status(401).json(null);
             }
         } catch (err) {
             if (err.code === 'NoSuchKey') {
-                // If no user found, return a null object
-                console.log("Invalid user credentials");
+                // If there is no user found under that username, return a null object signifying invalid credentials
                 res.status(401).json(null);
             } else {
                 res.status(500).send(`${method} request failed: ${err}`);
             }
         }
     } else {
-        res.status(400).send("Invalid request method");
+        res.status(405).send(`Method ${method} not allowed`);
     }
 };

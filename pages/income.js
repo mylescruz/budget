@@ -8,6 +8,7 @@ export default function Income() {
 
     const year = dateInfo.currentYear;
 
+    // Create a loading indicator while check on the status of a user's session
     if (status === 'loading') {
         return (
             <div className="d-flex justify-content-center align-items-center loading-spinner">

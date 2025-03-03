@@ -6,6 +6,7 @@ import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
 import { useSession } from "next-auth/react";
 
 const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddPaystubClicked}) => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
     const emptyPaystub = {
@@ -37,14 +38,18 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
     const AddNewPaystub = (e) => {
         e.preventDefault();
 
+        // Find the max ID in the paystubs array and add one for the new ID
         let maxID = 0;
         if (paystubs.length > 0)
             maxID = Math.max(...paystubs.map(paystub => paystub.id));
 
         paystub.id = maxID + 1;
         paystub.taxes = parseFloat((paystub.gross - paystub.net).toFixed(2));
+
+        // Adds the new paystub to the paystubs array by sending a POST request to the API
         postPaystub(paystub);
 
+        // Updates the budget value for the given month in the history array by sending a PUT request to the API
         const paystubMonth = addIncomeToHistoryBudget(paystub, history);
         putHistory(paystubMonth);
 

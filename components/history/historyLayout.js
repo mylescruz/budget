@@ -8,17 +8,22 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const HistoryLayout = () => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
+
+    // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
     const { history, historyLoading, postHistory, getMonthHistory } = useHistory(session.user.username);
 
+    // If there is no user session, redirect to the home page
     if (!session) {
-        // If no session, redirect to the home page
         router.push('/');
     }
 
+    // Adds the current month to the history array if not already added
     useEffect(() => {
+        // Sets the new month object and sends the POST request to the API
         const addNewHistoryMonth = async () => {
             let maxID = 0;
             if (history.length > 0)
@@ -36,6 +41,7 @@ const HistoryLayout = () => {
             postHistory(newMonth);
         };
 
+        // Checks if the current dates' month and year is already history array
         const monthInHistory = () => {
             const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
             const foundMonth = getMonthHistory(monthInfo);

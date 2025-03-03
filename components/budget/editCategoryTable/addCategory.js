@@ -75,20 +75,24 @@ const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked})
     const addNewCategory = (e) => {
         e.preventDefault();
 
+        // A fixed category's budget and actual spent are the same
         if (!newCategory.hasSubcategory && newCategory.fixed)
             newCategory.actual = newCategory.budget;
 
+        // Find the max ID in the categories array and add one for the new ID
         let maxID = 0;
         if (categories.length > 0)
             maxID = Math.max(...categories.map(category => category.id));
         newCategory.id = maxID + 1;
 
+        // Adds the new category to the category array by sending a POST request to the API
         postCategory(newCategory);
 
         closeModal();
     };
 
     const addToSubcategories = () => {
+        // Find the max ID in the subcategories array and add one for the new ID
         let maxID = 0;
         if (newCategory.subcategories.length > 0)
             maxID = Math.max(...newCategory.subcategories.map(sub => sub.id));
@@ -97,6 +101,7 @@ const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked})
         setSubcategoryTotal(parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2)));
 
         if (newCategory.fixed) {
+            // If the new category is fixed, set the budget and actual equal to the subcategory total and add the subcategory to the array
             setNewCategory({ ...newCategory,
                 budget: parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2)), 
                 actual: parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2)),
@@ -104,6 +109,7 @@ const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked})
                 subcategories: [...newCategory.subcategories, newSubcategory]
             });
         } else {
+            // If the new category is not fixed, just add the subcategory to the array
             setNewCategory({ ...newCategory, 
                 hasSubcategory: true,
                 subcategories: [...newCategory.subcategories, newSubcategory]

@@ -12,8 +12,10 @@ const DeleteTransaction = ({ transaction, showDelete, setShowDelete, setShowDeta
     };
 
     const confirmDelete = () => {
+        // Deletes a transaction from the transactions array by sending a DELETE request to the API
         deleteTransaction(transaction);
 
+        // Updates the categories array with the new category actual value by sending a DELETE request to the API
         const updatedCategories = deleteTransactionFromCategoryActual(transaction, categories);
         putCategories(updatedCategories);
     };

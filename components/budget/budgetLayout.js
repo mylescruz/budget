@@ -11,7 +11,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
+    // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
+
+    // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
     const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
@@ -20,8 +23,8 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const [editClicked, setEditClicked] = useState(false);
 
+    // If there is no user session, redirect to the home page
     if (!session) {
-        // If no session, redirect to the home page
         router.push('/');
     }
 

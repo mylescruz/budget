@@ -4,6 +4,7 @@ import { Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
 const guiltFree = "Guilt Free Spending";
 
+// Create a pop up message when hovering over the object
 const PopUp = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
       <span>{children}</span>
@@ -18,7 +19,8 @@ const CategoryRow = ({ category }) => {
         setShowSubcategories(!showSubcategories);
     };
 
-    const difference = parseFloat((category.budget - category.actual).toFixed(2));
+    const [difference, setDifference] = useState(category.budget - category.actual);
+
     return (
         <>
             <tr className="d-flex">
@@ -26,6 +28,7 @@ const CategoryRow = ({ category }) => {
                     <Row>
                         <Col xs={9} sm={10} className="cell">
                             {category.name}
+                            {/* Show the pop up message for the Guilt Free Spending category */}
                             {category.name === guiltFree &&
                                 <PopUp title="The money you can spend on whatever you want after all other expenses have been covered" id="t-1">
                                     <span> &#9432;</span>

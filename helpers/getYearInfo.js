@@ -1,3 +1,5 @@
+// Returns an object that has the start and end of year dates
+
 const getYearInfo = (year) => {
     const yearInfo = {
         startOfYear: new Date(`01/01/${year}`).toISOString().split('T')[0],

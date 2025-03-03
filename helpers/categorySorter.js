@@ -1,3 +1,5 @@
+// Sorts the categories based on their budget value
+
 const categorySorter = (givenArray) => {
     givenArray.sort((a,b) => {
         if (a.budget < b.budget)

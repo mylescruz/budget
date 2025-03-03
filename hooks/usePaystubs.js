@@ -5,6 +5,7 @@ const usePaystubs = (username, year) => {
     const [paystubs, setPaystubs] = useState([]);
     const [paystubsLoading, setPaystubsLoading] = useState(true);
     
+    // GET request that returns all the paystubs based on the username and year
     useEffect(() => {
         const getPaystubs = async () => {
             try {
@@ -21,6 +22,8 @@ const usePaystubs = (username, year) => {
         getPaystubs();
     }, [username, year]);
 
+    // POST request that adds a new paystub based on the username and year
+    // Then it sets the paystubs array to the array returned by the response
     const postPaystub = async (newPaystub) => {
         try {
             const rsp = await fetch(`/api/paystubs/${username}/${year}`, {
@@ -41,6 +44,8 @@ const usePaystubs = (username, year) => {
         }
     };
 
+    // PUT request that updates a paystub based on the username and year
+    // Then it sets the paystubs array to the new response array
     const putPaystub = async (edittedPaystub) => {
         try {
             const rsp = await fetch(`/api/paystubs/${username}/${year}`, {
@@ -61,6 +66,8 @@ const usePaystubs = (username, year) => {
         }
     };
 
+    // DELETE request that deletes a paystub based on the username and year
+    // Then it sets the paystubs array to the new response array
     const deletePaystub = async (paystubToDelete) => {
         try {
             const rsp = await fetch(`/api/paystubs/${username}/${year}`, {
@@ -81,9 +88,11 @@ const usePaystubs = (username, year) => {
         }
     };
 
+    // Function that returns a user's income for a given month
     const getMonthIncome = (monthInfo) => {
         let totalIncome = 0;
 
+        // Checks each paystub to see if it falls within the month and year given
         paystubs.map(paystub => {
             const paystubDate = new Date(paystub.date);
             const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});

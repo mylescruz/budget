@@ -4,6 +4,7 @@ const useHistory = (username) => {
     const [history, setHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
     
+    // GET request that returns the user's history based on the username
     useEffect(() => {
         const getHistory = async () => {
             try {
@@ -19,6 +20,8 @@ const useHistory = (username) => {
         getHistory();
     }, [username]);
 
+    // POST request that adds a month to the user's history based on the username
+    // Then it sets the history array to the array returned by the response
     const postHistory = async (newHistory) => {
         try {
             const rsp = await fetch(`/api/history/${username}/history`, {
@@ -38,6 +41,8 @@ const useHistory = (username) => {
         }
     };
 
+    // PUT request that updates a month's values in the user's history based on the username
+    // Then it sets the history array to the array returned by the response
     const putHistory = async (edittedHistory) => {
         try {
             const rsp = await fetch(`/api/history/${username}/history`, {
@@ -57,6 +62,8 @@ const useHistory = (username) => {
         }
     };
 
+    // DELETE request that deletes a month from the user's history based on the username
+    // Then it sets the history array to the array returned by the response
     const deleteHistory = async (historyToDelete) => {
         try {
             const rsp = await fetch(`/api/history/${username}/history`, {
@@ -76,6 +83,7 @@ const useHistory = (username) => {
         }
     };
 
+    // Function that returns a user's history for a single month based on the given month and year
     const getMonthHistory = (monthInfo) => {
         const foundMonth = history.find(currentMonth => {
             return currentMonth.month === monthInfo.month && currentMonth.year === monthInfo.year;
