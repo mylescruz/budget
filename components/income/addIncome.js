@@ -5,11 +5,11 @@ import useHistory from "@/hooks/useHistory";
 import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
 import { useSession } from "next-auth/react";
 
-const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddPaystubClicked}) => {
+const AddIncome = ({income, yearInfo, postIncome, addPaycheckClicked, setAddPaycheckClicked}) => {
     // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
-    const emptyPaystub = {
+    const emptyPaycheck = {
         id: 0,
         date: dateInfo.currentDate,
         company: "",
@@ -19,80 +19,80 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
         net: 0
     };
     
-    const [paystub, setPaystub] = useState(emptyPaystub);
+    const [paycheck, setPaycheck] = useState(emptyPaycheck);
     const { history, putHistory } = useHistory(session.user.username);
 
     const handleInput = (e) => {
-        setPaystub({ ...paystub, [e.target.id]: e.target.value});
+        setPaycheck({ ...paycheck, [e.target.id]: e.target.value});
     };
 
     const handleNumInput = (e) => {
         const input = e.target.value;
 
         if (input == '')
-            setPaystub({ ...paystub, [e.target.id]: input });
+            setPaycheck({ ...paycheck, [e.target.id]: input });
         else
-            setPaystub({ ...paystub, [e.target.id]: parseFloat(input) });
+            setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
     };
 
-    const AddNewPaystub = (e) => {
+    const AddNewPaycheck = (e) => {
         e.preventDefault();
 
-        // Find the max ID in the paystubs array and add one for the new ID
+        // Find the max ID in the income array and add one for the new ID
         let maxID = 0;
-        if (paystubs.length > 0)
-            maxID = Math.max(...paystubs.map(paystub => paystub.id));
+        if (income.length > 0)
+            maxID = Math.max(...income.map(paycheck => paycheck.id));
 
-        paystub.id = maxID + 1;
-        paystub.taxes = parseFloat((paystub.gross - paystub.net).toFixed(2));
+        paycheck.id = maxID + 1;
+        paycheck.taxes = parseFloat((paycheck.gross - paycheck.net).toFixed(2));
 
-        // Adds the new paystub to the paystubs array by sending a POST request to the API
-        postPaystub(paystub);
+        // Adds the new paycheck to the income array by sending a POST request to the API
+        postIncome(paycheck);
 
         // Updates the budget value for the given month in the history array by sending a PUT request to the API
-        const paystubMonth = addIncomeToHistoryBudget(paystub, history);
-        putHistory(paystubMonth);
+        const paycheckMonth = addIncomeToHistoryBudget(paycheck, history);
+        putHistory(paycheckMonth);
 
-        setPaystub(emptyPaystub);
-        setAddPaystubClicked(false);
+        setPaycheck(emptyPaycheck);
+        setAddPaycheckClicked(false);
     };
 
     const closeModal = () => {
-        setPaystub(emptyPaystub);
-        setAddPaystubClicked(false);
+        setPaycheck(emptyPaycheck);
+        setAddPaycheckClicked(false);
     }
 
     return (
-        <Modal show={addPaystubClicked} onHide={closeModal} centered>
+        <Modal show={addPaycheckClicked} onHide={closeModal} centered>
             <Modal.Header closeButton>
-                <Modal.Title>Enter paystub information</Modal.Title>
+                <Modal.Title>Enter paycheck information</Modal.Title>
             </Modal.Header>
             
-            <Form onSubmit={AddNewPaystub}>
+            <Form onSubmit={AddNewPaycheck}>
                 <Modal.Body>
                     <Form.Group className="formInput">
                         <Form.Label>Pay Date</Form.Label>
-                        <Form.Control id="date" className="h-100" type="date" min={yearInfo.startOfYear} max={yearInfo.endOfYear} value={paystub.date} onChange={handleInput} required />
+                        <Form.Control id="date" className="h-100" type="date" min={yearInfo.startOfYear} max={yearInfo.endOfYear} value={paycheck.date} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Company</Form.Label>
-                        <Form.Control id="company" className="h-100" type="text" value={paystub.company} onChange={handleInput} required />
+                        <Form.Control id="company" className="h-100" type="text" value={paycheck.company} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Description</Form.Label>
-                        <Form.Control id="description" className="h-100" type="text" value={paystub.description} placeholder="Optional" onChange={handleInput} />
+                        <Form.Control id="description" className="h-100" type="text" value={paycheck.description} placeholder="Optional" onChange={handleInput} />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Gross Income</Form.Label>
-                        <Form.Control id="gross" className="h-100" type="number" min="0.01" step="0.01" placeholder="Gross Income" value={paystub.gross} onChange={handleNumInput} required />
+                        <Form.Control id="gross" className="h-100" type="number" min="0.01" step="0.01" placeholder="Gross Income" value={paycheck.gross} onChange={handleNumInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Net Income</Form.Label>
-                        <Form.Control id="net" className="h-100" type="number" min="0.01" step="0.01" placeholder="Net Income" value={paystub.net} onChange={handleNumInput} required />
+                        <Form.Control id="net" className="h-100" type="number" min="0.01" step="0.01" placeholder="Net Income" value={paycheck.net} onChange={handleNumInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Taxes taken out</Form.Label>
-                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(paystub.gross-paystub.net).toFixed(2)} disabled required />
+                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(paycheck.gross-paycheck.net).toFixed(2)} disabled required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -108,4 +108,4 @@ const AddPaystub = ({paystubs, yearInfo, postPaystub, addPaystubClicked, setAddP
     );
 };
 
-export default AddPaystub;
+export default AddIncome;

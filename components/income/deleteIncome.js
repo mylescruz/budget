@@ -3,7 +3,7 @@ import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setShowDetails }) => {
+const DeleteIncome = ({ paycheck, deleteIncome, showDelete, setShowDelete, setShowDetails }) => {
     // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
@@ -15,19 +15,19 @@ const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setS
     };
 
     const confirmDelete = () => {
-        // Deletes a paystub from the paystubs array by sending a DELETE request to the API
-        deletePaystub(paystub);
+        // Deletes a paycheck from the income array by sending a DELETE request to the API
+        deleteIncome(paycheck);
 
         // Updates the budget value for the given month in the history array by sending a PUT request to the API
-        const paystubMonth = deleteIncomeFromHistoryBudget(paystub, history);
-        putHistory(paystubMonth);
+        const paycheckMonth = deleteIncomeFromHistoryBudget(paycheck, history);
+        putHistory(paycheckMonth);
     };
 
     return (
         <Modal show={showDelete} onHide={closeDelete} centered>
-            <Modal.Header closeButton>Delete Paystub</Modal.Header>
+            <Modal.Header closeButton>Delete Paycheck</Modal.Header>
             <Modal.Body>
-                Are you sure you want to delete this paystub?
+                Are you sure you want to delete this paycheck?
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="info" onClick={closeDelete}>Cancel</Button>
@@ -37,4 +37,4 @@ const DeletePaystub = ({ paystub, deletePaystub, showDelete, setShowDelete, setS
     );
 };
 
-export default DeletePaystub;
+export default DeleteIncome;

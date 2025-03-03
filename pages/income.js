@@ -1,4 +1,4 @@
-import PaystubLayout from "@/components/paystubs/paystubLayout";
+import IncomeLayout from "@/components/income/incomeLayout";
 import dateInfo from "@/helpers/dateInfo";
 import { useSession } from "next-auth/react";
 import { Spinner } from "react-bootstrap";
@@ -16,6 +16,6 @@ export default function Income() {
             </div>
         );
     } else {
-        return <PaystubLayout year={year} />;
+        return <IncomeLayout year={year} />;
     }
 };

@@ -4,7 +4,7 @@ import { useContext, useRef, useState } from "react";
 import AddCategory from "./addCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
-import usePaystubs from "@/hooks/usePaystubs";
+import useIncome from "@/hooks/useIncome";
 import { useSession } from "next-auth/react";
 
 const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
@@ -12,7 +12,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
     const { data: session } = useSession();
 
     const { categories, postCategory, putCategories, deleteCategory } = useContext(CategoriesContext);
-    const { getMonthIncome } = usePaystubs(session.user.username, monthInfo.year);
+    const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
     const [addCategoryClicked, setAddCategoryClicked] = useState(false);
 
     /* 

@@ -4,24 +4,24 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
-const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
+const EditIncome = ({ paycheck, putIncome, yearInfo, showEdit, setShowEdit, setShowDetails }) => {
     // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
-    const [edittedPaystub, setEdittedPaystub] = useState(paystub);
+    const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
     const { history, putHistory } = useHistory(session.user.username);
 
     const handleInput = (e) => {
-        setEdittedPaystub({ ...edittedPaystub, [e.target.id]: e.target.value});
+        setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: e.target.value});
     };
 
     const handleNumInput = (e) => {
         const input = e.target.value;
 
         if (input == '')
-            setEdittedPaystub({ ...edittedPaystub, [e.target.id]: input });
+            setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: input });
         else
-            setEdittedPaystub({ ...edittedPaystub, [e.target.id]: parseFloat(input) });
+            setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: parseFloat(input) });
     };
 
     const closeEdit = () => {
@@ -29,17 +29,17 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
         setShowDetails(true);
     };
 
-    const editPaystub = (e) => {
+    const editPaycheck = (e) => {
         e.preventDefault();
 
-        edittedPaystub.taxes = parseFloat((edittedPaystub.gross-edittedPaystub.net).toFixed(2));
+        edittedPaycheck.taxes = parseFloat((edittedPaycheck.gross-edittedPaycheck.net).toFixed(2));
 
-        // Edits a paystub in the paystubs array by sending a PUT request to the API
-        putPaystub(edittedPaystub);
+        // Edits a paycheck in the income array by sending a PUT request to the API
+        putIncome(edittedPaycheck);
 
         // Updates the budget value for the given month in the history array by sending a PUT request to the API
-        const paystubMonth = editIncomeForHistoryBudget(edittedPaystub, paystub, history);
-        putHistory(paystubMonth);
+        const paycheckMonth = editIncomeForHistoryBudget(edittedPaycheck, paycheck, history);
+        putHistory(paycheckMonth);
 
         setShowEdit(false);  
     };
@@ -47,33 +47,33 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
     return (
         <Modal show={showEdit} onHide={closeEdit} centered>
             <Modal.Header>
-                <Modal.Title>Edit Paystub</Modal.Title>
+                <Modal.Title>Edit Paycheck</Modal.Title>
             </Modal.Header>
-            <Form onSubmit={editPaystub}>
+            <Form onSubmit={editPaycheck}>
                 <Modal.Body>
                 <Form.Group className="formInput">
                         <Form.Label>Pay Date</Form.Label>
-                        <Form.Control id="date" className="h-100" type="date" min={yearInfo.startOfYear} max={yearInfo.endOfYear} value={edittedPaystub.date} onChange={handleInput} required />
+                        <Form.Control id="date" className="h-100" type="date" min={yearInfo.startOfYear} max={yearInfo.endOfYear} value={edittedPaycheck.date} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Company</Form.Label>
-                        <Form.Control id="company" className="h-100" type="text" value={edittedPaystub.company} onChange={handleInput} required />
+                        <Form.Control id="company" className="h-100" type="text" value={edittedPaycheck.company} onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Description</Form.Label>
-                        <Form.Control id="description" className="h-100" type="text" value={edittedPaystub.description} placeholder="Optional" onChange={handleInput} />
+                        <Form.Control id="description" className="h-100" type="text" value={edittedPaycheck.description} placeholder="Optional" onChange={handleInput} />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Gross Income</Form.Label>
-                        <Form.Control id="gross" className="h-100" type="number" min="0.01" step="0.01" placeholder="Gross Income" value={edittedPaystub.gross} onChange={handleNumInput} required />
+                        <Form.Control id="gross" className="h-100" type="number" min="0.01" step="0.01" placeholder="Gross Income" value={edittedPaycheck.gross} onChange={handleNumInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Net Income</Form.Label>
-                        <Form.Control id="net" className="h-100" type="number" min="0.01" step="0.01" placeholder="Net Income" value={edittedPaystub.net} onChange={handleNumInput} required />
+                        <Form.Control id="net" className="h-100" type="number" min="0.01" step="0.01" placeholder="Net Income" value={edittedPaycheck.net} onChange={handleNumInput} required />
                     </Form.Group>
                     <Form.Group className="formInput">
                         <Form.Label>Taxes taken out</Form.Label>
-                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(edittedPaystub.gross-edittedPaystub.net).toFixed(2)} disabled required />
+                        <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(edittedPaycheck.gross-edittedPaycheck.net).toFixed(2)} disabled required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -89,4 +89,4 @@ const EditPaystub = ({ paystub, putPaystub, yearInfo, showEdit, setShowEdit, set
     );
 };
 
-export default EditPaystub;
+export default EditIncome;

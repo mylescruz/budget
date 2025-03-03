@@ -1,28 +1,28 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useMemo } from "react";
 import { Table } from "react-bootstrap";
-import PaystubRow from "./paystubRow";
+import IncomeRow from "./incomeRow";
 
-const PaystubTable = ({ paystubs, putPaystub, deletePaystub, yearInfo }) => {
+const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
     // Sets the table's total gross income, taxes and net income
     const footerValues = useMemo(() => {
         let totalGross = 0;
         let totalTaxes = 0;
         let totalNet = 0;
 
-        paystubs.forEach(paystub => {
-            totalGross += paystub.gross;
-            totalTaxes += paystub.taxes;
+        income.forEach(paycheck => {
+            totalGross += paycheck.gross;
+            totalTaxes += paycheck.taxes;
         });
 
         totalNet = totalGross - totalTaxes;
 
         return {totalGross: totalGross, totalTaxes: totalTaxes, totalNet: totalNet};
-    }, [paystubs]);
+    }, [income]);
 
     return (
         <Table bordered className="mx-auto income-table">
-            <caption>*Click a paystub to view the details</caption>
+            <caption>*Click a paycheck to view the details</caption>
             <thead className="table-dark">
                 <tr className="d-flex">
                     <th className="col-3 col-md-2">Date</th>
@@ -33,8 +33,8 @@ const PaystubTable = ({ paystubs, putPaystub, deletePaystub, yearInfo }) => {
                 </tr>
             </thead>
             <tbody>
-                {paystubs.map(paystub => (
-                    <PaystubRow key={paystub.id} paystub={paystub} putPaystub={putPaystub} deletePaystub={deletePaystub} yearInfo={yearInfo} />
+                {income.map(paycheck => (
+                    <IncomeRow key={paycheck.id} paycheck={paycheck} putIncome={putIncome} deleteIncome={deleteIncome} yearInfo={yearInfo} />
                 ))}
             </tbody>
             <tfoot>
@@ -50,4 +50,4 @@ const PaystubTable = ({ paystubs, putPaystub, deletePaystub, yearInfo }) => {
     );
 };
 
-export default PaystubTable;
+export default IncomeTable;

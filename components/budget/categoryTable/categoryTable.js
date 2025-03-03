@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import categorySorter from "@/helpers/categorySorter";
-import usePaystubs from "@/hooks/usePaystubs";
+import useIncome from "@/hooks/useIncome";
 import useHistory from "@/hooks/useHistory";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { useSession } from "next-auth/react";
@@ -15,7 +15,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     const { data: session } = useSession();
 
     const { categories, categoriesLoading, putCategories } = useContext(CategoriesContext);
-    const { paystubs, paystubsLoading, getMonthIncome } = usePaystubs(session.user.username, monthInfo.year);
+    const { income, incomeLoading, getMonthIncome } = useIncome(session.user.username, monthInfo.year);
     const sortedCategories = categorySorter(categories);
     const { historyLoading, putHistory, getMonthHistory } = useHistory(session.user.username);
 
@@ -44,9 +44,9 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categories]);
 
-    // Updates the Guilt Free Spending budget when the paystubs array changes
+    // Updates the Guilt Free Spending budget when the income array changes
     useEffect(() => {
-        if (!paystubsLoading && !categoriesLoading) {
+        if (!incomeLoading && !categoriesLoading) {
             const income = getMonthIncome(monthInfo);
 
             // Updates the categories by sending a PUT request to the API
@@ -55,7 +55,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
         }
             
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [paystubs]);
+    }, [income]);
 
     // Sets the table's total budget and actual spent values
     const footerValues = useMemo(() => {

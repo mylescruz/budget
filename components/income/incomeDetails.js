@@ -2,7 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
-const PaystubDetails = ({ paystub, showDetails, setShowDetails, setShowEdit, setShowDelete }) => {
+const IncomeDetails = ({ paycheck, showDetails, setShowDetails, setShowEdit, setShowDelete }) => {
     const closeDetails = () => {
         setShowDetails(false);
     };
@@ -20,15 +20,15 @@ const PaystubDetails = ({ paystub, showDetails, setShowDetails, setShowEdit, set
     return (
         <Modal show={showDetails} onHide={closeDetails} centered>
             <Modal.Header closeButton>
-                <Modal.Title>Paystub Details</Modal.Title>
+                <Modal.Title>Paycheck Details</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Row className="m-2">Date: {dateFormatter(paystub.date)}</Row>
-                <Row className="m-2">Company: {paystub.company}</Row>
-                <Row className="m-2">Description: {paystub.description}</Row>
-                <Row className="m-2">Gross Income: {currencyFormatter.format(paystub.gross)}</Row>
-                <Row className="m-2">Taxes: {currencyFormatter.format(paystub.taxes)}</Row>
-                <Row className="m-2">Net Income: {currencyFormatter.format(paystub.net)}</Row>
+                <Row className="m-2">Date: {dateFormatter(paycheck.date)}</Row>
+                <Row className="m-2">Company: {paycheck.company}</Row>
+                <Row className="m-2">Description: {paycheck.description}</Row>
+                <Row className="m-2">Gross Income: {currencyFormatter.format(paycheck.gross)}</Row>
+                <Row className="m-2">Taxes: {currencyFormatter.format(paycheck.taxes)}</Row>
+                <Row className="m-2">Net Income: {currencyFormatter.format(paycheck.net)}</Row>
             </Modal.Body> 
             <Modal.Footer>
                 <Row>
@@ -40,4 +40,4 @@ const PaystubDetails = ({ paystub, showDetails, setShowDetails, setShowEdit, set
     );
 };
 
-export default PaystubDetails;
+export default IncomeDetails;

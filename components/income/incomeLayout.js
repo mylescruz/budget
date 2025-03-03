@@ -1,21 +1,21 @@
-import usePaystubs from "@/hooks/usePaystubs";
-import PaystubTable from "./paystubTable";
-import AddPaystub from "./addPaystub";
+import useIncome from "@/hooks/useIncome";
+import IncomeTable from "./incomeTable";
+import AddIncome from "./addIncome";
 import { Button, Col, Row } from "react-bootstrap";
 import { useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-const PaystubLayout = ({ year }) => {
+const IncomeLayout = ({ year }) => {
     // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
     // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
-    const { paystubs, postPaystub, putPaystub, deletePaystub } = usePaystubs(session.user.username, year);
-    const [addPaystubClicked, setAddPaystubClicked] = useState(false);
+    const { income, postIncome, putIncome, deleteIncome } = useIncome(session.user.username, year);
+    const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
     const yearInfo = getYearInfo(year);
 
     // If there is no user session, redirect to the home page
@@ -24,15 +24,15 @@ const PaystubLayout = ({ year }) => {
     }
 
     const addPay = () => {
-        setAddPaystubClicked(true);
+        setAddPaycheckClicked(true);
     };
 
-    const addPaystubProps = {
-        paystubs: paystubs,
+    const addIncomeProps = {
+        income: income,
         yearInfo: yearInfo,
-        postPaystub: postPaystub,
-        addPaystubClicked: addPaystubClicked,
-        setAddPaystubClicked:  setAddPaystubClicked
+        postIncome: postIncome,
+        addPaycheckClicked: addPaycheckClicked,
+        setAddPaycheckClicked:  setAddPaycheckClicked
     };
 
     return (
@@ -43,14 +43,14 @@ const PaystubLayout = ({ year }) => {
             </aside>
 
             <Row className="text-center">
-                <Col><Button id="add-paystub-btn" variant="primary" onClick={addPay}>Add Paycheck</Button></Col>
+                <Col><Button id="add-paycheck-btn" variant="primary" onClick={addPay}>Add Paycheck</Button></Col>
             </Row>
             
-            <PaystubTable paystubs={paystubs} putPaystub={putPaystub} deletePaystub={deletePaystub} yearInfo={yearInfo} />
+            <IncomeTable income={income} putIncome={putIncome} deleteIncome={deleteIncome} yearInfo={yearInfo} />
 
-            {addPaystubClicked && <AddPaystub {...addPaystubProps} />}
+            {addPaycheckClicked && <AddIncome {...addIncomeProps} />}
         </>
     );
 };
 
-export default PaystubLayout;
+export default IncomeLayout;

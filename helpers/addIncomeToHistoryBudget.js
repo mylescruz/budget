@@ -1,17 +1,17 @@
-// Add to a month's budget in the history array based on the paystub's net income
+// Add to a month's budget in the history array based on the paycheck's net income
 
-const addIncomeToHistoryBudget = (paystub, history) => {
-    const paystubDate = new Date(paystub.date);
-    const paystubMonth = paystubDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
-    const paystubYear = paystubDate.getFullYear();
+const addIncomeToHistoryBudget = (paycheck, history) => {
+    const paycheckDate = new Date(paycheck.date);
+    const paycheckMonth = paycheckDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
+    const paycheckYear = paycheckDate.getFullYear();
 
-    // Find the month in the history array that matches the paystubs month
+    // Find the month in the history array that matches the paycheck's month
     const foundMonth = history.find(currentMonth => {
-        return currentMonth.month === paystubMonth && currentMonth.year === paystubYear;
+        return currentMonth.month === paycheckMonth && currentMonth.year === paycheckYear;
     });
 
-    // Add the paystub's net income to the budget
-    foundMonth.budget += paystub.net;
+    // Add the paycheck's net income to the budget
+    foundMonth.budget += paycheck.net;
 
     // Update the leftover amount
     foundMonth.leftover = parseFloat((foundMonth.budget - foundMonth.actual).toFixed(2));
