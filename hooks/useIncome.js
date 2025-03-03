@@ -94,9 +94,12 @@ const useIncome = (username, year) => {
 
         // Checks each paycheck to see if it falls within the month and year given
         income.map(paycheck => {
-            const paycheckDate = new Date(paycheck.date);
-            const paycheckMonth = paycheckDate.toLocaleDateString('default', {month: 'long', timeZone: 'UTC'});
+            // Added a time component to the paycheck date avoid the automatic UTC timezone conversion
+            const paycheckDate = new Date(paycheck.date+"T00:00:00");
+            const paycheckMonth = paycheckDate.toLocaleString('default', {month: 'long'});
             const paycheckYear = paycheckDate.getFullYear();
+
+            // If the paycheck month and year matches the given month, then include that income for the month
             if (paycheckMonth === monthInfo.month && paycheckYear === monthInfo.year)
                 totalIncome += paycheck.net;
         });

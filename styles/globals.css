@@ -60,6 +60,18 @@ a {
   min-height: 100vh;
 }
 
+.error-layout {
+  min-height: 75vh;
+  text-align: center;
+  flex-direction: column;
+}
+
+.error-redirect {
+  font-weight: bold;
+  color: blue;
+  text-decoration: underline;
+}
+
 .formInput {
   margin: 0.5em 0.5em;
 }
