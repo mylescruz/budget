@@ -37,8 +37,8 @@ export default async function handler(req, res) {
             // Send the users array in the response
             res.status(200).json(users);
         } catch (err) {
-            console.error('Error getting all users: ', err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} users request failed: ${err}`);
+            res.status(500).send("Error occurred while retrieving all users");
         }
     } else if (method === 'POST') {
         // Add a new user to the users index in S3
@@ -62,8 +62,8 @@ export default async function handler(req, res) {
             // Send the updated users in the response
             res.status(200).json(updatedUsers);
         } catch (err) {
-            console.error('Error posting a new user: ', err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} users request failed: ${err}`);
+            res.status(500).send("Error occurred while adding a new user");
         }
     } else {
         res.status(405).send(`Method ${method} not allowed`);

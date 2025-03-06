@@ -70,7 +70,8 @@ export default async function handler(req, res) {
                 // If there is no user found under that username, return a null object signifying invalid credentials
                 res.status(401).json(null);
             } else {
-                res.status(500).send(`${method} request failed: ${err}`);
+                console.error(`${method} authorize request failed: ${err}`)
+                res.status(500).send("Error occured while authorizing this account");
             }
         }
     } else {

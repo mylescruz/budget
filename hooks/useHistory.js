@@ -1,24 +1,35 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const useHistory = (username) => {
     const [history, setHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
+    const router = useRouter();
     
     // GET request that returns the user's history based on the username
     useEffect(() => {
         const getHistory = async () => {
             try {
                 const rsp = await fetch(`/api/history/${username}/history`);
-                const result = await rsp.json();
-                setHistory(result);
-                setHistoryLoading(false);
-            } catch (err) {
-                console.log("Error occurred while getting the user's history: ", err);
+
+                if (rsp.ok) {
+                    const result = await rsp.json();
+                    setHistory(result);
+                    setHistoryLoading(false);
+                } else {
+                    const message = await rsp.text();
+                    throw new Error(message);
+                }
+            } catch (error) {
+                router.push({
+                    pathname:'/error', 
+                    query: {message: error.message}
+                });
             }
         }
 
         getHistory();
-    }, [username]);
+    }, [username, router]);
 
     // POST request that adds a month to the user's history based on the username
     // Then it sets the history array to the array returned by the response
@@ -33,11 +44,16 @@ const useHistory = (username) => {
                 body: JSON.stringify(newHistory)
             });
 
-            const result = await rsp.json();
-            setHistory(result);
-            setHistoryLoading(false);
-        } catch (err) {
-            console.log("Error occurred while adding to the user's history: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setHistory(result);
+                setHistoryLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -54,11 +70,16 @@ const useHistory = (username) => {
                 body: JSON.stringify(edittedHistory)
             });
 
-            const result = await rsp.json();
-            setHistory(result);
-            setHistoryLoading(false);
-        } catch (err) {
-            console.log("Error occurred while editting a month's history: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setHistory(result);
+                setHistoryLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -75,11 +96,16 @@ const useHistory = (username) => {
                 body: JSON.stringify(historyToDelete)
             });
 
-            const result = await rsp.json();
-            setHistory(result);
-            setHistoryLoading(false);
-        } catch (err) {
-            console.log("Error occurred while deleting a user's history: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setHistory(result);
+                setHistoryLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -90,6 +116,13 @@ const useHistory = (username) => {
         });
 
         return foundMonth;
+    };
+
+    const redirectToErrorPage = ( error ) => {
+        router.push({
+            pathname:'/error', 
+            query: {message: error.message}
+        });
     };
 
     return { history, historyLoading, postHistory, putHistory, deleteHistory, getMonthHistory };

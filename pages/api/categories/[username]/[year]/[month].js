@@ -155,8 +155,8 @@ export default async function handler(req, res) {
             // Send the categories array in the response
             res.status(200).send(categories);
         } catch (err) {
-            console.error("Error with GET categories request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} categories request failed: ${err}`);
+            res.status(500).send(`Error occurred while getting ${username}'s categories`);
         }
     } else if (method === "POST") {
         // Add the new category to the user's categories in S3
@@ -179,8 +179,8 @@ export default async function handler(req, res) {
             // Send the updated categories array in the response
             res.status(200).json(updatedCategories);
         } catch (err) {
-            console.error("Error with POST categories request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} categories request failed: ${err}`);
+            res.status(500).send("Error occurred while adding a category");
         }
     } else if (method === "PUT") {
         // Update the user's categories in S3
@@ -201,8 +201,8 @@ export default async function handler(req, res) {
             // Send the updated categories array in the response
             res.status(200).json(edittedCategories);
         } catch (err) {
-            console.error("Error with PUT categories request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} categories request failed: ${err}`);
+            res.status(500).send("Error occurred while updating categories");
         }
     } else if (method === "DELETE") {
         // Delete the given category from the user's categories in S3
@@ -225,13 +225,11 @@ export default async function handler(req, res) {
             // Place updated categories file in the user's folder in S3
             await s3.putObject(deleteParams).promise();
             
-            console.log(`DELETE /api/categories/${year}/${month} status: 200`);
-            
             // Send the updated categories array in the response
             res.status(200).json(updatedCategories);
         } catch (err) {
-            console.error("Error with DELETE category request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} categories request failed: ${err}`);
+            res.status(500).send("Error occurred while deleting a category");
         }
     } else {
         res.status(405).send(`Method ${method} not allowed`);

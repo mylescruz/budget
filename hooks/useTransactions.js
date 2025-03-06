@@ -1,21 +1,32 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const useTransactions = (username, month, year) => {
     const [transactions, setTransactions] = useState([]);
+    const router = useRouter();
 
     // GET request that returns the user's transaction based on the username, year and month
     useEffect(() => {
         const getTransactions = async () => {
             try {
                 const rsp = await fetch(`/api/transactions/${username}/${year}/${month}`);
-                const result = await rsp.json();
-                setTransactions(result);
-            } catch (err) {
-                console.log("Error occured while retrieving transactions: ", err);
+
+                if (rsp.ok) {
+                    const result = await rsp.json();
+                    setTransactions(result);
+                } else {
+                    const message = await rsp.text();
+                    throw new Error(message);
+                }
+            } catch (error) {
+                router.push({
+                    pathname: '/error',
+                    query: {message: error.message}
+                });
             }
         }
         getTransactions();
-    }, [username, month, year]);
+    }, [username, month, year, router]);
 
     // POST request that adds a new transaction based on the username, year and month
     // Then it sets the transactions array to the array returned by the response
@@ -33,10 +44,15 @@ const useTransactions = (username, month, year) => {
                 body: JSON.stringify(newTransaction)
             });
 
-            const result = await rsp.json();
-            setTransactions(result);
-        } catch (err) {
-            console.log("Error occurred while adding a transaction: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setTransactions(result);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -53,10 +69,15 @@ const useTransactions = (username, month, year) => {
                 body: JSON.stringify(edittedTransaction)
             });
 
-            const result = await rsp.json();
-            setTransactions(result);
-        } catch (err) {
-            console.log("Error occurred while updating a transaction: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setTransactions(result);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -76,11 +97,23 @@ const useTransactions = (username, month, year) => {
                 body: JSON.stringify(transactionToDelete)
             });
 
-            const result = await rsp.json();
-            setTransactions(result);
-        } catch (err) {
-            console.log("Error occurred while deleting a transaction: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setTransactions(result);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
+    };
+
+    const redirectToErrorPage = ( error ) => {
+        router.push({
+            pathname:'/error', 
+            query: {message: error.message}
+        });
     };
     
     return { transactions, postTransaction, putTransaction, deleteTransaction };

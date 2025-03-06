@@ -1,26 +1,37 @@
 import dateSorter from "@/helpers/dateSorter";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const useIncome = (username, year) => {
     const [income, setIncome] = useState([]);
     const [incomeLoading, setIncomeLoading] = useState(true);
+    const router = useRouter();
     
     // GET request that returns all the income based on the username and year
     useEffect(() => {
         const getIncome = async () => {
             try {
                 const rsp = await fetch(`/api/income/${username}/${year}`);
-                const result = await rsp.json();
-                const sortedIncome = dateSorter(result);
-                setIncome(sortedIncome);
-                setIncomeLoading(false);
-            } catch (err) {
-                console.log("Error occured while retrieving income: ", err);
+
+                if (rsp.ok) {
+                    const result = await rsp.json();
+                    const sortedIncome = dateSorter(result);
+                    setIncome(sortedIncome);
+                    setIncomeLoading(false);
+                } else {
+                    const message = await rsp.text();
+                    throw new Error(message);
+                }
+            } catch (error) {
+                router.push({
+                    pathname:'/error', 
+                    query: {message: error.message}
+                });
             }
         }
 
         getIncome();
-    }, [username, year]);
+    }, [username, year, router]);
 
     // POST request that adds a new paycheck based on the username and year
     // Then it sets the income array to the array returned by the response
@@ -35,12 +46,17 @@ const useIncome = (username, year) => {
                 body: JSON.stringify(newPaycheck)
             });
 
-            const result = await rsp.json();
-            const sortedIncome = dateSorter(result);
-            setIncome(sortedIncome);
-            setIncomeLoading(false);
-        } catch (err) {
-            console.log("Error occurred while adding a paycheck: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                const sortedIncome = dateSorter(result);
+                setIncome(sortedIncome);
+                setIncomeLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -57,12 +73,17 @@ const useIncome = (username, year) => {
                 body: JSON.stringify(edittedPaycheck)
             });
 
-            const result = await rsp.json();
-            const sortedIncome = dateSorter(result);
-            setIncome(sortedIncome);
-            setIncomeLoading(false);
-        } catch (err) {
-            console.log("Error occurred while updating income: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                const sortedIncome = dateSorter(result);
+                setIncome(sortedIncome);
+                setIncomeLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -79,12 +100,17 @@ const useIncome = (username, year) => {
                 body: JSON.stringify(paycheckToDelete)
             });
 
-            const result = await rsp.json();
-            const sortedIncome = dateSorter(result);
-            setIncome(sortedIncome);
-            setIncomeLoading(false);
-        } catch (err) {
-            console.log("Error occurred while deleting a paycheck: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                const sortedIncome = dateSorter(result);
+                setIncome(sortedIncome);
+                setIncomeLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -107,6 +133,13 @@ const useIncome = (username, year) => {
         return totalIncome;
     }
     
+    const redirectToErrorPage = ( error ) => {
+        router.push({
+            pathname:'/error', 
+            query: {message: error.message}
+        });
+    };
+
     return { income, incomeLoading, postIncome, putIncome, deleteIncome, getMonthIncome };
 };
 

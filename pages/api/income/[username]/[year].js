@@ -78,8 +78,8 @@ export default async function handler(req, res) {
             // Send the income array in the response
             res.status(200).send(income);
         } catch (err) {
-            console.log("Error with GET income request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} income request failed: ${err}`);
+            res.status(500).send(`Error occurred while getting ${username}'s income`);
         }
     } else if (method === "POST") {
         // Add the new paycheck to the user's income in S3
@@ -102,8 +102,8 @@ export default async function handler(req, res) {
             // Send the updated income array in the response
             res.status(200).json(updatedIncome);
         } catch (err) {
-            console.log("Error with POST income request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} income request failed: ${err}`);
+            res.status(500).send("Error occured while adding a paycheck");
         }
     } else if (method === "PUT") {
         // Update a paycheck in S3
@@ -133,8 +133,8 @@ export default async function handler(req, res) {
             // Send the updated income array in the response
             res.status(200).json(updatedIncome);
         } catch (err) {
-            console.log("Error with PUT income request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} income request failed: ${err}`);
+            res.status(500).send("Error occurred while editting a paycheck");
         }
     } else if (method === "DELETE") {
         // Delete the given paycheck from the user's income in S3
@@ -161,8 +161,8 @@ export default async function handler(req, res) {
             // Send the updated income array in the response
             res.status(200).json(updatedIncome);
         } catch (err) {
-            console.log("Error with DELETE income request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} income request failed: ${err}`);
+            res.status(500).send("Error occurred while deleting a paycheck");
         }
     } else {
         res.status(405).send(`Method ${method} not allowed`);

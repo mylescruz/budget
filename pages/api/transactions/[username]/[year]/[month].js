@@ -78,8 +78,8 @@ export default async function handler(req, res) {
             // Send the transactions array in the response
             res.status(200).send(transactions);
         } catch (err) {
-            console.log("Error with GET transactions request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} transactions request failed: ${err}`);
+            res.status(500).send(`Error occurred while getting ${username}'s transactions`);
         }
     } else if (method === "POST") {
         // Add the new transaction to the user's transactions in S3
@@ -103,8 +103,8 @@ export default async function handler(req, res) {
             // Send the updated transactions array in the response
             res.status(200).json(updatedTransactions);
         } catch (err) {
-            console.log("Error with POST transactions request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} transactions request failed: ${err}`);
+            res.status(500).send("Error occurred while adding a transaction");
         }
     } else if (method === "PUT") {
         // Update a user's transaction in S3
@@ -134,8 +134,8 @@ export default async function handler(req, res) {
             // Send the updated transactions array in the response
             res.status(200).json(updatedTransactions);
         } catch (err) {
-            console.log("Error with PUT transactions request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} transactions request failed: ${err}`);
+            res.status(500).send("Error occurred while editting a transaction");
         }
     } else if (method === "DELETE") {
         // Delete the given transaction from the user's transactions in S3
@@ -162,8 +162,8 @@ export default async function handler(req, res) {
             // Send the updated transactions array in the response
             res.status(200).json(updatedTransactions);
         } catch (err) {
-            console.log("Error with DELETE transactions request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} transactions request failed: ${err}`);
+            res.status(500).send("Error occurred while deleting a transaction");
         }
     } else {
         res.status(405).send(`Method ${method} not allowed`);

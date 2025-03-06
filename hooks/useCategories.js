@@ -1,24 +1,35 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const useCategories = (username, month, year) => {
     const [categories, setCategories] = useState([]);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
+    const router = useRouter();
     
     // GET request that returns all the categories based on the username, year and month
     useEffect(() => {
         const getCategories = async () => {
             try {
                 const rsp = await fetch(`/api/categories/${username}/${year}/${month}`);
-                const result = await rsp.json();
-                setCategories(result);
-                setCategoriesLoading(false);
-            } catch (err) {
-                console.log("Error occured while retrieving categories: ", err);
+
+                if (rsp.ok) {
+                    const result = await rsp.json();
+                    setCategories(result);
+                    setCategoriesLoading(false);
+                } else {
+                    const message = await rsp.text();
+                    throw new Error(message);
+                }
+            } catch (error) {
+                router.push({
+                    pathname:'/error', 
+                    query: {message: error.message}
+                });
             }
         }
 
         getCategories();
-    }, [username, month, year]);
+    }, [username, month, year, router]);
 
     // POST request that adds a new category based on the username, year and month
     // Then it sets the categories array to the array returned by the response
@@ -33,11 +44,16 @@ const useCategories = (username, month, year) => {
                 body: JSON.stringify(newCategory)
             });
 
-            const result = await rsp.json();
-            setCategories(result);
-            setCategoriesLoading(false);
-        } catch (err) {
-            console.log("Error occurred while adding a category: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setCategories(result);
+                setCategoriesLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -54,11 +70,16 @@ const useCategories = (username, month, year) => {
                 body: JSON.stringify(updatedCategories)
             });
 
-            const result = await rsp.json();
-            setCategories(result);
-            setCategoriesLoading(false);
-        } catch (err) {
-            console.log("Error occurred while updating categories: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setCategories(result);
+                setCategoriesLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
     };
 
@@ -75,12 +96,24 @@ const useCategories = (username, month, year) => {
                 body: JSON.stringify(categoryToDelete)
             });
 
-            const result = await rsp.json();
-            setCategories(result);
-            setCategoriesLoading(false);
-        } catch (err) {
-            console.log("Error occurred while deleting a category: ", err);
+            if (rsp.ok) {
+                const result = await rsp.json();
+                setCategories(result);
+                setCategoriesLoading(false);
+            } else {
+                const message = await rsp.text();
+                throw new Error(message);
+            }
+        } catch (error) {
+            redirectToErrorPage(error);
         }
+    };
+
+    const redirectToErrorPage = ( error ) => {
+        router.push({
+            pathname:'/error', 
+            query: {message: error.message}
+        });
     };
     
     return { categories, categoriesLoading, postCategory, putCategories, deleteCategory };

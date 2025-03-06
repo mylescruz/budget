@@ -65,7 +65,8 @@ export default async function handler(req, res) {
                 // If user doesn't exist, the user can sign up using that username
                 res.status(200).json({ exists: false });
             } else {
-                res.status(500).send(`${method} request failed: ${err}`);
+                console.error(`${method} username request failed: ${err}`);
+                res.status(500).send("Error occurred while finding user");
             }
         }
     } else if (method === 'POST') {
@@ -117,7 +118,8 @@ export default async function handler(req, res) {
             // Send a success status message in the response
             res.status(200).send("User created successfully!");
         } catch (err) {
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} username request failed: ${err}`);
+            res.status(500).send("Error occurred while creating a new account");
         }
     } else {
         res.status(405).send(`Method ${method} not allowed`);

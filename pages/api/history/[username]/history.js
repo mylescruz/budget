@@ -76,8 +76,8 @@ export default async function handler(req, res) {
             // Send the history array in the response
             res.status(200).send(history);
         } catch (err) {
-            console.error("Error with GET history request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} history request failed: ${err}`);
+            res.status(500).send(`Error occurred while getting ${username}'s history`);
         }
     } else if (method === "POST") {
         // Add the new month to the user's history in S3
@@ -100,8 +100,8 @@ export default async function handler(req, res) {
             // Send the updated history array in the response
             res.status(200).json(updatedHistory);
         } catch (err) {
-            console.error("Error with POST history request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} history request failed: ${err}`);
+            res.status(500).send("Error occurred while adding to the history");
         }
     } else if (method === "PUT") {
         // Update a user's history for a given month in S3
@@ -131,8 +131,8 @@ export default async function handler(req, res) {
             // Send the updated history array in the response
             res.status(200).json(updatedHistory);
         } catch (err) {
-            console.error("Error with PUT history request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} history request failed: ${err}`);
+            res.status(500).send("Error occurred while editting the history");
         }
     } else if (method === "DELETE") {
         // Delete the given month from the user's history in S3
@@ -159,8 +159,8 @@ export default async function handler(req, res) {
             // Send the updated history array in the response
             res.status(200).json(updatedHistory);
         } catch (err) {
-            console.error("Error with DELETE history request: ", err);
-            res.status(500).send(`${method} request failed: ${err}`);
+            console.error(`${method} history request failed: ${err}`);
+            res.status(500).send("Error occurred while deleting the history");
         }
     } else {
         res.status(405).send(`Method ${method} not allowed`);
