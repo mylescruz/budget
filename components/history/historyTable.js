@@ -2,14 +2,19 @@ import { Table } from "react-bootstrap";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import Link from "next/link";
 import monthFormatter from "@/helpers/monthFormatter";
+import PopUp from "../popUp";
 
 const HistoryTable = ({ history }) => {
     return (
-        <Table bordered hover className={"w-75 mx-auto history-table"}>
-            <caption>*Click a month to view its budget</caption>
+        <Table bordered hover className="mx-auto history-table">
             <thead className="table-dark">
                 <tr>
-                    <th>Month</th>
+                    <th>
+                        Month
+                        <PopUp title="Click a month to view its budget." id="history-info">
+                            <span> &#9432;</span>
+                        </PopUp>
+                    </th>
                     <th>Budget</th>
                     <th>Actual</th>
                     <th>Leftover</th>

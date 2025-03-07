@@ -1,3 +1,4 @@
+import PopUp from "@/components/popUp";
 import currencyFormatter from "@/helpers/currencyFormatter";
 
 const CategoryFooter = ({footerValues}) => {   
@@ -5,7 +6,12 @@ const CategoryFooter = ({footerValues}) => {
 
     return (
         <tr className="d-flex">
-            <th className={"col-6 bg-dark text-white cell"}>Total</th>
+            <th className={"col-6 bg-dark text-white cell"}>
+                Total
+                <PopUp title="Your budget is your total income for the month." id="budget-info">
+                    <span> &#9432;</span>
+                </PopUp>
+            </th>
             <td className={"col-2 bg-dark text-white cell"}>{currencyFormatter.format(footerValues.budget)}</td>
             <td className={"col-2 bg-dark text-white cell"}>{currencyFormatter.format(footerValues.actual)}</td>
             <td className={"col-2 bg-dark text-white cell"}>

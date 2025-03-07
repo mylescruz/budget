@@ -2,6 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import { useMemo } from "react";
 import { Table } from "react-bootstrap";
 import IncomeRow from "./incomeRow";
+import PopUp from "../popUp";
 
 const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
     // Sets the table's total gross income, taxes and net income
@@ -22,11 +23,15 @@ const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
 
     return (
         <Table bordered className="mx-auto income-table">
-            <caption>*Click a paycheck to view the details</caption>
             <thead className="table-dark">
                 <tr className="d-flex">
                     <th className="col-3 col-md-2">Date</th>
-                    <th className="col-6 col-md-4">Company</th>
+                    <th className="col-6 col-md-4">
+                        Company
+                        <PopUp title="Click a transaction to view its details." id="income-info">
+                            <span> &#9432;</span>
+                        </PopUp>
+                    </th>
                     <th className="d-none d-md-block col-md-2">Gross Income</th>
                     <th className="d-none d-md-block col-md-2">Taxes</th>
                     <th className="col-3 col-md-2">Net Income</th>

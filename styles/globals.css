@@ -191,6 +191,7 @@ a {
 
 .history-table {
   margin: 1em 0em 3em;
+  width: 90%;
 }
 
 .content-margin {
@@ -293,6 +294,14 @@ a {
   .input-number {
     width: 100%;
   } 
+
+  .income-table {
+    width: 75%;
+  }
+
+  .history-table {
+    width: 75%;
+  }
 }
 
 
@@ -309,6 +318,10 @@ a {
   .income-table {
     width: 75%;
   }
+
+  .history-table {
+    width: 75%;
+  }
 }
 
 @media (min-width: 1400px) {
@@ -322,6 +335,10 @@ a {
   }
 
   .income-table {
+    width: 75%;
+  }
+
+  .history-table {
     width: 75%;
   }
 }

@@ -1,15 +1,8 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useState } from "react";
-import { Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
-const guiltFree = "Guilt Free Spending";
-
-// Create a pop up message when hovering over the object
-const PopUp = ({ id, children, title }) => (
-    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-      <span>{children}</span>
-    </OverlayTrigger>
-);
+import PopUp from "@/components/popUp";
 
 const CategoryRow = ({ category }) => {
     const hasSubcategory = category.hasSubcategory;
@@ -29,8 +22,8 @@ const CategoryRow = ({ category }) => {
                         <Col xs={9} sm={10} className="cell">
                             {category.name}
                             {/* Show the pop up message for the Guilt Free Spending category */}
-                            {category.name === guiltFree &&
-                                <PopUp title="The money you can spend on whatever you want after all other expenses have been covered" id="t-1">
+                            {category.name === "Guilt Free Spending" &&
+                                <PopUp title="The money you can spend on whatever you want after all other expenses have been covered." id="guilt-free-info">
                                     <span> &#9432;</span>
                                 </PopUp>
                             }

@@ -1,14 +1,14 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryRow from "./categoryRow";
 import CategoryFooter from "./categoryFooter";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import FixedCategoryRow from "./fixedCategoryRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import categorySorter from "@/helpers/categorySorter";
 import useIncome from "@/hooks/useIncome";
 import useHistory from "@/hooks/useHistory";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { useSession } from "next-auth/react";
+import PopUp from "@/components/popUp";
 
 const CategoryTable = ({ setEditClicked, monthInfo }) => {
     // Using NextAuth.js to authenticate a user's session
@@ -78,7 +78,12 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
                 <tr className="d-flex">
                     <th className="col-6">
                         <Row className="alignX">
-                            <Col xs={9} sm={9} md={9}>Category</Col>
+                            <Col xs={9} sm={9} md={9}>
+                                Category
+                                <PopUp title="You can edit and add categories and their subcategories. You can also edit their budget and color." id="categories-info">
+                                    <span> &#9432;</span>
+                                </PopUp>
+                            </Col>
                             <Col xs={2} sm={2} md={2}><Button className="btn-sm" id="edit-categories-btn" variant="secondary" onClick={handleEdit}>Edit</Button></Col>
                         </Row>
                     </th>
@@ -89,13 +94,23 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
             </thead>
             <tbody>
                 <tr>
-                    <th className="bg-secondary text-white" colSpan={1}>Fixed Expenses</th>
+                    <th className="bg-secondary text-white" colSpan={1}>
+                        Fixed Expenses
+                        <PopUp title="Your expenses that remain the same each month." id="fixed-expenses-info">
+                            <span> &#9432;</span>
+                        </PopUp>
+                    </th>
                 </tr>
                 {categories.map(category => (
                     (category.fixed && <FixedCategoryRow key={category.id} category={category} />)
                 ))}
                 <tr>
-                    <th className="bg-secondary text-white" colSpan={1}>Variable Expenses</th>
+                    <th className="bg-secondary text-white" colSpan={1}>
+                        Variable Expenses
+                        <PopUp title="Your expenses that change depending on your spending." id="variable-expenses-info">
+                            <span> &#9432;</span>
+                        </PopUp>
+                    </th>
                 </tr>
                 {categories.map(category => (
                     (!category.fixed && <CategoryRow key={category.id} category={category} />)

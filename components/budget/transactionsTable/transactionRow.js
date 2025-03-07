@@ -2,7 +2,6 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
 import TransactionDetails from "./transactionDetails";
-import styles from "@/styles/transactionRow.module.css";
 import DeleteTransaction from "./deleteTransactions";
 import EditTransaction from "./editTransaction";
 
@@ -52,9 +51,9 @@ const TransactionRow = ({ transaction, putTransaction, deleteTransaction, monthI
 
     return (
         <>
-            <tr className="d-flex" onClick={openDetails}>
+            <tr className="d-flex click" onClick={openDetails}>
                 <td className="col-2">{dateFormatter(transaction.date)}</td>
-                <td className={`col-7 col-sm-4 ${styles.cell}`}>{transaction.store}</td>
+                <td className={"col-7 col-sm-4 cell"}>{transaction.store}</td>
                 <td className={`d-none d-sm-block col-sm-3`}>{transaction.category}</td>
                 {transaction.amount > 0 ? 
                         <td className="col-3 col-sm-3">{currencyFormatter.format(transaction.amount)}</td> 
