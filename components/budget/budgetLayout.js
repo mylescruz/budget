@@ -1,14 +1,15 @@
 import AddTransaction from "./transactionsTable/addTransaction";
 import CategoryTable from "./categoryTable/categoryTable";
 import TransactionsTable from "./transactionsTable/transactionsTable";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
-import { CategoriesProvider } from "@/contexts/CategoriesContext";
+import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
 import SummaryPieChart from "./summaryPieChart";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Loading from "../loading";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
     // Using NextAuth.js to authenticate a user's session
@@ -17,7 +18,8 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
-    const { transactions, postTransaction, putTransaction, deleteTransaction } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
+    const { categoriesLoading } = useContext(CategoriesContext);
+    const { transactions, transactionsLoading, postTransaction, putTransaction, deleteTransaction } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
     const [viewClicked, setViewClicked] = useState(false);
     const [viewText, setViewText] = useState("View Transactions");
     const [addTransactionClicked, setAddTransactionClicked] = useState(false);
@@ -26,6 +28,11 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     // If there is no user session, redirect to the home page
     if (!session) {
         router.push('/');
+    }
+
+    // If the categories or transactions are still being loaded by the API, show the loading component
+    if (categoriesLoading || transactionsLoading) {
+        return <Loading />;
     }
 
     const showTransactions = () => {

@@ -6,6 +6,7 @@ import { useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Loading from "../loading";
 
 const IncomeLayout = ({ year }) => {
     // Using NextAuth.js to authenticate a user's session
@@ -14,13 +15,18 @@ const IncomeLayout = ({ year }) => {
     // Using the router object to redirect to different pages within the app
     const router = useRouter();
 
-    const { income, postIncome, putIncome, deleteIncome } = useIncome(session.user.username, year);
+    const { income, incomeLoading, postIncome, putIncome, deleteIncome } = useIncome(session.user.username, year);
     const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
     const yearInfo = getYearInfo(year);
 
     // If there is no user session, redirect to the home page
     if (!session) {
         router.push('/');
+    }
+
+    // If the income is still being loaded by the API, show the loading component
+    if (incomeLoading) {
+        return <Loading />;
     }
 
     const addPay = () => {

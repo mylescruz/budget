@@ -16,7 +16,6 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
 
     const { categories, categoriesLoading, putCategories } = useContext(CategoriesContext);
     const { income, incomeLoading, getMonthIncome } = useIncome(session.user.username, monthInfo.year);
-    const sortedCategories = categorySorter(categories);
     const { historyLoading, putHistory, getMonthHistory } = useHistory(session.user.username);
 
     // Updates the budget and the money actual spent in the history array when the categories array changes
@@ -92,13 +91,13 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
                 <tr>
                     <th className="bg-secondary text-white" colSpan={1}>Fixed Expenses</th>
                 </tr>
-                {sortedCategories.map(category => (
+                {categories.map(category => (
                     (category.fixed && <FixedCategoryRow key={category.id} category={category} />)
                 ))}
                 <tr>
                     <th className="bg-secondary text-white" colSpan={1}>Variable Expenses</th>
                 </tr>
-                {sortedCategories.map(category => (
+                {categories.map(category => (
                     (!category.fixed && <CategoryRow key={category.id} category={category} />)
                 ))}
             </tbody>

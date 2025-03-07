@@ -1,3 +1,4 @@
+import categorySorter from "@/helpers/categorySorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -14,7 +15,7 @@ const useCategories = (username, month, year) => {
 
                 if (rsp.ok) {
                     const result = await rsp.json();
-                    setCategories(result);
+                    setCategories(categorySorter(result));
                     setCategoriesLoading(false);
                 } else {
                     const message = await rsp.text();
@@ -46,7 +47,7 @@ const useCategories = (username, month, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                setCategories(result);
+                setCategories(categorySorter(result));
                 setCategoriesLoading(false);
             } else {
                 const message = await rsp.text();
@@ -72,7 +73,7 @@ const useCategories = (username, month, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                setCategories(result);
+                setCategories(categorySorter(result));
                 setCategoriesLoading(false);
             } else {
                 const message = await rsp.text();
@@ -98,7 +99,7 @@ const useCategories = (username, month, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                setCategories(result);
+                setCategories(categorySorter(result));
                 setCategoriesLoading(false);
             } else {
                 const message = await rsp.text();

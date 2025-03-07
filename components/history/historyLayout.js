@@ -6,6 +6,7 @@ import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Loading from "../loading";
 
 const HistoryLayout = () => {
     // Using NextAuth.js to authenticate a user's session
@@ -53,6 +54,11 @@ const HistoryLayout = () => {
             addNewHistoryMonth();
 
     },[history, historyLoading, postHistory, getMonthHistory]);
+
+    // If the history is still being loaded by the API, show the loading component
+    if (historyLoading) {
+        return <Loading />;
+    }
 
     return (
         <>

@@ -15,8 +15,7 @@ const useIncome = (username, year) => {
 
                 if (rsp.ok) {
                     const result = await rsp.json();
-                    const sortedIncome = dateSorter(result);
-                    setIncome(sortedIncome);
+                    setIncome(dateSorter(result));
                     setIncomeLoading(false);
                 } else {
                     const message = await rsp.text();
@@ -48,8 +47,7 @@ const useIncome = (username, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                const sortedIncome = dateSorter(result);
-                setIncome(sortedIncome);
+                setIncome(dateSorter(result));
                 setIncomeLoading(false);
             } else {
                 const message = await rsp.text();
@@ -75,8 +73,7 @@ const useIncome = (username, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                const sortedIncome = dateSorter(result);
-                setIncome(sortedIncome);
+                setIncome(dateSorter(result));
                 setIncomeLoading(false);
             } else {
                 const message = await rsp.text();
@@ -102,8 +99,7 @@ const useIncome = (username, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                const sortedIncome = dateSorter(result);
-                setIncome(sortedIncome);
+                setIncome(dateSorter(result));
                 setIncomeLoading(false);
             } else {
                 const message = await rsp.text();

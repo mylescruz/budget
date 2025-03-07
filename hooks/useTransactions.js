@@ -1,8 +1,10 @@
+import dateSorter from "@/helpers/dateSorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const useTransactions = (username, month, year) => {
     const [transactions, setTransactions] = useState([]);
+    const [transactionsLoading, setTransactionsLoading] = useState(true);
     const router = useRouter();
 
     // GET request that returns the user's transaction based on the username, year and month
@@ -13,7 +15,8 @@ const useTransactions = (username, month, year) => {
 
                 if (rsp.ok) {
                     const result = await rsp.json();
-                    setTransactions(result);
+                    setTransactions(dateSorter(result));
+                    setTransactionsLoading(false);
                 } else {
                     const message = await rsp.text();
                     throw new Error(message);
@@ -46,7 +49,8 @@ const useTransactions = (username, month, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                setTransactions(result);
+                setTransactions(dateSorter(result));
+                setTransactionsLoading(false);
             } else {
                 const message = await rsp.text();
                 throw new Error(message);
@@ -71,7 +75,8 @@ const useTransactions = (username, month, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                setTransactions(result);
+                setTransactions(dateSorter(result));
+                setTransactionsLoading(false);
             } else {
                 const message = await rsp.text();
                 throw new Error(message);
@@ -99,7 +104,8 @@ const useTransactions = (username, month, year) => {
 
             if (rsp.ok) {
                 const result = await rsp.json();
-                setTransactions(result);
+                setTransactions(dateSorter(result));
+                setTransactionsLoading(false);
             } else {
                 const message = await rsp.text();
                 throw new Error(message);
@@ -116,7 +122,7 @@ const useTransactions = (username, month, year) => {
         });
     };
     
-    return { transactions, postTransaction, putTransaction, deleteTransaction };
+    return { transactions, transactionsLoading, postTransaction, putTransaction, deleteTransaction };
 };
 
 export default useTransactions;

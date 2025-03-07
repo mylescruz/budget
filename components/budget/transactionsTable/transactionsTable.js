@@ -1,10 +1,7 @@
 import { Table } from "react-bootstrap";
 import TransactionRow from "./transactionRow";
-import dateSorter from "@/helpers/dateSorter";
 
 const TransactionsTable = ({transactions, putTransaction, deleteTransaction, monthInfo}) => {
-    transactions = dateSorter(transactions);
-
     return (
         <Table striped bordered responsive hover className="transactions-table mx-auto">
             <caption>*Click a transaction to view the details</caption>
