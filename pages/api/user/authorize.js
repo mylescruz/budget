@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     // Function to get the user's info that matches the username provided
     async function getUser(username) {
         // S3 key for the file's location
-        const key = `${username}/info-${username}.json`;
+        const key = `users/${username}/info-${username}.json`;
 
         // A user's file parameters for S3
         const userParams = {

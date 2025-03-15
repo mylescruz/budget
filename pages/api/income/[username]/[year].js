@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     const method = req?.method;
 
     // S3 key for the location of the user's categories file
-    const key = `${username}/income/income-${username}-${year}.json`;
+    const key = `users/${username}/income/income-${username}-${year}.json`;
 
     // Function that returns the user's income from S3
     async function getIncomeData() {

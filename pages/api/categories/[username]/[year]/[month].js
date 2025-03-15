@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     const method = req?.method;
 
     // S3 key for the location of the user's categories file
-    const key = `${username}/categories/${year}/categories-${username}-${month}${year}.json`;
+    const key = `users/${username}/categories/${year}/categories-${username}-${month}${year}.json`;
 
     // Function that returns the user's categories from S3
     async function getCategoriesData() {
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
                     const previousMonth = previousMonthDate.toLocaleDateString('en-US', {month: 'long'}).toLowerCase();
                     
                     // The S3 key for the location of the user's previous months' categories file
-                    const previousMonthKey = `${username}/categories/${yearToCheck}/categories-${username}-${previousMonth}${yearToCheck}.json`;
+                    const previousMonthKey = `users/${username}/categories/${yearToCheck}/categories-${username}-${previousMonth}${yearToCheck}.json`;
                     
                     // Previous months' categories file parameters for S3
                     const previousMonthParams = {

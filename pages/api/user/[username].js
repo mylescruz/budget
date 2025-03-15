@@ -1,7 +1,7 @@
 // API Endpoint for a user information
 
 // Initializing the encryption for the user's password using bcrypt
-const bcyrpt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 // Configuring AWS SDK to connect to Amazon S3
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     const username = req?.query?.username;
 
     // S3 key for the file's location
-    const key = `${username}/info-${username}.json`;
+    const key = `users/${username}/info-${username}.json`;
 
     // Function to get a new userId based off the previous users
     async function getNewUserId() {
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
             const newUserId = await getNewUserId();
 
             // Encrypt the user's entered password by using bcrypt
-            const hashedPassword = await bcyrpt.hash(user.password, saltRounds);
+            const hashedPassword = await bcrypt.hash(user.password, saltRounds);
 
             // Assign a timestamp for when the user created their profile
             const createdDate = new Date().toUTCString();

@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const method = req?.method;
 
     // S3 key for the file's location
-    const key = `${username}/transactions/${year}/transactions-${username}-${month}${year}.json`;
+    const key = `users/${username}/transactions/${year}/transactions-${username}-${month}${year}.json`;
 
     // Function that returns the user's transactions from S3
     async function getTransactionData() {

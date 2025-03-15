@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     const method = req?.method;
 
     // S3 key for the file's location
-    const key = `${username}/history/history-${username}.json`;
+    const key = `users/${username}/history/history-${username}.json`;
 
     // Function that returns the user's history from S3
     async function getHistoryData() {

@@ -12,8 +12,6 @@ const CategoryRow = ({ category }) => {
         setShowSubcategories(!showSubcategories);
     };
 
-    const [difference, setDifference] = useState(category.budget - category.actual);
-
     return (
         <>
             <tr className="d-flex">
@@ -41,7 +39,7 @@ const CategoryRow = ({ category }) => {
                 </th>
                 <td className={`col-2 cell ${category.budget < 0 ? "text-danger fw-bold" : "fw-bold"}`}>{currencyFormatter.format(category.budget)}</td>
                 <td className={"col-2 cell"}>{currencyFormatter.format(category.actual)}</td>
-                <td className={`col-2 cell ${difference < 0 ? "text-danger fw-bold" : ""}`}>{currencyFormatter.format(difference)}</td>
+                <td className={`col-2 cell ${category.budget - category.actual < 0 ? "text-danger fw-bold" : ""}`}>{currencyFormatter.format(category.budget - category.actual)}</td>
             </tr>
             {showSubcategories &&
                 category.subcategories.map(subcategory => (

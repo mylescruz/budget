@@ -73,9 +73,13 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
         // Update the category's budget to remove the subcategory's actual value
         const budgetTotal = parseFloat((edittedCategory.budget - subcategory.actual).toFixed(2));
 
+        // If the category is fixed, keep the actual value to the current budget
+        // If the category isn't fixed, keep the current actual value
+        const actualTotal = edittedCategory.fixed ? budgetTotal : edittedCategory.actual;
+
         // Updates the category's budget and actual value and set the hasSubcategory flag based on if there are any subcategories left
-        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
-        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: budgetTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
+        setEdittedCategory({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
+        updateCategoryValues({...edittedCategory, budget: budgetTotal, actual: actualTotal, hasSubcategory: (updatedSubcategories.length > 0), subcategories: updatedSubcategories});
     };
     
     return (

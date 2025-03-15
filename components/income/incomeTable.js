@@ -28,7 +28,7 @@ const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
                     <th className="col-3 col-md-2">Date</th>
                     <th className="col-6 col-md-4">
                         Company
-                        <PopUp title="Click a transaction to view its details." id="income-info">
+                        <PopUp title="Click a paycheck to view its details." id="income-info">
                             <span> &#9432;</span>
                         </PopUp>
                     </th>

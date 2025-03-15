@@ -3,6 +3,7 @@ import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import addTransactionToCategoryActual from "@/helpers/addTransactionToCategoryActual";
 import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import dateInfo from "@/helpers/dateInfo";
 
 const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
     const { categories, putCategories } = useContext(CategoriesContext);
@@ -12,9 +13,12 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
         return (!category.fixed && !category.hasSubcategory);
     });
 
+    // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at current budget or history
+    const newTransactionDate = dateInfo.currentMonth === monthInfo.month ? dateInfo.currentDate : monthInfo.startOfMonthDate;
+
     const emptyTransaction = {
         id: 0,
-        date: monthInfo.startOfMonthDate,
+        date: newTransactionDate,
         store: "",
         items: "",
         category: firstNotFixed.name,

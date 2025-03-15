@@ -34,6 +34,10 @@ export const authOptions = {
             }
         })
     ],
+    session: {
+        jwt: true,
+        maxAge: 30 * 60
+    },
     callbacks: {
         // Update the token to include the user's username
         async jwt({ token, user }) {
