@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 
 const Dashboard = () => {
     // Using NextAuth.js to authenticate a user's session
@@ -16,10 +16,10 @@ const Dashboard = () => {
     }
     
     return (
-        <>
+        <Container className="d-flex justify-content-center align-items-center dashboard">
             <Card className="col-10 col-sm-8 col-md-8 col-lg-8 col-xl-6 mx-auto my-4 bg-secondary-subtle">
                 <Card.Body>
-                    <h2>Welcome {session.user.name}!</h2>
+                    <h2 className="text-center">Welcome {session.user.name}!</h2>
                     <p className="my-3 fs-5">Check out your budget, update your income or view the history of your budget.</p>
                     
                     <Row className="mx-auto text-center">
@@ -35,7 +35,7 @@ const Dashboard = () => {
                     </Row>
                 </Card.Body>
             </Card>
-        </>
+        </Container>
     );
 };
 

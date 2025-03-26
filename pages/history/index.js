@@ -1,5 +1,5 @@
 import HistoryLayout from "@/components/history/historyLayout";
-import Loading from "@/components/loading";
+import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
 
 export default function History() {

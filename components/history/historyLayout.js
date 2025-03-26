@@ -6,7 +6,7 @@ import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Loading from "../loading";
+import Loading from "../layout/loading";
 
 const HistoryLayout = () => {
     // Using NextAuth.js to authenticate a user's session

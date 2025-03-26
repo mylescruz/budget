@@ -1,5 +1,5 @@
-import CreateUser from "@/components/createUser";
-import Loading from "@/components/loading";
+import CreateUser from "@/components/user/createUser";
+import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
 
 export default function CreateAccount() {

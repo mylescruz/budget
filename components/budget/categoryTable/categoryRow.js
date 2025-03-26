@@ -2,7 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
-import PopUp from "@/components/popUp";
+import PopUp from "@/components/layout/popUp";
 
 const CategoryRow = ({ category }) => {
     const hasSubcategory = category.hasSubcategory;

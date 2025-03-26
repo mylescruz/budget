@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap";
 import TransactionRow from "./transactionRow";
-import PopUp from "@/components/popUp";
+import PopUp from "@/components/layout/popUp";
 
 const TransactionsTable = ({transactions, putTransaction, deleteTransaction, monthInfo}) => {
     return (

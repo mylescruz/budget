@@ -1,5 +1,5 @@
-import ErrorLayout from "@/components/errorLayout";
-import Loading from "@/components/loading";
+import ErrorLayout from "@/components/layout/errorLayout";
+import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 

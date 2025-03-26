@@ -8,7 +8,7 @@ import useIncome from "@/hooks/useIncome";
 import useHistory from "@/hooks/useHistory";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { useSession } from "next-auth/react";
-import PopUp from "@/components/popUp";
+import PopUp from "@/components/layout/popUp";
 
 const CategoryTable = ({ setEditClicked, monthInfo }) => {
     // Using NextAuth.js to authenticate a user's session

@@ -1,5 +1,5 @@
 import IncomeLayout from "@/components/income/incomeLayout";
-import Loading from "@/components/loading";
+import Loading from "@/components/layout/loading";
 import dateInfo from "@/helpers/dateInfo";
 import { useSession } from "next-auth/react";
 

@@ -1,5 +1,5 @@
 import BudgetLayout from "@/components/budget/budgetLayout";
-import Loading from "@/components/loading";
+import Loading from "@/components/layout/loading";
 import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";

@@ -2,7 +2,7 @@ import { Table } from "react-bootstrap";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import Link from "next/link";
 import monthFormatter from "@/helpers/monthFormatter";
-import PopUp from "../popUp";
+import PopUp from "../layout/popUp";
 
 const HistoryTable = ({ history }) => {
     return (

@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signIn } from "next-auth/react";
 
 export const authOptions = {
     providers: [
@@ -37,6 +38,9 @@ export const authOptions = {
     session: {
         jwt: true,
         maxAge: 60 * 60 * 24
+    },
+    pages: {
+        signIn: '/auth/signIn'
     },
     callbacks: {
         // Update the token to include the user's username

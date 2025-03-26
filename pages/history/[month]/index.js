@@ -1,5 +1,5 @@
 import HistoryBudget from "@/components/history/historyBudget";
-import Loading from "@/components/loading";
+import Loading from "@/components/layout/loading";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";

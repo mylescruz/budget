@@ -1,5 +1,5 @@
 import Home from "@/components/home/home";
-import Loading from "@/components/loading";
+import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
 
 export default function Index() {

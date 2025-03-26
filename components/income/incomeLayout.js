@@ -6,7 +6,7 @@ import { useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Loading from "../loading";
+import Loading from "../layout/loading";
 
 const IncomeLayout = ({ year }) => {
     // Using NextAuth.js to authenticate a user's session

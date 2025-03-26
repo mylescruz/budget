@@ -1,4 +1,4 @@
-import PopUp from "@/components/popUp";
+import PopUp from "@/components/layout/popUp";
 import currencyFormatter from "@/helpers/currencyFormatter";
 
 const CategoryFooter = ({footerValues}) => {   

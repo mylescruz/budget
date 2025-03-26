@@ -9,7 +9,7 @@ import useTransactions from "@/hooks/useTransactions";
 import SummaryPieChart from "./summaryPieChart";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Loading from "../loading";
+import Loading from "../layout/loading";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
     // Using NextAuth.js to authenticate a user's session

@@ -2,7 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import { useMemo } from "react";
 import { Table } from "react-bootstrap";
 import IncomeRow from "./incomeRow";
-import PopUp from "../popUp";
+import PopUp from "../layout/popUp";
 
 const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
     // Sets the table's total gross income, taxes and net income
