@@ -28,7 +28,7 @@ const Home = () => {
                                 <Button variant="dark" className="my-3" onClick={userSignIn}>Login</Button>
                             </Col>
                             <Col>
-                                <Button as={Link} href="/createaccount" variant="dark" className="my-3">Sign up</Button>
+                                <Button as={Link} href="/auth/createAccount" variant="dark" className="my-3">Sign up</Button>
                             </Col>
                         </Row>
                     </Card.Body>

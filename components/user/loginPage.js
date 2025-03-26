@@ -60,7 +60,7 @@ const LoginPage = ({ csrfToken }) => {
                         {loginError.error && <p className={styles.error}>{loginError.message}</p>}
                         <Button className="btn btn-primary w-100" type="submit">Login</Button>
                     </Form>
-                    <Link href="/auth/createaccount" className={styles.message}>New user? <span className={styles.create}>Create account</span></Link>
+                    <Link href="/auth/createAccount" className={styles.message}>New user? <span className={styles.create}>Create account</span></Link>
                 </Card>
             </Container>
         </Container>

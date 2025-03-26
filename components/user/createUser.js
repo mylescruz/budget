@@ -1,10 +1,11 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
 
-const CreateUser = () => {
+const CreateUser = ({ csrfToken }) => {
     const emptyUser = {
+        id: Date.now(),
         username: "",
         email: "",
         name: "",
@@ -12,7 +13,6 @@ const CreateUser = () => {
         confirmPassword: ""
     };
 
-    // Error validation object that checks if an object is valid and returns an error if not
     const validated = {
         valid: true,
         error: ''
@@ -23,16 +23,18 @@ const CreateUser = () => {
     const [validEmail, setValidEmail] = useState(validated);
     const [validPassword, setValidPassword] = useState(validated);
     const [validMatch, setValidMatch] = useState(validated);
+    const [creatingUser, setCreatingUser] = useState(false);
     const router = useRouter();
 
     const handleInput = (e) => {
         setNewUser({...newUser, [e.target.id]: e.target.value});
     };
 
-    /* 
-        Checks if the given username already exists
-        Sends a GET request to the API and checks if there is a user returned
-    */
+    const checkUsernameLength = (username) => {
+        const regex = /^[a-zA-Z0-9]{4,}$/;
+        return regex.test(username);
+    };
+
     const checkUsername = async (username) => {
         const res = await fetch(`/api/user/${username}`);
         const user = await res.json();
@@ -40,19 +42,16 @@ const CreateUser = () => {
         return user.exists;
     };
 
-    // Checks if the given email is in valid email format
     const checkEmail = (email) => {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
         return regex.test(email);
     };
 
-    // Checks if the given password matches the required format
     const checkPassword = (password) => {
         const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%&*?])[a-zA-Z0-9!@#$%&*?]{8,}$/;
         return regex.test(password);
     };
 
-    // Creates the new user by sending a POST request to the API
     const createUserS3 = async (newUser) => {
         try {
             await fetch(`/api/user/${newUser.username}`, {
@@ -64,34 +63,51 @@ const CreateUser = () => {
                 body: JSON.stringify(newUser)
             });
         } catch (err) {
-            window.alert('Error creating user. Please try again');
-            router.push('/createaccount');
+            console.log("Error creating user: ", err);
         }
     };
 
-    // Does all the validation checks to make sure the given input matches all the criteria
+    const closeCreatingUser = () => {
+        setCreatingUser(false);
+    };
+
     const createNewUser = async (e) => {
         e.preventDefault();
 
+        setCreatingUser(true);
+
         // Check if entered email is valid
         if (!checkEmail(newUser.email)) {
+            console.log("Didnt pass email check");
             setValidEmail({valid: false, error: 'Not a valid email address'});
             return;
         } else {
             setValidEmail(validated);
         }
 
-        // Check if the username is already taken
-        const userExists = await checkUsername(newUser.username);
-        if (userExists) {
-            setValidUsername({valid: false, error: 'Username is already taken'});
+        // Check if the username is a valid length
+        const validLength = checkUsernameLength(newUser.username);
+        if (!validLength) {
+            console.log("Didnt pass username check");
+            setValidUsername({valid: false, error: 'A username must have a minimum four alphanumeric characters'});
             return;
         } else {
             setValidUsername(validated);
         }
 
+        // Check if the username is already taken
+        const userExists = await checkUsername(newUser.username);
+        if (userExists) {
+            console.log("Didnt pass username check");
+            setValidUsername({valid: false, error: 'Username is already taken'});
+            return;
+        } else { 
+            setValidUsername(validated);
+        }
+
         // Check if entered password is valid
         if (!checkPassword(newUser.password)) {
+            console.log("Didnt pass password check");
             setValidPassword({valid: false, error: 'A password must have a minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character'});
             return;
         } else {
@@ -100,6 +116,7 @@ const CreateUser = () => {
 
         // Check if entered password and password confirmation match
         if (newUser.password !== newUser.confirmPassword) {
+            console.log("Didnt pass match check");
             setValidMatch({valid: false, error: 'Passwords do not match'});
             return;
         } else {
@@ -109,52 +126,79 @@ const CreateUser = () => {
         // Add the user to S3
         await createUserS3(newUser);
 
-        window.alert('User created successfully! Please login to your account.');
+        // Redirect to sign in page
+        try {
+            const response = await signIn('credentials', {
+                username: newUser.username,
+                password: newUser.password,
+                redirect: false,
+                csrfToken
+            });
 
-        // Redirects the user to the signIn page to login with the new credentials
-        signIn();
+            if (response.ok) {
+                router.push('/');
+            } else {
+                throw new Error("There was an issue with directly login. Please sign in using your new credentials.");
+            }
+        } catch(error) {
+            window.alert(error.message);
+            router.push('/auth/signIn');
+        }
+
+        closeCreatingUser();
     };
 
     return (
-        <Container className="my-4 col-12 col-sm-8 col-md-6 col-lg-4 col-xl-4">
-            <Card>
-                <Card.Body>
-                    <h4>Create account</h4>  
-                    <Form onSubmit={createNewUser}>
-                        <Form.Control type="text" id="name" className="h-100 my-2" value={newUser.name} placeholder="Name" onChange={handleInput} required />
-                        <Form.Group controlId="email" className="h-100 my-2">
-                            <Form.Control type="text" value={newUser.email} placeholder="Email" onChange={handleInput} isInvalid={validEmail.error && !validEmail.valid} required />
-                            <Form.Control.Feedback type="invalid">{validEmail.error}</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group controlId="username" className="h-100 my-2">
-                            <Form.Control type="text" value={newUser.username} placeholder="Username" onChange={handleInput} required isInvalid={validUsername.error && !validUsername.valid} />
-                            <Form.Control.Feedback type="invalid">{validUsername.error}</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group controlId="password" className="h-100 my-2">
-                            <Form.Control type="password" value={newUser.password} placeholder="Password" onChange={handleInput} required isInvalid={validPassword.error && !validPassword.valid} />
-                            <Form.Control.Feedback type="invalid">{validPassword.error}</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group controlId="confirmPassword" className="h-100 my-2">
-                            <Form.Control type="password" value={newUser.confirmPassword} placeholder="Confirm Password" onChange={handleInput} required isInvalid={validMatch.error && !validMatch.valid} />
-                            <Form.Control.Feedback type="invalid">{validMatch.error}</Form.Control.Feedback>
-                            <Form.Text>
-                                Your password must include: <br/>
-                                <ul>
-                                    <li>An uppercase letter</li>
-                                    <li>A lowercase letter</li>
-                                    <li>A number</li>
-                                    <li>A special character: !@#$%&*?</li>
-                                    <li>Minimum 8 characters</li>
-                                </ul>
-                            </Form.Text>
-                        </Form.Group>
-                        <Form.Group className="text-center">
-                            <Button type="submit">Sign Up</Button>
-                        </Form.Group>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </Container>
+        <>
+            <Container className="d-flex justify-content-center align-items-center create-account">
+                <Container className="my-4 col-12 col-sm-10 col-md-6 col-lg-4">
+                    <Card className="p-3">
+                        <h1>Create account</h1>  
+                        <Form onSubmit={createNewUser}>
+                            <Form.Group controlId="name" className="h-100 my-2">
+                                <Form.Control type="text" value={newUser.name} placeholder="Name" onChange={handleInput} required />
+                            </Form.Group>
+                            <Form.Group controlId="email" className="h-100 my-2">
+                                <Form.Control type="text" value={newUser.email} placeholder="Email" onChange={handleInput} isInvalid={validEmail.error && !validEmail.valid} required />
+                                <Form.Control.Feedback type="invalid">{validEmail.error}</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group controlId="username" className="h-100 my-2">
+                                <Form.Control type="text" value={newUser.username} placeholder="Username" onChange={handleInput} isInvalid={validUsername.error && !validUsername.valid} required />
+                                <Form.Control.Feedback type="invalid">{validUsername.error}</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group controlId="password" className="h-100 my-2">
+                                <Form.Control type="password" value={newUser.password} placeholder="Password" onChange={handleInput} isInvalid={validPassword.error && !validPassword.valid} required />
+                                <Form.Control.Feedback type="invalid">{validPassword.error}</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group controlId="confirmPassword" className="h-100 my-2">
+                                <Form.Control type="password" value={newUser.confirmPassword} placeholder="Confirm Password" onChange={handleInput} isInvalid={validMatch.error && !validMatch.valid} required />
+                                <Form.Control.Feedback type="invalid">{validMatch.error}</Form.Control.Feedback>
+                                <Form.Text>
+                                    Your password must include:
+                                    <ul>
+                                        <li>An uppercase letter</li>
+                                        <li>A lowercase letter</li>
+                                        <li>A number</li>
+                                        <li>A special character: !@#$%&*?</li>
+                                        <li>Minimum 8 characters</li>
+                                    </ul>
+                                </Form.Text>
+                            </Form.Group>
+                            <Button className="w-100" type="submit">Sign Up</Button>
+                        </Form>
+                    </Card>
+                </Container>        
+            </Container>
+
+            <Modal show={creatingUser} onHide={closeCreatingUser} centered>
+                <Modal.Body>
+                    <h3 className="text-center">Creating Your Account</h3>
+                    <div className="d-flex justify-content-center align-items-center">
+                        <Spinner animation="border" variant="primary"/>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        </>
     );
 };
 
