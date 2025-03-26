@@ -36,13 +36,16 @@ export const authOptions = {
     ],
     session: {
         jwt: true,
-        maxAge: 30 * 60
+        maxAge: 60 * 60 * 24
     },
     callbacks: {
         // Update the token to include the user's username
         async jwt({ token, user }) {
             if (user) {
                 token.username = user.username;
+                token.name = user.name;
+                token.email = user.email;
+                token.role = user.role;
             }
             return token;
         },
@@ -55,8 +58,10 @@ export const authOptions = {
         },
         // Update the session to include the accessToken and username
         async session({ session, token }) {
-            session.accessToken = token.accessToken;
             session.user.username = token.username;
+            session.user.name = token.name;
+            session.user.email = token.email;
+            session.user.role = token.role;
             return session;
         }
     },

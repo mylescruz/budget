@@ -14,6 +14,8 @@ AWS.config.update({
 const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
+const USER_ROLE = "User";
+
 export default async function handler(req, res) {
     const method = req?.method;
     const username = req?.query?.username;
@@ -90,6 +92,7 @@ export default async function handler(req, res) {
                 email: user.email,
                 username: user.username,
                 password_hash: hashedPassword,
+                role: USER_ROLE,
                 created_ts: createdDate
             };
 
@@ -109,7 +112,8 @@ export default async function handler(req, res) {
                 id: newUserId,
                 username: user.username,
                 email: user.email,
-                created_ts: createdDate
+                created_ts: createdDate,
+                role: USER_ROLE
             };
 
             // Add the user to the user's index in S3

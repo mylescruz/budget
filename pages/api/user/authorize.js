@@ -56,7 +56,8 @@ export default async function handler(req, res) {
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    username: user.username
+                    username: user.username,
+                    role: user.role
                 };
                 
                 // Sending back the verified user object in the response
