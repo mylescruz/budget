@@ -62,7 +62,7 @@ const HistoryLayout = () => {
 
     return (
         <>
-            <aside className="info-text text-center my-4 mx-auto">
+            <aside className="info-text text-center mx-auto">
                 <h1>History</h1>
                 <p>View your budget versus what you actually spent for previous months.</p>
             </aside>

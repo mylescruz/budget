@@ -1,6 +1,6 @@
 // API Endpoint for a user's information
 
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, DeleteObjectsCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
 
@@ -185,16 +185,11 @@ export default async function handler(req, res) {
 
             if (passwordsMatch) {
                 let updatedPassword = user.password_hash;
-                let updatedUsername = user.username;
                 let updatedEmail = user.email;
 
                 if ('newPassword' in edittedUser) {
                     updatedPassword = await bcrypt.hash(edittedUser.newPassword, saltRounds);
                 }
-                
-                if ('newUsername' in edittedUser ) {
-                    updatedUsername = edittedUser.newUsername;
-                } 
 
                 if ('newEmail' in edittedUser) {
                     updatedEmail = edittedUser.newEmail;
@@ -204,7 +199,7 @@ export default async function handler(req, res) {
                     id: user.id,
                     name: user.name,
                     email: updatedEmail,
-                    username: updatedUsername,
+                    username: user.username,
                     password_hash: updatedPassword,
                     role: user.role,
                     created_date: user.created_date
@@ -282,14 +277,28 @@ export default async function handler(req, res) {
             const passwordsMatch = await checkHashedPassword(deletedUser.password, user.password_hash);
 
             if (passwordsMatch) {
-                // S3 File Parameters for the users info
-                const userInfoParams = {
+                // Get all objects within the user's folder
+                const userFolder = `users/${deletedUser.username}`;
+
+                const userFolderParams = {
                     Bucket: BUCKET_NAME,
-                    Key: userKey
+                    Prefix: userFolder
                 };
-    
-                // Delete the user's info file from S3
-                await S3.send(new DeleteObjectCommand(userInfoParams));
+
+                const listedObjects = await S3.send(new ListObjectsV2Command(userFolderParams));
+
+                if (listedObjects.Contents.length > 0) {
+                    // S3 File Parameters for the users info
+                    const userInfoParams = {
+                        Bucket: BUCKET_NAME,
+                        Delete: {
+                            Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+                            Quiet: false
+                        }
+                    };
+
+                    await S3.send(new DeleteObjectsCommand(userInfoParams));
+                }
 
                 // Delete user from the users index
                 const users = await getUsers(indexKey);

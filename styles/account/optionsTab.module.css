@@ -1,0 +1,17 @@
+.options {
+    margin: 0.5em 0em;
+    padding: 0.25em;
+}
+
+.options:hover {
+    background-color: var(--bs-secondary);
+    color: white;
+    border-radius: 5px;
+}
+
+.active {
+    background-color: var(--bs-dark);
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+}

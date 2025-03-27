@@ -43,7 +43,7 @@ const IncomeLayout = ({ year }) => {
 
     return (
         <>
-            <aside className="info-text text-center my-4 mx-auto">
+            <aside className="info-text text-center mx-auto">
                 <h1>{year} Income</h1>
                 <p>View and add your paychecks for the current year. View your gross and net income and see how much taxes have been taken out.</p>
             </aside>
