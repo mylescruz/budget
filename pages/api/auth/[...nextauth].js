@@ -13,7 +13,7 @@ export const authOptions = {
             async authorize(credentials, req) {
                 // Authorize a user's credentials in the server
                 try {
-                    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user/authorize`, {
+                    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/authorize/password`, {
                         method: 'POST',
                         body: JSON.stringify(credentials),
                         headers: { "Content-Type": "application/json" }
@@ -39,7 +39,8 @@ export const authOptions = {
         maxAge: 60 * 60 * 24
     },
     pages: {
-        signIn: '/auth/signIn'
+        signIn: '/auth/signIn',
+        createAccount: '/auth/createAccount'
     },
     callbacks: {
         // Update the token to include the user's username

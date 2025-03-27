@@ -1,8 +1,10 @@
-// API Endpoint for a user information
+// API Endpoint for a user's information
 
-import { HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
-// Initializing the encryption for the user's password using bcrypt
+// Configuring bcrypt for password encryption
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -18,68 +20,100 @@ const BUCKET_NAME = process.env.BUCKET_NAME;
 
 const USER_ROLE = "User";
 
+// Function to convert the stream object from S3 to JSON
+const streamToJSON = (stream) => {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        stream.on('data', (chunk) => chunks.push(chunk));
+        stream.on('end', () => {
+            try {
+                const body = Buffer.concat(chunks).toString('utf-8');
+                const data = JSON.parse(body);
+                resolve(data);
+            } catch(error) {
+                reject(error);
+            }
+        });
+        stream.on("error", (err) => {
+            reject(err);
+        });
+    });
+};
+
+// Function to get the user's info that matches the username provided
+async function getUser(userKey) {
+    // S3 File Parameters for the users info
+    const userParams = {
+        Bucket: BUCKET_NAME,
+        Key: userKey
+    };
+
+    // Get the user data from S3
+    const userData = await S3.send(new GetObjectCommand(userParams));
+    return await streamToJSON(userData.Body);
+};
+
+// Gets all the users from S3
+async function getUsers(indexKey) {
+    const usersParams = {
+        Bucket: BUCKET_NAME,
+        Key: indexKey
+    };
+
+    const usersData = await S3.send(new GetObjectCommand(usersParams));
+    return await streamToJSON(usersData.Body);
+};
+
+// Function to compare the given password with the stored encrypted password
+async function checkHashedPassword(password, hashedPassword) {
+    try {
+        return await bcrypt.compare(password, hashedPassword);
+    } catch (err) {
+        console.error("Error comparing passwords: ", err);
+        return false;
+    }
+};
+
 export default async function handler(req, res) {
+    // Authorize API call with NextAuth
+    const session = await getServerSession(req, res, authOptions);
+
     const method = req?.method;
     const username = req?.query?.username;
 
-    // S3 key for the file's location
-    const key = `users/${username}/info-${username}.json`;
+    if (method !== "POST") {
+        // Reject a user if they try to access this endpoint without having a session
+        if (!session)
+            return res.status(401).send("You must login to view this information");
 
-    // Function to get a new userId based off the previous users
-    async function getNewUserId() {
-        const rsp = await fetch(`${process.env.NEXTAUTH_URL}/api/user/users`);
-        const users = await rsp.json();
+        // Reject a user if they try to access another user's information 
+        if (session.user.username !== username)
+            return res.status(403).send("You do not have access to this information");
+    }
 
-        // Find the max ID number
-        let maxID = 0;
-        if (users.length > 0)
-            maxID = Math.max(...users.map(user => user.id));
-
-        return parseInt(maxID) + 1;
-    };
-
-    // Function to add the new user to the user index in S3
-    async function postUserToIndex(user) {
-        await fetch(`${process.env.NEXTAUTH_URL}/api/user/users`, {
-            method: "POST",
-            headers: {
-                Accept: "application.json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(user)
-        });
-    };
+    const userKey = `users/${username}/info-${username}.json`;
+    const indexKey = 'users/users-index.json';
 
     if (method === 'GET') {
-        // Return the user based on the username from S3
         try {
-            // S3 File Parameters for the user's info
-            const userParams = {
-                Bucket: BUCKET_NAME,
-                Key: key
-            };
+            const user = await getUser(userKey);
+    
+            // Return a user without its password
+            const { password_hash, ...userInfo } = user;
 
-            // Returns an object if the user already exists and throws an error if they do not
-            await S3.send(new HeadObjectCommand(userParams));
-
-            // Send an object stating the user exists
-            res.status(200).json({ exists: true });
+            // Send the user in the response
+            res.status(200).json(userInfo);
         } catch (error) {
-            if (error.name === 'NotFound') {
-                // If user doesn't exist, the user can sign up using that username
-                res.status(200).json({ exists: false });
-            } else {
-                console.error(`${method} username request failed: ${error}`);
-                res.status(500).send("Error occurred while finding user");
-            }
+            console.error(`${method} user/username request failed: ${error}`);
+            res.status(500).send("An error occurred while getting your account info. Please try again later!");
         }
     } else if (method === 'POST') {
-        // Add a new user in S3
+        // Creating a new user
         try {
             const user = req?.body;
 
-            // Assign an ID to the user
-            const newUserId = await getNewUserId();
+            // Create a user ID based on the time of creation
+            const newID = Date.now();
 
             // Encrypt the user's entered password by using bcrypt
             const hashedPassword = await bcrypt.hash(user.password, saltRounds);
@@ -87,21 +121,21 @@ export default async function handler(req, res) {
             // Assign a timestamp for when the user created their profile
             const createdDate = new Date().toUTCString();
 
-            // The data that a user's info file will contain
+            // Add a user's file to their personal folder
             const userInfo = {
-                id: newUserId,
+                id: newID,
                 name: user.name,
                 email: user.email,
                 username: user.username,
                 password_hash: hashedPassword,
                 role: USER_ROLE,
-                created_ts: createdDate
+                created_date: createdDate
             };
 
             // S3 File Parameters for the user's info
             const userInfoParams = {
                 Bucket: BUCKET_NAME,
-                Key: key,
+                Key: userKey,
                 Body: JSON.stringify(userInfo, null, 2),
                 ContentType: "application/json"
             };
@@ -109,25 +143,184 @@ export default async function handler(req, res) {
             // Place the user's info file in the user's folder in S3
             await S3.send(new PutObjectCommand(userInfoParams));
 
-            // The data that the user's index will contain about the user
+            // Add this new user to the users index
             const newUser = {
-                id: newUserId,
+                id: newID,
+                name: user.name,
                 username: user.username,
                 email: user.email,
-                created_ts: createdDate,
-                role: USER_ROLE
+                role: USER_ROLE,
+                created_date: createdDate
             };
 
-            // Add the user to the user's index in S3
-            await postUserToIndex(newUser);
+            const users = await getUsers(indexKey);
+                        
+            // Add new user to users array
+            const updatedUsers = [...users, newUser];
 
-            // Send a success status message in the response
-            res.status(200).send("User created successfully!");
+            // S3 File Parameters for the users index
+            const usersParams = {
+                Bucket: BUCKET_NAME,
+                Key: indexKey,
+                Body: JSON.stringify(updatedUsers, null, 2),
+                ContentType: "application/json"
+            };
+
+            // Place updated users in to S3
+            await S3.send(new PutObjectCommand(usersParams));
+
+            res.status(200).json(newUser);
         } catch (error) {
-            console.error(`${method} username request failed: ${error}`);
-            res.status(500).send("Error occurred while creating a new account");
+            console.error(`${method} user/username request failed: ${error}`);
+            res.status(500).send("An error occurred while creating your account. Please try again later!");
+        }
+    } else if (method === 'PUT') {
+        // Update a user's credentials
+        try {
+            const edittedUser = req?.body;
+            const user = await getUser(userKey);
+
+            // Check if the passwords match
+            const passwordsMatch = await checkHashedPassword(edittedUser.currentPassword, user.password_hash);
+
+            if (passwordsMatch) {
+                let updatedPassword = user.password_hash;
+                let updatedUsername = user.username;
+                let updatedEmail = user.email;
+
+                if ('newPassword' in edittedUser) {
+                    updatedPassword = await bcrypt.hash(edittedUser.newPassword, saltRounds);
+                }
+                
+                if ('newUsername' in edittedUser ) {
+                    updatedUsername = edittedUser.newUsername;
+                } 
+
+                if ('newEmail' in edittedUser) {
+                    updatedEmail = edittedUser.newEmail;
+                }
+                
+                const userInfo = {
+                    id: user.id,
+                    name: user.name,
+                    email: updatedEmail,
+                    username: updatedUsername,
+                    password_hash: updatedPassword,
+                    role: user.role,
+                    created_date: user.created_date
+                };
+
+                let userInfoKey = userKey;
+
+                // If the user changes the username, delete the old user info
+                if (user.username !== userInfo.username) {
+                    // S3 File Parameters for the users info
+                    const oldUserInfoParams = {
+                        Bucket: BUCKET_NAME,
+                        Key: userInfoKey
+                    };
+    
+                    // Delete the user's info file from S3
+                    await S3.send(new DeleteObjectCommand(oldUserInfoParams));
+
+                    userInfoKey = `users/${userInfo.username}/info-${userInfo.username}.json`;
+                }
+
+                // User's info file parameters for S3
+                const userInfoParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: userInfoKey,
+                    Body: JSON.stringify(userInfo, null, 2),
+                    ContentType: "application/json"
+                };
+
+                // Place the user's info file in the user's folder in S3
+                await S3.send(new PutObjectCommand(userInfoParams));
+
+                // Update user in the users index
+                const { password_hash, ...updatedUser } = userInfo;
+
+                const users = await getUsers(indexKey);
+                            
+                // Edit user in the users array
+                const updatedUsers = users.map(user => {
+                    if (user.id === updatedUser.id) {
+                        return updatedUser;
+                    }
+
+                    return user;
+                });
+
+                // S3 File Parameters for the users index
+                const usersParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: indexKey,
+                    Body: JSON.stringify(updatedUsers, null, 2),
+                    ContentType: "application/json"
+                };
+
+                // Place updated users in to S3
+                await S3.send(new PutObjectCommand(usersParams));
+
+                // Sending back the verified user object in the response
+                res.status(200).json(updatedUser);
+            } else {
+                // If the passwords don't match, send back a null object signifying invalid credentials
+                res.status(401).send("Passwords do not match. Cannot update the password.");
+            }
+        } catch (err) {
+            console.error(`${method} user/username request failed: ${err}`);
+            res.status(500).send("An error occurred while updating your account. Please try again later!");
+        }
+    } else if (method === 'DELETE') {
+        // Delete a user
+        try {
+            const deletedUser = req?.body;
+            const user = await getUser(userKey);
+
+            // Check if the passwords match
+            const passwordsMatch = await checkHashedPassword(deletedUser.password, user.password_hash);
+
+            if (passwordsMatch) {
+                // S3 File Parameters for the users info
+                const userInfoParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: userKey
+                };
+    
+                // Delete the user's info file from S3
+                await S3.send(new DeleteObjectCommand(userInfoParams));
+
+                // Delete user from the users index
+                const users = await getUsers(indexKey);
+
+                // Delete user from the users array
+                const updatedUsers = users.filter(user => {
+                    return user.id !== deletedUser.id;
+                });
+                
+                // S3 File Parameters for the users index
+                const usersParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: indexKey,
+                    Body: JSON.stringify(updatedUsers, null, 2),
+                    ContentType: "application/json"
+                };
+    
+                // Place updated users in to S3
+                await S3.send(new PutObjectCommand(usersParams));
+
+                // Send back a successful status that the user was deleted
+                res.status(200).send();
+            } else {
+                // If the passwords don't match, send back an error message
+                res.status(401).send("Passwords do not match. Cannot delete your account.");
+            }
+        } catch (err) {
+            console.error(`${method} user/username request failed: ${err}`);
+            res.status(500).send("An error occurred while deleting your account. Please try again later!");
         }
     } else {
-        res.status(405).send(`Method ${method} not allowed`);
+        res.status(405).send(`${method} method not allowed`);
     }
 };

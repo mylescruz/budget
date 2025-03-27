@@ -1,13 +1,13 @@
 import { Container} from "react-bootstrap";
 import AccountInfo from "./accountInfo";
-import { useSession } from "next-auth/react";
+import useUser from "@/hooks/useUser";
 
 const AccountLayout = () => {
-    const { data: session } = useSession();
+    const { user } = useUser();
 
     return (
         <Container className="my-4">
-            <AccountInfo session={session} />
+            <AccountInfo user={user} />
         </Container>
     )
 };

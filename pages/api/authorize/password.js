@@ -34,46 +34,42 @@ const streamToJSON = (stream) => {
     });
 };
 
+// Get the user information that matches the username provided
+async function getUser(username) {
+    const key = `users/${username}/info-${username}.json`;
+
+    // S3 File Parameters for the user's info
+    const userParams = {
+        Bucket: BUCKET_NAME,
+        Key: key
+    };
+
+    const userData = await S3.send(new GetObjectCommand(userParams));
+    return await streamToJSON(userData.Body);
+};
+
+// Use bcrypt to check the encrypted password
+async function checkHashedPassword(password, hashedPassword) {
+    try {
+        return await bcrypt.compare(password, hashedPassword);
+    } catch (error) {
+        console.error("Error comparing passwords: ", error);
+        return false;
+    }
+};
+
 export default async function handler(req, res) {
     const method = req?.method;
 
-    // Function to get the user's info that matches the username provided
-    async function getUser(username) {
-        // S3 key for the file's location
-        const key = `users/${username}/info-${username}.json`;
-
-        // S3 File Parameters for the user's info
-        const userParams = {
-            Bucket: BUCKET_NAME,
-            Key: key
-        };
-
-        // Get the user data from S3
-        const userData = await S3.send(new GetObjectCommand(userParams));
-        return await streamToJSON(userData.Body);
-    }
-
-    // Function to compare the given password with the stored encrypted password
-    async function checkHashedPassword(password, hashedPassword) {
-        try {
-            return await bcrypt.compare(password, hashedPassword);
-        } catch (error) {
-            console.error("Error comparing passwords: ", error);
-            return false;
-        }
-    }
-
     if (method === 'POST') {
-        // Validate a user's credentials with the inputted credentials
         try {
             const credentials = req?.body;
             const user = await getUser(credentials.username);
 
-            // Check if the passwords match
+            // Check if password given matches the stored password
             const passwordsMatch = await checkHashedPassword(credentials.password, user.password_hash);
 
             if (passwordsMatch) {
-                // If the passwords match, send back certain user data
                 const verifiedUser = {
                     id: user.id,
                     name: user.name,
@@ -81,23 +77,22 @@ export default async function handler(req, res) {
                     username: user.username,
                     role: user.role
                 };
-                
-                // Sending back the verified user object in the response
+
+                // Send back verified user to NextAuth
                 res.status(200).json(verifiedUser);
             } else {
-                // If the passwords don't match, send back a null object signifying invalid credentials
                 res.status(401).json(null);
             }
         } catch (error) {
             if (error.name === 'NoSuchKey') {
-                // If there is no user found under that username, return a null object signifying invalid credentials
+                // If no user found, return a null object
                 res.status(401).json(null);
             } else {
-                console.error(`${method} authorize request failed: ${error}`)
-                res.status(500).send("Error occured while authorizing this account");
+                console.error(`${method} authorize request failed: ${error}`);
+                res.status(500).send("An error occurred while authorizing this user's credentials. Please try again later!");
             }
         }
     } else {
-        res.status(405).send(`Method ${method} not allowed`);
+        res.status(405).send(`${method} method not allowed`);
     }
 };

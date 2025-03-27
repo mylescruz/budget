@@ -5,7 +5,7 @@ import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
 
 const CreateUser = ({ csrfToken }) => {
     const emptyUser = {
-        id: Date.now(),
+        id: "",
         username: "",
         email: "",
         name: "",
@@ -36,7 +36,7 @@ const CreateUser = ({ csrfToken }) => {
     };
 
     const checkUsername = async (username) => {
-        const res = await fetch(`/api/user/${username}`);
+        const res = await fetch(`/api/authorize/${username}`);
         const user = await res.json();
         
         return user.exists;
@@ -52,6 +52,7 @@ const CreateUser = ({ csrfToken }) => {
         return regex.test(password);
     };
 
+    // Function to add user to S3
     const createUserS3 = async (newUser) => {
         try {
             await fetch(`/api/user/${newUser.username}`, {
@@ -78,7 +79,6 @@ const CreateUser = ({ csrfToken }) => {
 
         // Check if entered email is valid
         if (!checkEmail(newUser.email)) {
-            console.log("Didnt pass email check");
             setValidEmail({valid: false, error: 'Not a valid email address'});
             return;
         } else {
@@ -88,7 +88,6 @@ const CreateUser = ({ csrfToken }) => {
         // Check if the username is a valid length
         const validLength = checkUsernameLength(newUser.username);
         if (!validLength) {
-            console.log("Didnt pass username check");
             setValidUsername({valid: false, error: 'A username must have a minimum four alphanumeric characters'});
             return;
         } else {
@@ -98,7 +97,6 @@ const CreateUser = ({ csrfToken }) => {
         // Check if the username is already taken
         const userExists = await checkUsername(newUser.username);
         if (userExists) {
-            console.log("Didnt pass username check");
             setValidUsername({valid: false, error: 'Username is already taken'});
             return;
         } else { 
@@ -107,7 +105,6 @@ const CreateUser = ({ csrfToken }) => {
 
         // Check if entered password is valid
         if (!checkPassword(newUser.password)) {
-            console.log("Didnt pass password check");
             setValidPassword({valid: false, error: 'A password must have a minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character'});
             return;
         } else {
@@ -116,7 +113,6 @@ const CreateUser = ({ csrfToken }) => {
 
         // Check if entered password and password confirmation match
         if (newUser.password !== newUser.confirmPassword) {
-            console.log("Didnt pass match check");
             setValidMatch({valid: false, error: 'Passwords do not match'});
             return;
         } else {
@@ -135,17 +131,19 @@ const CreateUser = ({ csrfToken }) => {
                 csrfToken
             });
 
+            closeCreatingUser();
+
             if (response.ok) {
                 router.push('/');
             } else {
                 throw new Error("There was an issue with directly login. Please sign in using your new credentials.");
             }
         } catch(error) {
+            closeCreatingUser();
+
             window.alert(error.message);
             router.push('/auth/signIn');
         }
-
-        closeCreatingUser();
     };
 
     return (
