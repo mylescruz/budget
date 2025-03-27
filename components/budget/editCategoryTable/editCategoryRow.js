@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 import EditSubcategoryRow from "./editSubcategoryRow";
+import PopUp from "@/components/layout/popUp";
 
 const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => {
     const [edittedCategory, setEdittedCategory] = useState(category);
@@ -101,10 +102,22 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
                     <td><Form.Control type="number" name="budget" className="input-number" min="0" max="100000" step="0.01" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
                 }
                 <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
-                {edittedCategory.name !== dontDelete ? 
-                    <td className={`text-center align-middle delete`} onClick={removeCategory}><i className="bi bi-trash"></i></td>
+                {(edittedCategory.name === dontDelete || edittedCategory.hasSubcategory || (!edittedCategory.fixed && edittedCategory.actual !== 0)) ? 
+                    (edittedCategory.fixed ?
+                        <td className="text-center">
+                            <PopUp title={`Delete the subcategories for ${edittedCategory.name} in order to delete this category`} id={`category-${edittedCategory.id}-delete-info`}>
+                                <span>&#9432;</span>
+                            </PopUp>
+                        </td>
+                        :
+                        <td className="text-center">
+                            <PopUp title={`There are ${edittedCategory.name} transactions for this month. Change those in order to delete this category`} id={`category-${edittedCategory.id}-delete-info`}>
+                                <span>&#9432;</span>
+                            </PopUp>
+                        </td>
+                    )
                     :
-                    <td></td>
+                    <td className={`text-center align-middle delete`} onClick={removeCategory}><i className="bi bi-trash"></i></td>
                 }
             </tr>
             {edittedCategory.hasSubcategory &&      
