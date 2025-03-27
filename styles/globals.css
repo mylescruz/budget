@@ -47,7 +47,7 @@ a {
   min-height: 100vh;
 }
 
-.login, .create-account, .home, .dashboard {
+.login, .create-account, .home, .dashboard, .redirect {
   min-height: 70vh;
 }
 
@@ -191,7 +191,7 @@ a {
 
 /* Extra-Small Device */
 @media (max-width: 575.99px) {
-  .login, .create-account, .home, .dashboard {
+  .login, .create-account, .home, .dashboard, .redirect {
     min-height: 50vh;
   }
 
@@ -256,7 +256,7 @@ a {
 
 /* Small Device */
 @media (min-width: 576px) and (max-width: 767.99px) {
-  .login, .create-account, .home, .dashboard {
+  .login, .create-account, .home, .dashboard, .redirect {
     min-height: 55vh;
   }
 
@@ -267,7 +267,7 @@ a {
 
 /* Medium Device */
 @media (min-width: 768px) and (max-width: 991.99px) {
-  .login, .create-account, .home, .dashboard {
+  .login, .create-account, .home, .dashboard, .redirect {
     min-height: 60vh;
   }
 
