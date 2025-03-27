@@ -207,20 +207,6 @@ export default async function handler(req, res) {
 
                 let userInfoKey = userKey;
 
-                // If the user changes the username, delete the old user info
-                if (user.username !== userInfo.username) {
-                    // S3 File Parameters for the users info
-                    const oldUserInfoParams = {
-                        Bucket: BUCKET_NAME,
-                        Key: userInfoKey
-                    };
-    
-                    // Delete the user's info file from S3
-                    await S3.send(new DeleteObjectCommand(oldUserInfoParams));
-
-                    userInfoKey = `users/${userInfo.username}/info-${userInfo.username}.json`;
-                }
-
                 // User's info file parameters for S3
                 const userInfoParams = {
                     Bucket: BUCKET_NAME,
@@ -280,11 +266,13 @@ export default async function handler(req, res) {
                 // Get all objects within the user's folder
                 const userFolder = `users/${deletedUser.username}`;
 
+                // S3 File Parameters for the users info
                 const userFolderParams = {
                     Bucket: BUCKET_NAME,
                     Prefix: userFolder
                 };
 
+                // Get all the objects within the folder
                 const listedObjects = await S3.send(new ListObjectsV2Command(userFolderParams));
 
                 if (listedObjects.Contents.length > 0) {

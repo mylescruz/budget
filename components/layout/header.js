@@ -1,6 +1,7 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import AdminNavbar from "../admin/adminNavbar";
 
 const Header = () => {
     // Using NextAuth.js to authenticate a user's session
@@ -17,23 +18,26 @@ const Header = () => {
     };
 
     if (session) {
-        return (
-            <Navbar expand="lg" bg="dark" data-bs-theme="dark" fixed="top">
-                <Container>
-                    <Navbar.Brand href="/">Type-A Budget</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
-                            <Nav.Link as={Link} href="/budget">Budget</Nav.Link>
-                            <Nav.Link as={Link} href="/income">Income</Nav.Link>
-                            <Nav.Link as={Link} href="/history">History</Nav.Link>
-                            <Nav.Link as={Link} href="/account">Account</Nav.Link>
-                            <Nav.Link onClick={userSignOut}>Logout</Nav.Link>
-                        </Nav>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-        );
+        if (session.user.role === "Administrator")
+            return <AdminNavbar />;
+        else
+            return (
+                <Navbar expand="lg" bg="dark" data-bs-theme="dark" fixed="top">
+                    <Container>
+                        <Navbar.Brand href="/">Type-A Budget</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse id="basic-navbar-nav">
+                            <Nav className="me-auto">
+                                <Nav.Link as={Link} href="/budget">Budget</Nav.Link>
+                                <Nav.Link as={Link} href="/income">Income</Nav.Link>
+                                <Nav.Link as={Link} href="/history">History</Nav.Link>
+                                <Nav.Link as={Link} href="/account">Account</Nav.Link>
+                                <Nav.Link onClick={userSignOut}>Logout</Nav.Link>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
+            );
     } else {
         return (
             <Navbar expand="lg" bg="dark" data-bs-theme="dark" fixed="top">
