@@ -10,7 +10,7 @@ const useHistory = (username) => {
     useEffect(() => {
         const getHistory = async () => {
             try {
-                const rsp = await fetch(`/api/history/${username}/history`);
+                const rsp = await fetch(`/api/history/${username}`);
 
                 if (rsp.ok) {
                     const result = await rsp.json();
@@ -35,7 +35,7 @@ const useHistory = (username) => {
     // Then it sets the history array to the array returned by the response
     const postHistory = async (newHistory) => {
         try {
-            const rsp = await fetch(`/api/history/${username}/history`, {
+            const rsp = await fetch(`/api/history/${username}`, {
                 method: "POST",
                 headers: {
                     Accept: "application.json",
@@ -61,39 +61,13 @@ const useHistory = (username) => {
     // Then it sets the history array to the array returned by the response
     const putHistory = async (edittedHistory) => {
         try {
-            const rsp = await fetch(`/api/history/${username}/history`, {
+            const rsp = await fetch(`/api/history/${username}`, {
                 method: "PUT",
                 headers: {
                     Accept: "application.json",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(edittedHistory)
-            });
-
-            if (rsp.ok) {
-                const result = await rsp.json();
-                setHistory(result);
-                setHistoryLoading(false);
-            } else {
-                const message = await rsp.text();
-                throw new Error(message);
-            }
-        } catch (error) {
-            redirectToErrorPage(error);
-        }
-    };
-
-    // DELETE request that deletes a month from the user's history based on the username
-    // Then it sets the history array to the array returned by the response
-    const deleteHistory = async (historyToDelete) => {
-        try {
-            const rsp = await fetch(`/api/history/${username}/history`, {
-                method: "DELETE",
-                headers: {
-                    Accept: "application.json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(historyToDelete)
             });
 
             if (rsp.ok) {
@@ -125,7 +99,7 @@ const useHistory = (username) => {
         });
     };
 
-    return { history, historyLoading, postHistory, putHistory, deleteHistory, getMonthHistory };
+    return { history, historyLoading, postHistory, putHistory, getMonthHistory };
 };
 
 export default useHistory;

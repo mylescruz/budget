@@ -1,16 +1,38 @@
 // API Endpoint to authorize a user's credentials
 
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+
 const bcrypt = require('bcrypt');
 
 // Configuring AWS SDK to connect to Amazon S3
-const AWS = require('aws-sdk');
-AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION
+const S3 = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
 });
-const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
+
+// Function to convert the stream object from S3 to JSON
+const streamToJSON = (stream) => {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        stream.on('data', (chunk) => chunks.push(chunk));
+        stream.on('end', () => {
+            try {
+                const body = Buffer.concat(chunks).toString('utf-8');
+                const data = JSON.parse(body);
+                resolve(data);
+            } catch(error) {
+                reject(error);
+            }
+        });
+        stream.on("error", (err) => {
+            reject(err);
+        });
+    });
+};
 
 export default async function handler(req, res) {
     const method = req?.method;
@@ -20,23 +42,23 @@ export default async function handler(req, res) {
         // S3 key for the file's location
         const key = `users/${username}/info-${username}.json`;
 
-        // A user's file parameters for S3
+        // S3 File Parameters for the user's info
         const userParams = {
             Bucket: BUCKET_NAME,
             Key: key
         };
 
         // Get the user data from S3
-        const user = await s3.getObject(userParams).promise();
-        return JSON.parse(user.Body.toString('utf-8'));
+        const userData = await S3.send(new GetObjectCommand(userParams));
+        return await streamToJSON(userData.Body);
     }
 
     // Function to compare the given password with the stored encrypted password
     async function checkHashedPassword(password, hashedPassword) {
         try {
             return await bcrypt.compare(password, hashedPassword);
-        } catch (err) {
-            console.error("Error comparing passwords: ", err);
+        } catch (error) {
+            console.error("Error comparing passwords: ", error);
             return false;
         }
     }
@@ -66,12 +88,12 @@ export default async function handler(req, res) {
                 // If the passwords don't match, send back a null object signifying invalid credentials
                 res.status(401).json(null);
             }
-        } catch (err) {
-            if (err.code === 'NoSuchKey') {
+        } catch (error) {
+            if (error.name === 'NoSuchKey') {
                 // If there is no user found under that username, return a null object signifying invalid credentials
                 res.status(401).json(null);
             } else {
-                console.error(`${method} authorize request failed: ${err}`)
+                console.error(`${method} authorize request failed: ${error}`)
                 res.status(500).send("Error occured while authorizing this account");
             }
         }

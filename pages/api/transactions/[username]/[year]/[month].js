@@ -1,17 +1,38 @@
 // API Endpoint for a user's transactions data
 
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getServerSession } from 'next-auth';
 
 // Configuring AWS SDK to connect to Amazon S3
-const AWS = require('aws-sdk');
-AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION
+const S3 = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
 });
-const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
+
+// Function to convert the stream object from S3 to JSON
+const streamToJSON = (stream) => {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        stream.on('data', (chunk) => chunks.push(chunk));
+        stream.on('end', () => {
+            try {
+                const body = Buffer.concat(chunks).toString('utf-8');
+                const data = JSON.parse(body);
+                resolve(data);
+            } catch(error) {
+                reject(error);
+            }
+        });
+        stream.on("error", (err) => {
+            reject(err);
+        });
+    });
+};
 
 export default async function handler(req, res) {
     // Using NextAuth.js to authenticate a user's session in the server
@@ -36,23 +57,23 @@ export default async function handler(req, res) {
 
     // Function that returns the user's transactions from S3
     async function getTransactionData() {
-        // Transactions file parameters for S3
-        const getParams = {
+        // S3 File Parameters for the user's transactions
+        const transactionsParams = {
             Bucket: BUCKET_NAME,
             Key: key
         };
 
         try {
             // Get the transactions data from S3
-            const transactions = await s3.getObject(getParams).promise();
-            return JSON.parse(transactions.Body.toString('utf-8'));
-        } catch(err) {
-            if (err.code === 'NoSuchKey') {
+            const transactionsData = await S3.send(new GetObjectCommand(transactionsParams));
+            return await streamToJSON(transactionsData.Body);
+        } catch(error) {
+            if (error.name === 'NoSuchKey') {
                 // Create a transactions file if a user doesn't have one already
                 const newTransactions = [];
 
-                // Transactions file parameters for S3
-                const createFileParams = {
+                // S3 File Parameters for the new user's transactions
+                const newTransactionsParams = {
                     Bucket: BUCKET_NAME,
                     Key: key,
                     Body: JSON.stringify(newTransactions, null, 2),
@@ -60,11 +81,11 @@ export default async function handler(req, res) {
                 };
 
                 // Place new transactions file in the user's folder in S3
-                await s3.putObject(createFileParams).promise();
+                await S3.send(new PutObjectCommand(newTransactionsParams));
 
                 return newTransactions;
             } else {
-                console.error("Error retrieving transactions from S3: ", err);
+                console.error("Error retrieving transactions from S3: ", error);
                 return null;
             }
         }
@@ -76,9 +97,9 @@ export default async function handler(req, res) {
             const transactions = await getTransactionData();
 
             // Send the transactions array in the response
-            res.status(200).send(transactions);
-        } catch (err) {
-            console.error(`${method} transactions request failed: ${err}`);
+            res.status(200).json(transactions);
+        } catch (error) {
+            console.error(`${method} transactions request failed: ${error}`);
             res.status(500).send(`Error occurred while getting ${username}'s transactions`);
         }
     } else if (method === "POST") {
@@ -87,10 +108,11 @@ export default async function handler(req, res) {
             const newTransaction = req?.body;
             const transactions = await getTransactionData();
 
+            // Add new transaction to the transactions array
             const updatedTransactions = [...transactions, newTransaction];
 
-            // Transactions with added transaction file parameters for S3
-            const postParams = {
+            // S3 File Parameters for the user's updated transactions
+            const transactionsParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
                 Body: JSON.stringify(updatedTransactions, null, 2),
@@ -98,12 +120,12 @@ export default async function handler(req, res) {
             };
     
             // Place updated transactions file in the user's folder in S3
-            await s3.putObject(postParams).promise();
+            await S3.send(new PutObjectCommand(transactionsParams));
 
             // Send the updated transactions array in the response
             res.status(200).json(updatedTransactions);
-        } catch (err) {
-            console.error(`${method} transactions request failed: ${err}`);
+        } catch (error) {
+            console.error(`${method} transactions request failed: ${error}`);
             res.status(500).send("Error occurred while adding a transaction");
         }
     } else if (method === "PUT") {
@@ -120,8 +142,8 @@ export default async function handler(req, res) {
                     return transaction;
             });
 
-            // Updated transactions file parameters for S3
-            const putParams = {
+            // S3 File Parameters for the user's updated transactions
+            const transactionsParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
                 Body: JSON.stringify(updatedTransactions, null, 2),
@@ -129,12 +151,12 @@ export default async function handler(req, res) {
             };
     
             // Place updated transactions file in the user's folder in S3
-            await s3.putObject(putParams).promise();
+            await S3.send(new PutObjectCommand(transactionsParams));
 
             // Send the updated transactions array in the response
             res.status(200).json(updatedTransactions);
-        } catch (err) {
-            console.error(`${method} transactions request failed: ${err}`);
+        } catch (error) {
+            console.error(`${method} transactions request failed: ${error}`);
             res.status(500).send("Error occurred while editting a transaction");
         }
     } else if (method === "DELETE") {
@@ -148,8 +170,8 @@ export default async function handler(req, res) {
                 return transaction.id !== transactionToDelete.id;
             });
 
-            // Transactions with deleted transaction file parameters for S3
-            const deleteParams = {
+            // S3 File Parameters for the user's updated transactions
+            const transactionsParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
                 Body: JSON.stringify(updatedTransactions, null, 2),
@@ -157,12 +179,12 @@ export default async function handler(req, res) {
             };
     
             // Place updated transactions file in the user's folder in S3
-            await s3.putObject(deleteParams).promise();
+            await S3.send(new PutObjectCommand(transactionsParams));
 
             // Send the updated transactions array in the response
             res.status(200).json(updatedTransactions);
-        } catch (err) {
-            console.error(`${method} transactions request failed: ${err}`);
+        } catch (error) {
+            console.error(`${method} transactions request failed: ${error}`);
             res.status(500).send("Error occurred while deleting a transaction");
         }
     } else {

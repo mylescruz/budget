@@ -192,7 +192,7 @@ a {
 /* Extra-Small Device */
 @media (max-width: 575.99px) {
   .login, .create-account, .home, .dashboard {
-    min-height: 60vh;
+    min-height: 50vh;
   }
 
   .categories-table, .edit-categories-table {
@@ -257,7 +257,7 @@ a {
 /* Small Device */
 @media (min-width: 576px) and (max-width: 767.99px) {
   .login, .create-account, .home, .dashboard {
-    min-height: 60vh;
+    min-height: 55vh;
   }
 
   .input-subcategory {
@@ -268,7 +268,7 @@ a {
 /* Medium Device */
 @media (min-width: 768px) and (max-width: 991.99px) {
   .login, .create-account, .home, .dashboard {
-    min-height: 65vh;
+    min-height: 60vh;
   }
 
   .input-category {

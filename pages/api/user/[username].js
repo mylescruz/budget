@@ -1,17 +1,19 @@
 // API Endpoint for a user information
 
+import { HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+
 // Initializing the encryption for the user's password using bcrypt
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 // Configuring AWS SDK to connect to Amazon S3
-const AWS = require('aws-sdk');
-AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION
+const S3 = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
 });
-const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
 const USER_ROLE = "User";
@@ -51,23 +53,23 @@ export default async function handler(req, res) {
     if (method === 'GET') {
         // Return the user based on the username from S3
         try {
-            // A user's file parameters for S3
+            // S3 File Parameters for the user's info
             const userParams = {
                 Bucket: BUCKET_NAME,
                 Key: key
             };
 
             // Returns an object if the user already exists and throws an error if they do not
-            await s3.headObject(userParams).promise();
+            await S3.send(new HeadObjectCommand(userParams));
 
             // Send an object stating the user exists
             res.status(200).json({ exists: true });
-        } catch (err) {
-            if (err.code === 'NotFound') {
+        } catch (error) {
+            if (error.name === 'NotFound') {
                 // If user doesn't exist, the user can sign up using that username
                 res.status(200).json({ exists: false });
             } else {
-                console.error(`${method} username request failed: ${err}`);
+                console.error(`${method} username request failed: ${error}`);
                 res.status(500).send("Error occurred while finding user");
             }
         }
@@ -96,7 +98,7 @@ export default async function handler(req, res) {
                 created_ts: createdDate
             };
 
-            // User's info file parameters for S3
+            // S3 File Parameters for the user's info
             const userInfoParams = {
                 Bucket: BUCKET_NAME,
                 Key: key,
@@ -105,7 +107,7 @@ export default async function handler(req, res) {
             };
 
             // Place the user's info file in the user's folder in S3
-            await s3.putObject(userInfoParams).promise();
+            await S3.send(new PutObjectCommand(userInfoParams));
 
             // The data that the user's index will contain about the user
             const newUser = {
@@ -121,8 +123,8 @@ export default async function handler(req, res) {
 
             // Send a success status message in the response
             res.status(200).send("User created successfully!");
-        } catch (err) {
-            console.error(`${method} username request failed: ${err}`);
+        } catch (error) {
+            console.error(`${method} username request failed: ${error}`);
             res.status(500).send("Error occurred while creating a new account");
         }
     } else {
