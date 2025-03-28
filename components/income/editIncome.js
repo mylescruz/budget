@@ -1,3 +1,5 @@
+import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
+import deleteIncomeFromHistoryBudget from "@/helpers/deleteIncomeFromHistoryBudget";
 import editIncomeForHistoryBudget from "@/helpers/editIncomeForHistoryBudget";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
@@ -38,8 +40,16 @@ const EditIncome = ({ paycheck, putIncome, yearInfo, showEdit, setShowEdit, setS
         putIncome(edittedPaycheck);
 
         // Updates the budget value for the given month in the history array by sending a PUT request to the API
-        const paycheckMonth = editIncomeForHistoryBudget(edittedPaycheck, paycheck, history);
-        putHistory(paycheckMonth);
+        if (edittedPaycheck.date === paycheck.date) {
+            const paycheckMonth = editIncomeForHistoryBudget(edittedPaycheck, paycheck, history);
+            putHistory(paycheckMonth);
+        } else {
+            const oldPaycheckMonth = deleteIncomeFromHistoryBudget(paycheck, history);
+            putHistory(oldPaycheckMonth);
+
+            const newPaycheckMonth = addIncomeToHistoryBudget(edittedPaycheck, history);
+            putHistory(newPaycheckMonth);
+        }
 
         setShowEdit(false);  
     };
