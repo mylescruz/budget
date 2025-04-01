@@ -1,5 +1,5 @@
 import BudgetLayout from "../budget/budgetLayout";
-import styles from "@/styles/historyBudget.module.css";
+import styles from "@/styles/history/historyBudget.module.css";
 import Link from "next/link";
 
 const HistoryBudget = ({ monthInfo }) => {

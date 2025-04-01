@@ -1,7 +1,7 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useState } from "react";
-import { Form, Button, Modal, Col, Row, FloatingLabel} from "react-bootstrap";
+import { Form, Button, Modal, Col, Row, FloatingLabel, Container} from "react-bootstrap";
 
 const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked}) => {
     const emptyCategory = {
@@ -52,13 +52,11 @@ const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked})
             setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
     };
 
-    const handleChecked = (e) => {
+    const handleSubcategoryChecked = (e) => {
         if (e.target.checked)
             setNewCategory({...newCategory, hasSubcategory: true});
-        else {
-            setNewCategory({...newCategory, hasSubcategory: false});
-            setNewCategory({...newCategory, subcategories: []});
-        }
+        else
+            setNewCategory({...newCategory, hasSubcategory: false, subcategories: []});
     };
 
     const handleFixed = (e) => {
@@ -120,77 +118,88 @@ const AddCategory = ({ postCategory, addCategoryClicked, setAddCategoryClicked})
     };
 
     return (
-        <Modal show={addCategoryClicked} onHide={closeModal} centered>
-            <Modal.Header closeButton>
-                <Modal.Title>Enter new category information</Modal.Title>
-            </Modal.Header>
-            
-            <Form onSubmit={addNewCategory}>
+            <Modal show={addCategoryClicked} onHide={closeModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Enter new category information</Modal.Title>
+                </Modal.Header>
+
+                <Form onSubmit={addNewCategory}>
                 <Modal.Body>
-                    <Form.Group className="formInput">
-                        <Form.Label>Category name</Form.Label>
-                        <Form.Control id="name" className="h-100" type="text" placeholder="Name" value={newCategory.name} onChange={handleInput} required />
+                    <Form.Group controlId="name" className="my-2">
+                        <Form.Label>Category Name</Form.Label>
+                        <Form.Control className="h-100" type="text" value={newCategory.name} onChange={handleInput} required />
                     </Form.Group>
-                    <Form.Group className="formInput">
+                    <Form.Group controlId="budget" className="my-2">
                         <Form.Label>Budget Amount</Form.Label>
-                        <Form.Control id="budget" className="h-100" type="number" min="0.01" step="0.01"
+                        <Form.Control className="h-100" type="number" min="0.01" step="0.01"
                             value={(newCategory.hasSubcategory && newCategory.fixed) ? subcategoryTotal : newCategory.budget}
                             onChange={handleNumInput}
                             disabled={(newCategory.hasSubcategory && newCategory.fixed)}
                             required
                         />
                     </Form.Group>
-                    <Form.Group className="formInput">
-                        <Form.Label>Color</Form.Label>
-                        <Form.Control id="color" type="color" className="form-control-color" value={newCategory.color} onChange={handleInput} />
-                    </Form.Group>
-                    <Form.Group className="formInput alignX">
-                        <Form.Check reverse id="fixed" className="h-100" type="checkbox" label="Fixed?" value={newCategory.fixed} onChange={handleFixed} />
-                    </Form.Group>
-                    <Form.Group className="formInput alignX">
-                        <Form.Check reverse id="hasSubcategory" className="h-100" type="checkbox" label="Subcategories?" value={newCategory.hasSubcategory} onChange={handleChecked} />
-                    </Form.Group>
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="color" className="my-2">
+                                <Form.Label>Color</Form.Label>
+                                <Form.Control type="color" className="form-control-color" value={newCategory.color} onChange={handleInput} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="fixed" className="my-2">
+                                <Form.Label>Fixed?</Form.Label>
+                                <Form.Check className="h-100" type="checkbox" value={newCategory.fixed} onChange={handleFixed} />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="hasSubcategory" className="my-2">
+                                <Form.Label>Subcategories?</Form.Label>
+                                <Form.Check className="h-100" type="checkbox" value={newCategory.hasSubcategory} onChange={handleSubcategoryChecked} />
+                            </Form.Group>
+                        </Col>
+                    </Row>
                     {newCategory.hasSubcategory &&
-                    <Form.Group className="formInput">
-                        <Row className="alignX">
-                            <Col>
-                                <FloatingLabel controlId="floatingName" label="Subcategory" className="small">
-                                    <Form.Control name="name" type="text" placeholder="Subcategory" value={newSubcategory.name} onChange={handleSubcategoryInput} />
-                                </FloatingLabel>
+                    <Form.Group className="my-2">
+                        <Row>
+                            <Col className="col-5">
+                                <Form.Group controlId="subcategory-name" className="my-2">
+                                    <Form.Label>Subcategory Name</Form.Label>
+                                    <Form.Control className="h-100" type="text" value={newSubcategory.name} onChange={handleSubcategoryInput} />
+                                </Form.Group>
                             </Col>
                             { (newCategory.hasSubcategory && newCategory.fixed) &&
-                            <Col>
-                                <FloatingLabel controlId="floatingInput" label="Budget">
-                                    <Form.Control name="name" className="w-100" type="number" placeholder="Budget" value={newSubcategory.actual} onChange={handleSubcategoryBudget} />
-                                </FloatingLabel>
+                            <Col className="col-5">
+                                <Form.Group controlId="subcategory-budget" className="my-2">
+                                    <Form.Label>Subcategory Budget</Form.Label>
+                                    <Form.Control className="h-100" type="number" value={newSubcategory.actual} onChange={handleSubcategoryBudget} />
+                                </Form.Group>
                             </Col>
                             }
-                            <Col>
+                            <Col className="col-2 d-flex align-items-center">
                                 <i className="bi bi-plus-circle plus" onClick={addToSubcategories}></i>    
                             </Col>
-                            
                         </Row>
-                        
                     </Form.Group>
                     }
                     {newCategory.hasSubcategory && 
-                        (newCategory.subcategories.map(subcategory => (
-                            <Row key={subcategory.id} className="mx-2">
-                                <Col className="text-start">{subcategory.name}{newCategory.fixed && `: ${currencyFormatter.format(subcategory.actual)}`}</Col>
-                            </Row> 
-                        )))
+                        (<Container>
+                            {newCategory.subcategories.length > 0 && <h6>Subcategories added</h6>}
+                            {newCategory.subcategories.map(subcategory => (
+                                <p key={subcategory.id} className="my-1">{subcategory.name}{newCategory.fixed && `: ${currencyFormatter.format(subcategory.actual)}`}</p> 
+                            ))}
+                        </Container>)
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Row>
                             <Col><Button variant="secondary" onClick={closeModal}>Close</Button></Col>
                             <Col><Button variant="primary" type="submit">Add</Button></Col>
                         </Row>
                     </Form.Group>
                 </Modal.Footer>
-            </Form>
-        </Modal>
+                </Form>
+            </Modal>
     );
 };
 

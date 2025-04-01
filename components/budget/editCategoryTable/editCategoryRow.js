@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Dropdown, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 import EditSubcategoryRow from "./editSubcategoryRow";
 import PopUp from "@/components/layout/popUp";
@@ -85,40 +85,43 @@ const EditCategoryRow = ({ category, deleteCategory, updateCategoryValues }) => 
     
     return (
         <>
-            <tr>
-                <th className="text-nowrap">
-                    <Row className="alignX w-100">
-                        {edittedCategory.name !== dontDelete ? 
-                            <Col className="col-9"><Form.Control type="text" name="name" className="input-category" value={edittedCategory.name} onChange={handleInput} /></Col>
-                            :
-                            <Col className="col-9 mt-2 cell">{category.name}</Col>
-                        }
-                        <Col className="col-1"><i className={`bi bi-plus-circle plus`} onClick={addSubcategory}></i></Col>
+            <tr className="d-flex">
+                <th className="text-nowrap col-7 col-md-8">
+                    <Row className="w-100 d-flex align-items-center">
+                        <Col className="col-2">
+                            {(edittedCategory.name === dontDelete || edittedCategory.hasSubcategory || (!edittedCategory.fixed && edittedCategory.actual !== 0)) ? 
+                                (edittedCategory.fixed ?
+                                    <PopUp title={`Delete the subcategories for ${edittedCategory.name} in order to delete this category`} id={`category-${edittedCategory.id}-delete-info`}>
+                                        <span>&#9432;</span>
+                                    </PopUp>
+                                    :
+                                    <PopUp title={`There are ${edittedCategory.name} transactions for this month. Change those in order to delete this category`} id={`category-${edittedCategory.id}-delete-info`}>
+                                        <span>&#9432;</span>
+                                    </PopUp>
+                                )
+                                :
+                                <i className="bi bi-trash delete" onClick={removeCategory}/>
+                            }
+                        </Col>
+                        <Col className="col-8 col-md-8"> 
+                            <Form.Control type="text" name="name" value={edittedCategory.name} onChange={handleInput} disabled={edittedCategory.name === dontDelete} />
+                        </Col>
+                        <Col className="col-2 text-end">
+                            <i className="bi bi-plus-circle plus" onClick={addSubcategory} />
+                        </Col>
                     </Row>
                 </th>
-                {((edittedCategory.hasSubcategory && edittedCategory.fixed) || edittedCategory.name === dontDelete) ?
-                    <td><Form.Control type="number" name="budget" className="input-number" step="0.01" value={edittedCategory.budget} disabled /></td>
-                    :
-                    <td><Form.Control type="number" name="budget" className="input-number" min="0" max="100000" step="0.01" value={edittedCategory.budget} onChange={handleBudgetInput} /></td>
-                }
-                <td><Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control></td>
-                {(edittedCategory.name === dontDelete || edittedCategory.hasSubcategory || (!edittedCategory.fixed && edittedCategory.actual !== 0)) ? 
-                    (edittedCategory.fixed ?
-                        <td className="text-center">
-                            <PopUp title={`Delete the subcategories for ${edittedCategory.name} in order to delete this category`} id={`category-${edittedCategory.id}-delete-info`}>
-                                <span>&#9432;</span>
-                            </PopUp>
-                        </td>
-                        :
-                        <td className="text-center">
-                            <PopUp title={`There are ${edittedCategory.name} transactions for this month. Change those in order to delete this category`} id={`category-${edittedCategory.id}-delete-info`}>
-                                <span>&#9432;</span>
-                            </PopUp>
-                        </td>
-                    )
-                    :
-                    <td className={`text-center align-middle delete`} onClick={removeCategory}><i className="bi bi-trash"></i></td>
-                }
+                <td className="col-3 col-md-2">
+                    <Form.Control type="number" name="budget" min="0" max="100000" step="0.01"
+                        className="px-1 text-end"
+                        value={edittedCategory.budget} 
+                        onChange={handleBudgetInput}
+                        disabled={((edittedCategory.hasSubcategory && edittedCategory.fixed) || edittedCategory.name === dontDelete)}
+                    />
+                </td>
+                <td className="col-2 d-flex align-items-center justify-content-center">
+                    <Form.Control type="color" name="color" className="form-control-color" value={edittedCategory.color} onChange={handleInput}></Form.Control>
+                </td>
             </tr>
             {edittedCategory.hasSubcategory &&      
                 (edittedCategory.subcategories.map(subcategory => (

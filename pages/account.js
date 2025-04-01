@@ -9,7 +9,7 @@ export default function Account() {
 
     if (status === 'loading')
         return <Loading/>;
-    else if (!session)
+    else if (!session || status === 'unauthenticated')
         router.push('/redirect');
     else
         return <AccountLayout />;

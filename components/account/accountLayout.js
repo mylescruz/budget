@@ -6,13 +6,18 @@ import { useState } from "react";
 import ChangeEmail from "./changeEmail";
 import DeleteAccount from "./deleteAccount";
 import useUser from "@/hooks/useUser";
+import Loading from "../layout/loading";
 
 const AccountLayout = () => {
     const [accountSection, setAccountSection] = useState(true);
     const [passwordSection, setPasswordSection] = useState(false);
     const [emailSection, setEmailSection] = useState(false);
     const [deleteSection, setDeleteSection] = useState(false);
-    const { user, putUser, deleteUser } = useUser();
+    const { user, userLoading, putUser, deleteUser } = useUser();
+
+    if (userLoading) {
+        return <Loading/>;
+    }
 
     const optionsTabProps = {
         accountSection: accountSection,

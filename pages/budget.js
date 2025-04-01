@@ -5,16 +5,17 @@ import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 
 export default function Budget() {
-    const { status } = useSession();
+    const { data: session, status } = useSession();
     
     const month = dateInfo.currentMonth;
     const year = dateInfo.currentYear;
     const monthInfo = getMonthInfo(month, year);
     
     // Create a loading indicator while check on the status of a user's session
-    if (status === 'loading') {
+    if (status === 'loading')
         return <Loading />;
-    } else {
+    else if (!session || status === 'unauthenticated')
+        router.push('/redirect');
+    else
         return <BudgetLayout monthInfo={monthInfo} />;
-    }
 };

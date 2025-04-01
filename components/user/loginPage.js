@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
 import styles from "@/styles/user/loginPage.module.css";
 import Link from "next/link";
 
@@ -18,6 +18,7 @@ const LoginPage = ({ csrfToken }) => {
 
     const [user, setUser] = useState(emptyUser);
     const [loginError, setLoginError] = useState(newError);
+    const [loggingIn, setLoggingIn] = useState(false);
     const router = useRouter();
 
     const handleInput = (e) => {
@@ -26,6 +27,8 @@ const LoginPage = ({ csrfToken }) => {
 
     const loginUser = async (e) => {
         e.preventDefault();
+
+        setLoggingIn(true);
 
         try {
             const response = await signIn('credentials', {
@@ -36,8 +39,10 @@ const LoginPage = ({ csrfToken }) => {
             });
 
             if (response.ok) {
+                setLoggingIn(false);
                 router.push('/');
             } else {
+                setLoggingIn(false);
                 throw new Error("Invalid user credentials. Please try again!")
             }
         } catch(error) {
@@ -45,10 +50,14 @@ const LoginPage = ({ csrfToken }) => {
         }
     };
 
+    const closeLoggingIn = () => {
+        setLoggingIn(false);
+    };
+
     return (
-        <Container className="d-flex justify-content-center align-items-center login">
-            <Container className="my-4 col-12 col-sm-10 col-md-6 col-lg-4">
-                <Card className="p-3">
+        <>
+            <Container className="d-flex justify-content-center align-items-center login">
+                <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
                     <Form onSubmit={loginUser}>
                         <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
                         <Form.Group controlId="username" className="h-100 my-2">
@@ -63,7 +72,16 @@ const LoginPage = ({ csrfToken }) => {
                     <Link href="/auth/createAccount" className={styles.message}>New user? <span className={styles.create}>Create account</span></Link>
                 </Card>
             </Container>
-        </Container>
+
+            <Modal show={loggingIn} onHide={closeLoggingIn} centered>
+                <Modal.Body>
+                    <h3 className="text-center">Logging In</h3>
+                    <div className="d-flex justify-content-center align-items-center">
+                        <Spinner animation="border" variant="primary"/>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        </>
     );
 };
 

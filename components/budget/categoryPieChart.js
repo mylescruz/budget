@@ -1,16 +1,13 @@
 // Uses the Victory, 3rd Party Library, to display a Pie Chart of the percentages spent on each category
-
-import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { useContext } from "react";
 import { VictoryPie } from "victory";
 
-const SummaryPieChart = () => {
-    const { categories } = useContext(CategoriesContext);
-    
+const CategoryPieChart = ({ categories }) => {    
     let pieData = [];
     let colors = [];
 
     const pieSize = 350;
+
+    const pieSVG = "0 -25 400 400";
 
     const totalActual = categories.reduce((sum, category) => sum + category.actual, 0);
 
@@ -29,7 +26,7 @@ const SummaryPieChart = () => {
             pieData.push({
                 x: category.name,
                 y: category.actual,
-                label: `${category.name} ${percentage}%`
+                label: `${percentage}%`
             });
 
             colors.push(category.color);
@@ -37,18 +34,18 @@ const SummaryPieChart = () => {
     });
 
     return (
-        <svg viewBox="0 -25 400 400">
+        <svg viewBox={pieSVG}>
             <VictoryPie
                 standalone={false}
                 data={pieData} 
                 colorScale={colors}
                 height={pieSize}
                 labelPosition={"centroid"}
-                labelPlacement={"parallel"}
+                labelPlacement={"vertical"}
                 style={
                     {
                         labels: {
-                            fontSize: 8
+                            fontSize: 12
                         }
                         
                     }
@@ -58,4 +55,4 @@ const SummaryPieChart = () => {
     );
 };
 
-export default SummaryPieChart;
+export default CategoryPieChart;

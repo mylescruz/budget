@@ -26,24 +26,27 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
         setEditClicked(false);
 
-        // Maps through the categories array and if the category matches an editted category in categoryValues, replace that category
-        const updated = categories.map(category => {
-            const foundIndex = categoryValues.current.findIndex(cat => {
-                return cat.id === category.id;
+        // If any category was edited, make a PUT request to the categories API endpoint
+        if (categoryValues.current.length > 0) {
+            // Maps through the categories array and if the category matches an editted category in categoryValues, replace that category
+            const updated = categories.map(category => {
+                const foundIndex = categoryValues.current.findIndex(cat => {
+                    return cat.id === category.id;
+                });
+
+                if (foundIndex !== -1) {
+                    return categoryValues.current[foundIndex];
+                } else {
+                    return category;
+                }
             });
 
-            if (foundIndex !== -1) {
-                return categoryValues.current[foundIndex];
-            } else {
-                return category;
-            }
-        });
+            const totalIncome = getMonthIncome(monthInfo);
+            const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
 
-        const totalIncome = getMonthIncome(monthInfo);
-        const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
-        
-        // Updates the categories array with the editted categories by sending a PUT request to the API
-        putCategories(updatedCategories);
+            // Updates the categories array with the editted categories by sending a PUT request to the API
+            putCategories(updatedCategories);
+        }
     };
 
     const updateCategoryValues = (updatedCategory) => {
@@ -76,38 +79,35 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
     return (
         <>
             <Form onSubmit={updateCategoryTable}>
-            <Table striped bordered responsive className="mx-auto edit-categories-table">
-                <thead className="table-dark">
-                    <tr>
-                        <th className="col-7 col-lg-6">
-                            <Row className="alignX">
-                                <Col className="col-6">Category</Col>
-                                <Col className="col-2"><i className="bi bi-plus-circle-fill plus" onClick={addNewCategory}></i></Col>
-                                <Col className="col-2">
-                                    <Button className="btn-sm" id="save-all-btn" type="submit">Save All</Button>
-                                </Col>
-                            </Row>
-                        </th>
-                        <th className="col-3 col-lg-2">Budget</th>
-                        <th className="col-1 col-lg-1">Color</th>
-                        <th className="col-1 col-lg-1">Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th className="bg-secondary text-white" colSpan={4}>Fixed Expenses</th>
-                    </tr>
-                    {categories.map(category => (
-                        (category.fixed && <EditCategoryRow key={category.id} category={category} {...editCategoryProps} />)
-                    ))}
-                    <tr>
-                        <th className="bg-secondary text-white" colSpan={4}>Other Expenses</th>
-                    </tr>
-                    {categories.map(category => (
-                        (!category.fixed && <EditCategoryRow key={category.id} category={category} {...editCategoryProps} />)
-                    ))}
-                </tbody>
-            </Table>
+                <Table striped bordered className="mx-auto">
+                    <thead>
+                        <tr className="table-dark d-flex">
+                            <th className="col-7 col-md-8">Category <Button className="btn-sm mx-lg-2" id="save-all-btn" onClick={addNewCategory}>Add New</Button></th>
+                            <th className="col-3 col-md-2">Budget</th>
+                            <th className="col-2 col-md-2">Color</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th className="bg-secondary text-white" colSpan={1}>Fixed Expenses</th>
+                        </tr>
+                        {categories.map(category => (
+                            (category.fixed && <EditCategoryRow key={category.id} category={category} {...editCategoryProps} />)
+                        ))}
+                        <tr>
+                            <th className="bg-secondary text-white" colSpan={1}>Changing Expenses</th>
+                        </tr>
+                        {categories.map(category => (
+                            (!category.fixed && <EditCategoryRow key={category.id} category={category} {...editCategoryProps} />)
+                        ))}
+                    </tbody>
+                </Table>
+
+                <Row>
+                    <Col className="text-end">
+                        <Button id="save-all-btn" type="submit">Save Changes</Button>
+                    </Col>
+                </Row>
             </Form>
 
             {addCategoryClicked && <AddCategory {...addCategoryProps} />}

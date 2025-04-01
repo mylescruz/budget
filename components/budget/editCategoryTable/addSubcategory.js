@@ -74,7 +74,6 @@ const AddSubcategory = ({ edittedCategory, setEdittedCategory, updateCategoryVal
             </td>
             <td></td>
             <td></td>
-            <td></td>
         </tr>
     )
 };

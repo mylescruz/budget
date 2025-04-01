@@ -10,9 +10,8 @@ export default function Page() {
     const message = router?.query.message;
 
     // Create a loading indicator while check on the status of a user's session
-    if (status === 'loading') {
+    if (status === 'loading')
         return <Loading />;
-    } else {
+    else
         return <ErrorLayout message={message} />
-    }
 };

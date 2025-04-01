@@ -41,6 +41,13 @@ const IncomeLayout = ({ year }) => {
         setAddPaycheckClicked:  setAddPaycheckClicked
     };
 
+    const incomeTableProps = {
+        income: income,
+        putIncome: putIncome,
+        deleteIncome: deleteIncome,
+        yearInfo: yearInfo
+    };
+
     return (
         <>
             <aside className="info-text text-center mx-auto">
@@ -52,7 +59,11 @@ const IncomeLayout = ({ year }) => {
                 <Col><Button id="add-paycheck-btn" variant="primary" onClick={addPay}>Add Paycheck</Button></Col>
             </Row>
             
-            <IncomeTable income={income} putIncome={putIncome} deleteIncome={deleteIncome} yearInfo={yearInfo} />
+            <Row className="d-flex my-4">
+                <Col className="col-11 col-md-10 col-xl-8 mx-auto">
+                    <IncomeTable {...incomeTableProps} />
+                </Col>
+            </Row>
 
             {addPaycheckClicked && <AddIncome {...addIncomeProps} />}
         </>

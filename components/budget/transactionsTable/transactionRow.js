@@ -52,14 +52,23 @@ const TransactionRow = ({ transaction, putTransaction, deleteTransaction, monthI
     return (
         <>
             <tr className="d-flex click" onClick={openDetails}>
-                <td className="col-2">{dateFormatter(transaction.date)}</td>
-                <td className={"col-7 col-sm-4 cell"}>{transaction.store}</td>
-                <td className={`d-none d-sm-block col-sm-3`}>{transaction.category}</td>
-                {transaction.amount > 0 ? 
-                        <td className="col-3 col-sm-3">{currencyFormatter.format(transaction.amount)}</td> 
-                        : 
-                        <td className="col-3 col-sm-3 text-danger">({currencyFormatter.format(Math.abs(transaction.amount))})</td>
-                }
+                <td className="col-3 col-md-2 col-lg-1">{dateFormatter(transaction.date)}</td>
+                <td className="col-6 col-md-5 col-lg-4">
+                    <>
+                        <span className="d-sm-none">{transaction.store.length > 15 ? (transaction.store.slice(0,15)+"...") : transaction.store}</span>
+                        <span className="d-none d-sm-block d-md-none">{transaction.store.length > 25 ? (transaction.store.slice(0,25)+"...") : transaction.store}</span>
+                        <span className="d-none d-md-block">{transaction.store.length > 30 ? (transaction.store.slice(0,30)+"...") : transaction.store}</span>
+                    </>
+                </td>
+                <td className="d-none d-lg-block col-lg-4">
+                    {transaction.items.length > 30 ?
+                        <span>{transaction.items.slice(0,30)}...</span>
+                        :
+                        <span>{transaction.items}</span>
+                    }
+                </td>
+                <td className="d-none d-md-block col-md-3 col-lg-2">{transaction.category}</td>
+                <td className={`col-3 col-md-2 col-lg-1 ${transaction.amount < 0 && "text-danger"}`}>{currencyFormatter.format(transaction.amount)}</td> 
             </tr>
 
             { showDetails && <TransactionDetails {...transactionDetailsProps} />}

@@ -1,6 +1,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-background: #f2f2f2;
 }
 
 html,
@@ -47,8 +48,13 @@ a {
   min-height: 100vh;
 }
 
-.login, .create-account, .home, .dashboard, .redirect {
-  min-height: 70vh;
+.login, .create-account, .redirect {
+  min-height: 60vh;
+}
+
+.card-background {
+  background-color: var(--card-background);
+  border: 1px solid var(--card-background);
 }
 
 .error-layout {
@@ -63,43 +69,8 @@ a {
   text-decoration: underline;
 }
 
-.formInput {
-  margin: 0.5em 0.5em;
-}
-
 .clicker {
   cursor: pointer;
-}
-
-.align {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.alignX {
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.alignY {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.flex-start {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.flex-end {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
 }
 
 .cell {
@@ -109,8 +80,9 @@ a {
 }
 
 .click {
-  &:hover {
-    cursor: pointer;
+  cursor: pointer;
+
+  &:hover {  
     font-weight: bold;
   }
 }
@@ -119,8 +91,7 @@ a {
   &:hover {
       cursor: pointer;
       color: blue;
-      font-size: 1.25em;
-      transition: font-size 0.5s, color 0.5s;
+      transition: color 0.5s;
   }
 }
 
@@ -128,8 +99,7 @@ a {
   &:hover {
       cursor: pointer;
       color: green;
-      font-size: 1.25em;
-      transition: font-size 0.5s, color 0.5s;
+      transition: color 0.5s;
     }
 }
 
@@ -137,8 +107,7 @@ a {
   &:hover {
       cursor: pointer;
       color: red;
-      font-size: 1.25em;
-      transition: font-size 0.5s, color 0.5s;
+      transition: color 0.5s;
   }
 }
 
@@ -158,35 +127,12 @@ a {
   width: 90%;
 }
 
-.pie-size {
-  width: 100%;
-  height: 100%;
-}
-
-.pie {
-  margin: 2em 0em;
-}
-
 #save-all-btn {
   text-wrap: nowrap;
 }
 
-.input-subcategory {
-  width: 75%;
-}
-
 .option-buttons {
   margin: 1em 0em;
-}
-
-.income-table {
-  margin: 2em 0em;
-  width: 90%;
-}
-
-.history-table {
-  margin: 1em 0em 3em;
-  width: 90%;
 }
 
 .content-margin {
@@ -195,8 +141,8 @@ a {
 
 /* Extra-Small Device */
 @media (max-width: 575.99px) {
-  .login, .create-account, .home, .dashboard, .redirect {
-    min-height: 50vh;
+  .login, .create-account, .redirect {
+    min-height: 60vh;
   }
 
   .categories-table, .edit-categories-table {
@@ -209,11 +155,6 @@ a {
     font-size: 0.9em;
   }
 
-  .transactions-table {
-    margin: 0em 0em 3em;
-    font-size: 0.8em;
-  }
-
   #edit-categories-btn {
     font-size: 0.75em;
   }
@@ -222,25 +163,11 @@ a {
     font-size: 0.75em;
   }
 
-  .input-category {
-    width: 100%;
-    font-size: 0.9em;
-  }
-
-  .input-subcategory {
-    font-size: 0.9em;
-  }
-
   .add-subcategory {
     width: 100%;
     margin: 0em 0em 0em 1em;
     font-size: 0.9em;
   }
-
-  .input-number {
-    width: 100%;
-    font-size: 0.9em;
-  } 
 
   .add-sub {
     width: 60%;
@@ -260,92 +187,28 @@ a {
 
 /* Small Device */
 @media (min-width: 576px) and (max-width: 767.99px) {
-  .login, .create-account, .home, .dashboard, .redirect {
-    min-height: 55vh;
-  }
-
-  .input-subcategory {
-    width: 60%;
+  .login, .create-account, .redirect {
+    min-height: 65vh;
   }
 }
 
 /* Medium Device */
 @media (min-width: 768px) and (max-width: 991.99px) {
-  .login, .create-account, .home, .dashboard, .redirect {
-    min-height: 60vh;
-  }
-
-  .input-category {
-    width: 75%;
-  }
-
-  .input-subcategory {
-    width: 50%;
+  .login, .create-account, .redirect {
+    min-height: 70vh;
   }
 }
 
 /* Large Device */
 @media (min-width: 992px) and (max-width: 1199.99px) {
-  .pie {
-    margin: 2em 0em;
-  }
 
-  .input-category {
-    width: 60%;
-  }
-
-  .input-subcategory {
-    width: 40%;
-  }
-
-  .input-number {
-    width: 100%;
-  } 
-
-  .income-table {
-    width: 75%;
-  }
-
-  .history-table {
-    width: 75%;
-  }
 }
 
 
 @media (min-width: 1200px) and (max-width: 1399.99px) {
-  .pie {
-    margin: 2em 0em;
-  }
-
-  .transactions-table {
-    margin: 2em 0em;
-    width: 75%;
-  }
-
-  .income-table {
-    width: 75%;
-  }
-
-  .history-table {
-    width: 75%;
-  }
+  
 }
 
 @media (min-width: 1400px) {
-  .pie {
-    margin: 2em 0em 0em;
-  }
-
-  .transactions-table {
-    margin: 2em 0em;
-    width: 75%;
-  }
-
-  .income-table {
-    width: 75%;
-  }
-
-  .history-table {
-    width: 75%;
-  }
+  
 }

@@ -1,38 +1,41 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 
 const FixedCategoryRow = ({ category }) => {
     const hasSubcategory = category.hasSubcategory;
     const [showSubcategories, setShowSubcategories] = useState(false);    
 
+    const categoryColor = {
+        backgroundColor: category.color,
+        border: category.color
+    };
+    
     const dropdownSubcategories = () => {
         setShowSubcategories(!showSubcategories);
     };
 
-    const [difference, setDifference] = useState(category.budget - category.actual);
-
     return (
         <>
             <tr className="d-flex">
-                <th className="col-6">
-                    <Row>
-                        <Col xs={9} sm={10} className="cell">{category.name}</Col>
-                            {hasSubcategory && 
-                            <Col xs={3} sm={2}>
-                            {showSubcategories ? 
-                                <i className="bi bi-chevron-up" onClick={dropdownSubcategories}></i>
-                                :
-                                <i className="bi bi-chevron-down" onClick={dropdownSubcategories}></i>
-                            }
-                            </Col>
+                <th className="col-6" onClick={dropdownSubcategories}>
+                    <Row className="d-flex">
+                        {hasSubcategory ?
+                            <>
+                                <Col className="col-9 cell"><Button style={categoryColor} className="btn-sm fw-bold">{category.name}</Button></Col>
+                                <Col className="col-3 text-end">
+                                    <i className={`clicker bi ${showSubcategories ? "bi-chevron-up" : "bi-chevron-down"}`} />
+                                </Col>
+                            </>
+                            :
+                            <Col className="col-12 cell"><Button style={categoryColor} className="btn-sm fw-bold">{category.name}</Button></Col>
                         }
                     </Row>
                 </th>
-                <td className={"col-2 fw-bold"}>{currencyFormatter.format(category.budget)}</td>
-                <td className={"col-2 cell"}>{currencyFormatter.format(category.actual)}</td>
-                <td className={`col-2 cell ${difference < 0 ? "text-danger fw-bold" : ""}`}>{currencyFormatter.format(difference)}</td>
+                <td className="d-none d-md-block col-md-2 fw-bold"></td>
+                <td className="col-3 col-md-2 cell fw-bold">{currencyFormatter.format(category.actual)}</td>
+                <td className="col-3 col-md-2 cell"></td>
             </tr>
             {showSubcategories &&
                 category.subcategories.map(subcategory => (

@@ -4,14 +4,15 @@ import dateInfo from "@/helpers/dateInfo";
 import { useSession } from "next-auth/react";
 
 export default function Income() {
-    const { status } = useSession();
+    const { data: session, status } = useSession();
 
     const year = dateInfo.currentYear;
 
     // Create a loading indicator while check on the status of a user's session
-    if (status === 'loading') {
+    if (status === 'loading')
         return <Loading />;
-    } else {
+    else if (!session || status === 'unauthenticated')
+        router.push('/redirect');
+    else
         return <IncomeLayout year={year} />;
-    }
 };

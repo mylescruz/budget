@@ -4,18 +4,19 @@ import PopUp from "@/components/layout/popUp";
 
 const TransactionsTable = ({transactions, putTransaction, deleteTransaction, monthInfo}) => {
     return (
-        <Table striped bordered responsive hover className="transactions-table mx-auto">
+        <Table striped>
             <thead className="table-dark">
                 <tr className="d-flex">
-                    <th className="col-2">Date</th>
-                    <th className="col-7 col-sm-4">
+                    <th className="col-3 col-md-2 col-lg-1">Date</th>
+                    <th className="col-6 col-md-5 col-lg-4">
                         Store
                         <PopUp title="Click a transaction to view its details." id="transactions-info">
                             <span> &#9432;</span>
                         </PopUp>
                     </th>
-                    <th className="d-none d-sm-block col-sm-3">Category</th>
-                    <th className="col-3 col-sm-3">Amount</th>
+                    <th className="d-none d-lg-block col-lg-4">Items</th>
+                    <th className="d-none d-md-block col-md-3 col-lg-2">Category</th>
+                    <th className="col-3 col-md-2 col-lg-1">Amount</th>
                 </tr>
             </thead>
             <tbody>

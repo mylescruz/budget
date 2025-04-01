@@ -22,19 +22,20 @@ const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
     }, [income]);
 
     return (
-        <Table bordered className="mx-auto income-table">
+        <Table striped hover>
             <thead className="table-dark">
                 <tr className="d-flex">
-                    <th className="col-3 col-md-2">Date</th>
-                    <th className="col-6 col-md-4">
+                    <th className="col-3 col-md-2 col-lg-1">Date</th>
+                    <th className="col-6 col-md-4 col-lg-3">
                         Company
                         <PopUp title="Click a paycheck to view its details." id="income-info">
                             <span> &#9432;</span>
                         </PopUp>
                     </th>
-                    <th className="d-none d-md-block col-md-2">Gross Income</th>
-                    <th className="d-none d-md-block col-md-2">Taxes</th>
-                    <th className="col-3 col-md-2">Net Income</th>
+                    <th className="d-none d-lg-block col-lg-2">Description</th>
+                    <th className="d-none d-md-block col-md-2 col-lg-2">Gross Pay</th>
+                    <th className="d-none d-md-block col-md-2 col-lg-2">Taxes</th>
+                    <th className="col-3 col-md-2 col-lg-2">Net Pay</th>
                 </tr>
             </thead>
             <tbody>

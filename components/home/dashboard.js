@@ -1,41 +1,114 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
+import CategoryPieChart from "../budget/categoryPieChart";
+import dateInfo from "@/helpers/dateInfo";
+import getMonthInfo from "@/helpers/getMonthInfo";
+import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
+import useIncome from "@/hooks/useIncome";
+import currencyFormatter from "@/helpers/currencyFormatter";
+import Loading from "../layout/loading";
+import { useContext } from "react";
+import styles from "@/styles/home/dashboard.module.css";
 
-const Dashboard = () => {
+const InnerDashboard = ({ monthInfo }) => {
     // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
-    // Using the router object to redirect to different pages within the app
+    const { categories, categoriesLoading } = useContext(CategoriesContext);
+    const { incomeLoading, getMonthIncome } = useIncome(session.user.username, monthInfo.year);
     const router = useRouter();
+
+    // Get the top 5 categories to display on the dashboard
+    const topCategories = categories.filter(category => {
+        return category.actual > 0;
+    }).map(category => {
+        return {...category, style: {
+            backgroundColor: category.color,
+            border: category.color
+        }};
+    }).sort((categoryA, categoryB) => {
+        return categoryB.actual - categoryA.actual;
+    }).slice(0,5);
+
+    // Get the user's income for the current month
+    const monthIncome = getMonthIncome(monthInfo);
 
     // If there is no user session, redirect to the home page
     if (!session) {
         router.push('/');
     }
+
+    if (incomeLoading || categoriesLoading)
+        return <Loading/>;
     
     return (
-        <Container className="d-flex justify-content-center align-items-center dashboard">
-            <Card className="col-10 col-sm-8 col-md-8 col-lg-8 col-xl-6 mx-auto my-4 bg-secondary-subtle">
-                <Card.Body>
-                    <h2 className="text-center">Welcome {session.user.name}!</h2>
-                    <p className="my-3 fs-5">Check out your budget, update your income or view the history of your budget.</p>
-                    
-                    <Row className="mx-auto text-center">
-                        <Col xs={12} sm={4}>
-                            <Button as={Link} href="/budget" variant="dark" className="w-10 my-3">Budget</Button>
+        <Container>
+            <Row className="d-flex mx-auto">
+                <h2>Welcome {session.user.name}!</h2>
+                <Col className="col-12 col-xl-6">
+                    <Card className="my-2 card-background">
+                        <Card.Body>
+                            <h3>{monthInfo.month} Spending</h3>
+                            <Row className="mx-auto d-flex">
+                                <Col className="col-12 col-lg-6">
+                                    <CategoryPieChart categories={categories} />
+                                </Col>
+                                <Col className="col-12 col-lg-6">
+                                    <h5 className="text-center">Top Categories</h5>
+                                    <Table borderless>
+                                        <tbody>
+                                            {topCategories.map(category => (
+                                                <tr key={category.id} className="d-flex">
+                                                    <td className={`col-6 ${styles.grayBackground}`}><Button style={category.style} className="btn-sm fw-bold">{category.name}</Button></td>
+                                                    <td className={`col-6 text-end ${styles.grayBackground}`}>{currencyFormatter.format(category.actual)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </Table>
+                                </Col>
+                                <Button as={Link} href="/budget" variant="primary">View Full Budget</Button>
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col className="col-12 col-xl-6">
+                    <Row className="d-flex">
+                        <Col className="col-12">
+                            <Card className="my-2 card-background">
+                                <Card.Body>
+                                    <h3>{monthInfo.month} Income: {currencyFormatter.format(monthIncome)} </h3>
+                                    <p>View your recent paychecks</p>
+                                    <Button as={Link} href="/income" variant="primary">Income</Button>
+                                </Card.Body>
+                            </Card>
                         </Col>
-                        <Col xs={12} sm={4}>
-                            <Button as={Link} href="/income" variant="dark" className="w-10 my-3">Income</Button>
-                        </Col>
-                        <Col xs={12} sm={4}>
-                            <Button as={Link} href="/history" variant="dark" className="w-10 my-3">History</Button>
+                        <Col className="col-12">
+                            <Card className="my-2 card-background">
+                                <Card.Body>
+                                    <h3>History</h3>
+                                    <p>View your budget for previous months</p>
+                                    <Button as={Link} href="/history" variant="primary">History</Button>
+                                </Card.Body>
+                            </Card>
                         </Col>
                     </Row>
-                </Card.Body>
-            </Card>
+                </Col>
+            </Row>
         </Container>
+    );
+};
+
+const Dashboard = () => {
+    const month = dateInfo.currentMonth;
+    const year = dateInfo.currentYear;
+    const monthInfo = getMonthInfo(month, year);
+
+    return (
+        <CategoriesProvider monthInfo={monthInfo} >
+            <InnerDashboard monthInfo={monthInfo} />
+        </CategoriesProvider>
     );
 };
 

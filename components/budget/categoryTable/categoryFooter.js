@@ -6,21 +6,15 @@ const CategoryFooter = ({footerValues}) => {
 
     return (
         <tr className="d-flex">
-            <th className={"col-6 bg-dark text-white cell"}>
+            <th className="col-6 cell">
                 Total
                 <PopUp title="Your budget is your total income for the month." id="budget-info">
                     <span> &#9432;</span>
                 </PopUp>
             </th>
-            <td className={"col-2 bg-dark text-white cell"}>{currencyFormatter.format(footerValues.budget)}</td>
-            <td className={"col-2 bg-dark text-white cell"}>{currencyFormatter.format(footerValues.actual)}</td>
-            <td className={"col-2 bg-dark text-white cell"}>
-                {totalDifference > 0 ? 
-                    <span className="text-white">{currencyFormatter.format(totalDifference)}</span> 
-                    : 
-                    <span className="text-danger fw-bold">-{currencyFormatter.format(Math.abs(totalDifference))}</span>
-                }
-            </td>
+            <td className="d-none d-md-block col-md-2 cell">{currencyFormatter.format(footerValues.budget)}</td>
+            <td className="col-3 col-md-2 cell">{currencyFormatter.format(footerValues.actual)}</td>
+            <td className={`col-3 col-md-2 cell ${totalDifference > 0 ? "text-white" : "text-danger fw-bold"}`}>{currencyFormatter.format(totalDifference)}</td>
         </tr>
     );
 };

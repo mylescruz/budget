@@ -67,7 +67,11 @@ const HistoryLayout = () => {
                 <p>View your budget versus what you actually spent for previous months.</p>
             </aside>
 
-            <HistoryTable history={history} />
+            <Row className="d-flex">
+                <Col className="col-11 col-md-10 col-xl-8 mx-auto">
+                    <HistoryTable history={history} />
+                </Col>
+            </Row>
         </>
     );
 };
