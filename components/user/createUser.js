@@ -75,8 +75,6 @@ const CreateUser = ({ csrfToken }) => {
     const createNewUser = async (e) => {
         e.preventDefault();
 
-        setCreatingUser(true);
-
         // Check if entered email is valid
         if (!checkEmail(newUser.email)) {
             setValidEmail({valid: false, error: 'Not a valid email address'});
@@ -119,8 +117,17 @@ const CreateUser = ({ csrfToken }) => {
             setValidMatch(validated);
         }
 
-        // Add the user to S3
-        await createUserS3(newUser);
+        try {
+            setCreatingUser(true);
+
+            // Add the user to S3
+            await createUserS3(newUser);
+        } catch(error) {
+            closeCreatingUser();
+
+            window.alert(error.message);
+            router.push('/auth/signIn');
+        }
 
         // Redirect to sign in page
         try {
