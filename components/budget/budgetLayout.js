@@ -51,6 +51,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
     const addTransaction = () => {
         setAddTransactionClicked(true);
+        showTransactions();
     };
 
     const categoryTableProps = {
@@ -112,6 +113,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
                     </Col>
                 </Row>
             }
+
             {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
         </Container>
     );

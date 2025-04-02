@@ -9,15 +9,19 @@ import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesCont
 import useIncome from "@/hooks/useIncome";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import Loading from "../layout/loading";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
+import useTransactions from "@/hooks/useTransactions";
+import AddTransaction from "../budget/transactionsTable/addTransaction";
 
 const InnerDashboard = ({ monthInfo }) => {
     // Using NextAuth.js to authenticate a user's session
     const { data: session } = useSession();
 
     const { categories, categoriesLoading } = useContext(CategoriesContext);
+    const { transactions, transactionsLoading, postTransaction } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
     const { incomeLoading, getMonthIncome } = useIncome(session.user.username, monthInfo.year);
+    const [addTransactionClicked, setAddTransactionClicked] = useState(false);
     const router = useRouter();
 
     // Get the top 5 categories to display on the dashboard
@@ -40,8 +44,20 @@ const InnerDashboard = ({ monthInfo }) => {
         router.push('/');
     }
 
-    if (incomeLoading || categoriesLoading)
+    if (categoriesLoading || transactionsLoading || incomeLoading)
         return <Loading/>;
+
+    const openAddTransaction = () => {
+        setAddTransactionClicked(true);
+    };
+
+    const addTransactionsProps = {
+        transactions: transactions,
+        postTransaction: postTransaction,
+        monthInfo: monthInfo,
+        addTransactionClicked: addTransactionClicked,
+        setAddTransactionClicked: setAddTransactionClicked
+    };
     
     return (
         <Container>
@@ -78,7 +94,16 @@ const InnerDashboard = ({ monthInfo }) => {
                         <Col className="col-12">
                             <Card className="my-2 card-background">
                                 <Card.Body>
-                                    <h3>{monthInfo.month} Income: {currencyFormatter.format(monthIncome)} </h3>
+                                    <h3>New Transaction</h3>
+                                    <p>Add a transaction for the current month</p>
+                                    <Button variant="primary" onClick={openAddTransaction}>Add</Button>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col className="col-12">
+                            <Card className="my-2 card-background">
+                                <Card.Body>
+                                    <h4>{monthInfo.month} Income: {currencyFormatter.format(monthIncome)} </h4>
                                     <p>View your recent paychecks</p>
                                     <Button as={Link} href="/income" variant="primary">Income</Button>
                                 </Card.Body>
@@ -87,15 +112,17 @@ const InnerDashboard = ({ monthInfo }) => {
                         <Col className="col-12">
                             <Card className="my-2 card-background">
                                 <Card.Body>
-                                    <h3>History</h3>
+                                    <h4>History</h4>
                                     <p>View your budget for previous months</p>
-                                    <Button as={Link} href="/history" variant="primary">History</Button>
+                                    <Button as={Link} href="/history" variant="primary" className="">History</Button>
                                 </Card.Body>
                             </Card>
                         </Col>
                     </Row>
                 </Col>
             </Row>
+
+            {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
         </Container>
     );
 };

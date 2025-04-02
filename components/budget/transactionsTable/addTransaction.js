@@ -5,7 +5,7 @@ import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import dateInfo from "@/helpers/dateInfo";
 
-const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked, showTransactions}) => {
+const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactionClicked, setAddTransactionClicked }) => {
     const { categories, putCategories } = useContext(CategoriesContext);
 
     // When adding a new transaction, the first category option should be the first one that is not fixed and doesn't have a subcategory
@@ -59,7 +59,6 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
 
         setTransaction(emptyTransaction);
         setAddTransactionClicked(false);
-        showTransactions();
     };
 
     const closeModal = () => {
@@ -75,29 +74,46 @@ const AddTransaction = ({transactions, postTransaction, monthInfo, addTransactio
             
             <Form onSubmit={AddNewTransaction}>
                 <Modal.Body>
-                    <Form.Group className="formInput">
-                        <Form.Control id="date" className="h-100" type="date" min={monthInfo.startOfMonthDate} max={monthInfo.endOfMonthDate} value={newTransaction.date} onChange={handleInput} required />
+                    <Row className="d-flex">
+                        <Col className="col-12 col-md-4">
+                            <Form.Group controlId="date" className="my-2">
+                                <Form.Label>Date</Form.Label>
+                                <Form.Control className="h-100" type="date" min={monthInfo.startOfMonthDate} max={monthInfo.endOfMonthDate} value={newTransaction.date} onChange={handleInput} required />
+                            </Form.Group>
+                        </Col>
+                        <Col className="col-12 col-md-8">
+                            <Form.Group controlId="store" className="my-2">
+                                <Form.Label>Store/Restaurant</Form.Label>
+                                <Form.Control className="h-100" type="text" value={newTransaction.store} onChange={handleInput} required />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Form.Group controlId="items" className="my-2">
+                        <Form.Label>What was purchased?</Form.Label>
+                        <Form.Control className="h-100" type="text" value={newTransaction.items} onChange={handleInput} required />
                     </Form.Group>
-                    <Form.Group className="formInput">
-                        <Form.Control id="store" className="h-100" type="text" placeholder="Store/Restaurant" value={newTransaction.store} onChange={handleInput} required />
-                    </Form.Group>
-                    <Form.Group className="formInput">
-                        <Form.Control id="items" className="h-100" type="text" placeholder="What was purchased?" value={newTransaction.items} onChange={handleInput} required />
-                    </Form.Group>
-                    <Form.Group className="formInput">
-                        <Form.Select id="category" className="h-100" value={newTransaction.category} onChange={handleInput} required>
-                            <option disabled>Choose a Category...</option>
-                            {categories.map(category => (
-                                (!category.fixed && <SelectCategory key={category.id} category={category} />)
-                            ))}
-                        </Form.Select>
-                    </Form.Group>
-                    <Form.Group className="formInput">
-                        <Form.Control id="amount" className="h-100" type="number" step="0.01" placeholder="Amount" value={newTransaction.amount} onChange={handleNumInput} required />
-                    </Form.Group>
+                    <Row className="d-flex">
+                        <Col className="col-12 col-md-6">
+                            <Form.Group controlId="category" className="my-2">
+                                <Form.Label>Category</Form.Label>
+                                <Form.Select className="h-100" value={newTransaction.category} onChange={handleInput} required>
+                                    <option disabled>Choose a Category...</option>
+                                    {categories.map(category => (
+                                        (!category.fixed && <SelectCategory key={category.id} category={category} />)
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        <Col className="col-12 col-md-6">
+                            <Form.Group controlId="amount" className="my-2">
+                                <Form.Label>Amount</Form.Label>
+                                <Form.Control className="h-100" type="number" step="0.01" value={newTransaction.amount} onChange={handleNumInput} required />
+                            </Form.Group>
+                        </Col>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Row>
                             <Col><Button variant="secondary" onClick={closeModal}>Close</Button></Col>
                             <Col><Button variant="primary" type="submit">Add</Button></Col>

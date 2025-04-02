@@ -60,9 +60,19 @@ const Home = () => {
                 <Card.Body>
                     <Row>
                         <Col className="col-12 col-lg-6 mt-3">
-                            <h1 className="fw-bold">The budgeting app for your Type-A personality</h1>
-                            <h5 className="my-3">A budget for people who want to manually track their income and spending down to the cent.</h5>
-                            <h5>Login or sign up to see where you&#39;re allocating your money!</h5>
+                            <Row>
+                                <h1 className="fw-bold">The budgeting app for your Type-A personality</h1>
+                                <h5 className="my-3">A budget for people who want to manually track their income and spending down to the cent.</h5>
+                                <h5>Login or sign up to see where you&#39;re allocating your money!</h5>
+                            </Row>
+                            <Row className="text-center my-2">
+                                <Col>
+                                    <Button variant="dark" onClick={userSignIn}>Login</Button>
+                                </Col>
+                                <Col>
+                                    <Button as={Link} href="/auth/createAccount" variant="primary">Sign up</Button>
+                                </Col>
+                            </Row>
                         </Col>
                         <Col className="col-12 col-lg-6">
                             <Row className="d-flex align-items-center">
@@ -92,15 +102,6 @@ const Home = () => {
                                     </Table>
                                 </Col>
                             </Row>
-                        </Col>
-                    </Row>
-                    
-                    <Row className="text-center my-3">
-                        <Col>
-                            <Button variant="dark" onClick={userSignIn}>Login</Button>
-                        </Col>
-                        <Col>
-                            <Button as={Link} href="/auth/createAccount" variant="primary">Sign up</Button>
                         </Col>
                     </Row>
                 </Card.Body>
