@@ -129,6 +129,7 @@ export default async function handler(req, res) {
                 username: user.username,
                 password_hash: hashedPassword,
                 role: USER_ROLE,
+                onboarded: false,
                 created_date: createdDate
             };
 
@@ -150,6 +151,7 @@ export default async function handler(req, res) {
                 username: user.username,
                 email: user.email,
                 role: USER_ROLE,
+                onboarded: false,
                 created_date: createdDate
             };
 
@@ -180,75 +182,79 @@ export default async function handler(req, res) {
             const edittedUser = req?.body;
             const user = await getUser(userKey);
 
-            // Check if the passwords match
-            const passwordsMatch = await checkHashedPassword(edittedUser.currentPassword, user.password_hash);
+            let userInfo = {};
 
-            if (passwordsMatch) {
-                let updatedPassword = user.password_hash;
-                let updatedEmail = user.email;
+            if (edittedUser.onboarded === false) {
+                // Update a user confirming they have been onboarded
+                userInfo = {...user, onboarded: true};
+            } else {
+                // Update a user based on the credentials they want to update
 
-                if ('newPassword' in edittedUser) {
-                    updatedPassword = await bcrypt.hash(edittedUser.newPassword, saltRounds);
-                }
+                // Check if the passwords match
+                const passwordsMatch = await checkHashedPassword(edittedUser.currentPassword, user.password_hash);
 
-                if ('newEmail' in edittedUser) {
-                    updatedEmail = edittedUser.newEmail;
-                }
-                
-                const userInfo = {
-                    id: user.id,
-                    name: user.name,
-                    email: updatedEmail,
-                    username: user.username,
-                    password_hash: updatedPassword,
-                    role: user.role,
-                    created_date: user.created_date
-                };
+                if (passwordsMatch) {
+                    let updatedPassword = user.password_hash;
+                    let updatedEmail = user.email;
 
-                let userInfoKey = userKey;
-
-                // User's info file parameters for S3
-                const userInfoParams = {
-                    Bucket: BUCKET_NAME,
-                    Key: userInfoKey,
-                    Body: JSON.stringify(userInfo, null, 2),
-                    ContentType: "application/json"
-                };
-
-                // Place the user's info file in the user's folder in S3
-                await S3.send(new PutObjectCommand(userInfoParams));
-
-                // Update user in the users index
-                const { password_hash, ...updatedUser } = userInfo;
-
-                const users = await getUsers(indexKey);
-                            
-                // Edit user in the users array
-                const updatedUsers = users.map(user => {
-                    if (user.id === updatedUser.id) {
-                        return updatedUser;
+                    if ('newPassword' in edittedUser) {
+                        updatedPassword = await bcrypt.hash(edittedUser.newPassword, saltRounds);
                     }
 
-                    return user;
-                });
-
-                // S3 File Parameters for the users index
-                const usersParams = {
-                    Bucket: BUCKET_NAME,
-                    Key: indexKey,
-                    Body: JSON.stringify(updatedUsers, null, 2),
-                    ContentType: "application/json"
-                };
-
-                // Place updated users in to S3
-                await S3.send(new PutObjectCommand(usersParams));
-
-                // Sending back the verified user object in the response
-                res.status(200).json(updatedUser);
-            } else {
-                // If the passwords don't match, send back a null object signifying invalid credentials
-                res.status(401).send("Passwords do not match. Cannot update the password.");
+                    if ('newEmail' in edittedUser) {
+                        updatedEmail = edittedUser.newEmail;
+                    }
+                    
+                    userInfo = {...user, 
+                        email: updatedEmail,
+                        password_hash: updatedPassword
+                    };
+                } else {
+                    // If the passwords don't match, send back a null object signifying invalid credentials
+                    return res.status(401).send("Passwords do not match. Cannot update the password.");
+                }
             }
+
+            let userInfoKey = userKey;
+
+            // User's info file parameters for S3
+            const userInfoParams = {
+                Bucket: BUCKET_NAME,
+                Key: userInfoKey,
+                Body: JSON.stringify(userInfo, null, 2),
+                ContentType: "application/json"
+            };
+
+            // Place the user's info file in the user's folder in S3
+            await S3.send(new PutObjectCommand(userInfoParams));
+
+            // Update user in the users index
+            const { password_hash, ...updatedUser } = userInfo;
+
+            const users = await getUsers(indexKey);
+                        
+            // Edit user in the users array
+            const updatedUsers = users.map(user => {
+                if (user.id === updatedUser.id) {
+                    return updatedUser;
+                }
+
+                return user;
+            });
+
+            // S3 File Parameters for the users index
+            const usersParams = {
+                Bucket: BUCKET_NAME,
+                Key: indexKey,
+                Body: JSON.stringify(updatedUsers, null, 2),
+                ContentType: "application/json"
+            };
+
+            // Place updated users in to S3
+            await S3.send(new PutObjectCommand(usersParams));
+
+            // Sending back the verified user object in the response
+            res.status(200).json(updatedUser);
         } catch (err) {
             console.error(`${method} user/username request failed: ${err}`);
             res.status(500).send("An error occurred while updating your account. Please try again later!");

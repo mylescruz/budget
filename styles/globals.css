@@ -57,6 +57,10 @@ a {
   border: 1px solid var(--card-background);
 }
 
+.gray-background {
+  background-color: var(--card-background) !important;
+}
+
 .error-layout {
   min-height: 75vh;
   text-align: center;

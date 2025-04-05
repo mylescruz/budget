@@ -140,8 +140,9 @@ const CreateUser = ({ csrfToken }) => {
 
             closeCreatingUser();
 
+            // Take user directly to the onboarding page when done creating their account
             if (response.ok) {
-                router.push('/');
+                router.push('/onboarding');
             } else {
                 throw new Error("There was an issue with directly login. Please sign in using your new credentials.");
             }

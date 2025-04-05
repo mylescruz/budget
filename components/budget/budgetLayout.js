@@ -6,7 +6,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
 import useTransactions from "@/hooks/useTransactions";
-import SummaryPieChart from "./categoryPieChart";
+import CategoryPieChart from "../categories/categoryPieChart";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
@@ -89,7 +89,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
             <Row>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 mt-4">
-                    <SummaryPieChart categories={categories} />
+                    <CategoryPieChart categories={categories} />
                 </Col>
                 <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
                     {!editClicked ? 

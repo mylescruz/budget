@@ -110,7 +110,8 @@ export default async function handler(req, res) {
                 username: user.username,
                 password_hash: hashedPassword,
                 role: user.role,
-                created_date: createdDate
+                created_date: createdDate,
+                onboarded: false
             };
 
             const userKey = `users/${userInfo.username}/info-${userInfo.username}.json`;

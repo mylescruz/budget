@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
-import CategoryPieChart from "../budget/categoryPieChart";
+import CategoryPieChart from "../categories/categoryPieChart";
 import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { CategoriesContext, CategoriesProvider } from "@/contexts/CategoriesContext";
@@ -63,7 +63,7 @@ const InnerDashboard = ({ monthInfo }) => {
         <Container>
             <Row className="d-flex mx-auto">
                 <h2>Welcome {session.user.name}!</h2>
-                <Col className="col-12 col-xl-6">
+                <Col className="col-12 col-xl-8">
                     <Card className="my-2 card-background">
                         <Card.Body>
                             <h3>{monthInfo.month} Spending</h3>
@@ -89,7 +89,7 @@ const InnerDashboard = ({ monthInfo }) => {
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col className="col-12 col-xl-6">
+                <Col className="col-12 col-xl-4">
                     <Row className="d-flex">
                         <Col className="col-12">
                             <Card className="my-2 card-background">

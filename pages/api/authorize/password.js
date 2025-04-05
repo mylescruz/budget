@@ -75,7 +75,8 @@ export default async function handler(req, res) {
                     name: user.name,
                     email: user.email,
                     username: user.username,
-                    role: user.role
+                    role: user.role,
+                    onboarded: user.onboarded
                 };
 
                 // Send back verified user to NextAuth
