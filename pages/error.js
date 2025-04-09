@@ -1,4 +1,4 @@
-import ErrorLayout from "@/components/layout/errorLayout";
+import ErrorLayout from "@/components/errors/errorLayout";
 import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";

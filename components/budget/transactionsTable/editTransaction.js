@@ -50,16 +50,16 @@ const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShow
                 </Modal.Header>
                 <Form onSubmit={editTheTransaction}>
                     <Modal.Body>
-                        <Form.Group className="formInput">
+                        <Form.Group className="my-2">
                             <Form.Control id="date" className="h-100" type="date" min={monthInfo.startOfMonthDate} max={monthInfo.endOfMonthDate} value={edittedTransaction.date} onChange={handleInput} required />
                         </Form.Group>
-                        <Form.Group className="formInput">
+                        <Form.Group className="my-2">
                             <Form.Control id="store" className="h-100" type="text" placeholder="Store" value={edittedTransaction.store} onChange={handleInput} required />
                         </Form.Group>
-                        <Form.Group className="formInput">
+                        <Form.Group className="my-2">
                             <Form.Control id="items" className="h-100" type="text" placeholder="What was purchased?" value={edittedTransaction.items} onChange={handleInput} required />
                         </Form.Group>
-                        <Form.Group className="formInput">
+                        <Form.Group className="my-2">
                             <Form.Select id="category" className="h-100" value={edittedTransaction.category} onChange={handleInput} required>
                                 <option disabled>Choose a Category...</option>
                                 {categories.map(category => (
@@ -67,12 +67,12 @@ const EditTransaction = ({transaction, monthInfo, showEdit, setShowEdit, setShow
                                 ))}
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group className="formInput">
+                        <Form.Group className="my-2">
                             <Form.Control id="amount" className="h-100" type="number" step="0.01" placeholder="Amount" value={edittedTransaction.amount} onChange={handleNumInput} required />
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Form.Group className="formInput">
+                        <Form.Group className="my-2">
                             <Row>
                                 <Col><Button variant="secondary" onClick={closeEdit}>Cancel</Button></Col>
                                 <Col className="text-nowrap"><Button variant="primary" type="submit">Save Changes</Button></Col>

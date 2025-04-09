@@ -61,33 +61,33 @@ const EditIncome = ({ paycheck, putIncome, yearInfo, showEdit, setShowEdit, setS
             </Modal.Header>
             <Form onSubmit={editPaycheck}>
                 <Modal.Body>
-                <Form.Group className="formInput">
+                <Form.Group className="my-2">
                         <Form.Label>Pay Date</Form.Label>
                         <Form.Control id="date" className="h-100" type="date" min={yearInfo.startOfYear} max={yearInfo.endOfYear} value={edittedPaycheck.date} onChange={handleInput} required />
                     </Form.Group>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Form.Label>Company</Form.Label>
                         <Form.Control id="company" className="h-100" type="text" value={edittedPaycheck.company} onChange={handleInput} required />
                     </Form.Group>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Form.Label>Description</Form.Label>
                         <Form.Control id="description" className="h-100" type="text" value={edittedPaycheck.description} placeholder="Optional" onChange={handleInput} />
                     </Form.Group>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Form.Label>Gross Income</Form.Label>
                         <Form.Control id="gross" className="h-100" type="number" min="0.01" step="0.01" placeholder="Gross Income" value={edittedPaycheck.gross} onChange={handleNumInput} required />
                     </Form.Group>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Form.Label>Net Income</Form.Label>
                         <Form.Control id="net" className="h-100" type="number" min="0.01" step="0.01" placeholder="Net Income" value={edittedPaycheck.net} onChange={handleNumInput} required />
                     </Form.Group>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Form.Label>Taxes taken out</Form.Label>
                         <Form.Control id="taxes" className="h-100" type="number" min="0.01" step="0.01" placeholder="Taxes taken out" value={(edittedPaycheck.gross-edittedPaycheck.net).toFixed(2)} disabled required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Form.Group className="formInput">
+                    <Form.Group className="my-2">
                         <Row>
                             <Col><Button variant="secondary" onClick={closeEdit}>Cancel</Button></Col>
                             <Col className="text-nowrap"><Button variant="primary" type="submit">Save Changes</Button></Col>

@@ -77,8 +77,8 @@ const InnerDashboard = ({ monthInfo }) => {
                                         <tbody>
                                             {topCategories.map(category => (
                                                 <tr key={category.id} className="d-flex">
-                                                    <td className={`col-6 ${styles.grayBackground}`}><Button style={category.style} className="btn-sm fw-bold">{category.name}</Button></td>
-                                                    <td className={`col-6 text-end ${styles.grayBackground}`}>{currencyFormatter.format(category.actual)}</td>
+                                                    <td className={`col-7 ${styles.grayBackground}`}><Button style={category.style} className="btn-sm fw-bold">{category.name}</Button></td>
+                                                    <td className={`col-5 text-end ${styles.grayBackground}`}>{currencyFormatter.format(category.actual)}</td>
                                                 </tr>
                                             ))}
                                         </tbody>

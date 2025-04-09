@@ -100,18 +100,20 @@ const InnerBudgetLayout = ({ monthInfo }) => {
             </Row>
         
             {!editClicked &&
-                <Row className="option-buttons text-center">
-                    <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
-                    <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
-                </Row>
-            }
-            
-            {viewClicked && 
-                <Row className="d-flex">
-                    <Col className="col-12 col-xl-8 mx-auto">
-                        <TransactionsTable {...transactionsTableProps} />
-                    </Col>
-                </Row>
+                <>
+                    <Row className="option-buttons text-center">
+                        <Col><Button id="view-transactions-btn" variant="secondary" onClick={toggleTransactions}>{viewText}</Button></Col>
+                        <Col><Button id="add-transaction-btn" variant="primary" onClick={addTransaction} disabled={editClicked}>Add Transaction</Button></Col>
+                    </Row>
+                
+                    {viewClicked && 
+                        <Row className="d-flex">
+                            <Col className="col-12 col-xl-8 mx-auto">
+                                <TransactionsTable {...transactionsTableProps} />
+                            </Col>
+                        </Row>
+                    }
+                </>
             }
 
             {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
