@@ -1,6 +1,7 @@
 import HistoryLayout from "@/components/history/historyLayout";
 import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 
 export default function History() {
@@ -12,6 +13,17 @@ export default function History() {
         return <Loading />;
     else if (!session.user.onboarded)
         router.push('/onboarding');
-    else
-        return <HistoryLayout />;
+    else {
+        return (
+            <>
+                <Head>
+                    <title>History</title>
+                    <meta name="description" content="User's budget history" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
+                <HistoryLayout />
+            </>
+        )
+    }
 };

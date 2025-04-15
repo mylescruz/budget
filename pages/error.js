@@ -1,6 +1,7 @@
 import ErrorLayout from "@/components/errors/errorLayout";
 import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 
 export default function Page() {
@@ -12,6 +13,17 @@ export default function Page() {
     // Create a loading indicator while check on the status of a user's session
     if (status === 'loading')
         return <Loading />;
-    else
-        return <ErrorLayout message={message} />
+    else {
+        return (
+            <>
+                <Head>
+                    <title>Error</title>
+                    <meta name="description" content="An error occurred" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
+                <ErrorLayout message={message} />
+            </>
+        )
+    }
 };

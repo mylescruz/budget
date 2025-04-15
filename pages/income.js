@@ -2,6 +2,7 @@ import IncomeLayout from "@/components/income/incomeLayout";
 import Loading from "@/components/layout/loading";
 import dateInfo from "@/helpers/dateInfo";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 
 export default function Income() {
@@ -17,6 +18,17 @@ export default function Income() {
         router.push('/redirect');
     else if (!session.user.onboarded)
         router.push('/onboarding');
-    else
-        return <IncomeLayout year={year} />;
+    else {
+        return (
+            <>
+                <Head>
+                    <title>Income</title>
+                    <meta name="description" content="User's income" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
+                <IncomeLayout year={year} />
+            </>
+        )
+    }
 };

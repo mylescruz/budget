@@ -3,6 +3,7 @@ import Loading from "@/components/layout/loading";
 import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 
 export default function Budget() {
@@ -20,6 +21,17 @@ export default function Budget() {
         router.push('/redirect');
     else if (!session.user.onboarded)
         router.push('/onboarding');
-    else
-        return <BudgetLayout monthInfo={monthInfo} />;
+    else {
+        return (
+            <>
+                <Head>
+                    <title>Budget</title>
+                    <meta name="description" content="User's budget for the month" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
+                <BudgetLayout monthInfo={monthInfo} />
+            </>
+        )
+    }
 };
