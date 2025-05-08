@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Col, Dropdown, Form, Row } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 import AddSubcategory from "./addSubcategory";
 import EditSubcategoryRow from "./editSubcategoryRow";
 import PopUp from "@/components/layout/popUp";
