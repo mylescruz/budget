@@ -16,6 +16,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
     postTransaction,
     putTransaction,
     deleteTransaction,
+    updateTransactions,
   } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
 
   return (
@@ -26,6 +27,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
         postTransaction,
         putTransaction,
         deleteTransaction,
+        updateTransactions,
       }}
     >
       {children}

@@ -65,19 +65,34 @@ const TransactionRow = ({ transaction, monthInfo }) => {
                 ? transaction.store.slice(0, 25) + "..."
                 : transaction.store}
             </span>
-            <span className="d-none d-md-block">
+            <span className="d-none d-md-block d-lg-none">
               {transaction.store.length > 30
                 ? transaction.store.slice(0, 30) + "..."
+                : transaction.store}
+            </span>
+            <span className="d-none d-lg-block d-xl-none">
+              {transaction.store.length > 35
+                ? transaction.store.slice(0, 35) + "..."
+                : transaction.store}
+            </span>
+            <span className="d-none d-xl-block">
+              {transaction.store.length > 40
+                ? transaction.store.slice(0, 40) + "..."
                 : transaction.store}
             </span>
           </>
         </td>
         <td className="d-none d-lg-block col-lg-4">
-          {transaction.items.length > 30 ? (
-            <span>{transaction.items.slice(0, 30)}...</span>
-          ) : (
-            <span>{transaction.items}</span>
-          )}
+          <span className="d-none d-lg-block d-xl-none">
+            {transaction.items.length > 30
+              ? transaction.items.slice(0, 30) + "..."
+              : transaction.items}
+          </span>
+          <span className="d-none d-xl-block">
+            {transaction.items.length > 35
+              ? transaction.items.slice(0, 35) + "..."
+              : transaction.items}
+          </span>
         </td>
         <td className="d-none d-md-block col-md-3 col-lg-2">
           {transaction.category}

@@ -134,7 +134,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
           {viewClicked && (
             <Row className="d-flex">
-              <Col className="col-12 col-xl-8 mx-auto">
+              <Col className="col-12 col-xl-10 mx-auto">
                 <TransactionsTable {...transactionsTableProps} />
               </Col>
             </Row>

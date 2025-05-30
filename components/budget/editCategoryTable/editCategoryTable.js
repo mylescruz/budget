@@ -14,7 +14,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
   const { categories, postCategory, putCategories, deleteCategory } =
     useContext(CategoriesContext);
-  const { transactions, putTransaction } = useContext(TransactionsContext);
+  const { transactions, updateTransactions } = useContext(TransactionsContext);
   const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
 
@@ -37,16 +37,18 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
           return cat.id === category.id;
         });
 
+        // Maps through the transactions array and if a category has a transaction that matches the changed category, change that transaction's category
         if (foundIndex !== -1) {
-          transactions.map((transaction) => {
+          const updatedTransactions = transactions.map((transaction) => {
             if (transaction.category === category.name) {
               if (
                 category.id === categoryValues.current[foundIndex].id &&
                 transaction.category !== categoryValues.current[foundIndex].name
               ) {
                 transaction.category = categoryValues.current[foundIndex].name;
-                putTransaction(transaction);
               }
+
+              return transaction;
             } else if (
               transaction.category !== category.name &&
               category.hasSubcategory
@@ -62,15 +64,18 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
                     if (transaction.category !== newSubcategory.name) {
                       transaction.category = newSubcategory.name;
-                      putTransaction(transaction);
                     }
                   }
                 }
               });
+
+              return transaction;
             } else {
               return transaction;
             }
           });
+
+          updateTransactions(updatedTransactions);
 
           return categoryValues.current[foundIndex];
         } else {
@@ -181,9 +186,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
             >
               Cancel
             </Button>
-            <Button id="save-all-btn" type="submit">
-              Save Changes
-            </Button>
+            <Button type="submit">Save</Button>
           </Col>
         </Row>
       </Form>
