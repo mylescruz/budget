@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
-import AddSubcategory from "./addSubcategory";
+import AddSubcategoryForm from "./addSubcategoryForm";
 import EditSubcategoryRow from "./editSubcategoryRow";
 import PopUp from "@/components/layout/popUp";
 
@@ -209,7 +209,7 @@ const EditCategoryRow = ({
           />
         ))}
       {addSubcategoryClicked && (
-        <AddSubcategory
+        <AddSubcategoryForm
           edittedCategory={edittedCategory}
           setEdittedCategory={setEdittedCategory}
           updateCategoryValues={updateCategoryValues}

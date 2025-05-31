@@ -1,7 +1,7 @@
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
 import { useContext, useRef, useState } from "react";
-import AddCategory from "./addCategory";
+import AddCategoryModal from "./addCategoryModal";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import useIncome from "@/hooks/useIncome";
@@ -191,7 +191,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
         </Row>
       </Form>
 
-      {addCategoryClicked && <AddCategory {...addCategoryProps} />}
+      {addCategoryClicked && <AddCategoryModal {...addCategoryProps} />}
     </>
   );
 };

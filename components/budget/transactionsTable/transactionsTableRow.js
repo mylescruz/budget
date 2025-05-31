@@ -1,11 +1,11 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
-import TransactionDetails from "./transactionDetails";
-import DeleteTransaction from "./deleteTransactions";
-import EditTransaction from "./editTransaction";
+import DeleteTransactionModal from "./deleteTransactionModal";
+import EditTransactionModal from "./editTransactionModal";
+import TransactionDetailsModal from "./transactionDetailsModal";
 
-const TransactionRow = ({ transaction, monthInfo }) => {
+const TransactionsTableRow = ({ transaction, monthInfo }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -24,7 +24,7 @@ const TransactionRow = ({ transaction, monthInfo }) => {
     setShowEdit(true);
   };
 
-  const transactionDetailsProps = {
+  const transactionDetailsModalProps = {
     transaction: transaction,
     showDetails: showDetails,
     setShowDetails: setShowDetails,
@@ -32,7 +32,7 @@ const TransactionRow = ({ transaction, monthInfo }) => {
     openEdit: openEdit,
   };
 
-  const editTransactionProps = {
+  const editTransactionModalProps = {
     transaction: transaction,
     monthInfo: monthInfo,
     showEdit: showEdit,
@@ -40,7 +40,7 @@ const TransactionRow = ({ transaction, monthInfo }) => {
     setShowDetails: setShowDetails,
   };
 
-  const deleteTransactionProps = {
+  const deleteTransactionModalProps = {
     transaction: transaction,
     showDelete: showDelete,
     setShowDelete: setShowDelete,
@@ -104,11 +104,15 @@ const TransactionRow = ({ transaction, monthInfo }) => {
         </td>
       </tr>
 
-      {showDetails && <TransactionDetails {...transactionDetailsProps} />}
-      {showEdit && <EditTransaction {...editTransactionProps} />}
-      {showDelete && <DeleteTransaction {...deleteTransactionProps} />}
+      {showDetails && (
+        <TransactionDetailsModal {...transactionDetailsModalProps} />
+      )}
+      {showEdit && <EditTransactionModal {...editTransactionModalProps} />}
+      {showDelete && (
+        <DeleteTransactionModal {...deleteTransactionModalProps} />
+      )}
     </>
   );
 };
 
-export default TransactionRow;
+export default TransactionsTableRow;

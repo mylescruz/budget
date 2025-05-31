@@ -4,7 +4,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
 import PopUp from "@/components/layout/popUp";
 
-const CategoryRow = ({ category }) => {
+const CategoryTableRow = ({ category }) => {
   const hasSubcategory = category.hasSubcategory;
   const [showSubcategories, setShowSubcategories] = useState(false);
 
@@ -81,4 +81,4 @@ const CategoryRow = ({ category }) => {
   );
 };
 
-export default CategoryRow;
+export default CategoryTableRow;

@@ -1,8 +1,8 @@
 import { Table } from "react-bootstrap";
-import TransactionRow from "./transactionRow";
 import PopUp from "@/components/layout/popUp";
 import { useContext } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
+import TransactionsTableRow from "./transactionsTableRow";
 
 const TransactionsTable = ({ monthInfo }) => {
   const { transactions } = useContext(TransactionsContext);
@@ -27,7 +27,7 @@ const TransactionsTable = ({ monthInfo }) => {
       </thead>
       <tbody>
         {transactions.map((transaction) => (
-          <TransactionRow
+          <TransactionsTableRow
             key={transaction.id}
             transaction={transaction}
             monthInfo={monthInfo}

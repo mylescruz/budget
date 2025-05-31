@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import addTransactionToCategoryActual from "@/helpers/addTransactionToCategoryActual";
-import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import dateInfo from "@/helpers/dateInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
+import SelectCategoryOption from "./selectCategoryOption";
 
-const AddTransaction = ({
+const AddTransactionModal = ({
   monthInfo,
   addTransactionClicked,
   setAddTransactionClicked,
@@ -136,7 +136,10 @@ const AddTransaction = ({
                   {categories.map(
                     (category) =>
                       !category.fixed && (
-                        <SelectCategory key={category.id} category={category} />
+                        <SelectCategoryOption
+                          key={category.id}
+                          category={category}
+                        />
                       )
                   )}
                 </Form.Select>
@@ -178,4 +181,4 @@ const AddTransaction = ({
   );
 };
 
-export default AddTransaction;
+export default AddTransactionModal;

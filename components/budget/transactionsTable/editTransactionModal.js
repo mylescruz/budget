@@ -1,11 +1,11 @@
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useContext, useState } from "react";
 import editTransactionForCategoryActual from "@/helpers/editTransactionForCategoryActual";
-import SelectCategory from "./selectCategory";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
+import SelectCategoryOption from "./selectCategoryOption";
 
-const EditTransaction = ({
+const EditTransactionModal = ({
   transaction,
   monthInfo,
   showEdit,
@@ -24,7 +24,7 @@ const EditTransaction = ({
   const editTheTransaction = (e) => {
     e.preventDefault();
 
-    // If the EditTransaction Modal is showing, update the transaction and then close the modal
+    // If the Edit Transaction Modal is showing, update the transaction and then close the modal
     if (showEdit) {
       setEdittedTransaction(edittedTransaction);
       putTransaction(edittedTransaction);
@@ -114,7 +114,10 @@ const EditTransaction = ({
               {categories.map(
                 (category) =>
                   !category.fixed && (
-                    <SelectCategory key={category.id} category={category} />
+                    <SelectCategoryOption
+                      key={category.id}
+                      category={category}
+                    />
                   )
               )}
             </Form.Select>
@@ -153,4 +156,4 @@ const EditTransaction = ({
   );
 };
 
-export default EditTransaction;
+export default EditTransactionModal;

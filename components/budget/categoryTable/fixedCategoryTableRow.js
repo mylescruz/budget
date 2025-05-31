@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 
-const FixedCategoryRow = ({ category }) => {
+const FixedCategoryTableRow = ({ category }) => {
   const hasSubcategory = category.hasSubcategory;
   const [showSubcategories, setShowSubcategories] = useState(false);
 
@@ -63,4 +63,4 @@ const FixedCategoryRow = ({ category }) => {
   );
 };
 
-export default FixedCategoryRow;
+export default FixedCategoryTableRow;

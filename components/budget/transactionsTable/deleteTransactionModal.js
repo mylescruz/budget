@@ -4,7 +4,7 @@ import deleteTransactionFromCategoryActual from "@/helpers/deleteTransactionFrom
 import { useContext } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeleteTransaction = ({
+const DeleteTransactionModal = ({
   transaction,
   showDelete,
   setShowDelete,
@@ -46,4 +46,4 @@ const DeleteTransaction = ({
   );
 };
 
-export default DeleteTransaction;
+export default DeleteTransactionModal;

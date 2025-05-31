@@ -1,4 +1,3 @@
-import AddTransaction from "./transactionsTable/addTransaction";
 import CategoryTable from "./categoryTable/categoryTable";
 import TransactionsTable from "./transactionsTable/transactionsTable";
 import { useContext, useState } from "react";
@@ -8,7 +7,6 @@ import {
   CategoriesContext,
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
-import useTransactions from "@/hooks/useTransactions";
 import CategoryPieChart from "../categories/categoryPieChart";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -17,6 +15,7 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
+import AddTransactionModal from "./transactionsTable/addTransactionModal";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -75,7 +74,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     monthInfo: monthInfo,
   };
 
-  const addTransactionsProps = {
+  const addTransactionModalProps = {
     monthInfo: monthInfo,
     addTransactionClicked: addTransactionClicked,
     setAddTransactionClicked: setAddTransactionClicked,
@@ -142,7 +141,9 @@ const InnerBudgetLayout = ({ monthInfo }) => {
         </>
       )}
 
-      {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
+      {addTransactionClicked && (
+        <AddTransactionModal {...addTransactionModalProps} />
+      )}
     </Container>
   );
 };

@@ -15,7 +15,7 @@ import Loading from "../layout/loading";
 import { useContext, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
 import useTransactions from "@/hooks/useTransactions";
-import AddTransaction from "../budget/transactionsTable/addTransaction";
+import AddTransactionModal from "../budget/transactionsTable/addTransactionModal";
 import {
   TransactionsContext,
   TransactionsProvider,
@@ -68,7 +68,7 @@ const InnerDashboard = ({ monthInfo }) => {
     setAddTransactionClicked(true);
   };
 
-  const addTransactionsProps = {
+  const addTransactionModalProps = {
     monthInfo: monthInfo,
     addTransactionClicked: addTransactionClicked,
     setAddTransactionClicked: setAddTransactionClicked,
@@ -164,7 +164,9 @@ const InnerDashboard = ({ monthInfo }) => {
         </Col>
       </Row>
 
-      {addTransactionClicked && <AddTransaction {...addTransactionsProps} />}
+      {addTransactionClicked && (
+        <AddTransactionModal {...addTransactionModalProps} />
+      )}
     </Container>
   );
 };
