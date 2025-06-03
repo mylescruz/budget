@@ -1,7 +1,13 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryTableRow from "./categoryTableRow";
 import CategoryTableFooter from "./categoryTableFooter";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import FixedCategoryTableRow from "./fixedCategoryTableRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import useIncome from "@/hooks/useIncome";
@@ -39,32 +45,35 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
 
       // Updates the given month's actual and leftover value by sending a PUT request to the API
       if (foundMonth) {
-        foundMonth.actual = parseFloat(totalActual.toFixed(2));
-        foundMonth.leftover = parseFloat(
+        const newActual = parseFloat(totalActual.toFixed(2));
+        const newLeftover = parseFloat(
           (foundMonth.budget - totalActual).toFixed(2)
         );
 
-        putHistory(foundMonth);
+        if (
+          newActual !== foundMonth.actual &&
+          newLeftover !== foundMonth.leftover
+        ) {
+          putHistory({
+            ...foundMonth,
+            actual: newActual,
+            leftover: newLeftover,
+          });
+        }
       }
     };
 
     if (!categoriesLoading && !historyLoading) {
       updateHistoryValues();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categories]);
-
-  // Updates the Guilt Free Spending budget when the income array changes
-  // useEffect(() => {
-  //     if (!incomeLoading && !categoriesLoading) {
-
-  //         // Updates the categories by sending a PUT request to the API
-  //         const updatedCategories = updateGuiltFreeSpending(monthIncome, categories);
-  //         putCategories(updatedCategories);
-  //     }
-
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [categories, monthIncome]);
+  }, [
+    categories,
+    categoriesLoading,
+    getMonthHistory,
+    historyLoading,
+    monthInfo,
+    putHistory,
+  ]);
 
   // Sets the table's total budget and actual spent values
   const footerValues = useMemo(() => {

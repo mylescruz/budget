@@ -7,16 +7,25 @@ import getYearInfo from "@/helpers/getYearInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
+import { CategoriesProvider } from "@/contexts/CategoriesContext";
+import getMonthInfo from "@/helpers/getMonthInfo";
+import dateInfo from "@/helpers/dateInfo";
 
-const IncomeLayout = ({ year }) => {
+const InnerIncomeLayout = ({ year }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
   // Using the router object to redirect to different pages within the app
   const router = useRouter();
 
-  const { income, incomeLoading, postIncome, putIncome, deleteIncome } =
-    useIncome(session.user.username, year);
+  const {
+    income,
+    incomeLoading,
+    postIncome,
+    putIncome,
+    deleteIncome,
+    getMonthIncome,
+  } = useIncome(session.user.username, year);
   const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
   const yearInfo = getYearInfo(year);
 
@@ -40,6 +49,7 @@ const IncomeLayout = ({ year }) => {
     postIncome: postIncome,
     addPaycheckClicked: addPaycheckClicked,
     setAddPaycheckClicked: setAddPaycheckClicked,
+    getMonthIncome: getMonthIncome,
   };
 
   const incomeTableProps = {
@@ -75,6 +85,16 @@ const IncomeLayout = ({ year }) => {
 
       {addPaycheckClicked && <AddIncomeModal {...AddIncomeModalProps} />}
     </>
+  );
+};
+
+const IncomeLayout = ({ year }) => {
+  const monthInfo = getMonthInfo(dateInfo.currentMonth, year);
+
+  return (
+    <CategoriesProvider monthInfo={monthInfo}>
+      <InnerIncomeLayout year={year} />
+    </CategoriesProvider>
   );
 };
 

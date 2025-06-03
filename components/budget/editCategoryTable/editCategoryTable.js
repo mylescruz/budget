@@ -39,6 +39,8 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
         // Maps through the transactions array and if a category has a transaction that matches the changed category, change that transaction's category
         if (foundIndex !== -1) {
+          let anyCategoryNameChanged = false;
+
           const updatedTransactions = transactions.map((transaction) => {
             if (transaction.category === category.name) {
               if (
@@ -46,6 +48,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
                 transaction.category !== categoryValues.current[foundIndex].name
               ) {
                 transaction.category = categoryValues.current[foundIndex].name;
+                anyCategoryNameChanged = true;
               }
 
               return transaction;
@@ -64,6 +67,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
 
                     if (transaction.category !== newSubcategory.name) {
                       transaction.category = newSubcategory.name;
+                      anyCategoryNameChanged = true;
                     }
                   }
                 }
@@ -75,7 +79,9 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
             }
           });
 
-          updateTransactions(updatedTransactions);
+          if (anyCategoryNameChanged) {
+            updateTransactions(updatedTransactions);
+          }
 
           return categoryValues.current[foundIndex];
         } else {

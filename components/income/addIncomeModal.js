@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
 import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
 import { useSession } from "next-auth/react";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import getMonthInfo from "@/helpers/getMonthInfo";
+import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 
 const AddIncomeModal = ({
   income,
@@ -11,6 +14,7 @@ const AddIncomeModal = ({
   postIncome,
   addPaycheckClicked,
   setAddPaycheckClicked,
+  getMonthIncome,
 }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
@@ -25,6 +29,7 @@ const AddIncomeModal = ({
     net: 0,
   };
 
+  const { categories, putCategories } = useContext(CategoriesContext);
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const { history, putHistory } = useHistory(session.user.username);
 
@@ -56,6 +61,22 @@ const AddIncomeModal = ({
     // Updates the budget value for the given month in the history array by sending a PUT request to the API
     const paycheckMonth = addIncomeToHistoryBudget(paycheck, history);
     putHistory(paycheckMonth);
+
+    const paycheckDate = new Date(paycheck.date);
+    const paycheckMonthName = paycheckDate.toLocaleDateString("en-US", {
+      month: "long",
+      timeZone: "UTC",
+    });
+    const monthInfo = getMonthInfo(paycheckMonthName, yearInfo.year);
+
+    const monthIncome = getMonthIncome(monthInfo);
+
+    // Updates the categories by sending a PUT request to the API
+    const updatedCategories = updateGuiltFreeSpending(
+      monthIncome + paycheck.net,
+      categories
+    );
+    putCategories(updatedCategories);
 
     setPaycheck(emptyPaycheck);
     setAddPaycheckClicked(false);
