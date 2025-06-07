@@ -13,8 +13,8 @@ const useHistory = (username) => {
         const rsp = await fetch(`/api/history/${username}`);
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setHistory(result);
+          const fetchedHistory = await rsp.json();
+          setHistory(fetchedHistory);
           setHistoryLoading(false);
         } else {
           const message = await rsp.text();
@@ -56,8 +56,8 @@ const useHistory = (username) => {
         });
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setHistory(result);
+          const addedHistory = await rsp.json();
+          setHistory([...history, addedHistory]);
           setHistoryLoading(false);
         } else {
           const message = await rsp.text();
@@ -67,7 +67,7 @@ const useHistory = (username) => {
         redirectToErrorPage(error);
       }
     },
-    [username, redirectToErrorPage]
+    [history, username, redirectToErrorPage]
   );
 
   // PUT request that updates a month's values in the user's history based on the username
@@ -85,8 +85,17 @@ const useHistory = (username) => {
         });
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setHistory(result);
+          const edittedHistory = await rsp.json();
+
+          const updatedHistory = history.map((currentHistory) => {
+            if (currentHistory.id === edittedHistory.id) {
+              return edittedHistory;
+            } else {
+              return currentHistory;
+            }
+          });
+
+          setHistory(updatedHistory);
           setHistoryLoading(false);
         } else {
           const message = await rsp.text();
@@ -96,7 +105,7 @@ const useHistory = (username) => {
         redirectToErrorPage(error);
       }
     },
-    [username, redirectToErrorPage]
+    [history, username, redirectToErrorPage]
   );
 
   // Function that returns a user's history for a single month based on the given month and year

@@ -14,8 +14,8 @@ const useCategories = (username, month, year) => {
         const rsp = await fetch(`/api/categories/${username}/${year}/${month}`);
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setCategories(categorySorter(result));
+          const fetchedCategories = await rsp.json();
+          setCategories(categorySorter(fetchedCategories));
           setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
@@ -60,8 +60,8 @@ const useCategories = (username, month, year) => {
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setCategories(categorySorter(result));
+          const addedCategory = await rsp.json();
+          setCategories(categorySorter([...categories, addedCategory]));
           setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
@@ -71,13 +71,13 @@ const useCategories = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, month, redirectToErrorPage]
+    [categories, username, year, month, redirectToErrorPage]
   );
 
   // PUT request that updates all the categories based on the username, year and month
   // Then it sets the categories array to the array returned by the response
   const putCategories = useCallback(
-    async (updatedCategories) => {
+    async (edittedCategories) => {
       try {
         const rsp = await fetch(
           `/api/categories/${username}/${year}/${month}`,
@@ -87,13 +87,13 @@ const useCategories = (username, month, year) => {
               Accept: "application.json",
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(updatedCategories),
+            body: JSON.stringify(edittedCategories),
           }
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setCategories(categorySorter(result));
+          const updatedCategories = await rsp.json();
+          setCategories(categorySorter(updatedCategories));
           setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
@@ -124,8 +124,11 @@ const useCategories = (username, month, year) => {
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setCategories(categorySorter(result));
+          const deletedCategory = await rsp.json();
+          const updatedCategories = categories.filter((category) => {
+            return category.id !== deletedCategory.id;
+          });
+          setCategories(categorySorter(updatedCategories));
           setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
@@ -135,7 +138,7 @@ const useCategories = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, month, redirectToErrorPage]
+    [categories, username, year, month, redirectToErrorPage]
   );
 
   return {

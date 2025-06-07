@@ -41,9 +41,11 @@ const useUser = () => {
       });
 
       if (response.ok) {
-        const result = await response.json();
-        setUser(result);
+        const addedUser = await response.json();
+        setUser(addedUser);
+        setUserLoading(false);
       } else {
+        setUserLoading(false);
         const result = await response.text();
         throw new Error(result);
       }
@@ -65,9 +67,11 @@ const useUser = () => {
         });
 
         if (response.ok) {
-          const result = await response.json();
-          setUser(result);
+          const updatedUser = await response.json();
+          setUser(updatedUser);
+          setUserLoading(false);
         } else {
+          setUserLoading(false);
           const result = await response.text();
           throw new Error(result);
         }
@@ -91,7 +95,9 @@ const useUser = () => {
 
       if (response.ok) {
         setUser(null);
+        setUserLoading(false);
       } else {
+        setUserLoading(false);
         const result = await response.text();
         throw new Error(result);
       }

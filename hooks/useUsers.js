@@ -46,8 +46,9 @@ const useUsers = () => {
         });
 
         if (response.ok) {
-          const result = await response.json();
-          setUsers(result);
+          const addedUser = await response.json();
+          setUsers([...users, addedUser]);
+          setUsersLoading(false);
         } else {
           const result = await response.text();
           throw new Error(result);
@@ -60,7 +61,7 @@ const useUsers = () => {
         });
       }
     },
-    [router]
+    [users, router]
   );
 
   const putUser = useCallback(
@@ -76,8 +77,18 @@ const useUsers = () => {
         });
 
         if (response.ok) {
-          const result = await response.json();
-          setUsers(result);
+          const updatedUser = await response.json();
+
+          const updatedUsers = users.map((user) => {
+            if (user.id === updatedUser.id) {
+              return updatedUser;
+            }
+
+            return user;
+          });
+
+          setUsers(updatedUsers);
+          setUsersLoading(false);
         } else {
           const result = await response.text();
           throw new Error(result);
@@ -90,7 +101,7 @@ const useUsers = () => {
         });
       }
     },
-    [router]
+    [users, router]
   );
 
   const deleteUser = useCallback(
@@ -106,8 +117,14 @@ const useUsers = () => {
         });
 
         if (response.ok) {
-          const result = await response.json();
-          setUsers(result);
+          const deletedUser = await response.json();
+
+          const updatedUsers = users.filter((user) => {
+            return user.id !== deletedUser.id;
+          });
+
+          setUsers(updatedUsers);
+          setUsersLoading(false);
         } else {
           const result = await response.text();
           throw new Error(result);
@@ -120,7 +137,7 @@ const useUsers = () => {
         });
       }
     },
-    [router]
+    [users, router]
   );
 
   return { users, usersLoading, postUser, putUser, deleteUser };

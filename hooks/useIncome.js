@@ -14,8 +14,8 @@ const useIncome = (username, year) => {
         const rsp = await fetch(`/api/income/${username}/${year}`);
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setIncome(dateSorter(result));
+          const fetchedIncome = await rsp.json();
+          setIncome(dateSorter(fetchedIncome));
           setIncomeLoading(false);
         } else {
           const message = await rsp.text();
@@ -57,8 +57,8 @@ const useIncome = (username, year) => {
         });
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setIncome(dateSorter(result));
+          const addedPaycheck = await rsp.json();
+          setIncome(dateSorter([...income, addedPaycheck]));
           setIncomeLoading(false);
         } else {
           const message = await rsp.text();
@@ -68,7 +68,7 @@ const useIncome = (username, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, redirectToErrorPage]
+    [income, username, year, redirectToErrorPage]
   );
 
   // PUT request that updates a paycheck based on the username and year
@@ -86,8 +86,17 @@ const useIncome = (username, year) => {
         });
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setIncome(dateSorter(result));
+          const updatedPaycheck = await rsp.json();
+
+          const updatedIncome = income.map((paycheck) => {
+            if (paycheck.id === updatedPaycheck.id) {
+              return updatedPaycheck;
+            } else {
+              return paycheck;
+            }
+          });
+
+          setIncome(dateSorter(updatedIncome));
           setIncomeLoading(false);
         } else {
           const message = await rsp.text();
@@ -97,7 +106,7 @@ const useIncome = (username, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, redirectToErrorPage]
+    [income, username, year, redirectToErrorPage]
   );
 
   // DELETE request that deletes a paycheck based on the username and year
@@ -115,8 +124,13 @@ const useIncome = (username, year) => {
         });
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setIncome(dateSorter(result));
+          const deletedPaycheck = await rsp.json();
+
+          const updatedIncome = income.filter((paycheck) => {
+            return paycheck.id !== deletedPaycheck.id;
+          });
+
+          setIncome(dateSorter(updatedIncome));
           setIncomeLoading(false);
         } else {
           const message = await rsp.text();
@@ -126,7 +140,7 @@ const useIncome = (username, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, redirectToErrorPage]
+    [income, username, year, redirectToErrorPage]
   );
 
   // Function that returns a user's income for a given month

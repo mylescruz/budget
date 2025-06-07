@@ -16,8 +16,8 @@ const useTransactions = (username, month, year) => {
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setTransactions(dateSorter(result));
+          const fetchedTransactions = await rsp.json();
+          setTransactions(dateSorter(fetchedTransactions));
           setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
@@ -48,14 +48,18 @@ const useTransactions = (username, month, year) => {
   const postTransaction = useCallback(
     async (newTransaction) => {
       const date = new Date(newTransaction.date);
-      const month = date.toLocaleDateString("en-US", {
+      const transactionMonth = date.toLocaleDateString("en-US", {
         month: "long",
+        timeZone: "UTC",
+      });
+      const transactionYear = date.toLocaleDateString("en-US", {
+        year: "numeric",
         timeZone: "UTC",
       });
 
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transaction`,
+          `/api/transactions/${username}/${transactionYear}/${transactionMonth}/transaction`,
           {
             method: "POST",
             headers: {
@@ -67,8 +71,8 @@ const useTransactions = (username, month, year) => {
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setTransactions(dateSorter(result));
+          const addedTransaction = await rsp.json();
+          setTransactions(dateSorter([...transactions, addedTransaction]));
           setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
@@ -78,7 +82,7 @@ const useTransactions = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, redirectToErrorPage]
+    [transactions, username, redirectToErrorPage]
   );
 
   // PUT request that updates a transaction based on the username, year and month
@@ -99,8 +103,17 @@ const useTransactions = (username, month, year) => {
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setTransactions(dateSorter(result));
+          const updatedTransaction = await rsp.json();
+
+          const updatedTransactions = transactions.map((transaction) => {
+            if (transaction.id === updatedTransaction.id) {
+              return updatedTransaction;
+            } else {
+              return transaction;
+            }
+          });
+
+          setTransactions(dateSorter(updatedTransactions));
           setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
@@ -110,7 +123,7 @@ const useTransactions = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, month, redirectToErrorPage]
+    [transactions, username, year, month, redirectToErrorPage]
   );
 
   // DELETE request that deletes a transaction based on the username, year and month
@@ -118,14 +131,18 @@ const useTransactions = (username, month, year) => {
   const deleteTransaction = useCallback(
     async (transactionToDelete) => {
       const date = new Date(transactionToDelete.date);
-      const month = date.toLocaleDateString("en-US", {
+      const transactionMonth = date.toLocaleDateString("en-US", {
         month: "long",
+        timeZone: "UTC",
+      });
+      const transactionYear = date.toLocaleDateString("en-US", {
+        year: "numeric",
         timeZone: "UTC",
       });
 
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transaction`,
+          `/api/transactions/${username}/${transactionYear}/${transactionMonth}/transaction`,
           {
             method: "DELETE",
             headers: {
@@ -137,8 +154,13 @@ const useTransactions = (username, month, year) => {
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setTransactions(dateSorter(result));
+          const deletedTransaction = await rsp.json();
+
+          const updatedTransactions = transactions.filter((transaction) => {
+            return transaction.id !== deletedTransaction.id;
+          });
+
+          setTransactions(dateSorter(updatedTransactions));
           setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
@@ -148,11 +170,11 @@ const useTransactions = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [username, year, redirectToErrorPage]
+    [transactions, username, redirectToErrorPage]
   );
 
   const updateTransactions = useCallback(
-    async (updatedTransactions) => {
+    async (edittedTransactions) => {
       try {
         const rsp = await fetch(
           `/api/transactions/${username}/${year}/${month}/transactions`,
@@ -162,13 +184,13 @@ const useTransactions = (username, month, year) => {
               Accept: "application.json",
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(updatedTransactions),
+            body: JSON.stringify(edittedTransactions),
           }
         );
 
         if (rsp.ok) {
-          const result = await rsp.json();
-          setTransactions(dateSorter(result));
+          const updatedTransactions = await rsp.json();
+          setTransactions(dateSorter(updatedTransactions));
           setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
