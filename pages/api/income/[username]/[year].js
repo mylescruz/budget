@@ -125,8 +125,8 @@ export default async function handler(req, res) {
       // Place updated income file in the user's folder in S3
       await S3.send(new PutObjectCommand(incomeParams));
 
-      // Send the updated income array in the response
-      res.status(200).json(updatedIncome);
+      // Send the new paycheck in the response
+      res.status(200).json(newPaycheck);
     } catch (error) {
       console.error(`${method} income request failed: ${error}`);
       res.status(500).send("Error occured while adding a paycheck");

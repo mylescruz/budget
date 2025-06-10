@@ -29,16 +29,6 @@ const InnerIncomeLayout = ({ year }) => {
   const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
   const yearInfo = getYearInfo(year);
 
-  // If there is no user session, redirect to the home page
-  if (!session) {
-    router.push("/");
-  }
-
-  // If the income is still being loaded by the API, show the loading component
-  if (incomeLoading) {
-    return <Loading />;
-  }
-
   const addPay = () => {
     setAddPaycheckClicked(true);
   };
@@ -59,33 +49,41 @@ const InnerIncomeLayout = ({ year }) => {
     yearInfo: yearInfo,
   };
 
-  return (
-    <>
-      <aside className="info-text text-center mx-auto">
-        <h1>{year} Income</h1>
-        <p>
-          View and add your paychecks for the current year. View your gross and
-          net income and see how much taxes have been taken out.
-        </p>
-      </aside>
+  if (!session) {
+    // If there is no user session, redirect to the home page
+    router.push("/");
+  } else if (incomeLoading) {
+    // If the income is still being loaded by the API, show the loading component
+    return <Loading />;
+  } else {
+    return (
+      <>
+        <aside className="info-text text-center mx-auto">
+          <h1>{year} Income</h1>
+          <p>
+            View and add your paychecks for the current year. View your gross
+            and net income and see how much taxes have been taken out.
+          </p>
+        </aside>
 
-      <Row className="text-center">
-        <Col>
-          <Button id="add-paycheck-btn" variant="primary" onClick={addPay}>
-            Add Paycheck
-          </Button>
-        </Col>
-      </Row>
+        <Row className="text-center">
+          <Col>
+            <Button id="add-paycheck-btn" variant="primary" onClick={addPay}>
+              Add Paycheck
+            </Button>
+          </Col>
+        </Row>
 
-      <Row className="d-flex my-4">
-        <Col className="col-11 col-md-10 col-xl-8 mx-auto">
-          <IncomeTable {...incomeTableProps} />
-        </Col>
-      </Row>
+        <Row className="d-flex my-4">
+          <Col className="col-11 col-md-10 col-xl-8 mx-auto">
+            <IncomeTable {...incomeTableProps} />
+          </Col>
+        </Row>
 
-      {addPaycheckClicked && <AddIncomeModal {...AddIncomeModalProps} />}
-    </>
-  );
+        {addPaycheckClicked && <AddIncomeModal {...AddIncomeModalProps} />}
+      </>
+    );
+  }
 };
 
 const IncomeLayout = ({ year }) => {

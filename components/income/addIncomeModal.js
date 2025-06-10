@@ -31,7 +31,7 @@ const AddIncomeModal = ({
 
   const { categories, putCategories } = useContext(CategoriesContext);
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
-  const { history, putHistory } = useHistory(session.user.username);
+  const { putHistory, getMonthHistory } = useHistory(session.user.username);
 
   const handleInput = (e) => {
     setPaycheck({ ...paycheck, [e.target.id]: e.target.value });
@@ -44,42 +44,62 @@ const AddIncomeModal = ({
     else setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
   };
 
-  const AddNewPaycheck = (e) => {
-    e.preventDefault();
+  const AddNewPaycheck = async (e) => {
+    try {
+      e.preventDefault();
 
-    // Find the max ID in the income array and add one for the new ID
-    let maxID = 0;
-    if (income.length > 0)
-      maxID = Math.max(...income.map((paycheck) => paycheck.id));
+      // Find the max ID in the income array and add one for the new ID
+      let maxID = 0;
+      if (income.length > 0)
+        maxID = Math.max(...income.map((paycheck) => paycheck.id));
 
-    paycheck.id = maxID + 1;
-    paycheck.taxes = parseFloat((paycheck.gross - paycheck.net).toFixed(2));
+      paycheck.id = maxID + 1;
+      paycheck.taxes = parseFloat((paycheck.gross - paycheck.net).toFixed(2));
 
-    // Adds the new paycheck to the income array by sending a POST request to the API
-    postIncome(paycheck);
+      // Adds the new paycheck to the income array by sending a POST request to the API
+      await postIncome(paycheck);
 
-    // Updates the budget value for the given month in the history array by sending a PUT request to the API
-    const paycheckMonth = addIncomeToHistoryBudget(paycheck, history);
-    putHistory(paycheckMonth);
+      // Update the budget and categories for the month the paycheck is in
+      const paycheckDate = new Date(paycheck.date);
+      const paycheckMonthName = paycheckDate.toLocaleDateString("en-US", {
+        month: "long",
+        timeZone: "UTC",
+      });
+      const monthInfo = getMonthInfo(paycheckMonthName, yearInfo.year);
 
-    const paycheckDate = new Date(paycheck.date);
-    const paycheckMonthName = paycheckDate.toLocaleDateString("en-US", {
-      month: "long",
-      timeZone: "UTC",
-    });
-    const monthInfo = getMonthInfo(paycheckMonthName, yearInfo.year);
+      const monthIncome = getMonthIncome(monthInfo);
 
-    const monthIncome = getMonthIncome(monthInfo);
+      const paycheckMonth = getMonthHistory(monthInfo);
+      // Add the paycheck's net income to the budget
+      const updatedBudget = monthIncome + paycheck.net;
 
-    // Updates the categories by sending a PUT request to the API
-    const updatedCategories = updateGuiltFreeSpending(
-      monthIncome + paycheck.net,
-      categories
-    );
-    putCategories(updatedCategories);
+      // Update the leftover amount
+      const updatedLeftover = parseFloat(
+        (updatedBudget - paycheckMonth.actual).toFixed(2)
+      );
 
-    setPaycheck(emptyPaycheck);
-    setAddPaycheckClicked(false);
+      // Update the budget and leftover in the history and send it to the API
+      const updatedPaycheckMonth = {
+        ...paycheckMonth,
+        budget: updatedBudget,
+        leftover: updatedLeftover,
+      };
+
+      await putHistory(updatedPaycheckMonth);
+
+      // Updates the categories by sending a PUT request to the API
+      const updatedCategories = updateGuiltFreeSpending(
+        updatedBudget,
+        categories
+      );
+      await putCategories(updatedCategories);
+
+      setPaycheck(emptyPaycheck);
+      setAddPaycheckClicked(false);
+    } catch (error) {
+      console.error("Error adding new income: ", error);
+      return;
+    }
   };
 
   const closeModal = () => {
