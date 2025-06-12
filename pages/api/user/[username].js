@@ -86,7 +86,7 @@ export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
 
   const method = req?.method;
-  const username = req?.query?.username;
+  const username = req?.query?.username.toLowerCase();
 
   if (method !== "POST") {
     // Reject a user if they try to access this endpoint without having a session
@@ -98,8 +98,8 @@ export default async function handler(req, res) {
       return res.status(403).send("You do not have access to this information");
   }
 
-  const userKey = `users/${username}/info-${username}.json`;
-  const indexKey = "users/users-index.json";
+  const userKey = `users/${username}/info.json`;
+  const indexKey = "users/index.json";
 
   if (method === "GET") {
     try {
@@ -137,7 +137,7 @@ export default async function handler(req, res) {
         id: newID,
         name: user.name,
         email: user.email,
-        username: user.username,
+        username: user.username.toLowerCase(),
         password_hash: hashedPassword,
         role: USER_ROLE,
         onboarded: false,
@@ -159,7 +159,7 @@ export default async function handler(req, res) {
       const newUser = {
         id: newID,
         name: user.name,
-        username: user.username,
+        username: user.username.toLowerCase(),
         email: user.email,
         role: USER_ROLE,
         onboarded: false,
@@ -301,7 +301,7 @@ export default async function handler(req, res) {
 
       if (passwordsMatch) {
         // Get all objects within the user's folder
-        const userFolder = `users/${deletedUser.username}`;
+        const userFolder = `users/${deletedUser.username.toLowerCase()}`;
 
         // S3 File Parameters for the users info
         const userFolderParams = {

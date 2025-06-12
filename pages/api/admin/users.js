@@ -58,7 +58,7 @@ export default async function handler(req, res) {
   if (session.user.role !== "Administrator")
     return res.status(403).send("You do not have access to this information");
 
-  const key = "users/users-index.json";
+  const key = "users/index.json";
 
   // Gets all the users from S3
   async function getUsers() {
@@ -73,7 +73,8 @@ export default async function handler(req, res) {
 
   // Gets the user from S3
   async function getUser(username) {
-    const infoKey = `users/${username}/info-${username}.json`;
+    const usernameLower = username.toLowerCase();
+    const infoKey = `users/${usernameLower}/info.json`;
 
     const usersParams = {
       Bucket: BUCKET_NAME,
@@ -124,7 +125,7 @@ export default async function handler(req, res) {
         onboarded: false,
       };
 
-      const userKey = `users/${userInfo.username}/info-${userInfo.username}.json`;
+      const userKey = `users/${userInfo.username}/info.json`;
 
       // S3 File Parameters for the user's info
       const userInfoParams = {
@@ -198,7 +199,7 @@ export default async function handler(req, res) {
         role: edittedUser.role,
       };
 
-      const userKey = `users/${updatedUser.username}/info-${updatedUser.username}.json`;
+      const userKey = `users/${updatedUser.username}/info.json`;
 
       // S3 File Parameters for the user info
       const userInfoParams = {

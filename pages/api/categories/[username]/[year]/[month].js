@@ -49,18 +49,18 @@ export default async function handler(req, res) {
   // If there is no session, send an error message
   if (!session) return res.status(401).send("Must login to view your data!");
 
-  const username = req?.query?.username;
+  const username = req?.query?.username.toLowerCase();
 
   // If a user tries to directly access a different user's data, send an error message
   if (session.user.username !== username)
     return res.status(403).send("Access denied to this user's data");
 
-  const month = req?.query?.month.toLowerCase();
+  const month = req?.query?.month;
   const year = req?.query?.year;
   const method = req?.method;
 
   // S3 key for the location of the user's categories file
-  const key = `users/${username}/categories/${year}/categories-${username}-${month}${year}.json`;
+  const key = `users/${username}/categories/${year}/${month}${year}.json`;
 
   // Function that returns the user's categories from S3
   async function getCategoriesData() {
@@ -81,22 +81,21 @@ export default async function handler(req, res) {
         // Check if there is a category file for the previous month
         try {
           // Get the previous month based on the month and year given
-          const givenMonth = new Date(`${month} 01, ${year}`);
-          const monthNumber = givenMonth.getMonth();
+          const monthNumber = parseInt(month);
           let previousMonthNumber = monthNumber - 1;
           let yearToCheck = year;
           if (monthNumber === 0) {
-            previousMonthNumber = 11;
+            previousMonthNumber = 12;
             yearToCheck -= 1;
           }
 
-          const previousMonthDate = new Date(yearToCheck, previousMonthNumber);
-          const previousMonth = previousMonthDate
-            .toLocaleDateString("en-US", { month: "long" })
-            .toLowerCase();
+          const previousMonth =
+            previousMonthNumber < 10
+              ? "0" + previousMonthNumber
+              : previousMonthNumber.toString();
 
           // The S3 key for the location of the user's previous months' categories file
-          const previousMonthKey = `users/${username}/categories/${yearToCheck}/categories-${username}-${previousMonth}${yearToCheck}.json`;
+          const previousMonthKey = `users/${username}/categories/${yearToCheck}/${previousMonth}${yearToCheck}.json`;
 
           // Previous months' categories file parameters for S3
           const previousMonthParams = {

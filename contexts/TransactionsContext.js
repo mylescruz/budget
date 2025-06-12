@@ -17,7 +17,11 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
     putTransaction,
     deleteTransaction,
     updateTransactions,
-  } = useTransactions(session.user.username, monthInfo.month, monthInfo.year);
+  } = useTransactions(
+    session.user.username,
+    monthInfo.monthString,
+    monthInfo.year
+  );
 
   return (
     <TransactionsContext.Provider

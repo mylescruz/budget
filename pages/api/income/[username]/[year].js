@@ -46,7 +46,7 @@ export default async function handler(req, res) {
   // If there is no session, send an error message
   if (!session) return res.status(401).send("Must login to view your data!");
 
-  const username = req?.query?.username;
+  const username = req?.query?.username.toLowerCase();
 
   // If a user tries to directly access a different user's data, send an error message
   if (session.user.username !== username)
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
   const method = req?.method;
 
   // S3 key for the location of the user's categories file
-  const key = `users/${username}/income/income-${username}-${year}.json`;
+  const key = `users/${username}/income/${year}.json`;
 
   // Function that returns the user's income from S3
   async function getIncomeData() {
