@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Form, Button, Modal, Col, Row } from "react-bootstrap";
+import { Form, Button, Modal, Col, Row, Spinner } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
@@ -29,6 +29,7 @@ const AddIncomeModal = ({
   const { categories, putCategories } = useContext(CategoriesContext);
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
+  const [inputtingPaycheck, setInputtingPaycheck] = useState(true);
 
   const handleInput = (e) => {
     setPaycheck({ ...paycheck, [e.target.id]: e.target.value });
@@ -42,6 +43,8 @@ const AddIncomeModal = ({
   };
 
   const AddNewPaycheck = async (e) => {
+    setInputtingPaycheck(false);
+
     try {
       e.preventDefault();
 
@@ -59,31 +62,35 @@ const AddIncomeModal = ({
       // Get the history for the month of the paycheck
       const paycheckMonth = getMonthHistory(paycheckMonthInfo);
 
-      // Update the budget for the month the paycheck is in
-      const updatedBudget = monthIncome + paycheck.net;
-      const updatedLeftover = parseFloat(
-        (updatedBudget - paycheckMonth.actual).toFixed(2)
-      );
+      if (paycheckMonth) {
+        // Update the budget for the month the paycheck is in
+        const updatedBudget = monthIncome + paycheck.net;
+        const updatedLeftover = parseFloat(
+          (updatedBudget - paycheckMonth.actual).toFixed(2)
+        );
 
-      // Update the budget and leftover in the history and send it to the API
-      const updatedPaycheckMonth = {
-        ...paycheckMonth,
-        budget: updatedBudget,
-        leftover: updatedLeftover,
-      };
+        // Update the budget and leftover in the history and send it to the API
+        const updatedPaycheckMonth = {
+          ...paycheckMonth,
+          budget: updatedBudget,
+          leftover: updatedLeftover,
+        };
 
-      await putHistory(updatedPaycheckMonth);
+        await putHistory(updatedPaycheckMonth);
 
-      // Updates the categories by sending a PUT request to the API
-      const updatedCategories = updateGuiltFreeSpending(
-        updatedBudget,
-        categories
-      );
-      await putCategories(updatedCategories);
+        // Updates the categories by sending a PUT request to the API
+        const updatedCategories = updateGuiltFreeSpending(
+          updatedBudget,
+          categories
+        );
+        await putCategories(updatedCategories);
+      }
 
-      setPaycheck(emptyPaycheck);
+      setInputtingPaycheck(true);
       setAddPaycheckClicked(false);
+      setPaycheck(emptyPaycheck);
     } catch (error) {
+      setInputtingPaycheck(true);
       console.error("Error adding new income: ", error);
       return;
     }
@@ -95,109 +102,124 @@ const AddIncomeModal = ({
   };
 
   return (
-    <Modal show={addPaycheckClicked} onHide={closeModal} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Enter paycheck information</Modal.Title>
-      </Modal.Header>
+    <>
+      <Modal show={addPaycheckClicked} onHide={closeModal} centered>
+        {inputtingPaycheck ? (
+          <>
+            <Modal.Header closeButton>
+              <Modal.Title>Enter paycheck information</Modal.Title>
+            </Modal.Header>
 
-      <Form onSubmit={AddNewPaycheck}>
-        <Modal.Body>
-          <Form.Group className="my-2">
-            <Form.Label>Pay Date</Form.Label>
-            <Form.Control
-              id="date"
-              className="h-100"
-              type="date"
-              min={yearInfo.startOfYear}
-              max={yearInfo.endOfYear}
-              value={paycheck.date}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Company</Form.Label>
-            <Form.Control
-              id="company"
-              className="h-100"
-              type="text"
-              value={paycheck.company}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              id="description"
-              className="h-100"
-              type="text"
-              value={paycheck.description}
-              placeholder="Optional"
-              onChange={handleInput}
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Gross Income</Form.Label>
-            <Form.Control
-              id="gross"
-              className="h-100"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="Gross Income"
-              value={paycheck.gross}
-              onChange={handleNumInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Net Income</Form.Label>
-            <Form.Control
-              id="net"
-              className="h-100"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="Net Income"
-              value={paycheck.net}
-              onChange={handleNumInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Taxes taken out</Form.Label>
-            <Form.Control
-              id="taxes"
-              className="h-100"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="Taxes taken out"
-              value={(paycheck.gross - paycheck.net).toFixed(2)}
-              disabled
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Form.Group className="my-2">
-            <Row>
-              <Col>
-                <Button variant="secondary" onClick={closeModal}>
-                  Close
-                </Button>
-              </Col>
-              <Col>
-                <Button variant="primary" type="submit">
-                  Add
-                </Button>
-              </Col>
-            </Row>
-          </Form.Group>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+            <Form onSubmit={AddNewPaycheck}>
+              <Modal.Body>
+                <Form.Group className="my-2">
+                  <Form.Label>Pay Date</Form.Label>
+                  <Form.Control
+                    id="date"
+                    className="h-100"
+                    type="date"
+                    min={yearInfo.startOfYear}
+                    max={yearInfo.endOfYear}
+                    value={paycheck.date}
+                    onChange={handleInput}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="my-2">
+                  <Form.Label>Company</Form.Label>
+                  <Form.Control
+                    id="company"
+                    className="h-100"
+                    type="text"
+                    value={paycheck.company}
+                    onChange={handleInput}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="my-2">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    id="description"
+                    className="h-100"
+                    type="text"
+                    value={paycheck.description}
+                    placeholder="Optional"
+                    onChange={handleInput}
+                  />
+                </Form.Group>
+                <Form.Group className="my-2">
+                  <Form.Label>Gross Income</Form.Label>
+                  <Form.Control
+                    id="gross"
+                    className="h-100"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="Gross Income"
+                    value={paycheck.gross}
+                    onChange={handleNumInput}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="my-2">
+                  <Form.Label>Net Income</Form.Label>
+                  <Form.Control
+                    id="net"
+                    className="h-100"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="Net Income"
+                    value={paycheck.net}
+                    onChange={handleNumInput}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="my-2">
+                  <Form.Label>Taxes taken out</Form.Label>
+                  <Form.Control
+                    id="taxes"
+                    className="h-100"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="Taxes taken out"
+                    value={(paycheck.gross - paycheck.net).toFixed(2)}
+                    disabled
+                    required
+                  />
+                </Form.Group>
+              </Modal.Body>
+              <Modal.Footer>
+                <Form.Group className="my-2">
+                  <Row>
+                    <Col>
+                      <Button variant="secondary" onClick={closeModal}>
+                        Close
+                      </Button>
+                    </Col>
+                    <Col>
+                      <Button variant="primary" type="submit">
+                        Add
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form.Group>
+              </Modal.Footer>
+            </Form>
+          </>
+        ) : (
+          <>
+            <Modal.Body>
+              <h3 className="text-center">Adding the new paycheck</h3>
+              <div className="d-flex justify-content-center align-items-center">
+                <Spinner animation="border" variant="primary" />
+              </div>
+            </Modal.Body>
+          </>
+        )}
+      </Modal>
+    </>
   );
 };
 

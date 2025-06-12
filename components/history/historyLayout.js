@@ -7,6 +7,7 @@ import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
+import useIncome from "@/hooks/useIncome";
 
 const HistoryLayout = () => {
   // Using NextAuth.js to authenticate a user's session
@@ -18,6 +19,10 @@ const HistoryLayout = () => {
   const { history, historyLoading, postHistory, getMonthHistory } = useHistory(
     session.user.username
   );
+  const { getMonthIncome } = useIncome(
+    session.user.username,
+    dateInfo.currentYear
+  );
 
   // If there is no user session, redirect to the home page
   if (!session) {
@@ -26,14 +31,18 @@ const HistoryLayout = () => {
 
   // Adds the current month to the history array if not already added
   useEffect(() => {
+    const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
+
     // Sets the new month object and sends the POST request to the API
     const addNewHistoryMonth = async () => {
+      const newMonthIncome = getMonthIncome(monthInfo);
+
       const newMonth = {
         month: dateInfo.currentMonth,
         year: dateInfo.currentYear,
-        budget: 0,
+        budget: newMonthIncome,
         actual: 0,
-        leftover: 0,
+        leftover: newMonthIncome,
       };
 
       await postHistory(newMonth);
@@ -41,10 +50,6 @@ const HistoryLayout = () => {
 
     // Checks if the current dates' month and year is already history array
     const monthInHistory = () => {
-      const monthInfo = getMonthInfo(
-        dateInfo.currentMonth,
-        dateInfo.currentYear
-      );
       const foundMonth = getMonthHistory(monthInfo);
 
       return foundMonth !== undefined;
@@ -53,7 +58,7 @@ const HistoryLayout = () => {
     if (!historyLoading && !monthInHistory()) {
       addNewHistoryMonth();
     }
-  }, [history, historyLoading, postHistory, getMonthHistory]);
+  }, [history, historyLoading, postHistory, getMonthHistory, getMonthIncome]);
 
   // If the history is still being loaded by the API, show the loading component
   if (historyLoading) {

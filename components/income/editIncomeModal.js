@@ -62,21 +62,23 @@ const EditIncomeModal = ({
         // Get the history for the month of the editted paycheck
         const paycheckMonth = getMonthHistory(paycheckMonthInfo);
 
-        // Update the budget for the month the editted paycheck is in
-        const updatedCurrentBudget =
-          paycheckMonthIncome - paycheck.net + edittedPaycheck.net;
-        const updatedCurrentLeftover = parseFloat(
-          (updatedCurrentBudget - paycheckMonth.actual).toFixed(2)
-        );
+        if (paycheckMonth) {
+          // Update the budget for the month the editted paycheck is in
+          const updatedCurrentBudget =
+            paycheckMonthIncome - paycheck.net + edittedPaycheck.net;
+          const updatedCurrentLeftover = parseFloat(
+            (updatedCurrentBudget - paycheckMonth.actual).toFixed(2)
+          );
 
-        // Update the budget and leftover in the history and send it to the API
-        const updatedMonth = {
-          ...paycheckMonth,
-          budget: updatedCurrentBudget,
-          leftover: updatedCurrentLeftover,
-        };
+          // Update the budget and leftover in the history and send it to the API
+          const updatedMonth = {
+            ...paycheckMonth,
+            budget: updatedCurrentBudget,
+            leftover: updatedCurrentLeftover,
+          };
 
-        await putHistory(updatedMonth);
+          await putHistory(updatedMonth);
+        }
       } else {
         // Update the history for the old month
         const oldMonthInfo = dateToMonthInfo(edittedPaycheck.date);
@@ -87,20 +89,22 @@ const EditIncomeModal = ({
         // Get the history for the month of the old paycheck
         const oldMonth = getMonthHistory(oldMonthInfo);
 
-        // Update the budget for the month the old paycheck is in
-        const updatedOldBudget = oldIncome - paycheck.net;
-        const updatedOldLeftover = parseFloat(
-          (updatedOldBudget - oldMonth.actual).toFixed(2)
-        );
+        if (oldMonth) {
+          // Update the budget for the month the old paycheck is in
+          const updatedOldBudget = oldIncome - paycheck.net;
+          const updatedOldLeftover = parseFloat(
+            (updatedOldBudget - oldMonth.actual).toFixed(2)
+          );
 
-        // Update the budget and leftover in the history and send it to the API
-        const updatedOldMonth = {
-          ...oldMonth,
-          budget: updatedOldBudget,
-          leftover: updatedOldLeftover,
-        };
+          // Update the budget and leftover in the history and send it to the API
+          const updatedOldMonth = {
+            ...oldMonth,
+            budget: updatedOldBudget,
+            leftover: updatedOldLeftover,
+          };
 
-        await putHistory(updatedOldMonth);
+          await putHistory(updatedOldMonth);
+        }
 
         // Update the history for the editted month
         const newMonthInfo = dateToMonthInfo(edittedPaycheck.date);
@@ -111,20 +115,22 @@ const EditIncomeModal = ({
         // Get the history for the month of the editted paycheck
         const newMonth = getMonthHistory(newMonthInfo);
 
-        // Update the budget for the month the editted paycheck is in
-        const updatedNewBudget = newIncome - paycheck.net;
-        const updatedNewLeftover = parseFloat(
-          (updatedNewBudget - newMonth.actual).toFixed(2)
-        );
+        if (newMonth) {
+          // Update the budget for the month the editted paycheck is in
+          const updatedNewBudget = newIncome - paycheck.net;
+          const updatedNewLeftover = parseFloat(
+            (updatedNewBudget - newMonth.actual).toFixed(2)
+          );
 
-        // Update the budget and leftover in the history and send it to the API
-        const updatedNewMonth = {
-          ...newMonth,
-          budget: updatedNewBudget,
-          leftover: updatedNewLeftover,
-        };
+          // Update the budget and leftover in the history and send it to the API
+          const updatedNewMonth = {
+            ...newMonth,
+            budget: updatedNewBudget,
+            leftover: updatedNewLeftover,
+          };
 
-        await putHistory(updatedNewMonth);
+          await putHistory(updatedNewMonth);
+        }
       }
 
       setShowEdit(false);

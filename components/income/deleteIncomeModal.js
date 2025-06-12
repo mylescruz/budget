@@ -34,20 +34,22 @@ const DeleteIncomeModal = ({
     // Get the history for the month of the paycheck
     const paycheckMonth = getMonthHistory(paycheckMonthInfo);
 
-    // Update the budget for the month the paycheck is in
-    const updatedBudget = monthIncome - paycheck.net;
-    const updatedLeftover = parseFloat(
-      (updatedBudget - paycheckMonth.actual).toFixed(2)
-    );
+    if (paycheckMonth) {
+      // Update the budget for the month the paycheck is in
+      const updatedBudget = monthIncome - paycheck.net;
+      const updatedLeftover = parseFloat(
+        (updatedBudget - paycheckMonth.actual).toFixed(2)
+      );
 
-    // Update the budget and leftover in the history and send it to the API
-    const updatedMonth = {
-      ...paycheckMonth,
-      budget: updatedBudget,
-      leftover: updatedLeftover,
-    };
+      // Update the budget and leftover in the history and send it to the API
+      const updatedMonth = {
+        ...paycheckMonth,
+        budget: updatedBudget,
+        leftover: updatedLeftover,
+      };
 
-    await putHistory(updatedMonth);
+      await putHistory(updatedMonth);
+    }
   };
 
   return (
