@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
+import { v4 as uuidv4 } from "uuid";
 
 const AddSubcategoryForm = ({
   edittedCategory,
@@ -8,7 +9,7 @@ const AddSubcategoryForm = ({
   setAddSubcategoryClicked,
 }) => {
   const emptySubcategory = {
-    id: 0,
+    id: uuidv4(),
     name: "",
     actual: 0,
   };
@@ -26,31 +27,21 @@ const AddSubcategoryForm = ({
   const addToCategory = (e) => {
     e.preventDefault();
 
-    if (newSubcategory.name === "") return;
+    if (newSubcategory.name === "") {
+      return;
+    }
 
-    let maxID = 0;
     if (edittedCategory.hasSubcategory) {
       // If the editted category already has a subcategory
-
-      // Find the max ID in the subcategories array and add one for the new ID
-      maxID = Math.max(
-        ...edittedCategory.subcategories.map((subcategory) => subcategory.id)
-      );
 
       // Updates the category with the new subcategory and new ID
       setEdittedCategory({
         ...edittedCategory,
-        subcategories: [
-          ...edittedCategory.subcategories,
-          { ...newSubcategory, id: maxID + 1 },
-        ],
+        subcategories: [...edittedCategory.subcategories, newSubcategory],
       });
       updateCategoryValues({
         ...edittedCategory,
-        subcategories: [
-          ...edittedCategory.subcategories,
-          { ...newSubcategory, id: maxID + 1 },
-        ],
+        subcategories: [...edittedCategory.subcategories, newSubcategory],
       });
     } else {
       // If the editted category didn't already have a subcategory
@@ -75,14 +66,14 @@ const AddSubcategoryForm = ({
         budget: budgetValue,
         actual: actualValue,
         hasSubcategory: true,
-        subcategories: [{ ...newSubcategory, id: maxID }],
+        subcategories: [newSubcategory],
       });
       updateCategoryValues({
         ...edittedCategory,
         budget: budgetValue,
         actual: actualValue,
         hasSubcategory: true,
-        subcategories: [{ ...newSubcategory, id: maxID }],
+        subcategories: [newSubcategory],
       });
     }
 

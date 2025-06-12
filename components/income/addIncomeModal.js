@@ -8,7 +8,6 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 
 const AddIncomeModal = ({
-  income,
   yearInfo,
   postIncome,
   addPaycheckClicked,
@@ -19,7 +18,6 @@ const AddIncomeModal = ({
   const { data: session } = useSession();
 
   const emptyPaycheck = {
-    id: 0,
     date: dateInfo.currentDate,
     company: "",
     description: "",
@@ -47,12 +45,7 @@ const AddIncomeModal = ({
     try {
       e.preventDefault();
 
-      // Find the max ID in the income array and add one for the new ID
-      let maxID = 0;
-      if (income.length > 0)
-        maxID = Math.max(...income.map((paycheck) => paycheck.id));
-
-      paycheck.id = maxID + 1;
+      // Update the paycheck's taxes taken out
       paycheck.taxes = parseFloat((paycheck.gross - paycheck.net).toFixed(2));
 
       // Adds the new paycheck to the income array by sending a POST request to the API

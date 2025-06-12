@@ -1,23 +1,11 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useState } from "react";
-import {
-  Form,
-  Button,
-  Modal,
-  Col,
-  Row,
-  FloatingLabel,
-  Container,
-} from "react-bootstrap";
+import { Form, Button, Modal, Col, Row, Container } from "react-bootstrap";
+import { v4 as uuidv4 } from "uuid";
 
-const AddCategoryModal = ({
-  postCategory,
-  addCategoryClicked,
-  setAddCategoryClicked,
-}) => {
+const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
   const emptyCategory = {
-    id: 0,
     name: "",
     color: "#000000",
     budget: "",
@@ -28,12 +16,12 @@ const AddCategoryModal = ({
   };
 
   const emptySubcategory = {
-    id: 0,
+    id: uuidv4(),
     name: "",
     actual: 0,
   };
 
-  const { categories } = useContext(CategoriesContext);
+  const { postCategory } = useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
   const [subcategoryTotal, setSubcategoryTotal] = useState(0);
@@ -45,8 +33,11 @@ const AddCategoryModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") setNewCategory({ ...newCategory, budget: input });
-    else setNewCategory({ ...newCategory, budget: parseFloat(input) });
+    if (input == "") {
+      setNewCategory({ ...newCategory, budget: input });
+    } else {
+      setNewCategory({ ...newCategory, budget: parseFloat(input) });
+    }
   };
 
   const handleSubcategoryInput = (e) => {
@@ -56,8 +47,11 @@ const AddCategoryModal = ({
   const handleSubcategoryBudget = (e) => {
     const input = e.target.value;
 
-    if (input == "") setNewSubcategory({ ...newSubcategory, actual: input });
-    else setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
+    if (input == "") {
+      setNewSubcategory({ ...newSubcategory, actual: input });
+    } else {
+      setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
+    }
   };
 
   const handleSubcategoryChecked = (e) => {
@@ -87,12 +81,6 @@ const AddCategoryModal = ({
     if (!newCategory.hasSubcategory && newCategory.fixed)
       newCategory.actual = newCategory.budget;
 
-    // Find the max ID in the categories array and add one for the new ID
-    let maxID = 0;
-    if (categories.length > 0)
-      maxID = Math.max(...categories.map((category) => category.id));
-    newCategory.id = maxID + 1;
-
     // Adds the new category to the category array by sending a POST request to the API
     postCategory(newCategory);
 
@@ -100,12 +88,6 @@ const AddCategoryModal = ({
   };
 
   const addToSubcategories = () => {
-    // Find the max ID in the subcategories array and add one for the new ID
-    let maxID = 0;
-    if (newCategory.subcategories.length > 0)
-      maxID = Math.max(...newCategory.subcategories.map((sub) => sub.id));
-    newSubcategory.id = maxID + 1;
-
     setSubcategoryTotal(
       parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2))
     );

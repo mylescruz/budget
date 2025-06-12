@@ -7,6 +7,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { v4 as uuidv4 } from "uuid";
 
 // Configuring AWS SDK to connect to Amazon S3
 const S3 = new S3Client({
@@ -108,7 +109,11 @@ export default async function handler(req, res) {
   } else if (method === "POST") {
     // Add the new month to the user's history in S3
     try {
-      const newHistory = req?.body;
+      const historyBody = req?.body;
+
+      // Assign an id to the new history month
+      const newHistory = { id: uuidv4(), ...historyBody };
+
       const history = await getHistoryData();
       const updatedHistory = [...history, newHistory];
 

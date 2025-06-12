@@ -7,6 +7,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
+import { v4 as uuidv4 } from "uuid";
 
 // Configuring AWS SDK to connect to Amazon S3
 const S3 = new S3Client({
@@ -112,7 +113,11 @@ export default async function handler(req, res) {
   } else if (method === "POST") {
     // Add the new transaction to the user's transactions in S3
     try {
-      const newTransaction = req?.body;
+      const transactionBody = req?.body;
+
+      // Assign an id to the new transaction
+      const newTransaction = { id: uuidv4(), ...transactionBody };
+
       const transactions = await getTransactionData();
 
       // Add new transaction to the transactions array

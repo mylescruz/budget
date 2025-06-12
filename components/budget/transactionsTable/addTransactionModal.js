@@ -12,7 +12,7 @@ const AddTransactionModal = ({
   setAddTransactionClicked,
 }) => {
   const { categories, putCategories } = useContext(CategoriesContext);
-  const { transactions, postTransaction } = useContext(TransactionsContext);
+  const { postTransaction } = useContext(TransactionsContext);
 
   // When adding a new transaction, the first category option should be the first one that is not fixed and doesn't have a subcategory
   const firstNotFixed = categories.find((category) => {
@@ -26,7 +26,6 @@ const AddTransactionModal = ({
       : monthInfo.startOfMonthDate;
 
   const emptyTransaction = {
-    id: 0,
     date: newTransactionDate,
     store: "",
     items: "",
@@ -49,13 +48,6 @@ const AddTransactionModal = ({
 
   const AddNewTransaction = (e) => {
     e.preventDefault();
-
-    // Find the max ID in the transactions array and add one for the new ID
-    let maxID = 0;
-    if (transactions.length > 0)
-      maxID = Math.max(...transactions.map((trans) => trans.id));
-
-    newTransaction.id = maxID + 1;
 
     // Adds the new transaction to the transactions array by sending a POST request to the API
     postTransaction(newTransaction);

@@ -4,10 +4,11 @@ import PopUp from "../layout/popUp";
 import dateInfo from "@/helpers/dateInfo";
 import getYearInfo from "@/helpers/getYearInfo";
 import currencyFormatter from "@/helpers/currencyFormatter";
+import { v4 as uuidv4 } from "uuid";
 
 const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
   const emptyPaycheck = {
-    id: 0,
+    id: uuidv4(),
     date: dateInfo.currentDate,
     company: "",
     description: "",
@@ -39,7 +40,7 @@ const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
 
     setNewIncome([...newIncome, paycheck]);
 
-    setPaycheck({ ...emptyPaycheck, id: paycheck.id + 1 });
+    setPaycheck(emptyPaycheck);
   };
 
   const completeOnboarding = () => {

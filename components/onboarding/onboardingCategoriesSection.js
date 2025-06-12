@@ -2,6 +2,7 @@ import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
 import PopUp from "../layout/popUp";
 import { useState } from "react";
 import currencyFormatter from "@/helpers/currencyFormatter";
+import { v4 as uuidv4 } from "uuid";
 
 const OnboardingCategoriesSection = ({
   newCategories,
@@ -13,7 +14,7 @@ const OnboardingCategoriesSection = ({
   enterCustom,
 }) => {
   const emptyCategory = {
-    id: 0,
+    id: uuidv4(),
     name: "",
     color: "#000000",
     budget: "",
@@ -24,7 +25,7 @@ const OnboardingCategoriesSection = ({
   };
 
   const emptySubcategory = {
-    id: 0,
+    id: uuidv4(),
     name: "",
     actual: 0,
   };
@@ -124,18 +125,15 @@ const OnboardingCategoriesSection = ({
   };
 
   const handleFixed = (e) => {
-    if (e.target.checked) setNewCategory({ ...newCategory, fixed: true });
-    else setNewCategory({ ...newCategory, fixed: false });
+    if (e.target.checked) {
+      setNewCategory({ ...newCategory, fixed: true });
+    } else {
+      setNewCategory({ ...newCategory, fixed: false });
+    }
   };
 
   // Function add to the subcategories to the new category
   const addToSubcategories = () => {
-    // Find the max ID in the subcategories array and add one for the new ID
-    let maxID = 0;
-    if (newCategory.subcategories.length > 0)
-      maxID = Math.max(...newCategory.subcategories.map((sub) => sub.id));
-    newSubcategory.id = maxID + 1;
-
     setSubcategoryTotal(
       parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2))
     );
@@ -175,7 +173,7 @@ const OnboardingCategoriesSection = ({
 
     setNewCategories([...newCategories, newCategory]);
 
-    setNewCategory({ ...emptyCategory, id: newCategory.id + 1 });
+    setNewCategory(emptyCategory);
   };
 
   return (

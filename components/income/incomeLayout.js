@@ -34,7 +34,6 @@ const InnerIncomeLayout = ({ year }) => {
   };
 
   const AddIncomeModalProps = {
-    income: income,
     yearInfo: yearInfo,
     postIncome: postIncome,
     addPaycheckClicked: addPaycheckClicked,

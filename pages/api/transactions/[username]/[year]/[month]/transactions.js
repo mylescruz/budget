@@ -1,11 +1,7 @@
 // API Endpoint for a user's transactions data
 
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
 
 // Configuring AWS SDK to connect to Amazon S3
@@ -17,26 +13,6 @@ const S3 = new S3Client({
   },
 });
 const BUCKET_NAME = process.env.BUCKET_NAME;
-
-// Function to convert the stream object from S3 to JSON
-const streamToJSON = (stream) => {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    stream.on("data", (chunk) => chunks.push(chunk));
-    stream.on("end", () => {
-      try {
-        const body = Buffer.concat(chunks).toString("utf-8");
-        const data = JSON.parse(body);
-        resolve(data);
-      } catch (error) {
-        reject(error);
-      }
-    });
-    stream.on("error", (err) => {
-      reject(err);
-    });
-  });
-};
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server

@@ -7,6 +7,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
+import { v4 as uuidv4 } from "uuid";
 
 // Configuring AWS SDK to connect to Amazon S3
 const S3 = new S3Client({
@@ -112,13 +113,17 @@ export default async function handler(req, res) {
           // Set the previous months categories to the new month categories
           // Update all the actual values to zero to signify a new month
           const newMonthCategories = previousCategories.map((category) => {
+            // Update each category with a new ID
+            category.id = uuidv4();
+
             if (category.fixed) {
               return category;
             } else {
               if (category.hasSubcategory) {
                 const newSubcategories = category.subcategories.map(
                   (subcategory) => {
-                    return { ...subcategory, actual: 0 };
+                    // Reset the id for each subcategory
+                    return { ...subcategory, id: uuidv4(), actual: 0 };
                   }
                 );
 
@@ -162,9 +167,16 @@ export default async function handler(req, res) {
             );
 
             // Create new categories based on the default categories
-            const newCategories = await streamToJSON(
+            const defaultCategories = await streamToJSON(
               defaultCategoriesData.Body
             );
+
+            const newCategories = defaultCategories.map((category) => {
+              return {
+                ...category,
+                id: uuidv4(),
+              };
+            });
 
             // S3 File Parameters for the user's new default categories
             const categoriesParams = {
@@ -203,7 +215,11 @@ export default async function handler(req, res) {
   } else if (method === "POST") {
     // Add the new category to the user's categories in S3
     try {
-      const newCategory = req?.body;
+      const categoryBody = req?.body;
+
+      // Assign an id to the new category
+      const newCategory = { id: uuidv4(), ...categoryBody };
+
       const categories = await getCategoriesData();
       const updatedCategories = [...categories, newCategory];
 

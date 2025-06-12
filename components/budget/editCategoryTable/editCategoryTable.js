@@ -12,7 +12,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { categories, postCategory, putCategories, deleteCategory } =
+  const { categories, putCategories, deleteCategory } =
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
   const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
@@ -114,7 +114,6 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   };
 
   const addCategoryProps = {
-    postCategory: postCategory,
     addCategoryClicked: addCategoryClicked,
     setAddCategoryClicked: setAddCategoryClicked,
   };
