@@ -1,4 +1,4 @@
-import { Button, Col, Form, Row, Table } from "react-bootstrap";
+import { Button, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
 import { useContext, useRef, useState } from "react";
 import AddCategoryModal from "./addCategoryModal";
@@ -7,6 +7,7 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import useIncome from "@/hooks/useIncome";
 import { useSession } from "next-auth/react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
+import LoadingMessage from "@/components/layout/loadingMessage";
 
 const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -17,6 +18,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   const { transactions, updateTransactions } = useContext(TransactionsContext);
   const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
+  const [updatingCategories, setUpdatingCategories] = useState(false);
 
   /* 
         categoryValues is a reference array set up to update all the categories at the same time
@@ -24,76 +26,87 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
     */
   const categoryValues = useRef([]);
 
-  const updateCategoryTable = (e) => {
-    e.preventDefault();
+  const updateCategoryTable = async (e) => {
+    setUpdatingCategories(true);
 
-    setEditClicked(false);
+    try {
+      e.preventDefault();
 
-    // If any category was edited, make a PUT request to the categories API endpoint
-    if (categoryValues.current.length > 0) {
-      // Maps through the categories array and if the category matches an editted category in categoryValues, replace that category
-      const updated = categories.map((category) => {
-        const foundIndex = categoryValues.current.findIndex((cat) => {
-          return cat.id === category.id;
-        });
+      setEditClicked(false);
 
-        // Maps through the transactions array and if a category has a transaction that matches the changed category, change that transaction's category
-        if (foundIndex !== -1) {
-          let anyCategoryNameChanged = false;
-
-          const updatedTransactions = transactions.map((transaction) => {
-            if (transaction.category === category.name) {
-              if (
-                category.id === categoryValues.current[foundIndex].id &&
-                transaction.category !== categoryValues.current[foundIndex].name
-              ) {
-                transaction.category = categoryValues.current[foundIndex].name;
-                anyCategoryNameChanged = true;
-              }
-
-              return transaction;
-            } else if (
-              transaction.category !== category.name &&
-              category.hasSubcategory
-            ) {
-              category.subcategories.map((subCategory) => {
-                if (transaction.category === subCategory.name) {
-                  if (categoryValues.current[foundIndex].hasSubcategory) {
-                    const newSubcategory = categoryValues.current[
-                      foundIndex
-                    ].subcategories.find(
-                      (subCat) => subCat.id === subCategory.id
-                    );
-
-                    if (transaction.category !== newSubcategory.name) {
-                      transaction.category = newSubcategory.name;
-                      anyCategoryNameChanged = true;
-                    }
-                  }
-                }
-              });
-
-              return transaction;
-            } else {
-              return transaction;
-            }
+      // If any category was edited, make a PUT request to the categories API endpoint
+      if (categoryValues.current.length > 0) {
+        // Maps through the categories array and if the category matches an editted category in categoryValues, replace that category
+        const updated = categories.map((category) => {
+          const foundIndex = categoryValues.current.findIndex((cat) => {
+            return cat.id === category.id;
           });
 
-          if (anyCategoryNameChanged) {
-            updateTransactions(updatedTransactions);
+          // Maps through the transactions array and if a category has a transaction that matches the changed category, change that transaction's category
+          if (foundIndex !== -1) {
+            let anyCategoryNameChanged = false;
+
+            const updatedTransactions = transactions.map((transaction) => {
+              if (transaction.category === category.name) {
+                if (
+                  category.id === categoryValues.current[foundIndex].id &&
+                  transaction.category !==
+                    categoryValues.current[foundIndex].name
+                ) {
+                  transaction.category =
+                    categoryValues.current[foundIndex].name;
+                  anyCategoryNameChanged = true;
+                }
+
+                return transaction;
+              } else if (
+                transaction.category !== category.name &&
+                category.hasSubcategory
+              ) {
+                category.subcategories.map((subCategory) => {
+                  if (transaction.category === subCategory.name) {
+                    if (categoryValues.current[foundIndex].hasSubcategory) {
+                      const newSubcategory = categoryValues.current[
+                        foundIndex
+                      ].subcategories.find(
+                        (subCat) => subCat.id === subCategory.id
+                      );
+
+                      if (transaction.category !== newSubcategory.name) {
+                        transaction.category = newSubcategory.name;
+                        anyCategoryNameChanged = true;
+                      }
+                    }
+                  }
+                });
+
+                return transaction;
+              } else {
+                return transaction;
+              }
+            });
+
+            if (anyCategoryNameChanged) {
+              updateTransactions(updatedTransactions);
+            }
+
+            return categoryValues.current[foundIndex];
+          } else {
+            return category;
           }
+        });
 
-          return categoryValues.current[foundIndex];
-        } else {
-          return category;
-        }
-      });
+        const totalIncome = getMonthIncome(monthInfo);
+        const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
 
-      const totalIncome = getMonthIncome(monthInfo);
-      const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
-
-      // Updates the categories array with the editted categories by sending a PUT request to the API
-      putCategories(updatedCategories);
+        // Updates the categories array with the editted categories by sending a PUT request to the API
+        await putCategories(updatedCategories);
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    } finally {
+      setUpdatingCategories(false);
     }
   };
 
@@ -196,7 +209,11 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
         </Row>
       </Form>
 
-      {addCategoryClicked && <AddCategoryModal {...addCategoryProps} />}
+      <AddCategoryModal {...addCategoryProps} />
+
+      <Modal show={updatingCategories} backdrop="static" centered>
+        <LoadingMessage message="Updating these categories" />
+      </Modal>
     </>
   );
 };

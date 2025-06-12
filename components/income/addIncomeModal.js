@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
+import LoadingMessage from "../layout/loadingMessage";
 
 const AddIncomeModal = ({
   yearInfo,
@@ -29,7 +30,7 @@ const AddIncomeModal = ({
   const { categories, putCategories } = useContext(CategoriesContext);
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
-  const [inputtingPaycheck, setInputtingPaycheck] = useState(true);
+  const [addingPaycheck, setAddingPaycheck] = useState(false);
 
   const handleInput = (e) => {
     setPaycheck({ ...paycheck, [e.target.id]: e.target.value });
@@ -43,7 +44,7 @@ const AddIncomeModal = ({
   };
 
   const AddNewPaycheck = async (e) => {
-    setInputtingPaycheck(false);
+    setAddingPaycheck(true);
 
     try {
       e.preventDefault();
@@ -86,13 +87,13 @@ const AddIncomeModal = ({
         await putCategories(updatedCategories);
       }
 
-      setInputtingPaycheck(true);
       setAddPaycheckClicked(false);
       setPaycheck(emptyPaycheck);
     } catch (error) {
-      setInputtingPaycheck(true);
       console.error("Error adding new income: ", error);
       return;
+    } finally {
+      setAddingPaycheck(false);
     }
   };
 
@@ -104,7 +105,7 @@ const AddIncomeModal = ({
   return (
     <>
       <Modal show={addPaycheckClicked} onHide={closeModal} centered>
-        {inputtingPaycheck ? (
+        {!addingPaycheck ? (
           <>
             <Modal.Header closeButton>
               <Modal.Title>Enter paycheck information</Modal.Title>
@@ -209,14 +210,7 @@ const AddIncomeModal = ({
             </Form>
           </>
         ) : (
-          <>
-            <Modal.Body>
-              <h3 className="text-center">Adding the new paycheck</h3>
-              <div className="d-flex justify-content-center align-items-center">
-                <Spinner animation="border" variant="primary" />
-              </div>
-            </Modal.Body>
-          </>
+          <LoadingMessage message="Adding the new paycheck" />
         )}
       </Modal>
     </>

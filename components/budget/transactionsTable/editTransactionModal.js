@@ -4,6 +4,7 @@ import editTransactionForCategoryActual from "@/helpers/editTransactionForCatego
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import SelectCategoryOption from "./selectCategoryOption";
+import LoadingMessage from "@/components/layout/loadingMessage";
 
 const EditTransactionModal = ({
   transaction,
@@ -15,30 +16,40 @@ const EditTransactionModal = ({
   const { categories, putCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
   const [edittedTransaction, setEdittedTransaction] = useState(transaction);
+  const [updatingTransaction, setUpdatingTransaction] = useState(false);
 
   const closeEdit = () => {
     setShowEdit(false);
     setShowDetails(true);
   };
 
-  const editTheTransaction = (e) => {
-    e.preventDefault();
+  const editTheTransaction = async (e) => {
+    setUpdatingTransaction(true);
 
-    // If the Edit Transaction Modal is showing, update the transaction and then close the modal
-    if (showEdit) {
-      setEdittedTransaction(edittedTransaction);
-      putTransaction(edittedTransaction);
+    try {
+      e.preventDefault();
 
-      const updatedCategories = editTransactionForCategoryActual(
-        edittedTransaction,
-        transaction,
-        categories
-      );
-      putCategories(updatedCategories);
+      // If the Edit Transaction Modal is showing, update the transaction and then close the modal
+      if (showEdit) {
+        setEdittedTransaction(edittedTransaction);
+        await putTransaction(edittedTransaction);
 
-      setShowEdit(false);
-    } else {
-      setShowEdit(true);
+        const updatedCategories = editTransactionForCategoryActual(
+          edittedTransaction,
+          transaction,
+          categories
+        );
+        await putCategories(updatedCategories);
+
+        setShowEdit(false);
+      } else {
+        setShowEdit(true);
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    } finally {
+      setUpdatingTransaction(false);
     }
   };
 
@@ -63,95 +74,101 @@ const EditTransactionModal = ({
 
   return (
     <Modal show={showEdit} onHide={closeEdit} centered>
-      <Modal.Header>
-        <Modal.Title>Edit Transaction</Modal.Title>
-      </Modal.Header>
-      <Form onSubmit={editTheTransaction}>
-        <Modal.Body>
-          <Form.Group className="my-2">
-            <Form.Control
-              id="date"
-              className="h-100"
-              type="date"
-              min={monthInfo.startOfMonthDate}
-              max={monthInfo.endOfMonthDate}
-              value={edittedTransaction.date}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Control
-              id="store"
-              className="h-100"
-              type="text"
-              placeholder="Store"
-              value={edittedTransaction.store}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Control
-              id="items"
-              className="h-100"
-              type="text"
-              placeholder="What was purchased?"
-              value={edittedTransaction.items}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Select
-              id="category"
-              className="h-100"
-              value={edittedTransaction.category}
-              onChange={handleInput}
-              required
-            >
-              <option disabled>Choose a Category...</option>
-              {categories.map(
-                (category) =>
-                  !category.fixed && (
-                    <SelectCategoryOption
-                      key={category.id}
-                      category={category}
-                    />
-                  )
-              )}
-            </Form.Select>
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Control
-              id="amount"
-              className="h-100"
-              type="number"
-              step="0.01"
-              placeholder="Amount"
-              value={edittedTransaction.amount}
-              onChange={handleNumInput}
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Form.Group className="my-2">
-            <Row>
-              <Col>
-                <Button variant="secondary" onClick={closeEdit}>
-                  Cancel
-                </Button>
-              </Col>
-              <Col className="text-nowrap">
-                <Button variant="primary" type="submit">
-                  Save Changes
-                </Button>
-              </Col>
-            </Row>
-          </Form.Group>
-        </Modal.Footer>
-      </Form>
+      {!updatingTransaction ? (
+        <>
+          <Modal.Header>
+            <Modal.Title>Edit Transaction</Modal.Title>
+          </Modal.Header>
+          <Form onSubmit={editTheTransaction}>
+            <Modal.Body>
+              <Form.Group className="my-2">
+                <Form.Control
+                  id="date"
+                  className="h-100"
+                  type="date"
+                  min={monthInfo.startOfMonthDate}
+                  max={monthInfo.endOfMonthDate}
+                  value={edittedTransaction.date}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Control
+                  id="store"
+                  className="h-100"
+                  type="text"
+                  placeholder="Store"
+                  value={edittedTransaction.store}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Control
+                  id="items"
+                  className="h-100"
+                  type="text"
+                  placeholder="What was purchased?"
+                  value={edittedTransaction.items}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Select
+                  id="category"
+                  className="h-100"
+                  value={edittedTransaction.category}
+                  onChange={handleInput}
+                  required
+                >
+                  <option disabled>Choose a Category...</option>
+                  {categories.map(
+                    (category) =>
+                      !category.fixed && (
+                        <SelectCategoryOption
+                          key={category.id}
+                          category={category}
+                        />
+                      )
+                  )}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Control
+                  id="amount"
+                  className="h-100"
+                  type="number"
+                  step="0.01"
+                  placeholder="Amount"
+                  value={edittedTransaction.amount}
+                  onChange={handleNumInput}
+                  required
+                />
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Form.Group className="my-2">
+                <Row>
+                  <Col>
+                    <Button variant="secondary" onClick={closeEdit}>
+                      Cancel
+                    </Button>
+                  </Col>
+                  <Col className="text-nowrap">
+                    <Button variant="primary" type="submit">
+                      Save Changes
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Modal.Footer>
+          </Form>
+        </>
+      ) : (
+        <LoadingMessage message="Updating this transaction" />
+      )}
     </Modal>
   );
 };

@@ -3,6 +3,7 @@ import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import LoadingMessage from "../layout/loadingMessage";
 
 const EditIncomeModal = ({
   paycheck,
@@ -18,6 +19,7 @@ const EditIncomeModal = ({
 
   const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
+  const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
 
   const handleInput = (e) => {
     setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: e.target.value });
@@ -41,6 +43,8 @@ const EditIncomeModal = ({
   };
 
   const editPaycheck = async (e) => {
+    setUpdatingPaycheck(true);
+
     try {
       e.preventDefault();
 
@@ -137,111 +141,121 @@ const EditIncomeModal = ({
     } catch (error) {
       console.error("Error editting a paycheck: ", error);
       return;
+    } finally {
+      setUpdatingPaycheck(false);
     }
   };
 
   return (
     <Modal show={showEdit} onHide={closeEdit} centered>
-      <Modal.Header>
-        <Modal.Title>Edit Paycheck</Modal.Title>
-      </Modal.Header>
-      <Form onSubmit={editPaycheck}>
-        <Modal.Body>
-          <Form.Group className="my-2">
-            <Form.Label>Pay Date</Form.Label>
-            <Form.Control
-              id="date"
-              className="h-100"
-              type="date"
-              min={yearInfo.startOfYear}
-              max={yearInfo.endOfYear}
-              value={edittedPaycheck.date}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Company</Form.Label>
-            <Form.Control
-              id="company"
-              className="h-100"
-              type="text"
-              value={edittedPaycheck.company}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              id="description"
-              className="h-100"
-              type="text"
-              value={edittedPaycheck.description}
-              placeholder="Optional"
-              onChange={handleInput}
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Gross Income</Form.Label>
-            <Form.Control
-              id="gross"
-              className="h-100"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="Gross Income"
-              value={edittedPaycheck.gross}
-              onChange={handleNumInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Net Income</Form.Label>
-            <Form.Control
-              id="net"
-              className="h-100"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="Net Income"
-              value={edittedPaycheck.net}
-              onChange={handleNumInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Taxes taken out</Form.Label>
-            <Form.Control
-              id="taxes"
-              className="h-100"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="Taxes taken out"
-              value={(edittedPaycheck.gross - edittedPaycheck.net).toFixed(2)}
-              disabled
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Form.Group className="my-2">
-            <Row>
-              <Col>
-                <Button variant="secondary" onClick={closeEdit}>
-                  Cancel
-                </Button>
-              </Col>
-              <Col className="text-nowrap">
-                <Button variant="primary" type="submit">
-                  Save Changes
-                </Button>
-              </Col>
-            </Row>
-          </Form.Group>
-        </Modal.Footer>
-      </Form>
+      {!updatingPaycheck ? (
+        <>
+          <Modal.Header>
+            <Modal.Title>Edit Paycheck</Modal.Title>
+          </Modal.Header>
+          <Form onSubmit={editPaycheck}>
+            <Modal.Body>
+              <Form.Group className="my-2">
+                <Form.Label>Pay Date</Form.Label>
+                <Form.Control
+                  id="date"
+                  className="h-100"
+                  type="date"
+                  min={yearInfo.startOfYear}
+                  max={yearInfo.endOfYear}
+                  value={edittedPaycheck.date}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Label>Company</Form.Label>
+                <Form.Control
+                  id="company"
+                  className="h-100"
+                  type="text"
+                  value={edittedPaycheck.company}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  id="description"
+                  className="h-100"
+                  type="text"
+                  value={edittedPaycheck.description}
+                  placeholder="Optional"
+                  onChange={handleInput}
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Label>Gross Income</Form.Label>
+                <Form.Control
+                  id="gross"
+                  className="h-100"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="Gross Income"
+                  value={edittedPaycheck.gross}
+                  onChange={handleNumInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Label>Net Income</Form.Label>
+                <Form.Control
+                  id="net"
+                  className="h-100"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="Net Income"
+                  value={edittedPaycheck.net}
+                  onChange={handleNumInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="my-2">
+                <Form.Label>Taxes taken out</Form.Label>
+                <Form.Control
+                  id="taxes"
+                  className="h-100"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="Taxes taken out"
+                  value={(edittedPaycheck.gross - edittedPaycheck.net).toFixed(
+                    2
+                  )}
+                  disabled
+                  required
+                />
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Form.Group className="my-2">
+                <Row>
+                  <Col>
+                    <Button variant="secondary" onClick={closeEdit}>
+                      Cancel
+                    </Button>
+                  </Col>
+                  <Col className="text-nowrap">
+                    <Button variant="primary" type="submit">
+                      Save Changes
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Modal.Footer>
+          </Form>
+        </>
+      ) : (
+        <LoadingMessage message="Editting the paycheck" />
+      )}
     </Modal>
   );
 };

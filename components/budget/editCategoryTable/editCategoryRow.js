@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Form, Modal, Row } from "react-bootstrap";
 import AddSubcategoryForm from "./addSubcategoryForm";
 import EditSubcategoryRow from "./editSubcategoryRow";
 import PopUp from "@/components/layout/popUp";
+import LoadingMessage from "@/components/layout/loadingMessage";
 
 const EditCategoryRow = ({
   category,
@@ -11,6 +12,7 @@ const EditCategoryRow = ({
 }) => {
   const [edittedCategory, setEdittedCategory] = useState(category);
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
+  const [deletingCategory, setDeletingCategory] = useState(false);
 
   // The only category that cannot be deleted
   const dontDelete = "Guilt Free Spending";
@@ -91,9 +93,18 @@ const EditCategoryRow = ({
     setAddSubcategoryClicked(true);
   };
 
-  const removeCategory = () => {
-    // Removes a category from the categories array by sending a DELETE request to the API
-    deleteCategory(category);
+  const removeCategory = async () => {
+    setDeletingCategory(true);
+
+    try {
+      // Removes a category from the categories array by sending a DELETE request to the API
+      await deleteCategory(category);
+    } catch (error) {
+      console.error(error);
+      return;
+    } finally {
+      setDeletingCategory(false);
+    }
   };
 
   const deleteSubcategory = (subcategory) => {
@@ -208,6 +219,7 @@ const EditCategoryRow = ({
             deleteSubcategory={deleteSubcategory}
           />
         ))}
+
       {addSubcategoryClicked && (
         <AddSubcategoryForm
           edittedCategory={edittedCategory}
@@ -216,6 +228,10 @@ const EditCategoryRow = ({
           setAddSubcategoryClicked={setAddSubcategoryClicked}
         />
       )}
+
+      <Modal show={deletingCategory} backdrop="static" centered>
+        <LoadingMessage message="Deleting the category" />
+      </Modal>
     </>
   );
 };
