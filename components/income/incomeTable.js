@@ -4,7 +4,13 @@ import { Table } from "react-bootstrap";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "../layout/popUp";
 
-const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
+const IncomeTable = ({
+  income,
+  putIncome,
+  deleteIncome,
+  yearInfo,
+  getMonthIncome,
+}) => {
   // Sets the table's total gross income, taxes and net income
   const footerValues = useMemo(() => {
     let totalGross = 0;
@@ -53,6 +59,7 @@ const IncomeTable = ({ income, putIncome, deleteIncome, yearInfo }) => {
             putIncome={putIncome}
             deleteIncome={deleteIncome}
             yearInfo={yearInfo}
+            getMonthIncome={getMonthIncome}
           />
         ))}
       </tbody>

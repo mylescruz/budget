@@ -1,6 +1,4 @@
-import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
-import deleteIncomeFromHistoryBudget from "@/helpers/deleteIncomeFromHistoryBudget";
-import editIncomeForHistoryBudget from "@/helpers/editIncomeForHistoryBudget";
+import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -13,12 +11,13 @@ const EditIncomeModal = ({
   showEdit,
   setShowEdit,
   setShowDetails,
+  getMonthIncome,
 }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
   const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
-  const { history, putHistory } = useHistory(session.user.username);
+  const { putHistory, getMonthHistory } = useHistory(session.user.username);
 
   const handleInput = (e) => {
     setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: e.target.value });
@@ -41,36 +40,98 @@ const EditIncomeModal = ({
     setShowDetails(true);
   };
 
-  const editPaycheck = (e) => {
-    e.preventDefault();
+  const editPaycheck = async (e) => {
+    try {
+      e.preventDefault();
 
-    edittedPaycheck.taxes = parseFloat(
-      (edittedPaycheck.gross - edittedPaycheck.net).toFixed(2)
-    );
-
-    // Edits a paycheck in the income array by sending a PUT request to the API
-    putIncome(edittedPaycheck);
-
-    // Updates the budget value for the given month in the history array by sending a PUT request to the API
-    if (edittedPaycheck.date === paycheck.date) {
-      const paycheckMonth = editIncomeForHistoryBudget(
-        edittedPaycheck,
-        paycheck,
-        history
+      edittedPaycheck.taxes = parseFloat(
+        (edittedPaycheck.gross - edittedPaycheck.net).toFixed(2)
       );
-      putHistory(paycheckMonth);
-    } else {
-      const oldPaycheckMonth = deleteIncomeFromHistoryBudget(paycheck, history);
-      putHistory(oldPaycheckMonth);
 
-      const newPaycheckMonth = addIncomeToHistoryBudget(
-        edittedPaycheck,
-        history
-      );
-      putHistory(newPaycheckMonth);
+      // Edits a paycheck in the income array by sending a PUT request to the API
+      await putIncome(edittedPaycheck);
+
+      // Updates the budget value for the given month in the history array by sending a PUT request to the API
+      if (edittedPaycheck.date === paycheck.date) {
+        // Update the history for the current month
+        const paycheckMonthInfo = dateToMonthInfo(edittedPaycheck.date);
+
+        // Get the income for the month of the editted paycheck
+        const paycheckMonthIncome = getMonthIncome(paycheckMonthInfo);
+
+        // Get the history for the month of the editted paycheck
+        const paycheckMonth = getMonthHistory(paycheckMonthInfo);
+
+        // Update the budget for the month the editted paycheck is in
+        const updatedCurrentBudget =
+          paycheckMonthIncome - paycheck.net + edittedPaycheck.net;
+        const updatedCurrentLeftover = parseFloat(
+          (updatedCurrentBudget - paycheckMonth.actual).toFixed(2)
+        );
+
+        // Update the budget and leftover in the history and send it to the API
+        const updatedMonth = {
+          ...paycheckMonth,
+          budget: updatedCurrentBudget,
+          leftover: updatedCurrentLeftover,
+        };
+
+        await putHistory(updatedMonth);
+      } else {
+        // Update the history for the old month
+        const oldMonthInfo = dateToMonthInfo(edittedPaycheck.date);
+
+        // Get the income for the month of the old paycheck
+        const oldIncome = getMonthIncome(oldMonthInfo);
+
+        // Get the history for the month of the old paycheck
+        const oldMonth = getMonthHistory(oldMonthInfo);
+
+        // Update the budget for the month the old paycheck is in
+        const updatedOldBudget = oldIncome - paycheck.net;
+        const updatedOldLeftover = parseFloat(
+          (updatedOldBudget - oldMonth.actual).toFixed(2)
+        );
+
+        // Update the budget and leftover in the history and send it to the API
+        const updatedOldMonth = {
+          ...oldMonth,
+          budget: updatedOldBudget,
+          leftover: updatedOldLeftover,
+        };
+
+        await putHistory(updatedOldMonth);
+
+        // Update the history for the editted month
+        const newMonthInfo = dateToMonthInfo(edittedPaycheck.date);
+
+        // Get the income for the month of the editted paycheck
+        const newIncome = getMonthIncome(newMonthInfo);
+
+        // Get the history for the month of the editted paycheck
+        const newMonth = getMonthHistory(newMonthInfo);
+
+        // Update the budget for the month the editted paycheck is in
+        const updatedNewBudget = newIncome - paycheck.net;
+        const updatedNewLeftover = parseFloat(
+          (updatedNewBudget - newMonth.actual).toFixed(2)
+        );
+
+        // Update the budget and leftover in the history and send it to the API
+        const updatedNewMonth = {
+          ...newMonth,
+          budget: updatedNewBudget,
+          leftover: updatedNewLeftover,
+        };
+
+        await putHistory(updatedNewMonth);
+      }
+
+      setShowEdit(false);
+    } catch (error) {
+      console.error("Error editting a paycheck: ", error);
+      return;
     }
-
-    setShowEdit(false);
   };
 
   return (

@@ -1,4 +1,4 @@
-import deleteIncomeFromHistoryBudget from "@/helpers/deleteIncomeFromHistoryBudget";
+import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
@@ -9,24 +9,45 @@ const DeleteIncomeModal = ({
   showDelete,
   setShowDelete,
   setShowDetails,
+  getMonthIncome,
 }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { history, putHistory } = useHistory(session.user.username);
+  const { putHistory, getMonthHistory } = useHistory(session.user.username);
 
   const closeDelete = () => {
     setShowDelete(false);
     setShowDetails(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     // Deletes a paycheck from the income array by sending a DELETE request to the API
-    deleteIncome(paycheck);
+    await deleteIncome(paycheck);
 
-    // Updates the budget value for the given month in the history array by sending a PUT request to the API
-    const paycheckMonth = deleteIncomeFromHistoryBudget(paycheck, history);
-    putHistory(paycheckMonth);
+    // Update the history for the paycheck's month
+    const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
+
+    // Get the income for the month of the paycheck
+    const monthIncome = getMonthIncome(paycheckMonthInfo);
+
+    // Get the history for the month of the paycheck
+    const paycheckMonth = getMonthHistory(paycheckMonthInfo);
+
+    // Update the budget for the month the paycheck is in
+    const updatedBudget = monthIncome - paycheck.net;
+    const updatedLeftover = parseFloat(
+      (updatedBudget - paycheckMonth.actual).toFixed(2)
+    );
+
+    // Update the budget and leftover in the history and send it to the API
+    const updatedMonth = {
+      ...paycheckMonth,
+      budget: updatedBudget,
+      leftover: updatedLeftover,
+    };
+
+    await putHistory(updatedMonth);
   };
 
   return (

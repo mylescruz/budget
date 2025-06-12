@@ -47,6 +47,7 @@ const InnerIncomeLayout = ({ year }) => {
     putIncome: putIncome,
     deleteIncome: deleteIncome,
     yearInfo: yearInfo,
+    getMonthIncome: getMonthIncome,
   };
 
   if (!session) {

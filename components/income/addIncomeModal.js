@@ -2,11 +2,10 @@ import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
-import addIncomeToHistoryBudget from "@/helpers/addIncomeToHistoryBudget";
 import { useSession } from "next-auth/react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import getMonthInfo from "@/helpers/getMonthInfo";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
+import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 
 const AddIncomeModal = ({
   income,
@@ -59,21 +58,16 @@ const AddIncomeModal = ({
       // Adds the new paycheck to the income array by sending a POST request to the API
       await postIncome(paycheck);
 
-      // Update the budget and categories for the month the paycheck is in
-      const paycheckDate = new Date(paycheck.date);
-      const paycheckMonthName = paycheckDate.toLocaleDateString("en-US", {
-        month: "long",
-        timeZone: "UTC",
-      });
-      const monthInfo = getMonthInfo(paycheckMonthName, yearInfo.year);
+      const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
 
-      const monthIncome = getMonthIncome(monthInfo);
+      // Get the income for the month of the paycheck
+      const monthIncome = getMonthIncome(paycheckMonthInfo);
 
-      const paycheckMonth = getMonthHistory(monthInfo);
-      // Add the paycheck's net income to the budget
+      // Get the history for the month of the paycheck
+      const paycheckMonth = getMonthHistory(paycheckMonthInfo);
+
+      // Update the budget for the month the paycheck is in
       const updatedBudget = monthIncome + paycheck.net;
-
-      // Update the leftover amount
       const updatedLeftover = parseFloat(
         (updatedBudget - paycheckMonth.actual).toFixed(2)
       );
