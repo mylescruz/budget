@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/layout/errorMessage";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
@@ -14,6 +15,7 @@ const DeleteTransactionModal = ({
   const { categories, putCategories } = useContext(CategoriesContext);
   const { deleteTransaction } = useContext(TransactionsContext);
   const [deletingTransaction, setDeletingTransaction] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const closeDelete = () => {
     setShowDelete(false);
@@ -33,7 +35,10 @@ const DeleteTransactionModal = ({
         categories
       );
       await putCategories(updatedCategories);
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -47,7 +52,8 @@ const DeleteTransactionModal = ({
         <>
           <Modal.Header closeButton>Delete Transaction</Modal.Header>
           <Modal.Body>
-            Are you sure you want to delete this transaction?
+            <p>Are you sure you want to delete this transaction?</p>
+            {errorOccurred && <ErrorMessage />}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="info" onClick={closeDelete}>

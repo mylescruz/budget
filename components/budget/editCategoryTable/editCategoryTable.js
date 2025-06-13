@@ -8,6 +8,7 @@ import useIncome from "@/hooks/useIncome";
 import { useSession } from "next-auth/react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/layout/loadingMessage";
+import ErrorModal from "@/components/layout/errorModal";
 
 const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -19,6 +20,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
   const [updatingCategories, setUpdatingCategories] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   /* 
         categoryValues is a reference array set up to update all the categories at the same time
@@ -102,7 +104,10 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
         // Updates the categories array with the editted categories by sending a PUT request to the API
         await putCategories(updatedCategories);
       }
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -214,6 +219,11 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
       <Modal show={updatingCategories} backdrop="static" centered>
         <LoadingMessage message="Updating these categories" />
       </Modal>
+
+      <ErrorModal
+        errorOccurred={errorOccurred}
+        setErrorOccurred={setErrorOccurred}
+      />
     </>
   );
 };

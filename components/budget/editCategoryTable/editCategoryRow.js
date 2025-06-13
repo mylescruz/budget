@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import AddSubcategoryForm from "./addSubcategoryForm";
 import EditSubcategoryRow from "./editSubcategoryRow";
 import PopUp from "@/components/layout/popUp";
 import LoadingMessage from "@/components/layout/loadingMessage";
+import ErrorModal from "@/components/layout/errorModal";
 
 const EditCategoryRow = ({
   category,
@@ -13,6 +14,7 @@ const EditCategoryRow = ({
   const [edittedCategory, setEdittedCategory] = useState(category);
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
   const [deletingCategory, setDeletingCategory] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   // The only category that cannot be deleted
   const dontDelete = "Guilt Free Spending";
@@ -99,7 +101,10 @@ const EditCategoryRow = ({
     try {
       // Removes a category from the categories array by sending a DELETE request to the API
       await deleteCategory(category);
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -232,6 +237,11 @@ const EditCategoryRow = ({
       <Modal show={deletingCategory} backdrop="static" centered>
         <LoadingMessage message="Deleting the category" />
       </Modal>
+
+      <ErrorModal
+        errorOccurred={errorOccurred}
+        setErrorOccurred={setErrorOccurred}
+      />
     </>
   );
 };

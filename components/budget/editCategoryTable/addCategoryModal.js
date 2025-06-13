@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/layout/errorMessage";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
@@ -27,6 +28,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
   const [subcategoryTotal, setSubcategoryTotal] = useState(0);
   const [addingCategory, setAddingCategory] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
     setNewCategory({ ...newCategory, [e.target.id]: e.target.value });
@@ -90,7 +92,10 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
       await postCategory(newCategory);
 
       closeModal();
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -253,6 +258,8 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
                   ))}
                 </Container>
               )}
+
+              {errorOccurred && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer>
               <Form.Group className="my-2">

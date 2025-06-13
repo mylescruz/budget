@@ -3,6 +3,7 @@ import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
+import ErrorMessage from "../layout/errorMessage";
 
 const DeleteIncomeModal = ({
   paycheck,
@@ -17,6 +18,7 @@ const DeleteIncomeModal = ({
 
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
   const [deletingPaycheck, setDeletingPaycheck] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const closeDelete = () => {
     setShowDelete(false);
@@ -55,7 +57,10 @@ const DeleteIncomeModal = ({
 
         await putHistory(updatedMonth);
       }
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -70,6 +75,7 @@ const DeleteIncomeModal = ({
           <Modal.Header closeButton>Delete Paycheck</Modal.Header>
           <Modal.Body>
             Are you sure you want to delete this paycheck?
+            {errorOccurred && <ErrorMessage />}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="info" onClick={closeDelete}>

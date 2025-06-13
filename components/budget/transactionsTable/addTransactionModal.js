@@ -6,6 +6,7 @@ import dateInfo from "@/helpers/dateInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import SelectCategoryOption from "./selectCategoryOption";
 import LoadingMessage from "@/components/layout/loadingMessage";
+import ErrorMessage from "@/components/layout/errorMessage";
 
 const AddTransactionModal = ({
   monthInfo,
@@ -15,6 +16,7 @@ const AddTransactionModal = ({
   const { categories, putCategories } = useContext(CategoriesContext);
   const { postTransaction } = useContext(TransactionsContext);
   const [addingTransaction, setAddingTransaction] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   // When adding a new transaction, the first category option should be the first one that is not fixed and doesn't have a subcategory
   const firstNotFixed = categories.find((category) => {
@@ -66,7 +68,9 @@ const AddTransactionModal = ({
 
       setTransaction(emptyTransaction);
       setAddTransactionClicked(false);
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -164,6 +168,7 @@ const AddTransactionModal = ({
                   </Form.Group>
                 </Col>
               </Row>
+              {errorOccurred && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer>
               <Form.Group className="my-2">

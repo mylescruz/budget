@@ -5,6 +5,7 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import SelectCategoryOption from "./selectCategoryOption";
 import LoadingMessage from "@/components/layout/loadingMessage";
+import ErrorMessage from "@/components/layout/errorMessage";
 
 const EditTransactionModal = ({
   transaction,
@@ -17,6 +18,7 @@ const EditTransactionModal = ({
   const { putTransaction } = useContext(TransactionsContext);
   const [edittedTransaction, setEdittedTransaction] = useState(transaction);
   const [updatingTransaction, setUpdatingTransaction] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const closeEdit = () => {
     setShowEdit(false);
@@ -45,7 +47,10 @@ const EditTransactionModal = ({
       } else {
         setShowEdit(true);
       }
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
@@ -147,6 +152,7 @@ const EditTransactionModal = ({
                   required
                 />
               </Form.Group>
+              {errorOccurred && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer>
               <Form.Group className="my-2">

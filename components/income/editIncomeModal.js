@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
+import ErrorMessage from "../layout/errorMessage";
 
 const EditIncomeModal = ({
   paycheck,
@@ -20,6 +21,7 @@ const EditIncomeModal = ({
   const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
   const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
     setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: e.target.value });
@@ -138,7 +140,9 @@ const EditIncomeModal = ({
       }
 
       setShowEdit(false);
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error("Error editting a paycheck: ", error);
       return;
     } finally {
@@ -234,6 +238,7 @@ const EditIncomeModal = ({
                   required
                 />
               </Form.Group>
+              {errorOccurred && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer>
               <Form.Group className="my-2">

@@ -7,6 +7,7 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import LoadingMessage from "../layout/loadingMessage";
+import ErrorMessage from "../layout/errorMessage";
 
 const AddIncomeModal = ({
   yearInfo,
@@ -31,6 +32,7 @@ const AddIncomeModal = ({
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
   const [addingPaycheck, setAddingPaycheck] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
     setPaycheck({ ...paycheck, [e.target.id]: e.target.value });
@@ -89,7 +91,9 @@ const AddIncomeModal = ({
 
       setAddPaycheckClicked(false);
       setPaycheck(emptyPaycheck);
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error("Error adding new income: ", error);
       return;
     } finally {
@@ -190,6 +194,7 @@ const AddIncomeModal = ({
                     required
                   />
                 </Form.Group>
+                {errorOccurred && <ErrorMessage />}
               </Modal.Body>
               <Modal.Footer>
                 <Form.Group className="my-2">

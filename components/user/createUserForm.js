@@ -2,6 +2,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
+import ErrorModal from "../layout/errorModal";
 
 const CreateUserForm = ({ csrfToken }) => {
   const emptyUser = {
@@ -24,6 +25,7 @@ const CreateUserForm = ({ csrfToken }) => {
   const [validPassword, setValidPassword] = useState(validated);
   const [validMatch, setValidMatch] = useState(validated);
   const [creatingUser, setCreatingUser] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const router = useRouter();
 
   const handleInput = (e) => {
@@ -55,18 +57,14 @@ const CreateUserForm = ({ csrfToken }) => {
 
   // Function to add user to S3
   const createUserS3 = async (newUser) => {
-    try {
-      await fetch(`/api/user/${newUser.username}`, {
-        method: "POST",
-        headers: {
-          Accept: "application.json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-    } catch (err) {
-      console.log("Error creating user: ", err);
-    }
+    await fetch(`/api/user/${newUser.username}`, {
+      method: "POST",
+      headers: {
+        Accept: "application.json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newUser),
+    });
   };
 
   const closeCreatingUser = () => {
@@ -130,11 +128,12 @@ const CreateUserForm = ({ csrfToken }) => {
 
       // Add the user to S3
       await createUserS3(newUser);
-    } catch (error) {
-      closeCreatingUser();
 
-      window.alert(error.message);
-      router.push("/auth/signIn");
+      setErrorOccurred(false);
+    } catch (error) {
+      setErrorOccurred(true);
+      console.error(error);
+      return;
     }
 
     // Redirect to sign in page
@@ -146,8 +145,6 @@ const CreateUserForm = ({ csrfToken }) => {
         csrfToken,
       });
 
-      closeCreatingUser();
-
       // Take user directly to the onboarding page when done creating their account
       if (response.ok) {
         router.push("/onboarding");
@@ -156,11 +153,14 @@ const CreateUserForm = ({ csrfToken }) => {
           "There was an issue with directly login. Please sign in using your new credentials."
         );
       }
-    } catch (error) {
-      closeCreatingUser();
 
-      window.alert(error.message);
+      setErrorOccurred(false);
+    } catch (error) {
+      setErrorOccurred(true);
+      console.error(error);
       router.push("/auth/signIn");
+    } finally {
+      closeCreatingUser();
     }
   };
 
@@ -256,6 +256,11 @@ const CreateUserForm = ({ csrfToken }) => {
           </div>
         </Modal.Body>
       </Modal>
+
+      <ErrorModal
+        errorOccurred={errorOccurred}
+        setErrorOccurred={setErrorOccurred}
+      />
     </>
   );
 };

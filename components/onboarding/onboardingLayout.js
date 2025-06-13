@@ -13,6 +13,7 @@ import {
 import useIncome from "@/hooks/useIncome";
 import { useSession } from "next-auth/react";
 import useUser from "@/hooks/useUser";
+import ErrorModal from "../layout/errorModal";
 
 const OnboardingInnerLayout = () => {
   const { data: session } = useSession();
@@ -32,6 +33,7 @@ const OnboardingInnerLayout = () => {
   const [completeOnboarding, setCompleteOnboarding] = useState(false);
   const [customChosen, setCustomChosen] = useState(false);
   const [enterCustom, setEnterCustom] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   // Functions to change screens in boarding
   const openIncome = () => {
@@ -63,14 +65,18 @@ const OnboardingInnerLayout = () => {
   const setBudget = async () => {
     // Add the user's paychecks to their income
     try {
-      newIncome.map((paycheck) => {
+      newIncome.forEach((paycheck) => {
         postIncome(paycheck);
       });
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error(
         "Error adding the new user's income during onboarding: ",
         error
       );
+      return;
     }
 
     // If a user entered custom categories, use a PUT request to update the categories
@@ -78,11 +84,15 @@ const OnboardingInnerLayout = () => {
     if (customChosen) {
       try {
         putCategories(newCategories);
+
+        setErrorOccurred(false);
       } catch (error) {
+        setErrorOccurred(true);
         console.error(
           "Error adding the new user's custom categories during onboarding: ",
           error
         );
+        return;
       }
     }
 
@@ -90,12 +100,12 @@ const OnboardingInnerLayout = () => {
     try {
       putUser(user);
       session.user.onboarded = true;
+
+      setErrorOccurred(false);
     } catch (error) {
+      setErrorOccurred(true);
       console.error("Error updating the user to be onboarded", error);
-      window.alert(
-        "Sorry there was an error onboarding you. Please try again!"
-      );
-      router.push("/onboarding");
+      return;
     }
 
     // Take user to their new budget
@@ -143,6 +153,11 @@ const OnboardingInnerLayout = () => {
           </Col>
         </Row>
       </Card>
+
+      <ErrorModal
+        errorOccurred={errorOccurred}
+        setErrorOccurred={setErrorOccurred}
+      />
     </>
   );
 };
