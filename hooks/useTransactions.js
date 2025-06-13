@@ -47,19 +47,9 @@ const useTransactions = (username, month, year) => {
   // Then it sets the transactions array to the array returned by the response
   const postTransaction = useCallback(
     async (newTransaction) => {
-      const date = new Date(newTransaction.date);
-      const transactionMonth = date.toLocaleDateString("en-US", {
-        month: "long",
-        timeZone: "UTC",
-      });
-      const transactionYear = date.toLocaleDateString("en-US", {
-        year: "numeric",
-        timeZone: "UTC",
-      });
-
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${transactionYear}/${transactionMonth}/transaction`,
+          `/api/transactions/${username}/${year}/${month}/transaction`,
           {
             method: "POST",
             headers: {
@@ -82,7 +72,7 @@ const useTransactions = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [transactions, username, redirectToErrorPage]
+    [year, month, transactions, username, redirectToErrorPage]
   );
 
   // PUT request that updates a transaction based on the username, year and month
@@ -130,19 +120,9 @@ const useTransactions = (username, month, year) => {
   // Then it sets the transactions array to the array returned by the response
   const deleteTransaction = useCallback(
     async (transactionToDelete) => {
-      const date = new Date(transactionToDelete.date);
-      const transactionMonth = date.toLocaleDateString("en-US", {
-        month: "long",
-        timeZone: "UTC",
-      });
-      const transactionYear = date.toLocaleDateString("en-US", {
-        year: "numeric",
-        timeZone: "UTC",
-      });
-
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${transactionYear}/${transactionMonth}/transaction`,
+          `/api/transactions/${username}/${year}/${month}/transaction`,
           {
             method: "DELETE",
             headers: {
@@ -170,7 +150,7 @@ const useTransactions = (username, month, year) => {
         redirectToErrorPage(error);
       }
     },
-    [transactions, username, redirectToErrorPage]
+    [year, month, transactions, username, redirectToErrorPage]
   );
 
   const updateTransactions = useCallback(
