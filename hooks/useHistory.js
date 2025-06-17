@@ -15,31 +15,20 @@ const useHistory = (username) => {
         if (rsp.ok) {
           const fetchedHistory = await rsp.json();
           setHistory(fetchedHistory);
-          setHistoryLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+        setHistory(null);
+        console.error(error);
+      } finally {
+        setHistoryLoading(false);
       }
     };
 
     getHistory();
   }, [username, router]);
-
-  const redirectToErrorPage = useCallback(
-    (error) => {
-      router.push({
-        pathname: "/error",
-        query: { message: error.message },
-      });
-    },
-    [router]
-  );
 
   // POST request that adds a month to the user's history based on the username
   // Then it sets the history array to the array returned by the response
@@ -58,16 +47,18 @@ const useHistory = (username) => {
         if (rsp.ok) {
           const addedHistory = await rsp.json();
           setHistory([...history, addedHistory]);
-          setHistoryLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setHistory(null);
+        console.error(error);
+      } finally {
+        setHistoryLoading(false);
       }
     },
-    [history, username, redirectToErrorPage]
+    [history, username]
   );
 
   // PUT request that updates a month's values in the user's history based on the username
@@ -96,16 +87,18 @@ const useHistory = (username) => {
           });
 
           setHistory(updatedHistory);
-          setHistoryLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setHistory(null);
+        console.error(error);
+      } finally {
+        setHistoryLoading(false);
       }
     },
-    [history, username, redirectToErrorPage]
+    [history, username]
   );
 
   // Function that returns a user's history for a single month based on the given month and year
