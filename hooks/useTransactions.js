@@ -1,11 +1,9 @@
 import dateSorter from "@/helpers/dateSorter";
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 const useTransactions = (username, month, year) => {
   const [transactions, setTransactions] = useState([]);
   const [transactionsLoading, setTransactionsLoading] = useState(true);
-  const router = useRouter();
 
   // GET request that returns the user's transaction based on the username, year and month
   useEffect(() => {
@@ -18,30 +16,19 @@ const useTransactions = (username, month, year) => {
         if (rsp.ok) {
           const fetchedTransactions = await rsp.json();
           setTransactions(dateSorter(fetchedTransactions));
-          setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+        setTransactions(null);
+        console.error(null);
+      } finally {
+        setTransactionsLoading(false);
       }
     };
     getTransactions();
-  }, [username, month, year, router]);
-
-  const redirectToErrorPage = useCallback(
-    (error) => {
-      router.push({
-        pathname: "/error",
-        query: { message: error.message },
-      });
-    },
-    [router]
-  );
+  }, [username, month, year]);
 
   // POST request that adds a new transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
@@ -63,16 +50,18 @@ const useTransactions = (username, month, year) => {
         if (rsp.ok) {
           const addedTransaction = await rsp.json();
           setTransactions(dateSorter([...transactions, addedTransaction]));
-          setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setTransactions(null);
+        console.error(error);
+      } finally {
+        setTransactionsLoading(false);
       }
     },
-    [year, month, transactions, username, redirectToErrorPage]
+    [year, month, transactions, username]
   );
 
   // PUT request that updates a transaction based on the username, year and month
@@ -104,16 +93,18 @@ const useTransactions = (username, month, year) => {
           });
 
           setTransactions(dateSorter(updatedTransactions));
-          setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setTransactions(null);
+        console.error(error);
+      } finally {
+        setTransactionsLoading(false);
       }
     },
-    [transactions, username, year, month, redirectToErrorPage]
+    [transactions, username, year, month]
   );
 
   // DELETE request that deletes a transaction based on the username, year and month
@@ -141,16 +132,18 @@ const useTransactions = (username, month, year) => {
           });
 
           setTransactions(dateSorter(updatedTransactions));
-          setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setTransactions(null);
+        console.error(error);
+      } finally {
+        setTransactionsLoading(false);
       }
     },
-    [year, month, transactions, username, redirectToErrorPage]
+    [year, month, transactions, username]
   );
 
   const updateTransactions = useCallback(
@@ -171,16 +164,18 @@ const useTransactions = (username, month, year) => {
         if (rsp.ok) {
           const updatedTransactions = await rsp.json();
           setTransactions(dateSorter(updatedTransactions));
-          setTransactionsLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setTransactions(null);
+        console.error(error);
+      } finally {
+        setTransactionsLoading(false);
       }
     },
-    [username, year, month, redirectToErrorPage]
+    [username, year, month]
   );
 
   return {

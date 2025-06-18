@@ -1,6 +1,6 @@
 import CategoryTable from "./categoryTable/categoryTable";
 import TransactionsTable from "./transactionsTable/transactionsTable";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import {
@@ -25,10 +25,23 @@ const InnerBudgetLayout = ({ monthInfo }) => {
   const router = useRouter();
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
-  const { transactionsLoading } = useContext(TransactionsContext);
+  const { transactions, transactionsLoading } = useContext(TransactionsContext);
   const [viewClicked, setViewClicked] = useState(false);
   const [viewText, setViewText] = useState("View Transactions");
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
+  const [nullTransactions, setNullTransactions] = useState(
+    transactions === null
+  );
+
+  // If there is an error loading the transaction data, show the user an error message
+  useEffect(() => {
+    if (transactions) {
+      setNullTransactions(false);
+    } else {
+      setNullTransactions(true);
+    }
+  }, [transactions]);
+
   const [editClicked, setEditClicked] = useState(false);
 
   // If there is no user session, redirect to the home page
@@ -124,7 +137,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
                 id="add-transaction-btn"
                 variant="primary"
                 onClick={addTransaction}
-                disabled={editClicked}
+                disabled={editClicked || nullTransactions}
               >
                 Add Transaction
               </Button>

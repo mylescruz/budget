@@ -6,6 +6,7 @@ import TransactionsTableRow from "./transactionsTableRow";
 
 const TransactionsTable = ({ monthInfo }) => {
   const { transactions } = useContext(TransactionsContext);
+
   return (
     <Table striped>
       <thead className="table-dark">
@@ -26,13 +27,22 @@ const TransactionsTable = ({ monthInfo }) => {
         </tr>
       </thead>
       <tbody>
-        {transactions.map((transaction) => (
-          <TransactionsTableRow
-            key={transaction.id}
-            transaction={transaction}
-            monthInfo={monthInfo}
-          />
-        ))}
+        {transactions ? (
+          transactions.map((transaction) => (
+            <TransactionsTableRow
+              key={transaction.id}
+              transaction={transaction}
+              monthInfo={monthInfo}
+            />
+          ))
+        ) : (
+          <tr>
+            <td colSpan={1} className="text-danger fw-bold text-center">
+              &#9432; There was an error loading your transactions. Please try
+              again later!
+            </td>
+          </tr>
+        )}
       </tbody>
     </Table>
   );
