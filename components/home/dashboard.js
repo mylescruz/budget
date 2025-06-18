@@ -134,7 +134,11 @@ const InnerDashboard = ({ monthInfo }) => {
                 <Card.Body>
                   <h4>
                     {monthInfo.month} Income:{" "}
-                    {currencyFormatter.format(monthIncome)}{" "}
+                    {monthIncome ? (
+                      <>{currencyFormatter.format(monthIncome)} </>
+                    ) : (
+                      <p className="text-danger fw-bold">Income Unavailable</p>
+                    )}
                   </h4>
                   <p>View your recent paychecks</p>
                   <Button as={Link} href="/income" variant="primary">

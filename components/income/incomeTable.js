@@ -17,12 +17,14 @@ const IncomeTable = ({
     let totalTaxes = 0;
     let totalNet = 0;
 
-    income.forEach((paycheck) => {
-      totalGross += paycheck.gross;
-      totalTaxes += paycheck.taxes;
-    });
+    if (income) {
+      income.forEach((paycheck) => {
+        totalGross += paycheck.gross;
+        totalTaxes += paycheck.taxes;
+      });
 
-    totalNet = totalGross - totalTaxes;
+      totalNet = totalGross - totalTaxes;
+    }
 
     return {
       totalGross: totalGross,
@@ -51,33 +53,46 @@ const IncomeTable = ({
           <th className="col-3 col-md-2 col-lg-2">Net Pay</th>
         </tr>
       </thead>
-      <tbody>
-        {income.map((paycheck) => (
-          <IncomeTableRow
-            key={paycheck.id}
-            paycheck={paycheck}
-            putIncome={putIncome}
-            deleteIncome={deleteIncome}
-            yearInfo={yearInfo}
-            getMonthIncome={getMonthIncome}
-          />
-        ))}
-      </tbody>
-      <tfoot>
-        <tr className="d-flex">
-          <th className="col-3 col-md-2">Total</th>
-          <th className="col-6 col-md-4"></th>
-          <th className="d-none d-md-block col-md-2">
-            {currencyFormatter.format(footerValues.totalGross)}
-          </th>
-          <th className="d-none d-md-block col-md-2">
-            {currencyFormatter.format(footerValues.totalTaxes)}
-          </th>
-          <th className="col-3 col-md-2">
-            {currencyFormatter.format(footerValues.totalNet)}
-          </th>
-        </tr>
-      </tfoot>
+      {income ? (
+        <>
+          <tbody>
+            {income.map((paycheck) => (
+              <IncomeTableRow
+                key={paycheck.id}
+                paycheck={paycheck}
+                putIncome={putIncome}
+                deleteIncome={deleteIncome}
+                yearInfo={yearInfo}
+                getMonthIncome={getMonthIncome}
+              />
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="d-flex">
+              <th className="col-3 col-md-2">Total</th>
+              <th className="col-6 col-md-4"></th>
+              <th className="d-none d-md-block col-md-2">
+                {currencyFormatter.format(footerValues.totalGross)}
+              </th>
+              <th className="d-none d-md-block col-md-2">
+                {currencyFormatter.format(footerValues.totalTaxes)}
+              </th>
+              <th className="col-3 col-md-2">
+                {currencyFormatter.format(footerValues.totalNet)}
+              </th>
+            </tr>
+          </tfoot>
+        </>
+      ) : (
+        <tbody>
+          <tr>
+            <td colSpan={4} className="text-danger fw-bold text-center">
+              &#9432; There was an error loading your paychecks. Please try
+              again later!
+            </td>
+          </tr>
+        </tbody>
+      )}
     </Table>
   );
 };

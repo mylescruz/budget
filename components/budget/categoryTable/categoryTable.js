@@ -77,12 +77,16 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
 
   // Sets the table's total budget and actual spent values
   const footerValues = useMemo(() => {
-    let totalActual = 0;
-    categories.forEach((category) => {
-      totalActual += parseFloat(category.actual);
-    });
+    if (monthIncome) {
+      let totalActual = 0;
+      categories.forEach((category) => {
+        totalActual += parseFloat(category.actual);
+      });
 
-    return { budget: monthIncome, actual: totalActual };
+      return { budget: monthIncome, actual: totalActual };
+    } else {
+      return null;
+    }
   }, [categories, monthIncome]);
 
   const handleEdit = () => {

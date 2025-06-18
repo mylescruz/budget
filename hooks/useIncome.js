@@ -1,11 +1,9 @@
 import dateSorter from "@/helpers/dateSorter";
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 const useIncome = (username, year) => {
   const [income, setIncome] = useState([]);
   const [incomeLoading, setIncomeLoading] = useState(true);
-  const router = useRouter();
 
   // GET request that returns all the income based on the username and year
   useEffect(() => {
@@ -16,31 +14,20 @@ const useIncome = (username, year) => {
         if (rsp.ok) {
           const fetchedIncome = await rsp.json();
           setIncome(dateSorter(fetchedIncome));
-          setIncomeLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+        setIncome(null);
+        console.error(error);
+      } finally {
+        setIncomeLoading(false);
       }
     };
 
     getIncome();
-  }, [username, year, router]);
-
-  const redirectToErrorPage = useCallback(
-    (error) => {
-      router.push({
-        pathname: "/error",
-        query: { message: error.message },
-      });
-    },
-    [router]
-  );
+  }, [username, year]);
 
   // POST request that adds a new paycheck based on the username and year
   // Then it sets the income array to the array returned by the response
@@ -59,16 +46,18 @@ const useIncome = (username, year) => {
         if (rsp.ok) {
           const addedPaycheck = await rsp.json();
           setIncome(dateSorter([...income, addedPaycheck]));
-          setIncomeLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setIncome(null);
+        console.error(error);
+      } finally {
+        setIncomeLoading(false);
       }
     },
-    [income, username, year, redirectToErrorPage]
+    [income, username, year]
   );
 
   // PUT request that updates a paycheck based on the username and year
@@ -97,16 +86,18 @@ const useIncome = (username, year) => {
           });
 
           setIncome(dateSorter(updatedIncome));
-          setIncomeLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setIncome(null);
+        console.error(error);
+      } finally {
+        setIncomeLoading(false);
       }
     },
-    [income, username, year, redirectToErrorPage]
+    [income, username, year]
   );
 
   // DELETE request that deletes a paycheck based on the username and year
@@ -131,16 +122,18 @@ const useIncome = (username, year) => {
           });
 
           setIncome(dateSorter(updatedIncome));
-          setIncomeLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        setIncome(null);
+        console.error(error);
+      } finally {
+        setIncomeLoading(false);
       }
     },
-    [income, username, year, redirectToErrorPage]
+    [income, username, year]
   );
 
   // Function that returns a user's income for a given month
@@ -148,24 +141,28 @@ const useIncome = (username, year) => {
     (monthInfo) => {
       let totalIncome = 0;
 
-      // Checks each paycheck to see if it falls within the month and year given
-      income.forEach((paycheck) => {
-        // Added a time component to the paycheck date avoid the automatic UTC timezone conversion
-        const paycheckDate = new Date(paycheck.date + "T00:00:00");
-        const paycheckMonth = paycheckDate.toLocaleString("default", {
-          month: "long",
+      if (income) {
+        // Checks each paycheck to see if it falls within the month and year given
+        income.forEach((paycheck) => {
+          // Added a time component to the paycheck date avoid the automatic UTC timezone conversion
+          const paycheckDate = new Date(paycheck.date + "T00:00:00");
+          const paycheckMonth = paycheckDate.toLocaleString("default", {
+            month: "long",
+          });
+          const paycheckYear = paycheckDate.getFullYear();
+
+          // If the paycheck month and year matches the given month, then include that income for the month
+          if (
+            paycheckMonth === monthInfo.month &&
+            paycheckYear === monthInfo.year
+          )
+            totalIncome += paycheck.net;
         });
-        const paycheckYear = paycheckDate.getFullYear();
 
-        // If the paycheck month and year matches the given month, then include that income for the month
-        if (
-          paycheckMonth === monthInfo.month &&
-          paycheckYear === monthInfo.year
-        )
-          totalIncome += paycheck.net;
-      });
-
-      return totalIncome;
+        return totalIncome;
+      } else {
+        return null;
+      }
     },
     [income]
   );

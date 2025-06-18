@@ -2,7 +2,7 @@ import useIncome from "@/hooks/useIncome";
 import IncomeTable from "./incomeTable";
 import AddIncomeModal from "./addIncomeModal";
 import { Button, Col, Row } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -27,6 +27,16 @@ const InnerIncomeLayout = ({ year }) => {
     getMonthIncome,
   } = useIncome(session.user.username, year);
   const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
+  const [nullIncome, setNullIncome] = useState(income === null);
+
+  useEffect(() => {
+    if (income) {
+      setNullIncome(false);
+    } else {
+      setNullIncome(true);
+    }
+  }, [income]);
+
   const yearInfo = getYearInfo(year);
 
   const addPay = () => {
@@ -68,7 +78,12 @@ const InnerIncomeLayout = ({ year }) => {
 
         <Row className="text-center">
           <Col>
-            <Button id="add-paycheck-btn" variant="primary" onClick={addPay}>
+            <Button
+              id="add-paycheck-btn"
+              variant="primary"
+              onClick={addPay}
+              disabled={nullIncome}
+            >
               Add Paycheck
             </Button>
           </Col>
