@@ -1,10 +1,8 @@
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 const useHistory = (username) => {
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
-  const router = useRouter();
 
   // GET request that returns the user's history based on the username
   useEffect(() => {
@@ -28,7 +26,7 @@ const useHistory = (username) => {
     };
 
     getHistory();
-  }, [username, router]);
+  }, [username]);
 
   // POST request that adds a month to the user's history based on the username
   // Then it sets the history array to the array returned by the response

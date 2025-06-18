@@ -49,13 +49,13 @@ const HistoryLayout = () => {
     };
 
     // Checks if the current dates' month and year is already history array
-    const monthInHistory = () => {
+    const isMonthInHistory = () => {
       const foundMonth = getMonthHistory(monthInfo);
 
       return foundMonth !== undefined;
     };
 
-    if (!historyLoading && !monthInHistory()) {
+    if (!historyLoading && !isMonthInHistory() && history !== null) {
       addNewHistoryMonth();
     }
   }, [history, historyLoading, postHistory, getMonthHistory, getMonthIncome]);
