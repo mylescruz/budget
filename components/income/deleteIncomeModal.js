@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
+import { useState } from "react";
 
 const DeleteIncomeModal = ({
   paycheck,
