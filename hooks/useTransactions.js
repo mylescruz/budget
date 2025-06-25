@@ -1,4 +1,3 @@
-import dateSorter from "@/helpers/dateSorter";
 import { useCallback, useEffect, useState } from "react";
 
 const useTransactions = (username, month, year) => {
@@ -15,7 +14,7 @@ const useTransactions = (username, month, year) => {
 
         if (rsp.ok) {
           const fetchedTransactions = await rsp.json();
-          setTransactions(dateSorter(fetchedTransactions));
+          setTransactions(fetchedTransactions);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -49,7 +48,7 @@ const useTransactions = (username, month, year) => {
 
         if (rsp.ok) {
           const addedTransaction = await rsp.json();
-          setTransactions(dateSorter([...transactions, addedTransaction]));
+          setTransactions([...transactions, addedTransaction]);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -92,7 +91,7 @@ const useTransactions = (username, month, year) => {
             }
           });
 
-          setTransactions(dateSorter(updatedTransactions));
+          setTransactions(updatedTransactions);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -131,7 +130,7 @@ const useTransactions = (username, month, year) => {
             return transaction.id !== deletedTransaction.id;
           });
 
-          setTransactions(dateSorter(updatedTransactions));
+          setTransactions(updatedTransactions);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -163,7 +162,7 @@ const useTransactions = (username, month, year) => {
 
         if (rsp.ok) {
           const updatedTransactions = await rsp.json();
-          setTransactions(dateSorter(updatedTransactions));
+          setTransactions(updatedTransactions);
         } else {
           const message = await rsp.text();
           throw new Error(message);

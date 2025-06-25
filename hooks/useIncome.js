@@ -1,4 +1,3 @@
-import dateSorter from "@/helpers/dateSorter";
 import { useCallback, useEffect, useState } from "react";
 
 const useIncome = (username, year) => {
@@ -13,7 +12,7 @@ const useIncome = (username, year) => {
 
         if (rsp.ok) {
           const fetchedIncome = await rsp.json();
-          setIncome(dateSorter(fetchedIncome));
+          setIncome(fetchedIncome);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -45,7 +44,7 @@ const useIncome = (username, year) => {
 
         if (rsp.ok) {
           const addedPaycheck = await rsp.json();
-          setIncome(dateSorter([...income, addedPaycheck]));
+          setIncome([...income, addedPaycheck]);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -85,7 +84,7 @@ const useIncome = (username, year) => {
             }
           });
 
-          setIncome(dateSorter(updatedIncome));
+          setIncome(updatedIncome);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -121,7 +120,7 @@ const useIncome = (username, year) => {
             return paycheck.id !== deletedPaycheck.id;
           });
 
-          setIncome(dateSorter(updatedIncome));
+          setIncome(updatedIncome);
         } else {
           const message = await rsp.text();
           throw new Error(message);
