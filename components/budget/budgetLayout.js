@@ -1,7 +1,7 @@
 import CategoryTable from "./categoryTable/categoryTable";
 import TransactionsTable from "./transactionsTable/transactionsTable";
 import { useContext, useEffect, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import {
   CategoriesContext,
@@ -107,55 +107,85 @@ const InnerBudgetLayout = ({ monthInfo }) => {
         </p>
       </aside>
 
-      <Row>
-        <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 mt-4">
-          <CategoryPieChart categories={categories} />
-        </Col>
-        <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
-          {!editClicked ? (
-            <CategoryTable {...categoryTableProps} />
-          ) : (
-            <EditCategoryTable {...editCategoryTableProps} />
-          )}
-        </Col>
-      </Row>
-
-      {!editClicked && (
+      {categories ? (
         <>
-          <Row className="option-buttons text-center">
-            <Col>
-              <Button
-                id="view-transactions-btn"
-                variant="secondary"
-                onClick={toggleTransactions}
-              >
-                {viewText}
-              </Button>
+          <Row>
+            <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 mt-4">
+              <CategoryPieChart categories={categories} />
             </Col>
-            <Col>
-              <Button
-                id="add-transaction-btn"
-                variant="primary"
-                onClick={addTransaction}
-                disabled={editClicked || nullTransactions}
-              >
-                Add Transaction
-              </Button>
+            <Col className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
+              {!editClicked ? (
+                <CategoryTable {...categoryTableProps} />
+              ) : (
+                <EditCategoryTable {...editCategoryTableProps} />
+              )}
             </Col>
           </Row>
 
-          {viewClicked && (
-            <Row className="d-flex">
-              <Col className="col-12 col-xl-10 mx-auto">
-                <TransactionsTable {...transactionsTableProps} />
-              </Col>
-            </Row>
+          {!editClicked && (
+            <>
+              <Row className="option-buttons text-center">
+                <Col>
+                  <Button
+                    id="view-transactions-btn"
+                    variant="secondary"
+                    onClick={toggleTransactions}
+                  >
+                    {viewText}
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    id="add-transaction-btn"
+                    variant="primary"
+                    onClick={addTransaction}
+                    disabled={editClicked || nullTransactions}
+                  >
+                    Add Transaction
+                  </Button>
+                </Col>
+              </Row>
+
+              {viewClicked && (
+                <Row className="d-flex">
+                  <Col className="col-12 col-xl-10 mx-auto">
+                    <TransactionsTable {...transactionsTableProps} />
+                  </Col>
+                </Row>
+              )}
+            </>
+          )}
+
+          {addTransactionClicked && (
+            <AddTransactionModal {...addTransactionModalProps} />
           )}
         </>
-      )}
-
-      {addTransactionClicked && (
-        <AddTransactionModal {...addTransactionModalProps} />
+      ) : (
+        <Row className="d-flex">
+          <Col className="col-12 col-xl-10 mx-auto">
+            <Table striped className="mb-4">
+              <thead className="table-dark">
+                <tr className="d-flex">
+                  <th className="col-6">Category</th>
+                  <th className="d-none d-md-block col-md-2">Budget</th>
+                  <th className="col-3 col-md-2">Spent</th>
+                  <th className="col-3 col-md-2 cell">Remaining</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colSpan={1} className="text-danger fw-bold text-center">
+                    &#9432; There was an error loading your categories. Please
+                    try again later!
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+          <Col className="col-12 col-xl-10 mx-auto">
+            <TransactionsTable {...transactionsTableProps} />
+          </Col>
+        </Row>
       )}
     </Container>
   );

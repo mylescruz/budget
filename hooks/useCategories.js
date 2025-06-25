@@ -1,11 +1,9 @@
 import categorySorter from "@/helpers/categorySorter";
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 const useCategories = (username, month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const router = useRouter();
 
   // GET request that returns all the categories based on the username, year and month
   useEffect(() => {
@@ -16,31 +14,20 @@ const useCategories = (username, month, year) => {
         if (rsp.ok) {
           const fetchedCategories = await rsp.json();
           setCategories(categorySorter(fetchedCategories));
-          setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+        console.error(error);
+        setCategories(null);
+      } finally {
+        setCategoriesLoading(false);
       }
     };
 
     getCategories();
-  }, [username, month, year, router]);
-
-  const redirectToErrorPage = useCallback(
-    (error) => {
-      router.push({
-        pathname: "/error",
-        query: { message: error.message },
-      });
-    },
-    [router]
-  );
+  }, [username, month, year]);
 
   // POST request that adds a new category based on the username, year and month
   // Then it sets the categories array to the array returned by the response
@@ -62,16 +49,18 @@ const useCategories = (username, month, year) => {
         if (rsp.ok) {
           const addedCategory = await rsp.json();
           setCategories(categorySorter([...categories, addedCategory]));
-          setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        console.error(error);
+        setCategories(null);
+      } finally {
+        setCategoriesLoading(false);
       }
     },
-    [categories, username, year, month, redirectToErrorPage]
+    [categories, username, year, month]
   );
 
   // PUT request that updates all the categories based on the username, year and month
@@ -94,16 +83,18 @@ const useCategories = (username, month, year) => {
         if (rsp.ok) {
           const updatedCategories = await rsp.json();
           setCategories(categorySorter(updatedCategories));
-          setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        console.error(error);
+        setCategories(null);
+      } finally {
+        setCategoriesLoading(false);
       }
     },
-    [username, year, month, redirectToErrorPage]
+    [username, year, month]
   );
 
   // DELETE request that deletes a category based on the username, year and month
@@ -129,16 +120,18 @@ const useCategories = (username, month, year) => {
             return category.id !== deletedCategory.id;
           });
           setCategories(categorySorter(updatedCategories));
-          setCategoriesLoading(false);
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        redirectToErrorPage(error);
+        console.error(error);
+        setCategories(null);
+      } finally {
+        setCategoriesLoading(false);
       }
     },
-    [categories, username, year, month, redirectToErrorPage]
+    [categories, username, year, month]
   );
 
   return {
