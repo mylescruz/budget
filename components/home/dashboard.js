@@ -170,15 +170,15 @@ const InnerDashboard = ({ monthInfo }) => {
             <Col className="col-12">
               <Card className="my-2 card-background">
                 <Card.Body>
-                  <h4>History</h4>
-                  <p>View your budget for previous months</p>
+                  <h4>Summary</h4>
+                  <p>View your total spending for the year</p>
                   <Button
                     as={Link}
-                    href="/history"
+                    href="/summary"
                     variant="primary"
                     className=""
                   >
-                    History
+                    Summary
                   </Button>
                 </Card.Body>
               </Card>

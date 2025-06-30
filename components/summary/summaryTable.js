@@ -29,9 +29,9 @@ const SummaryTable = ({ summary }) => {
       <thead className="table-dark">
         <tr className="d-flex">
           <th className="col-6">Category</th>
-          <th className="d-none d-md-block col-md-2">Budget</th>
+          <th className="col-3 col-md-2">Budget</th>
           <th className="col-3 col-md-2">Actual</th>
-          <th className="col-3 col-md-2 cell">Remaining</th>
+          <th className="d-none d-md-block col-md-2 cell">Remaining</th>
         </tr>
       </thead>
       <tbody>
@@ -73,14 +73,14 @@ const SummaryTable = ({ summary }) => {
       <tfoot className="table-dark">
         <tr className="d-flex">
           <th className="col-6">Totals</th>
-          <th className="d-none d-md-block col-md-2">
+          <th className="col-3 col-md-2 cell">
             {currencyFormatter.format(totalBudget)}
           </th>
-          <th className="col-3 col-md-2">
+          <th className="col-3 col-md-2 cell">
             {currencyFormatter.format(totalActual)}
           </th>
           <th
-            className={`col-3 col-md-2 cell ${totalBudget - totalActual > 0 ? "text-white" : "text-danger fw-bold"}`}
+            className={`d-none d-md-block col-md-2 cell ${totalBudget - totalActual > 0 ? "text-white" : "text-danger"}`}
           >
             {currencyFormatter.format(totalBudget - totalActual)}
           </th>
