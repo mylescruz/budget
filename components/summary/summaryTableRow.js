@@ -65,7 +65,14 @@ const SummaryTableRow = ({ category }) => {
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
-          <SubcategoryRow key={subcategory.id} subcategory={subcategory} />
+          <tr key={subcategory.id} className="d-flex">
+            <th className="col-6 cell text-end">{subcategory.name}</th>
+            <td className="col-3 col-md-2"></td>
+            <td className="col-3 col-md-2 text-center">
+              {currencyFormatter.format(subcategory.actual)}
+            </td>
+            <td className="d-none d-md-block col-md-2"></td>
+          </tr>
         ))}
     </>
   );

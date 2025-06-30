@@ -14,7 +14,7 @@ const IncomeTable = ({
   yearInfo,
   getMonthIncome,
 }) => {
-  const [sortedIncome, setSortedIncome] = useState(income);
+  const [sortedIncome, setSortedIncome] = useState(aToZDateSorter(income));
   const [sortDirection, setSortDirection] = useState(true);
   const sortAscending = useRef(true);
 

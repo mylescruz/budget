@@ -10,7 +10,9 @@ import styles from "@/styles/budget/transactionsTable/transactionsTable.module.c
 const TransactionsTable = ({ monthInfo }) => {
   const { transactions } = useContext(TransactionsContext);
 
-  const [sortedTransactions, setSortedTransactions] = useState(transactions);
+  const [sortedTransactions, setSortedTransactions] = useState(
+    aToZDateSorter(transactions)
+  );
   const [sortDirection, setSortDirection] = useState(true);
   const sortAscending = useRef(true);
 
