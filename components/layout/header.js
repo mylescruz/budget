@@ -68,6 +68,9 @@ const Header = () => {
                 <Nav.Link as={Link} href="/income" onClick={linkClicked}>
                   Income
                 </Nav.Link>
+                <Nav.Link as={Link} href="/summary" onClick={linkClicked}>
+                  Summary
+                </Nav.Link>
                 <Nav.Link as={Link} href="/history" onClick={linkClicked}>
                   History
                 </Nav.Link>
