@@ -1,13 +1,7 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryTableRow from "./categoryTableRow";
 import CategoryTableFooter from "./categoryTableFooter";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FixedCategoryTableRow from "./fixedCategoryTableRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import useIncome from "@/hooks/useIncome";
@@ -22,12 +16,8 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
 
   const [showFixedExpenses, setShowFixedExpenses] = useState(true);
   const [showVariableExpenses, setShowVariableExpenses] = useState(true);
-  const { categories, categoriesLoading, putCategories } =
-    useContext(CategoriesContext);
-  const { income, incomeLoading, getMonthIncome } = useIncome(
-    session.user.username,
-    monthInfo.year
-  );
+  const { categories, categoriesLoading } = useContext(CategoriesContext);
+  const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
   const { historyLoading, putHistory, getMonthHistory } = useHistory(
     session.user.username
   );
@@ -74,20 +64,6 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
     monthInfo,
     putHistory,
   ]);
-
-  // Sets the table's total budget and actual spent values
-  const footerValues = useMemo(() => {
-    if (monthIncome) {
-      let totalActual = 0;
-      categories.forEach((category) => {
-        totalActual += parseFloat(category.actual);
-      });
-
-      return { budget: monthIncome, actual: totalActual };
-    } else {
-      return null;
-    }
-  }, [categories, monthIncome]);
 
   const handleEdit = () => {
     setEditClicked(true);
@@ -198,7 +174,10 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
           )}
       </tbody>
       <tfoot className="table-dark">
-        <CategoryTableFooter footerValues={footerValues} />
+        <CategoryTableFooter
+          getMonthIncome={getMonthIncome}
+          monthInfo={monthInfo}
+        />
       </tfoot>
     </Table>
   );
