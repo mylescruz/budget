@@ -10,7 +10,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
 
-const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
+const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
@@ -34,7 +34,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
     try {
       e.preventDefault();
 
-      setEditClicked(false);
+      setEditCategories(false);
 
       // If any category was edited, make a PUT request to the categories API endpoint
       if (categoryValues.current.length > 0) {
@@ -142,7 +142,7 @@ const EditCategoryTable = ({ setEditClicked, monthInfo }) => {
   };
 
   const closeEdit = () => {
-    setEditClicked(false);
+    setEditCategories(false);
   };
 
   return (

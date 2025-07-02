@@ -8,7 +8,7 @@ import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
 import PopUp from "@/components/layout/popUp";
 
-const CategoryTable = ({ setEditClicked, monthInfo }) => {
+const CategoryTable = ({ setEditCategories, monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
@@ -62,7 +62,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
   ]);
 
   const handleEdit = () => {
-    setEditClicked(true);
+    setEditCategories(true);
   };
 
   const displayFixedExpenses = () => {

@@ -14,7 +14,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import Loading from "../layout/loading";
 import { useContext, useEffect, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
-import AddTransactionModal from "../budget/transactionsTable/addTransactionModal";
+import AddTransactionModal from "../budget/transactions/addTransactionModal";
 import {
   TransactionsContext,
   TransactionsProvider,

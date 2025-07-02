@@ -5,7 +5,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsTableRow from "./transactionsTableRow";
 import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
-import styles from "@/styles/budget/transactionsTable/transactionsTable.module.css";
+import styles from "@/styles/budget/transactions/transactionsTable.module.css";
 
 const TransactionsTable = ({ monthInfo }) => {
   const { transactions } = useContext(TransactionsContext);
@@ -61,22 +61,13 @@ const TransactionsTable = ({ monthInfo }) => {
         </tr>
       </thead>
       <tbody>
-        {transactions ? (
-          sortedTransactions.map((transaction) => (
-            <TransactionsTableRow
-              key={transaction.id}
-              transaction={transaction}
-              monthInfo={monthInfo}
-            />
-          ))
-        ) : (
-          <tr>
-            <td colSpan={1} className="text-danger fw-bold text-center">
-              &#9432; There was an error loading your transactions. Please try
-              again later!
-            </td>
-          </tr>
-        )}
+        {sortedTransactions.map((transaction) => (
+          <TransactionsTableRow
+            key={transaction.id}
+            transaction={transaction}
+            monthInfo={monthInfo}
+          />
+        ))}
       </tbody>
     </Table>
   );
