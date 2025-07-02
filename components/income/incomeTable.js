@@ -15,6 +15,11 @@ const IncomeTable = ({
   getMonthIncome,
 }) => {
   const [sortedIncome, setSortedIncome] = useState(aToZDateSorter(income));
+  const [incomeTotals, setIncomeTotals] = useState({
+    totalGross: 0,
+    totalTaxes: 0,
+    totalNet: 0,
+  });
   const [sortDirection, setSortDirection] = useState(true);
   const sortAscending = useRef(true);
 
@@ -25,26 +30,25 @@ const IncomeTable = ({
     }
   }, [income]);
 
-  // Sets the table's total gross income, taxes and net income
-  const footerValues = useMemo(() => {
-    let totalGross = 0;
-    let totalTaxes = 0;
-    let totalNet = 0;
-
+  // Sets a user's total gross income, taxes and net income
+  useEffect(() => {
     if (income) {
-      income.forEach((paycheck) => {
-        totalGross += paycheck.gross;
-        totalTaxes += paycheck.taxes;
-      });
+      let grossTotal = 0;
+      let taxesTotal = 0;
 
-      totalNet = totalGross - totalTaxes;
+      if (income) {
+        income.forEach((paycheck) => {
+          grossTotal += paycheck.gross;
+          taxesTotal += paycheck.taxes;
+        });
+
+        setIncomeTotals({
+          totalGross: grossTotal,
+          totalTaxes: taxesTotal,
+          totalNet: grossTotal - taxesTotal,
+        });
+      }
     }
-
-    return {
-      totalGross: totalGross,
-      totalTaxes: totalTaxes,
-      totalNet: totalNet,
-    };
   }, [income]);
 
   const sortIncomeDates = () => {
@@ -104,13 +108,13 @@ const IncomeTable = ({
               <th className="col-3 col-md-2">Total</th>
               <th className="col-6 col-md-4"></th>
               <th className="d-none d-md-block col-md-2">
-                {currencyFormatter.format(footerValues.totalGross)}
+                {currencyFormatter.format(incomeTotals.totalGross)}
               </th>
               <th className="d-none d-md-block col-md-2">
-                {currencyFormatter.format(footerValues.totalTaxes)}
+                {currencyFormatter.format(incomeTotals.totalTaxes)}
               </th>
               <th className="col-3 col-md-2">
-                {currencyFormatter.format(footerValues.totalNet)}
+                {currencyFormatter.format(incomeTotals.totalNet)}
               </th>
             </tr>
           </tfoot>
