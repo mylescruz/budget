@@ -6,9 +6,13 @@ import { useEffect, useState } from "react";
 import currencyFormatter from "@/helpers/currencyFormatter";
 
 const SummaryTable = ({ summary }) => {
-  const [totalBudget, setTotalBudget] = useState(0);
-  const [totalActual, setTotalActual] = useState(0);
+  const [summaryTotals, setSummaryTotals] = useState({
+    budget: 0,
+    actual: 0,
+    remaining: 0,
+  });
 
+  // Get the totals for the budget, actual value spent and the remaining value for all categories
   useEffect(() => {
     if (summary) {
       let totalActual = 0;
@@ -19,8 +23,11 @@ const SummaryTable = ({ summary }) => {
         totalActual += parseFloat(category.actual);
       });
 
-      setTotalBudget(totalBudget);
-      setTotalActual(totalActual);
+      setSummaryTotals({
+        budget: totalBudget,
+        actual: totalActual,
+        remaining: totalBudget - totalActual,
+      });
     }
   }, [summary]);
 
@@ -30,7 +37,7 @@ const SummaryTable = ({ summary }) => {
         <tr className="d-flex">
           <th className="col-6">Category</th>
           <th className="col-3 col-md-2">Budget</th>
-          <th className="col-3 col-md-2">Actual</th>
+          <th className="col-3 col-md-2">Spent</th>
           <th className="d-none d-md-block col-md-2 cell">Remaining</th>
         </tr>
       </thead>
@@ -74,15 +81,15 @@ const SummaryTable = ({ summary }) => {
         <tr className="d-flex">
           <th className="col-6">Totals</th>
           <th className="col-3 col-md-2 cell">
-            {currencyFormatter.format(totalBudget)}
+            {currencyFormatter.format(summaryTotals.budget)}
           </th>
           <th className="col-3 col-md-2 cell">
-            {currencyFormatter.format(totalActual)}
+            {currencyFormatter.format(summaryTotals.actual)}
           </th>
           <th
-            className={`d-none d-md-block col-md-2 cell ${totalBudget - totalActual > 0 ? "text-white" : "text-danger"}`}
+            className={`d-none d-md-block col-md-2 cell ${summaryTotals.remaining > 0 ? "text-white" : "text-danger"}`}
           >
-            {currencyFormatter.format(totalBudget - totalActual)}
+            {currencyFormatter.format(summaryTotals.remaining)}
           </th>
         </tr>
       </tfoot>

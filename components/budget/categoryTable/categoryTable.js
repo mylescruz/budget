@@ -4,9 +4,7 @@ import CategoryTableFooter from "./categoryTableFooter";
 import React, { useContext, useEffect, useState } from "react";
 import FixedCategoryTableRow from "./fixedCategoryTableRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import useIncome from "@/hooks/useIncome";
 import useHistory from "@/hooks/useHistory";
-import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { useSession } from "next-auth/react";
 import PopUp from "@/components/layout/popUp";
 
@@ -17,11 +15,9 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
   const [showFixedExpenses, setShowFixedExpenses] = useState(true);
   const [showVariableExpenses, setShowVariableExpenses] = useState(true);
   const { categories, categoriesLoading } = useContext(CategoriesContext);
-  const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
   const { historyLoading, putHistory, getMonthHistory } = useHistory(
     session.user.username
   );
-  const monthIncome = getMonthIncome(monthInfo);
 
   // Updates the budget and the money actual spent in the history array when the categories array changes
   useEffect(() => {
@@ -104,9 +100,9 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
               </Col>
             </Row>
           </th>
-          <th className="d-none d-md-block col-md-2">Budget</th>
+          <th className="col-3 col-md-2">Budget</th>
           <th className="col-3 col-md-2">Spent</th>
-          <th className="col-3 col-md-2 cell">Remaining</th>
+          <th className="d-none d-md-block col-md-2 cell">Remaining</th>
         </tr>
       </thead>
       <tbody>
@@ -174,10 +170,7 @@ const CategoryTable = ({ setEditClicked, monthInfo }) => {
           )}
       </tbody>
       <tfoot className="table-dark">
-        <CategoryTableFooter
-          getMonthIncome={getMonthIncome}
-          monthInfo={monthInfo}
-        />
+        <CategoryTableFooter monthInfo={monthInfo} />
       </tfoot>
     </Table>
   );

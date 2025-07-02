@@ -60,7 +60,7 @@ const CategoryTableRow = ({ category }) => {
           </Row>
         </th>
         <td
-          className={`d-none d-md-block col-md-2 cell fw-bold ${category.budget < 0 && "text-danger "}`}
+          className={`col-3 col-md-2 cell fw-bold ${category.budget < 0 && "text-danger "}`}
         >
           {currencyFormatter.format(category.budget)}
         </td>
@@ -68,7 +68,7 @@ const CategoryTableRow = ({ category }) => {
           {currencyFormatter.format(category.actual)}
         </td>
         <td
-          className={`col-3 col-md-2 cell ${category.budget - category.actual < 0 && "text-danger fw-bold"}`}
+          className={`d-none d-md-block col-md-2 cell ${category.budget - category.actual < 0 && "text-danger fw-bold"}`}
         >
           {currencyFormatter.format(category.budget - category.actual)}
         </td>

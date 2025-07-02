@@ -1,38 +1,48 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
+import useIncome from "@/hooks/useIncome";
+import { useSession } from "next-auth/react";
 import { useContext, useEffect, useState } from "react";
 
-const CategoryFooter = ({ getMonthIncome, monthInfo }) => {
+const CategoryFooter = ({ monthInfo }) => {
+  // Using NextAuth.js to authenticate a user's session
+  const { data: session } = useSession();
+
   const { categories } = useContext(CategoriesContext);
-  const [footerValues, setFooterValue] = useState({
+  const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
+  const [categoryTotals, setCategoryTotals] = useState({
     budget: 0,
     actual: 0,
-    difference: 0,
+    remaining: 0,
   });
 
   // Get the budget, actual value spent and the remaining value for each category
   useEffect(() => {
     if (categories) {
-      let actualValue = 0;
+      let totalActual = 0;
 
       categories.forEach((category) => {
-        actualValue += category.actual;
+        totalActual += category.actual;
       });
 
       const budget = getMonthIncome(monthInfo);
 
-      setFooterValue({
-        budget: budget,
-        actual: actualValue,
-        difference: budget - actualValue,
-      });
+      if (budget !== null) {
+        setCategoryTotals({
+          budget: budget,
+          actual: totalActual,
+          remaining: budget - totalActual,
+        });
+      } else {
+        setCategoryTotals(null);
+      }
     }
   }, [categories, getMonthIncome, monthInfo]);
 
   return (
     <>
-      {footerValues ? (
+      {categoryTotals ? (
         <tr className="d-flex">
           <th className="col-6 cell">
             Total
@@ -43,16 +53,16 @@ const CategoryFooter = ({ getMonthIncome, monthInfo }) => {
               <span> &#9432;</span>
             </PopUp>
           </th>
-          <td className="d-none d-md-block col-md-2 cell">
-            {currencyFormatter.format(footerValues.budget)}
+          <td className="col-3 col-md-2 cell">
+            {currencyFormatter.format(categoryTotals.budget)}
           </td>
           <td className="col-3 col-md-2 cell">
-            {currencyFormatter.format(footerValues.actual)}
+            {currencyFormatter.format(categoryTotals.actual)}
           </td>
           <td
-            className={`col-3 col-md-2 cell ${footerValues.difference > 0 ? "text-white" : "text-danger fw-bold"}`}
+            className={`d-none d-md-block col-md-2 cell ${categoryTotals.remaining > 0 ? "text-white" : "text-danger fw-bold"}`}
           >
-            {currencyFormatter.format(footerValues.difference)}
+            {currencyFormatter.format(categoryTotals.remaining)}
           </td>
         </tr>
       ) : (
