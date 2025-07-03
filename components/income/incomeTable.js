@@ -14,7 +14,7 @@ const IncomeTable = ({
   yearInfo,
   getMonthIncome,
 }) => {
-  const [sortedIncome, setSortedIncome] = useState(aToZDateSorter(income));
+  const [sortedIncome, setSortedIncome] = useState(income);
   const [incomeTotals, setIncomeTotals] = useState({
     totalGross: 0,
     totalTaxes: 0,
