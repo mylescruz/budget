@@ -22,10 +22,8 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
   const [updatingCategories, setUpdatingCategories] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
-  /* 
-        categoryValues is a reference array set up to update all the categories at the same time
-        It needs to survive the re-renders that occur each time a category changes
-    */
+  // categoryValues is a reference array set up to update multiple categories at the same time
+  // It needs to survive the re-renders that occur each time a category changes
   const categoryValues = useRef([]);
 
   const updateCategoryTable = async (e) => {
@@ -46,53 +44,57 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
 
           // Maps through the transactions array and if a category has a transaction that matches the changed category, change that transaction's category
           if (foundIndex !== -1) {
-            let anyCategoryNameChanged = false;
+            if (category.fixed) {
+              return categoryValues.current[foundIndex];
+            } else {
+              let anyCategoryNameChanged = false;
 
-            const updatedTransactions = transactions.map((transaction) => {
-              if (transaction.category === category.name) {
-                if (
-                  category.id === categoryValues.current[foundIndex].id &&
-                  transaction.category !==
-                    categoryValues.current[foundIndex].name
+              const updatedTransactions = transactions.map((transaction) => {
+                if (transaction.category === category.name) {
+                  if (
+                    category.id === categoryValues.current[foundIndex].id &&
+                    transaction.category !==
+                      categoryValues.current[foundIndex].name
+                  ) {
+                    transaction.category =
+                      categoryValues.current[foundIndex].name;
+                    anyCategoryNameChanged = true;
+                  }
+
+                  return transaction;
+                } else if (
+                  transaction.category !== category.name &&
+                  category.hasSubcategory
                 ) {
-                  transaction.category =
-                    categoryValues.current[foundIndex].name;
-                  anyCategoryNameChanged = true;
-                }
+                  category.subcategories.map((subCategory) => {
+                    if (transaction.category === subCategory.name) {
+                      if (categoryValues.current[foundIndex].hasSubcategory) {
+                        const newSubcategory = categoryValues.current[
+                          foundIndex
+                        ].subcategories.find(
+                          (subCat) => subCat.id === subCategory.id
+                        );
 
-                return transaction;
-              } else if (
-                transaction.category !== category.name &&
-                category.hasSubcategory
-              ) {
-                category.subcategories.map((subCategory) => {
-                  if (transaction.category === subCategory.name) {
-                    if (categoryValues.current[foundIndex].hasSubcategory) {
-                      const newSubcategory = categoryValues.current[
-                        foundIndex
-                      ].subcategories.find(
-                        (subCat) => subCat.id === subCategory.id
-                      );
-
-                      if (transaction.category !== newSubcategory.name) {
-                        transaction.category = newSubcategory.name;
-                        anyCategoryNameChanged = true;
+                        if (transaction.category !== newSubcategory.name) {
+                          transaction.category = newSubcategory.name;
+                          anyCategoryNameChanged = true;
+                        }
                       }
                     }
-                  }
-                });
+                  });
 
-                return transaction;
-              } else {
-                return transaction;
+                  return transaction;
+                } else {
+                  return transaction;
+                }
+              });
+
+              if (anyCategoryNameChanged) {
+                updateTransactions(updatedTransactions);
               }
-            });
 
-            if (anyCategoryNameChanged) {
-              updateTransactions(updatedTransactions);
+              return categoryValues.current[foundIndex];
             }
-
-            return categoryValues.current[foundIndex];
           } else {
             return category;
           }
