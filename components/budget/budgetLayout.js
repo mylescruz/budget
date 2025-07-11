@@ -1,7 +1,6 @@
 import CategoryTable from "./categoryTable/categoryTable";
-import TransactionsTable from "./transactions/transactionsTable";
 import { useContext, useState } from "react";
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Col, Container, Row, Table } from "react-bootstrap";
 import EditCategoryTable from "./editCategoryTable/editCategoryTable";
 import {
   CategoriesContext,
@@ -11,8 +10,8 @@ import CategoryPieChart from "../categories/categoryPieChart";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
-import AddTransactionModal from "./transactions/addTransactionModal";
 import TransactionsLayout from "./transactions/transactionsLayout";
+import { TransactionsProvider } from "@/contexts/TransactionsContext";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -104,7 +103,9 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 const BudgetLayout = ({ monthInfo }) => {
   return (
     <CategoriesProvider monthInfo={monthInfo}>
-      <InnerBudgetLayout monthInfo={monthInfo} />
+      <TransactionsProvider monthInfo={monthInfo}>
+        <InnerBudgetLayout monthInfo={monthInfo} />
+      </TransactionsProvider>
     </CategoriesProvider>
   );
 };

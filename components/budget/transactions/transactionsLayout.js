@@ -2,16 +2,13 @@ import { Button, Col, Row } from "react-bootstrap";
 import TransactionsTable from "./transactionsTable";
 import AddTransactionModal from "./addTransactionModal";
 import { useContext, useState } from "react";
-import {
-  TransactionsContext,
-  TransactionsProvider,
-} from "@/contexts/TransactionsContext";
+import { TransactionsContext } from "@/contexts/TransactionsContext";
 import ErrorTransactionsTable from "./errorTransactionsTable";
 
 const VIEW_TEXT = "View Transactions";
 const HIDE_TEXT = "Hide Transactions";
 
-const InnerTransactionsLayout = ({ monthInfo }) => {
+const TransactionsLayout = ({ monthInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const [viewTransactions, setViewTransactions] = useState(true);
   const [viewText, setViewText] = useState(HIDE_TEXT);
@@ -80,14 +77,6 @@ const InnerTransactionsLayout = ({ monthInfo }) => {
         <AddTransactionModal {...addTransactionModalProps} />
       )}
     </>
-  );
-};
-
-const TransactionsLayout = ({ monthInfo }) => {
-  return (
-    <TransactionsProvider monthInfo={monthInfo}>
-      <InnerTransactionsLayout monthInfo={monthInfo} />
-    </TransactionsProvider>
   );
 };
 
