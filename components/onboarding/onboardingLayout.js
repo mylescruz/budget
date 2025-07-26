@@ -10,16 +10,16 @@ import {
   CategoriesContext,
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
-import useIncome from "@/hooks/useIncome";
 import { useSession } from "next-auth/react";
 import useUser from "@/hooks/useUser";
 import ErrorModal from "../layout/errorModal";
+import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
 
 const OnboardingInnerLayout = () => {
   const { data: session } = useSession();
   const { user, putUser } = useUser();
   const { putCategories } = useContext(CategoriesContext);
-  const { postIncome } = useIncome(session.user.username, dateInfo.currentYear);
+  const { postIncome } = useContext(IncomeContext);
   const router = useRouter();
 
   // The new user's income and categories objects
@@ -169,7 +169,9 @@ const OnboardingLayout = () => {
 
   return (
     <CategoriesProvider monthInfo={monthInfo}>
-      <OnboardingInnerLayout monthInfo={monthInfo} />
+      <IncomeProvider monthInfo={monthInfo}>
+        <OnboardingInnerLayout monthInfo={monthInfo} />
+      </IncomeProvider>
     </CategoriesProvider>
   );
 };

@@ -1,8 +1,7 @@
-import useIncome from "@/hooks/useIncome";
 import IncomeTable from "./incomeTable";
 import AddIncomeModal from "./addIncomeModal";
 import { Button, Col, Row } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -10,6 +9,7 @@ import Loading from "../layout/loading";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import dateInfo from "@/helpers/dateInfo";
+import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
 
 const InnerIncomeLayout = ({ year }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -18,17 +18,11 @@ const InnerIncomeLayout = ({ year }) => {
   // Using the router object to redirect to different pages within the app
   const router = useRouter();
 
-  const {
-    income,
-    incomeLoading,
-    postIncome,
-    putIncome,
-    deleteIncome,
-    getMonthIncome,
-  } = useIncome(session.user.username, year);
+  const { income, incomeLoading } = useContext(IncomeContext);
   const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
   const [nullIncome, setNullIncome] = useState(income === null);
 
+  // Checks if there is an error loading income
   useEffect(() => {
     if (income) {
       setNullIncome(false);
@@ -45,22 +39,12 @@ const InnerIncomeLayout = ({ year }) => {
 
   const AddIncomeModalProps = {
     yearInfo: yearInfo,
-    postIncome: postIncome,
     addPaycheckClicked: addPaycheckClicked,
     setAddPaycheckClicked: setAddPaycheckClicked,
-    getMonthIncome: getMonthIncome,
   };
 
-  const incomeTableProps = {
-    income: income,
-    putIncome: putIncome,
-    deleteIncome: deleteIncome,
-    yearInfo: yearInfo,
-    getMonthIncome: getMonthIncome,
-  };
-
+  // If there is no user session, redirect to the home page
   if (!session) {
-    // If there is no user session, redirect to the home page
     router.push("/");
   } else if (incomeLoading) {
     // If the income is still being loaded by the API, show the loading component
@@ -91,7 +75,7 @@ const InnerIncomeLayout = ({ year }) => {
 
         <Row className="d-flex my-4">
           <Col className="col-11 col-md-10 col-xl-8 mx-auto">
-            <IncomeTable {...incomeTableProps} />
+            <IncomeTable yearInfo={yearInfo} />
           </Col>
         </Row>
 
@@ -106,7 +90,9 @@ const IncomeLayout = ({ year }) => {
 
   return (
     <CategoriesProvider monthInfo={monthInfo}>
-      <InnerIncomeLayout year={year} />
+      <IncomeProvider monthInfo={monthInfo}>
+        <InnerIncomeLayout year={year} />
+      </IncomeProvider>
     </CategoriesProvider>
   );
 };

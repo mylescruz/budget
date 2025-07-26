@@ -1,15 +1,15 @@
 import { Button, Col, Row } from "react-bootstrap";
 import HistoryTable from "./historyTable";
 import useHistory from "@/hooks/useHistory";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import dateInfo from "@/helpers/dateInfo";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
-import useIncome from "@/hooks/useIncome";
+import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
 
-const HistoryLayout = () => {
+const InnerHistoryLayout = () => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
@@ -19,11 +19,7 @@ const HistoryLayout = () => {
   const { history, historyLoading, postHistory, getMonthHistory } = useHistory(
     session.user.username
   );
-  const { getMonthIncome } = useIncome(
-    session.user.username,
-    dateInfo.currentYear
-  );
-  // const [historyYear, setHistoryYear] = useState(dateInfo.currentYear);
+  const { incomeLoading, getMonthIncome } = useContext(IncomeContext);
   const [currentYearHistory, setCurrentYearHistory] = useState(history);
   const [historyYears, setHistoryYears] = useState({
     years: [],
@@ -31,11 +27,6 @@ const HistoryLayout = () => {
     max: dateInfo.currentYear,
     min: dateInfo.currentYear,
   });
-
-  // If there is no user session, redirect to the home page
-  if (!session) {
-    router.push("/");
-  }
 
   // Adds the current month to the history array if not already added
   useEffect(() => {
@@ -111,8 +102,10 @@ const HistoryLayout = () => {
     setHistoryYears({ ...historyYears, current: historyYears.current - 1 });
   };
 
-  // If the history is still being loaded by the API, show the loading component
-  if (historyLoading) {
+  // If there is no user session, redirect to the home page
+  if (!session) {
+    router.push("/");
+  } else if (historyLoading || incomeLoading) {
     return <Loading />;
   } else {
     return (
@@ -151,6 +144,16 @@ const HistoryLayout = () => {
       </>
     );
   }
+};
+
+const HistoryLayout = () => {
+  const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
+
+  return (
+    <IncomeProvider monthInfo={monthInfo}>
+      <InnerHistoryLayout />
+    </IncomeProvider>
+  );
 };
 
 export default HistoryLayout;

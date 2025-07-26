@@ -1,23 +1,23 @@
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
+import { IncomeContext } from "@/contexts/IncomeContext";
 
 const EditIncomeModal = ({
   paycheck,
-  putIncome,
   yearInfo,
   showEdit,
   setShowEdit,
   setShowDetails,
-  getMonthIncome,
 }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
+  const { putIncome, getMonthIncome } = useContext(IncomeContext);
   const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
   const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
@@ -30,13 +30,14 @@ const EditIncomeModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "")
+    if (input == "") {
       setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: input });
-    else
+    } else {
       setEdittedPaycheck({
         ...edittedPaycheck,
         [e.target.id]: parseFloat(input),
       });
+    }
   };
 
   const closeEdit = () => {

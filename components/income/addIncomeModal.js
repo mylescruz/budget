@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Form, Button, Modal, Col, Row, Spinner } from "react-bootstrap";
+import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
 import { useSession } from "next-auth/react";
@@ -8,13 +8,12 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
+import { IncomeContext } from "@/contexts/IncomeContext";
 
 const AddIncomeModal = ({
   yearInfo,
-  postIncome,
   addPaycheckClicked,
   setAddPaycheckClicked,
-  getMonthIncome,
 }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
@@ -29,6 +28,7 @@ const AddIncomeModal = ({
   };
 
   const { categories, putCategories } = useContext(CategoriesContext);
+  const { postIncome, getMonthIncome } = useContext(IncomeContext);
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
   const [addingPaycheck, setAddingPaycheck] = useState(false);
@@ -41,8 +41,11 @@ const AddIncomeModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") setPaycheck({ ...paycheck, [e.target.id]: input });
-    else setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
+    if (input == "") {
+      setPaycheck({ ...paycheck, [e.target.id]: input });
+    } else {
+      setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
+    }
   };
 
   const AddNewPaycheck = async (e) => {

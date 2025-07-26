@@ -5,13 +5,7 @@ import IncomeDetailsModal from "./incomeDetailsModal";
 import EditIncomeModal from "./editIncomeModal";
 import DeleteIncomeModal from "./deleteIncomeModal";
 
-const IncomeTableRow = ({
-  paycheck,
-  putIncome,
-  deleteIncome,
-  yearInfo,
-  getMonthIncome,
-}) => {
+const IncomeTableRow = ({ paycheck, yearInfo }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -30,21 +24,17 @@ const IncomeTableRow = ({
 
   const editIncomeModalProps = {
     paycheck: paycheck,
-    putIncome: putIncome,
     yearInfo: yearInfo,
     showEdit: showEdit,
     setShowEdit: setShowEdit,
     setShowDetails: setShowDetails,
-    getMonthIncome: getMonthIncome,
   };
 
   const deleteIncomeModalProps = {
     paycheck: paycheck,
-    deleteIncome: deleteIncome,
     showDelete: showDelete,
     setShowDelete: setShowDelete,
     setShowDetails: setShowDetails,
-    getMonthIncome: getMonthIncome,
   };
 
   return (

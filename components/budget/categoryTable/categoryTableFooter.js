@@ -1,16 +1,12 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import { IncomeContext } from "@/contexts/IncomeContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
-import useIncome from "@/hooks/useIncome";
-import { useSession } from "next-auth/react";
 import { useContext, useEffect, useState } from "react";
 
 const CategoryFooter = ({ monthInfo }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
   const { categories } = useContext(CategoriesContext);
-  const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
+  const { getMonthIncome } = useContext(IncomeContext);
   const [categoryTotals, setCategoryTotals] = useState({
     budget: 0,
     actual: 0,

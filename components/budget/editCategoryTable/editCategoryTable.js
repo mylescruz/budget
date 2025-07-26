@@ -4,20 +4,16 @@ import { useContext, useRef, useState } from "react";
 import AddCategoryModal from "./addCategoryModal";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
-import useIncome from "@/hooks/useIncome";
-import { useSession } from "next-auth/react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
+import { IncomeContext } from "@/contexts/IncomeContext";
 
 const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
   const { categories, putCategories, deleteCategory } =
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
-  const { getMonthIncome } = useIncome(session.user.username, monthInfo.year);
+  const { getMonthIncome } = useContext(IncomeContext);
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
   const [updatingCategories, setUpdatingCategories] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);

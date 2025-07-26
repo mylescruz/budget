@@ -11,7 +11,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
 import TransactionsLayout from "./transactions/transactionsLayout";
-import { TransactionsProvider } from "@/contexts/TransactionsContext";
+import {
+  TransactionsContext,
+  TransactionsProvider,
+} from "@/contexts/TransactionsContext";
+import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -21,6 +25,8 @@ const InnerBudgetLayout = ({ monthInfo }) => {
   const router = useRouter();
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
+  const { transactionsLoading } = useContext(TransactionsContext);
+  const { incomeLoading } = useContext(IncomeContext);
   const [editCategories, setEditCategories] = useState(false);
 
   // If there is no user session, redirect to the home page
@@ -38,7 +44,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     monthInfo: monthInfo,
   };
 
-  if (categoriesLoading) {
+  if (categoriesLoading || transactionsLoading || incomeLoading) {
     return <Loading />;
   } else {
     return (
@@ -104,7 +110,9 @@ const BudgetLayout = ({ monthInfo }) => {
   return (
     <CategoriesProvider monthInfo={monthInfo}>
       <TransactionsProvider monthInfo={monthInfo}>
-        <InnerBudgetLayout monthInfo={monthInfo} />
+        <IncomeProvider monthInfo={monthInfo}>
+          <InnerBudgetLayout monthInfo={monthInfo} />
+        </IncomeProvider>
       </TransactionsProvider>
     </CategoriesProvider>
   );

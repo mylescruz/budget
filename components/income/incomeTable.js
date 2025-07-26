@@ -1,19 +1,15 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Table } from "react-bootstrap";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "../layout/popUp";
 import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
 import styles from "@/styles/income/incomeTable.module.css";
+import { IncomeContext } from "@/contexts/IncomeContext";
 
-const IncomeTable = ({
-  income,
-  putIncome,
-  deleteIncome,
-  yearInfo,
-  getMonthIncome,
-}) => {
+const IncomeTable = ({ yearInfo }) => {
+  const { income } = useContext(IncomeContext);
   const [sortedIncome, setSortedIncome] = useState(income);
   const [incomeTotals, setIncomeTotals] = useState({
     totalGross: 0,
@@ -96,10 +92,7 @@ const IncomeTable = ({
               <IncomeTableRow
                 key={paycheck.id}
                 paycheck={paycheck}
-                putIncome={putIncome}
-                deleteIncome={deleteIncome}
                 yearInfo={yearInfo}
-                getMonthIncome={getMonthIncome}
               />
             ))}
           </tbody>

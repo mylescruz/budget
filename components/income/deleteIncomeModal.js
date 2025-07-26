@@ -4,19 +4,19 @@ import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { IncomeContext } from "@/contexts/IncomeContext";
 
 const DeleteIncomeModal = ({
   paycheck,
-  deleteIncome,
   showDelete,
   setShowDelete,
   setShowDetails,
-  getMonthIncome,
 }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
+  const { deleteIncome, getMonthIncome } = useContext(IncomeContext);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
   const [deletingPaycheck, setDeletingPaycheck] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
