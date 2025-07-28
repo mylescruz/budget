@@ -49,11 +49,11 @@ const FixedCategoryTableRow = ({ category }) => {
             )}
           </Row>
         </th>
-        <td className="d-none d-md-block col-md-2 fw-bold"></td>
-        <td className="col-3 col-md-2 cell fw-bold">
+        <td className="col-3 col-md-2"></td>
+        <td className="col-3 col-md-2 cell">
           {currencyFormatter.format(category.actual)}
         </td>
-        <td className="col-3 col-md-2 cell"></td>
+        <td className="d-none d-md-block col-md-2 cell"></td>
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (

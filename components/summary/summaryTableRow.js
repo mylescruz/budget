@@ -51,7 +51,7 @@ const SummaryTableRow = ({ category }) => {
         <td
           className={`col-3 col-md-2 cell fw-bold ${category.budget < 0 && "text-danger "}`}
         >
-          {currencyFormatter.format(category.budget)}
+          {!category.fixed && currencyFormatter.format(category.budget)}
         </td>
         <td className="col-3 col-md-2 cell">
           {currencyFormatter.format(category.actual)}
@@ -68,7 +68,7 @@ const SummaryTableRow = ({ category }) => {
           <tr key={subcategory.id} className="d-flex">
             <th className="col-6 cell text-end">{subcategory.name}</th>
             <td className="col-3 col-md-2"></td>
-            <td className="col-3 col-md-2 text-center">
+            <td className="col-3 col-md-2 text-end">
               {currencyFormatter.format(subcategory.actual)}
             </td>
             <td className="d-none d-md-block col-md-2"></td>

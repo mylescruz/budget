@@ -37,6 +37,7 @@ a {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 .content {
@@ -48,7 +49,9 @@ a {
   min-height: 100vh;
 }
 
-.login, .create-account, .redirect {
+.login,
+.create-account,
+.redirect {
   min-height: 50vh;
 }
 
@@ -86,32 +89,33 @@ a {
 .click {
   cursor: pointer;
 
-  &:hover {  
+  &:hover {
     font-weight: bold;
   }
 }
 
 .plus {
   &:hover {
-      cursor: pointer;
-      color: blue;
-      transition: color 0.5s;
+    cursor: pointer;
+    color: blue;
+    transition: color 0.5s;
   }
 }
 
 .check {
   &:hover {
-      cursor: pointer;
-      color: green;
-      transition: color 0.5s;
-    }
+    cursor: pointer;
+    color: green;
+    transition: color 0.5s;
+  }
 }
 
-.cancel, .delete {
+.cancel,
+.delete {
   &:hover {
-      cursor: pointer;
-      color: red;
-      transition: color 0.5s;
+    cursor: pointer;
+    color: red;
+    transition: color 0.5s;
   }
 }
 
@@ -121,9 +125,9 @@ a {
   overflow-x: scroll;
 
   &:hover {
-      cursor: pointer;
-      color: white !important;
-      background-color: lightblue !important;
+    cursor: pointer;
+    color: white !important;
+    background-color: lightblue !important;
   }
 }
 
@@ -145,12 +149,14 @@ a {
 
 /* Extra-Small Device */
 @media (max-width: 575.99px) {
-  .categories-table, .edit-categories-table {
+  .categories-table,
+  .edit-categories-table {
     margin: 2em 0em;
     font-size: 0.8em;
   }
 
-  #view-transactions-btn, #add-transaction-btn {
+  #view-transactions-btn,
+  #add-transaction-btn {
     margin: 0em 0em 2em;
     font-size: 0.9em;
   }
@@ -187,24 +193,18 @@ a {
 
 /* Small Device */
 @media (min-width: 576px) and (max-width: 767.99px) {
-  
 }
 
 /* Medium Device */
 @media (min-width: 768px) and (max-width: 991.99px) {
-  
 }
 
 /* Large Device */
 @media (min-width: 992px) and (max-width: 1199.99px) {
-
 }
 
-
 @media (min-width: 1200px) and (max-width: 1399.99px) {
-  
 }
 
 @media (min-width: 1400px) {
-  
 }
