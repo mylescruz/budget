@@ -52,8 +52,13 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
                     transaction.category !==
                       categoryValues.current[foundIndex].name
                   ) {
+                    // Update the transaction's category
                     transaction.category =
                       categoryValues.current[foundIndex].name;
+
+                    // Set a flag that there was a change to the category
+                    transaction.changedCategory = true;
+
                     anyCategoryNameChanged = true;
                   }
 
@@ -72,7 +77,12 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
                         );
 
                         if (transaction.category !== newSubcategory.name) {
+                          // Update the transaction's category
                           transaction.category = newSubcategory.name;
+
+                          // Set a flag that there was a change to the category
+                          transaction.changedCategory = true;
+
                           anyCategoryNameChanged = true;
                         }
                       }
@@ -86,7 +96,11 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
               });
 
               if (anyCategoryNameChanged) {
-                updateTransactions(updatedTransactions);
+                const changedTransactions = updatedTransactions.filter(
+                  (transaction) => transaction.changedCategory
+                );
+                // console.log("Changed transactions: ", changedTransactions);
+                updateTransactions(changedTransactions);
               }
 
               return categoryValues.current[foundIndex];

@@ -5,7 +5,9 @@ const Footer = () => {
     <Navbar bg="dark" data-bs-theme="dark" className="w-100 footer">
       <Container>
         <Nav className="ms-auto">
-          <Nav.Link href="https://mylescruz.com/">© 2025 Myles Cruz</Nav.Link>
+          <Nav.Link href="https://mylescruz.com/" target="_blank">
+            © 2025 Myles Cruz
+          </Nav.Link>
         </Nav>
       </Container>
     </Navbar>

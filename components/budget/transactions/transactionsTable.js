@@ -1,5 +1,4 @@
 import {
-  Button,
   Col,
   Dropdown,
   DropdownItem,
@@ -22,13 +21,6 @@ const TransactionsTable = ({ monthInfo }) => {
   const [transactionFilter, setTransactionFilter] = useState("All");
   const [sortDirection, setSortDirection] = useState(true);
   const sortAscending = useRef(true);
-
-  // Sort transactions from first to last or opposite on user click
-  useEffect(() => {
-    if (transactions) {
-      setSortedTransactions(aToZDateSorter(transactions));
-    }
-  }, [transactions]);
 
   // Gets all the transaction categories in a set
   useEffect(() => {

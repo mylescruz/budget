@@ -9,7 +9,7 @@ const useTransactions = (username, month, year) => {
     const getTransactions = async () => {
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transaction`
+          `/api/transactions/${username}/${year}/${month}`
         );
 
         if (rsp.ok) {
@@ -21,7 +21,7 @@ const useTransactions = (username, month, year) => {
         }
       } catch (error) {
         setTransactions(null);
-        console.error(null);
+        console.error(error);
       } finally {
         setTransactionsLoading(false);
       }
@@ -35,7 +35,7 @@ const useTransactions = (username, month, year) => {
     async (newTransaction) => {
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transaction`,
+          `/api/transactions/${username}/${year}/${month}`,
           {
             method: "POST",
             headers: {
@@ -63,22 +63,19 @@ const useTransactions = (username, month, year) => {
     [year, month, transactions, username]
   );
 
-  // PUT request that updates a transaction based on the username, year and month
+  // PUT request that updates a transaction based on the transaction's id
   // Then it sets the transactions array to the array returned by the response
   const putTransaction = useCallback(
     async (edittedTransaction) => {
       try {
-        const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transaction`,
-          {
-            method: "PUT",
-            headers: {
-              Accept: "application.json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(edittedTransaction),
-          }
-        );
+        const rsp = await fetch(`/api/transaction/${edittedTransaction.id}`, {
+          method: "PUT",
+          headers: {
+            Accept: "application.json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(edittedTransaction),
+        });
 
         if (rsp.ok) {
           const updatedTransaction = await rsp.json();
@@ -103,31 +100,27 @@ const useTransactions = (username, month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [transactions, username, year, month]
+    [transactions]
   );
 
   // DELETE request that deletes a transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
   const deleteTransaction = useCallback(
-    async (transactionToDelete) => {
+    async (transactionId) => {
       try {
-        const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transaction`,
-          {
-            method: "DELETE",
-            headers: {
-              Accept: "application.json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(transactionToDelete),
-          }
-        );
+        const rsp = await fetch(`/api/transaction/${transactionId}`, {
+          method: "DELETE",
+          headers: {
+            Accept: "application.json",
+            "Content-Type": "application/json",
+          },
+        });
 
         if (rsp.ok) {
-          const deletedTransaction = await rsp.json();
+          const deleteResult = await rsp.json();
 
           const updatedTransactions = transactions.filter((transaction) => {
-            return transaction.id !== deletedTransaction.id;
+            return transaction.id !== deleteResult.id;
           });
 
           setTransactions(updatedTransactions);
@@ -142,21 +135,21 @@ const useTransactions = (username, month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [year, month, transactions, username]
+    [transactions]
   );
 
   const updateTransactions = useCallback(
-    async (edittedTransactions) => {
+    async (changedTransactions) => {
       try {
         const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}/transactions`,
+          `/api/transactions/${username}/${year}/${month}`,
           {
             method: "PUT",
             headers: {
               Accept: "application.json",
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(edittedTransactions),
+            body: JSON.stringify(changedTransactions),
           }
         );
 
