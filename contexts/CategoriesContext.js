@@ -1,5 +1,4 @@
 import useCategories from "@/hooks/useCategories";
-import { useSession } from "next-auth/react";
 import { createContext } from "react";
 
 // Context for the categories array and API calls
@@ -8,19 +7,14 @@ import { createContext } from "react";
 export const CategoriesContext = createContext({});
 
 export const CategoriesProvider = ({ children, monthInfo }) => {
-  const { data: session } = useSession();
-
   const {
     categories,
     categoriesLoading,
     postCategory,
-    putCategories,
+    putCategory,
     deleteCategory,
-  } = useCategories(
-    session.user.username,
-    monthInfo.monthString,
-    monthInfo.year
-  );
+    updateCategories,
+  } = useCategories(monthInfo.monthString, monthInfo.year);
 
   return (
     <CategoriesContext.Provider
@@ -28,8 +22,9 @@ export const CategoriesProvider = ({ children, monthInfo }) => {
         categories,
         categoriesLoading,
         postCategory,
-        putCategories,
+        putCategory,
         deleteCategory,
+        updateCategories,
       }}
     >
       {children}

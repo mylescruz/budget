@@ -13,7 +13,7 @@ const AddTransactionModal = ({
   addTransactionClicked,
   setAddTransactionClicked,
 }) => {
-  const { categories, putCategories } = useContext(CategoriesContext);
+  const { categories, updateCategories } = useContext(CategoriesContext);
   const { postTransaction } = useContext(TransactionsContext);
   const [addingTransaction, setAddingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -64,7 +64,13 @@ const AddTransactionModal = ({
         newTransaction,
         categories
       );
-      await putCategories(updatedCategories);
+
+      // Only update categories that have been updated
+      const changedCategories = updatedCategories.filter(
+        (category) => category.updated
+      );
+      console.log(changedCategories);
+      await updateCategories(changedCategories);
 
       setTransaction(emptyTransaction);
       setAddTransactionClicked(false);

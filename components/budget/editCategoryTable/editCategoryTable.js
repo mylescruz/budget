@@ -10,7 +10,7 @@ import ErrorModal from "@/components/layout/errorModal";
 import { IncomeContext } from "@/contexts/IncomeContext";
 
 const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
-  const { categories, putCategories, deleteCategory } =
+  const { categories, deleteCategory, updateCategories } =
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
   const { getMonthIncome } = useContext(IncomeContext);
@@ -41,6 +41,9 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
           // Maps through the transactions array and if a category has a transaction that matches the changed category, change that transaction's category
           if (foundIndex !== -1) {
             if (category.fixed) {
+              // Flag the category that was updated
+              categoryValues.current[foundIndex].updated = true;
+
               return categoryValues.current[foundIndex];
             } else {
               let anyCategoryNameChanged = false;
@@ -99,9 +102,12 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
                 const changedTransactions = updatedTransactions.filter(
                   (transaction) => transaction.changedCategory
                 );
-                // console.log("Changed transactions: ", changedTransactions);
+
                 updateTransactions(changedTransactions);
               }
+
+              // Flag the category that was updated
+              categoryValues.current[foundIndex].updated = true;
 
               return categoryValues.current[foundIndex];
             }
@@ -114,7 +120,11 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
         const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
 
         // Updates the categories array with the editted categories by sending a PUT request to the API
-        await putCategories(updatedCategories);
+        const changedCategories = updatedCategories.filter(
+          (category) => category.updated
+        );
+
+        await updateCategories(changedCategories);
       }
 
       setErrorOccurred(false);

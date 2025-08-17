@@ -27,7 +27,7 @@ const AddIncomeModal = ({
     net: 0,
   };
 
-  const { categories, putCategories } = useContext(CategoriesContext);
+  const { categories, updateCategories } = useContext(CategoriesContext);
   const { postIncome, getMonthIncome } = useContext(IncomeContext);
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
@@ -89,7 +89,7 @@ const AddIncomeModal = ({
           updatedBudget,
           categories
         );
-        await putCategories(updatedCategories);
+        await updateCategories(updatedCategories);
       }
 
       setAddPaycheckClicked(false);

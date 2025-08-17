@@ -12,7 +12,7 @@ const DeleteTransactionModal = ({
   setShowDelete,
   setShowDetails,
 }) => {
-  const { categories, putCategories } = useContext(CategoriesContext);
+  const { categories, updateCategories } = useContext(CategoriesContext);
   const { deleteTransaction } = useContext(TransactionsContext);
   const [deletingTransaction, setDeletingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -34,7 +34,12 @@ const DeleteTransactionModal = ({
         transaction,
         categories
       );
-      await putCategories(updatedCategories);
+
+      // Only update categories that have been updated
+      const changedCategories = updatedCategories.filter(
+        (category) => category.updated
+      );
+      await updateCategories(changedCategories);
 
       setErrorOccurred(false);
     } catch (error) {

@@ -124,7 +124,9 @@ const CategoryTable = ({ setEditCategories, monthInfo }) => {
               </Col>
               <Col className="col-2 text-end">
                 <i
-                  className={`fw-bold bi ${showFixedExpenses ? "bi-chevron-up" : "bi-chevron-down"}`}
+                  className={`fw-bold bi ${
+                    showFixedExpenses ? "bi-chevron-up" : "bi-chevron-down"
+                  }`}
                 />
               </Col>
             </Row>
@@ -155,7 +157,9 @@ const CategoryTable = ({ setEditCategories, monthInfo }) => {
               </Col>
               <Col className="col-2 text-end">
                 <i
-                  className={`fw-bold bi ${showVariableExpenses ? "bi-chevron-up" : "bi-chevron-down"}`}
+                  className={`fw-bold bi ${
+                    showVariableExpenses ? "bi-chevron-up" : "bi-chevron-down"
+                  }`}
                 ></i>
               </Col>
             </Row>

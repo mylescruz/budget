@@ -18,7 +18,7 @@ import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
 const OnboardingInnerLayout = () => {
   const { data: session } = useSession();
   const { user, putUser } = useUser();
-  const { putCategories } = useContext(CategoriesContext);
+  const { updateCategories } = useContext(CategoriesContext);
   const { postIncome } = useContext(IncomeContext);
   const router = useRouter();
 
@@ -83,7 +83,7 @@ const OnboardingInnerLayout = () => {
     // If the user chooses the default categories, those will load automatically
     if (customChosen) {
       try {
-        putCategories(newCategories);
+        updateCategories(newCategories);
 
         setErrorOccurred(false);
       } catch (error) {

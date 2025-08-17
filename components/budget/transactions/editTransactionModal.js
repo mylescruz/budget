@@ -14,7 +14,7 @@ const EditTransactionModal = ({
   setShowEdit,
   setShowDetails,
 }) => {
-  const { categories, putCategories } = useContext(CategoriesContext);
+  const { categories, updateCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
   const [edittedTransaction, setEdittedTransaction] = useState(transaction);
   const [updatingTransaction, setUpdatingTransaction] = useState(false);
@@ -41,7 +41,13 @@ const EditTransactionModal = ({
           transaction,
           categories
         );
-        await putCategories(updatedCategories);
+
+        // Only update categories that have been updated
+        const changedCategories = updatedCategories.filter(
+          (category) => category.updated
+        );
+        console.log(changedCategories);
+        await updateCategories(changedCategories);
 
         setShowEdit(false);
       } else {
