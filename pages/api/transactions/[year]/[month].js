@@ -14,24 +14,18 @@ export default async function handler(req, res) {
     return res.status(401).send("Must login to view your data!");
   }
 
-  const username = req?.query?.username.toLowerCase();
-
-  // If a user tries to directly access a different user's data, send an error message
-  if (session.user.username !== username) {
-    return res.status(401).send("Access denied to this user's data");
-  }
+  const username = session.user.username;
 
   const month = parseInt(req?.query?.month);
   const year = parseInt(req?.query?.year);
   const method = req?.method;
 
   // Configure MongoDB
-  const mongoDB = process.env.MONGO_DB;
-  const client = await clientPromise;
-  const db = client.db(mongoDB);
+  const db = (await clientPromise).db(process.env.MONGO_DB);
   const transactionsCol = db.collection("transactions");
 
-  async function getTransactions() {
+  // Get the transactions from MongoDB and return the necessary fields
+  const getTransactions = async () => {
     const docs = await transactionsCol
       .find({ username: username, month: month, year: year })
       .sort({ date: 1 })
@@ -49,7 +43,25 @@ export default async function handler(req, res) {
     });
 
     return transactions;
-  }
+  };
+
+  // Function to update the given transactions' category in MongoDB
+  const updateTransaction = async (changedTransactions) => {
+    let numUpdated = 0;
+
+    for (const transaction of changedTransactions) {
+      const result = await transactionsCol.updateOne(
+        { _id: new ObjectId(transaction.id) },
+        { $set: { category: transaction.category } }
+      );
+
+      if (result.modifiedCount === 1) {
+        numUpdated++;
+      }
+    }
+
+    return numUpdated === changedTransactions.length;
+  };
 
   if (method === "GET") {
     try {
@@ -79,7 +91,7 @@ export default async function handler(req, res) {
       const result = await transactionsCol.insertOne(newTransaction);
 
       // Send the new transaction back to the client
-      res.status(200).json(transactionBody);
+      res.status(200).json({ id: result.insertedId, ...transactionBody });
     } catch (error) {
       console.error(`${method} transactions request failed: ${error}`);
       res.status(500).send("Error occurred while adding a transaction");
@@ -88,27 +100,16 @@ export default async function handler(req, res) {
     try {
       const changedTransactions = req?.body;
 
-      const updateCategory = async (changedTransactions) => {
-        changedTransactions.forEach(async (transaction) => {
-          console.log(transaction);
+      const results = await updateTransaction(changedTransactions);
 
-          const result = await transactionsCol.updateOne(
-            { _id: new ObjectId(transaction.id) },
-            { $set: { category: transaction.category } }
-          );
+      if (results) {
+        // Send the updated transactions back to the client
+        const transactions = await getTransactions();
 
-          if (result.modifiedCount === 0) {
-            throw new Error("Transactions were not found");
-          }
-        });
-      };
-
-      await updateCategory(changedTransactions);
-
-      // Send the updated transactions back to the client
-      const transactions = await getTransactions();
-
-      res.status(200).json(transactions);
+        res.status(200).json(transactions);
+      } else {
+        throw new Error("Categories could not be updated");
+      }
     } catch (error) {
       if (error.message === "Transactions were not found") {
         res.status(404).send(error.message);

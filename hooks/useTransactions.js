@@ -1,16 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 
-const useTransactions = (username, month, year) => {
+const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState([]);
   const [transactionsLoading, setTransactionsLoading] = useState(true);
 
-  // GET request that returns the user's transaction based on the username, year and month
+  // GET request that returns the user's transaction based on the month and year
   useEffect(() => {
     const getTransactions = async () => {
       try {
-        const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}`
-        );
+        const rsp = await fetch(`/api/transactions/${year}/${month}`);
 
         if (rsp.ok) {
           const fetchedTransactions = await rsp.json();
@@ -27,24 +25,21 @@ const useTransactions = (username, month, year) => {
       }
     };
     getTransactions();
-  }, [username, month, year]);
+  }, [month, year]);
 
-  // POST request that adds a new transaction based on the username, year and month
+  // POST request that adds a new transaction based on the month and year
   // Then it sets the transactions array to the array returned by the response
   const postTransaction = useCallback(
     async (newTransaction) => {
       try {
-        const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application.json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newTransaction),
-          }
-        );
+        const rsp = await fetch(`/api/transactions/${year}/${month}`, {
+          method: "POST",
+          headers: {
+            Accept: "application.json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newTransaction),
+        });
 
         if (rsp.ok) {
           const addedTransaction = await rsp.json();
@@ -60,7 +55,7 @@ const useTransactions = (username, month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [year, month, transactions, username]
+    [transactions, year, month]
   );
 
   // PUT request that updates a transaction based on the transaction's id
@@ -141,17 +136,14 @@ const useTransactions = (username, month, year) => {
   const updateTransactions = useCallback(
     async (changedTransactions) => {
       try {
-        const rsp = await fetch(
-          `/api/transactions/${username}/${year}/${month}`,
-          {
-            method: "PUT",
-            headers: {
-              Accept: "application.json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(changedTransactions),
-          }
-        );
+        const rsp = await fetch(`/api/transactions/${year}/${month}`, {
+          method: "PUT",
+          headers: {
+            Accept: "application.json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(changedTransactions),
+        });
 
         if (rsp.ok) {
           const updatedTransactions = await rsp.json();
@@ -167,7 +159,7 @@ const useTransactions = (username, month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [username, year, month]
+    [year, month]
   );
 
   return {

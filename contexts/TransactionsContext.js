@@ -1,5 +1,4 @@
 import useTransactions from "@/hooks/useTransactions";
-import { useSession } from "next-auth/react";
 import { createContext } from "react";
 
 // Context for the transactions array and API calls
@@ -8,8 +7,6 @@ import { createContext } from "react";
 export const TransactionsContext = createContext({});
 
 export const TransactionsProvider = ({ children, monthInfo }) => {
-  const { data: session } = useSession();
-
   const {
     transactions,
     transactionsLoading,
@@ -17,11 +14,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
     putTransaction,
     deleteTransaction,
     updateTransactions,
-  } = useTransactions(
-    session.user.username,
-    monthInfo.monthString,
-    monthInfo.year
-  );
+  } = useTransactions(monthInfo.monthString, monthInfo.year);
 
   return (
     <TransactionsContext.Provider
