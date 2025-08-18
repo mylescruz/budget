@@ -1,5 +1,5 @@
-import IncomeTable from "./incomeTable";
-import AddIncomeModal from "./addIncomeModal";
+import IncomeTable from "./paychecksTable";
+import AddIncomeModal from "./addPaycheckModal";
 import { Button, Col, Row } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
@@ -9,7 +9,10 @@ import Loading from "../layout/loading";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import getMonthInfo from "@/helpers/getMonthInfo";
 import dateInfo from "@/helpers/dateInfo";
-import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
+import {
+  PaychecksContext,
+  PaychecksProvider,
+} from "@/contexts/PaychecksContext";
 
 const InnerIncomeLayout = ({ year }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -18,18 +21,19 @@ const InnerIncomeLayout = ({ year }) => {
   // Using the router object to redirect to different pages within the app
   const router = useRouter();
 
-  const { income, incomeLoading } = useContext(IncomeContext);
-  const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
-  const [nullIncome, setNullIncome] = useState(income === null);
+  const { paychecks, paychecksLoading } = useContext(PaychecksContext);
 
-  // Checks if there is an error loading income
+  const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
+  const [nullPaychecks, setNullPaychecks] = useState(paychecks === null);
+
+  // Checks if there is an error loading paychecks
   useEffect(() => {
-    if (income) {
-      setNullIncome(false);
+    if (paychecks) {
+      setNullPaychecks(false);
     } else {
-      setNullIncome(true);
+      setNullPaychecks(true);
     }
-  }, [income]);
+  }, [paychecks]);
 
   const yearInfo = getYearInfo(year);
 
@@ -46,8 +50,8 @@ const InnerIncomeLayout = ({ year }) => {
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  } else if (incomeLoading) {
-    // If the income is still being loaded by the API, show the loading component
+  } else if (paychecksLoading) {
+    // If the paychecks is still being loaded by the API, show the loading component
     return <Loading />;
   } else {
     return (
@@ -56,7 +60,7 @@ const InnerIncomeLayout = ({ year }) => {
           <h1>{year} Income</h1>
           <p>
             View and add your paychecks for the current year. View your gross
-            and net income and see how much taxes have been taken out.
+            and net paychecks and see how much taxes have been taken out.
           </p>
         </aside>
 
@@ -66,7 +70,7 @@ const InnerIncomeLayout = ({ year }) => {
               id="add-paycheck-btn"
               variant="primary"
               onClick={addPay}
-              disabled={nullIncome}
+              disabled={nullPaychecks}
             >
               Add Paycheck
             </Button>
@@ -90,9 +94,9 @@ const IncomeLayout = ({ year }) => {
 
   return (
     <CategoriesProvider monthInfo={monthInfo}>
-      <IncomeProvider monthInfo={monthInfo}>
+      <PaychecksProvider monthInfo={monthInfo}>
         <InnerIncomeLayout year={year} />
-      </IncomeProvider>
+      </PaychecksProvider>
     </CategoriesProvider>
   );
 };

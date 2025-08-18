@@ -5,9 +5,10 @@ import { useContext, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
-import { IncomeContext } from "@/contexts/IncomeContext";
+import { PaychecksContext } from "@/contexts/PaychecksContext";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditIncomeModal = ({
+const EditPaycheckModal = ({
   paycheck,
   yearInfo,
   showEdit,
@@ -17,9 +18,11 @@ const EditIncomeModal = ({
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { putIncome, getMonthIncome } = useContext(IncomeContext);
-  const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
+  const { categories, updateCategories } = useContext(CategoriesContext);
+  const { putPaycheck, getMonthIncome } = useContext(PaychecksContext);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
+
+  const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
   const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -56,7 +59,7 @@ const EditIncomeModal = ({
       );
 
       // Edits a paycheck in the income array by sending a PUT request to the API
-      await putIncome(edittedPaycheck);
+      await putPaycheck(edittedPaycheck);
 
       // Updates the budget value for the given month in the history array by sending a PUT request to the API
       if (edittedPaycheck.date === paycheck.date) {
@@ -266,4 +269,4 @@ const EditIncomeModal = ({
   );
 };
 
-export default EditIncomeModal;
+export default EditPaycheckModal;

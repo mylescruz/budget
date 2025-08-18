@@ -1,11 +1,11 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
-import IncomeDetailsModal from "./incomeDetailsModal";
-import EditIncomeModal from "./editIncomeModal";
-import DeleteIncomeModal from "./deleteIncomeModal";
+import PaycheckDetailsModal from "./paycheckDetailsModal";
+import EditPaycheckModal from "./editPaycheckModal";
+import DeletePaycheckModal from "./deletePaycheckModal";
 
-const IncomeTableRow = ({ paycheck, yearInfo }) => {
+const PaychecksTableRow = ({ paycheck, yearInfo }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -14,7 +14,7 @@ const IncomeTableRow = ({ paycheck, yearInfo }) => {
     setShowDetails(true);
   };
 
-  const incomeDetailsProps = {
+  const paycheckDetailsModalProp = {
     paycheck: paycheck,
     showDetails: showDetails,
     setShowDetails: setShowDetails,
@@ -22,7 +22,7 @@ const IncomeTableRow = ({ paycheck, yearInfo }) => {
     setShowDelete: setShowDelete,
   };
 
-  const editIncomeModalProps = {
+  const editPaycheckModalProps = {
     paycheck: paycheck,
     yearInfo: yearInfo,
     showEdit: showEdit,
@@ -30,7 +30,7 @@ const IncomeTableRow = ({ paycheck, yearInfo }) => {
     setShowDetails: setShowDetails,
   };
 
-  const deleteIncomeModalProps = {
+  const deletePaycheckModalProps = {
     paycheck: paycheck,
     showDelete: showDelete,
     setShowDelete: setShowDelete,
@@ -80,11 +80,11 @@ const IncomeTableRow = ({ paycheck, yearInfo }) => {
         </td>
       </tr>
 
-      {showDetails && <IncomeDetailsModal {...incomeDetailsProps} />}
-      {showEdit && <EditIncomeModal {...editIncomeModalProps} />}
-      {showDelete && <DeleteIncomeModal {...deleteIncomeModalProps} />}
+      {showDetails && <PaycheckDetailsModal {...paycheckDetailsModalProp} />}
+      {showEdit && <EditPaycheckModal {...editPaycheckModalProps} />}
+      {showDelete && <DeletePaycheckModal {...deletePaycheckModalProps} />}
     </>
   );
 };
 
-export default IncomeTableRow;
+export default PaychecksTableRow;

@@ -18,7 +18,10 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
+import {
+  PaychecksContext,
+  PaychecksProvider,
+} from "@/contexts/PaychecksContext";
 
 const InnerDashboard = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -26,7 +29,8 @@ const InnerDashboard = ({ monthInfo }) => {
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { incomeLoading, getMonthIncome } = useContext(IncomeContext);
+  const { paychecks, paychecksLoading, getMonthIncome } =
+    useContext(PaychecksContext);
   const [topCategories, setTopCategories] = useState([]);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
   const [monthIncome, setMonthIncome] = useState(0);
@@ -59,10 +63,10 @@ const InnerDashboard = ({ monthInfo }) => {
 
   // Get the user's income for the current month
   useEffect(() => {
-    if (!incomeLoading) {
+    if (!paychecksLoading) {
       setMonthIncome(getMonthIncome(monthInfo));
     }
-  }, [incomeLoading, getMonthIncome, monthInfo]);
+  }, [paychecksLoading, getMonthIncome, monthInfo]);
 
   const openAddTransaction = () => {
     setAddTransactionClicked(true);
@@ -77,7 +81,7 @@ const InnerDashboard = ({ monthInfo }) => {
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  } else if (categoriesLoading || transactionsLoading || incomeLoading) {
+  } else if (categoriesLoading || transactionsLoading || paychecksLoading) {
     return <Loading />;
   } else {
     return (
@@ -207,9 +211,9 @@ const Dashboard = () => {
   return (
     <CategoriesProvider monthInfo={monthInfo}>
       <TransactionsProvider monthInfo={monthInfo}>
-        <IncomeProvider monthInfo={monthInfo}>
+        <PaychecksProvider monthInfo={monthInfo}>
           <InnerDashboard monthInfo={monthInfo} />
-        </IncomeProvider>
+        </PaychecksProvider>
       </TransactionsProvider>
     </CategoriesProvider>
   );

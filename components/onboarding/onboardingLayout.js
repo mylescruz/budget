@@ -13,14 +13,18 @@ import {
 import { useSession } from "next-auth/react";
 import useUser from "@/hooks/useUser";
 import ErrorModal from "../layout/errorModal";
-import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
+import {
+  PaychecksContext,
+  PaychecksProvider,
+} from "@/contexts/PaychecksContext";
 
 const OnboardingInnerLayout = () => {
   const { data: session } = useSession();
   const { user, putUser } = useUser();
-  const { updateCategories } = useContext(CategoriesContext);
-  const { postIncome } = useContext(IncomeContext);
   const router = useRouter();
+
+  const { updateCategories } = useContext(CategoriesContext);
+  const { postPaycheck } = useContext(PaychecksContext);
 
   // The new user's income and categories objects
   const [newCategories, setNewCategories] = useState([]);
@@ -66,7 +70,7 @@ const OnboardingInnerLayout = () => {
     // Add the user's paychecks to their income
     try {
       newIncome.forEach((paycheck) => {
-        postIncome(paycheck);
+        postPaycheck(paycheck);
       });
 
       setErrorOccurred(false);
@@ -169,9 +173,9 @@ const OnboardingLayout = () => {
 
   return (
     <CategoriesProvider monthInfo={monthInfo}>
-      <IncomeProvider monthInfo={monthInfo}>
+      <PaychecksProvider monthInfo={monthInfo}>
         <OnboardingInnerLayout monthInfo={monthInfo} />
-      </IncomeProvider>
+      </PaychecksProvider>
     </CategoriesProvider>
   );
 };

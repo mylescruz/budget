@@ -15,7 +15,10 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
+import {
+  PaychecksContext,
+  PaychecksProvider,
+} from "@/contexts/PaychecksContext";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -26,7 +29,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { incomeLoading } = useContext(IncomeContext);
+  const { paychecksLoading } = useContext(PaychecksContext);
   const [editCategories, setEditCategories] = useState(false);
 
   // If there is no user session, redirect to the home page
@@ -44,7 +47,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
     monthInfo: monthInfo,
   };
 
-  if (categoriesLoading || transactionsLoading || incomeLoading) {
+  if (categoriesLoading || transactionsLoading || paychecksLoading) {
     return <Loading />;
   } else {
     return (
@@ -110,9 +113,9 @@ const BudgetLayout = ({ monthInfo }) => {
   return (
     <CategoriesProvider monthInfo={monthInfo}>
       <TransactionsProvider monthInfo={monthInfo}>
-        <IncomeProvider monthInfo={monthInfo}>
+        <PaychecksProvider monthInfo={monthInfo}>
           <InnerBudgetLayout monthInfo={monthInfo} />
-        </IncomeProvider>
+        </PaychecksProvider>
       </TransactionsProvider>
     </CategoriesProvider>
   );

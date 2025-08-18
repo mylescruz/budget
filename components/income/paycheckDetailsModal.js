@@ -2,7 +2,7 @@ import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
-const IncomeDetailsModal = ({
+const PaycheckDetailsModal = ({
   paycheck,
   showDetails,
   setShowDetails,
@@ -60,4 +60,4 @@ const IncomeDetailsModal = ({
   );
 };
 
-export default IncomeDetailsModal;
+export default PaycheckDetailsModal;

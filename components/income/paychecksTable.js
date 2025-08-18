@@ -1,59 +1,61 @@
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Table } from "react-bootstrap";
-import IncomeTableRow from "./incomeTableRow";
+import PaychecksTableRow from "./paychecksTableRow";
 import PopUp from "../layout/popUp";
 import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
-import styles from "@/styles/income/incomeTable.module.css";
-import { IncomeContext } from "@/contexts/IncomeContext";
+import styles from "@/styles/income/paychecksTable.module.css";
+import { PaychecksContext } from "@/contexts/PaychecksContext";
 
-const IncomeTable = ({ yearInfo }) => {
-  const { income } = useContext(IncomeContext);
-  const [sortedIncome, setSortedIncome] = useState(income);
-  const [incomeTotals, setIncomeTotals] = useState({
+const PaychecksTable = ({ yearInfo }) => {
+  const { paychecks } = useContext(PaychecksContext);
+
+  const [sortedPaychecks, setSortedPaychecks] = useState(paychecks);
+  const [paychecksTotals, setPaychecksTotals] = useState({
     totalGross: 0,
     totalTaxes: 0,
     totalNet: 0,
   });
   const [sortDirection, setSortDirection] = useState(true);
+
   const sortAscending = useRef(true);
 
-  // Sort income from first to last or opposite on user click
+  // Sort paychecks from first to last or opposite on user click
   useEffect(() => {
-    if (income) {
-      setSortedIncome(aToZDateSorter(income));
+    if (paychecks) {
+      setSortedPaychecks(aToZDateSorter(paychecks));
     }
-  }, [income]);
+  }, [paychecks]);
 
-  // Sets a user's total gross income, taxes and net income
+  // Sets a user's total gross paychecks, taxes and net paychecks
   useEffect(() => {
-    if (income) {
+    if (paychecks) {
       let grossTotal = 0;
       let taxesTotal = 0;
 
-      if (income) {
-        income.forEach((paycheck) => {
+      if (paychecks) {
+        paychecks.forEach((paycheck) => {
           grossTotal += paycheck.gross;
           taxesTotal += paycheck.taxes;
         });
 
-        setIncomeTotals({
+        setPaychecksTotals({
           totalGross: grossTotal,
           totalTaxes: taxesTotal,
           totalNet: grossTotal - taxesTotal,
         });
       }
     }
-  }, [income]);
+  }, [paychecks]);
 
-  const sortIncomeDates = () => {
+  const sortPaycheckDates = () => {
     sortAscending.current = !sortAscending.current;
 
     if (sortAscending.current) {
-      setSortedIncome(aToZDateSorter(income));
+      setSortedPaychecks(aToZDateSorter(paychecks));
     } else {
-      setSortedIncome(zToADateSorter(income));
+      setSortedPaychecks(zToADateSorter(paychecks));
     }
 
     setSortDirection(sortAscending.current);
@@ -65,7 +67,7 @@ const IncomeTable = ({ yearInfo }) => {
         <tr className="d-flex">
           <th
             className={`col-3 col-md-2 col-lg-1 ${styles.dateSorter}`}
-            onClick={sortIncomeDates}
+            onClick={sortPaycheckDates}
           >
             Date
             {sortDirection ? <span> &#8595;</span> : <span> &#8593;</span>}
@@ -74,7 +76,7 @@ const IncomeTable = ({ yearInfo }) => {
             Company
             <PopUp
               title="Click a paycheck to view its details."
-              id="income-info"
+              id="paychecks-info"
             >
               <span> &#9432;</span>
             </PopUp>
@@ -85,11 +87,11 @@ const IncomeTable = ({ yearInfo }) => {
           <th className="col-3 col-md-2 col-lg-2">Net Pay</th>
         </tr>
       </thead>
-      {income ? (
+      {paychecks ? (
         <>
           <tbody>
-            {sortedIncome.map((paycheck) => (
-              <IncomeTableRow
+            {sortedPaychecks.map((paycheck) => (
+              <PaychecksTableRow
                 key={paycheck.id}
                 paycheck={paycheck}
                 yearInfo={yearInfo}
@@ -101,13 +103,13 @@ const IncomeTable = ({ yearInfo }) => {
               <th className="col-3 col-md-2">Total</th>
               <th className="col-6 col-md-4"></th>
               <th className="d-none d-md-block col-md-2">
-                {currencyFormatter.format(incomeTotals.totalGross)}
+                {currencyFormatter.format(paychecksTotals.totalGross)}
               </th>
               <th className="d-none d-md-block col-md-2">
-                {currencyFormatter.format(incomeTotals.totalTaxes)}
+                {currencyFormatter.format(paychecksTotals.totalTaxes)}
               </th>
               <th className="col-3 col-md-2">
-                {currencyFormatter.format(incomeTotals.totalNet)}
+                {currencyFormatter.format(paychecksTotals.totalNet)}
               </th>
             </tr>
           </tfoot>
@@ -126,4 +128,4 @@ const IncomeTable = ({ yearInfo }) => {
   );
 };
 
-export default IncomeTable;
+export default PaychecksTable;

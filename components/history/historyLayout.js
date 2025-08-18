@@ -7,7 +7,10 @@ import getMonthInfo from "@/helpers/getMonthInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
-import { IncomeContext, IncomeProvider } from "@/contexts/IncomeContext";
+import {
+  PaychecksContext,
+  PaychecksProvider,
+} from "@/contexts/PaychecksContext";
 
 const InnerHistoryLayout = () => {
   // Using NextAuth.js to authenticate a user's session
@@ -19,7 +22,7 @@ const InnerHistoryLayout = () => {
   const { history, historyLoading, postHistory, getMonthHistory } = useHistory(
     session.user.username
   );
-  const { incomeLoading, getMonthIncome } = useContext(IncomeContext);
+  const { paychecksLoading, getMonthIncome } = useContext(PaychecksContext);
   const [currentYearHistory, setCurrentYearHistory] = useState(history);
   const [historyYears, setHistoryYears] = useState({
     years: [],
@@ -105,7 +108,7 @@ const InnerHistoryLayout = () => {
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  } else if (historyLoading || incomeLoading) {
+  } else if (historyLoading || paychecksLoading) {
     return <Loading />;
   } else {
     return (
@@ -150,9 +153,9 @@ const HistoryLayout = () => {
   const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
 
   return (
-    <IncomeProvider monthInfo={monthInfo}>
+    <PaychecksProvider monthInfo={monthInfo}>
       <InnerHistoryLayout />
-    </IncomeProvider>
+    </PaychecksProvider>
   );
 };
 

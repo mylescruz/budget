@@ -5,9 +5,11 @@ import { Button, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
 import { useContext, useState } from "react";
-import { IncomeContext } from "@/contexts/IncomeContext";
+import { PaychecksContext } from "@/contexts/PaychecksContext";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 
-const DeleteIncomeModal = ({
+const DeletePaycheckModal = ({
   paycheck,
   showDelete,
   setShowDelete,
@@ -16,8 +18,10 @@ const DeleteIncomeModal = ({
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { deleteIncome, getMonthIncome } = useContext(IncomeContext);
+  const { categories, updateCategories } = useContext(CategoriesContext);
+  const { deletePaycheck, getMonthIncome } = useContext(PaychecksContext);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
+
   const [deletingPaycheck, setDeletingPaycheck] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -31,7 +35,7 @@ const DeleteIncomeModal = ({
 
     try {
       // Deletes a paycheck from the income array by sending a DELETE request to the API
-      await deleteIncome(paycheck);
+      await deletePaycheck(paycheck);
 
       // Update the history for the paycheck's month
       const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
@@ -57,6 +61,19 @@ const DeleteIncomeModal = ({
         };
 
         await putHistory(updatedMonth);
+
+        // Updates the categories by sending a PUT request to the API
+        const updatedCategories = updateGuiltFreeSpending(
+          updatedBudget,
+          categories
+        );
+
+        // Only update the categories that were changed
+        const changedCategories = updatedCategories.filter(
+          (category) => category.updated
+        );
+
+        await updateCategories(changedCategories);
       }
 
       setErrorOccurred(false);
@@ -94,4 +111,4 @@ const DeleteIncomeModal = ({
   );
 };
 
-export default DeleteIncomeModal;
+export default DeletePaycheckModal;

@@ -7,13 +7,13 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
-import { IncomeContext } from "@/contexts/IncomeContext";
+import { PaychecksContext } from "@/contexts/PaychecksContext";
 
 const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
   const { categories, deleteCategory, updateCategories } =
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
-  const { getMonthIncome } = useContext(IncomeContext);
+  const { getMonthIncome } = useContext(PaychecksContext);
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
   const [updatingCategories, setUpdatingCategories] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);

@@ -8,9 +8,9 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
-import { IncomeContext } from "@/contexts/IncomeContext";
+import { PaychecksContext } from "@/contexts/PaychecksContext";
 
-const AddIncomeModal = ({
+const AddPaycheckModal = ({
   yearInfo,
   addPaycheckClicked,
   setAddPaycheckClicked,
@@ -28,9 +28,10 @@ const AddIncomeModal = ({
   };
 
   const { categories, updateCategories } = useContext(CategoriesContext);
-  const { postIncome, getMonthIncome } = useContext(IncomeContext);
-  const [paycheck, setPaycheck] = useState(emptyPaycheck);
+  const { postPaycheck, getMonthIncome } = useContext(PaychecksContext);
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
+
+  const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const [addingPaycheck, setAddingPaycheck] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -58,7 +59,7 @@ const AddIncomeModal = ({
       paycheck.taxes = parseFloat((paycheck.gross - paycheck.net).toFixed(2));
 
       // Adds the new paycheck to the income array by sending a POST request to the API
-      await postIncome(paycheck);
+      await postPaycheck(paycheck);
 
       const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
 
@@ -89,7 +90,13 @@ const AddIncomeModal = ({
           updatedBudget,
           categories
         );
-        await updateCategories(updatedCategories);
+
+        // Only update the categories that were changed
+        const changedCategories = updatedCategories.filter(
+          (category) => category.updated
+        );
+
+        await updateCategories(changedCategories);
       }
 
       setAddPaycheckClicked(false);
@@ -225,4 +232,4 @@ const AddIncomeModal = ({
   );
 };
 
-export default AddIncomeModal;
+export default AddPaycheckModal;

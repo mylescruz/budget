@@ -1,12 +1,12 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { IncomeContext } from "@/contexts/IncomeContext";
+import { PaychecksContext } from "@/contexts/PaychecksContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useEffect, useState } from "react";
 
 const CategoryFooter = ({ monthInfo }) => {
   const { categories } = useContext(CategoriesContext);
-  const { getMonthIncome } = useContext(IncomeContext);
+  const { getMonthIncome } = useContext(PaychecksContext);
   const [categoryTotals, setCategoryTotals] = useState({
     budget: 0,
     actual: 0,
@@ -56,7 +56,11 @@ const CategoryFooter = ({ monthInfo }) => {
             {currencyFormatter.format(categoryTotals.actual)}
           </td>
           <td
-            className={`d-none d-md-block col-md-2 cell ${categoryTotals.remaining > 0 ? "text-white" : "text-danger fw-bold"}`}
+            className={`d-none d-md-block col-md-2 cell ${
+              categoryTotals.remaining > 0
+                ? "text-white"
+                : "text-danger fw-bold"
+            }`}
           >
             {currencyFormatter.format(categoryTotals.remaining)}
           </td>
