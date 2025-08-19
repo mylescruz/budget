@@ -1,15 +1,11 @@
 import useSummary from "@/hooks/useSummary";
-import { useSession } from "next-auth/react";
 import Loading from "../layout/loading";
 import SummaryTable from "./summaryTable";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categories/categoryPieChart";
 
 const SummaryLayout = ({ year }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
-  const { summary, summaryLoading } = useSummary(session.user.username, year);
+  const { summary, summaryLoading } = useSummary(year);
 
   if (summaryLoading) {
     return <Loading />;

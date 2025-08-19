@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-const useSummary = (username, year) => {
+const useSummary = (year) => {
   const [summary, setSummary] = useState([]);
   const [summaryLoading, setSummaryLoading] = useState(true);
 
   useEffect(() => {
     const getSummary = async () => {
       try {
-        const rsp = await fetch(`/api/summary/${username}/${year}`);
+        const rsp = await fetch(`/api/summary/${year}`);
 
         if (rsp.ok) {
           const fetchedSummary = await rsp.json();
@@ -25,7 +25,7 @@ const useSummary = (username, year) => {
     };
 
     getSummary();
-  }, [username, year]);
+  }, [year]);
 
   return { summary, summaryLoading };
 };
