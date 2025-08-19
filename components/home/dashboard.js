@@ -19,22 +19,21 @@ import {
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
 import {
-  PaychecksContext,
-  PaychecksProvider,
-} from "@/contexts/PaychecksContext";
+  MonthIncomeProvider,
+  MonthIncomeContext,
+} from "@/contexts/MonthIncomeContext";
 
 const InnerDashboard = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
+  const router = useRouter();
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { paychecks, paychecksLoading, getMonthIncome } =
-    useContext(PaychecksContext);
+  const { monthIncome, monthIncomeLoading } = useContext(MonthIncomeContext);
+
   const [topCategories, setTopCategories] = useState([]);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
-  const [monthIncome, setMonthIncome] = useState(0);
-  const router = useRouter();
 
   // Get the top 5 categories to display on the dashboard
   useEffect(() => {
@@ -61,13 +60,6 @@ const InnerDashboard = ({ monthInfo }) => {
     }
   }, [categories]);
 
-  // Get the user's income for the current month
-  useEffect(() => {
-    if (!paychecksLoading) {
-      setMonthIncome(getMonthIncome(monthInfo));
-    }
-  }, [paychecksLoading, getMonthIncome, monthInfo]);
-
   const openAddTransaction = () => {
     setAddTransactionClicked(true);
   };
@@ -81,7 +73,7 @@ const InnerDashboard = ({ monthInfo }) => {
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  } else if (categoriesLoading || transactionsLoading || paychecksLoading) {
+  } else if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
     return <Loading />;
   } else {
     return (
@@ -211,9 +203,9 @@ const Dashboard = () => {
   return (
     <CategoriesProvider monthInfo={monthInfo}>
       <TransactionsProvider monthInfo={monthInfo}>
-        <PaychecksProvider monthInfo={monthInfo}>
+        <MonthIncomeProvider monthInfo={monthInfo}>
           <InnerDashboard monthInfo={monthInfo} />
-        </PaychecksProvider>
+        </MonthIncomeProvider>
       </TransactionsProvider>
     </CategoriesProvider>
   );

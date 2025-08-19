@@ -7,13 +7,14 @@ import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
-import { PaychecksContext } from "@/contexts/PaychecksContext";
+import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 
-const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
+const EditCategoryTable = ({ setEditCategories }) => {
   const { categories, deleteCategory, updateCategories } =
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
-  const { getMonthIncome } = useContext(PaychecksContext);
+  const { monthIncome } = useContext(MonthIncomeContext);
+
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
   const [updatingCategories, setUpdatingCategories] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -116,8 +117,7 @@ const EditCategoryTable = ({ setEditCategories, monthInfo }) => {
           }
         });
 
-        const totalIncome = getMonthIncome(monthInfo);
-        const updatedCategories = updateGuiltFreeSpending(totalIncome, updated);
+        const updatedCategories = updateGuiltFreeSpending(monthIncome, updated);
 
         // Updates the categories array with the editted categories by sending a PUT request to the API
         const changedCategories = updatedCategories.filter(

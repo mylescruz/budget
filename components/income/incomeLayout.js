@@ -13,6 +13,10 @@ import {
   PaychecksContext,
   PaychecksProvider,
 } from "@/contexts/PaychecksContext";
+import {
+  MonthIncomeProvider,
+  MonthIncomeContext,
+} from "@/contexts/MonthIncomeContext";
 
 const InnerIncomeLayout = ({ year }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -22,6 +26,7 @@ const InnerIncomeLayout = ({ year }) => {
   const router = useRouter();
 
   const { paychecks, paychecksLoading } = useContext(PaychecksContext);
+  const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
   const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
   const [nullPaychecks, setNullPaychecks] = useState(paychecks === null);
@@ -50,8 +55,7 @@ const InnerIncomeLayout = ({ year }) => {
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  } else if (paychecksLoading) {
-    // If the paychecks is still being loaded by the API, show the loading component
+  } else if (paychecksLoading || monthIncomeLoading) {
     return <Loading />;
   } else {
     return (
@@ -95,7 +99,9 @@ const IncomeLayout = ({ year }) => {
   return (
     <CategoriesProvider monthInfo={monthInfo}>
       <PaychecksProvider monthInfo={monthInfo}>
-        <InnerIncomeLayout year={year} />
+        <MonthIncomeProvider monthInfo={monthInfo}>
+          <InnerIncomeLayout year={year} />
+        </MonthIncomeProvider>
       </PaychecksProvider>
     </CategoriesProvider>
   );

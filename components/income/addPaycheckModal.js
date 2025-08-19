@@ -9,6 +9,7 @@ import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
+import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 
 const AddPaycheckModal = ({
   yearInfo,
@@ -28,7 +29,9 @@ const AddPaycheckModal = ({
   };
 
   const { categories, updateCategories } = useContext(CategoriesContext);
-  const { postPaycheck, getMonthIncome } = useContext(PaychecksContext);
+  const { postPaycheck } = useContext(PaychecksContext);
+  const { monthIncome } = useContext(MonthIncomeContext);
+
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
 
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
@@ -62,9 +65,6 @@ const AddPaycheckModal = ({
       await postPaycheck(paycheck);
 
       const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
-
-      // Get the income for the month of the paycheck
-      const monthIncome = getMonthIncome(paycheckMonthInfo);
 
       // Get the history for the month of the paycheck
       const paycheckMonth = getMonthHistory(paycheckMonthInfo);

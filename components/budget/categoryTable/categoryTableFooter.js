@@ -1,12 +1,13 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { PaychecksContext } from "@/contexts/PaychecksContext";
+import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useEffect, useState } from "react";
 
-const CategoryFooter = ({ monthInfo }) => {
+const CategoryFooter = () => {
   const { categories } = useContext(CategoriesContext);
-  const { getMonthIncome } = useContext(PaychecksContext);
+  const { monthIncome } = useContext(MonthIncomeContext);
+
   const [categoryTotals, setCategoryTotals] = useState({
     budget: 0,
     actual: 0,
@@ -22,19 +23,17 @@ const CategoryFooter = ({ monthInfo }) => {
         totalActual += category.actual;
       });
 
-      const budget = getMonthIncome(monthInfo);
-
-      if (budget !== null) {
+      if (monthIncome !== null) {
         setCategoryTotals({
-          budget: budget,
+          budget: monthIncome,
           actual: totalActual,
-          remaining: budget - totalActual,
+          remaining: monthIncome - totalActual,
         });
       } else {
         setCategoryTotals(null);
       }
     }
-  }, [categories, getMonthIncome, monthInfo]);
+  }, [categories, monthIncome]);
 
   return (
     <>

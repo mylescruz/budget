@@ -15,39 +15,28 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
+import { PaychecksProvider } from "@/contexts/PaychecksContext";
 import {
-  PaychecksContext,
-  PaychecksProvider,
-} from "@/contexts/PaychecksContext";
+  MonthIncomeProvider,
+  MonthIncomeContext,
+} from "@/contexts/MonthIncomeContext";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  // Using the router object to redirect to different pages within the app
   const router = useRouter();
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { paychecksLoading } = useContext(PaychecksContext);
+  const { monthIncomeLoading } = useContext(MonthIncomeContext);
+
   const [editCategories, setEditCategories] = useState(false);
 
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  }
-
-  const categoryTableProps = {
-    setEditCategories: setEditCategories,
-    monthInfo: monthInfo,
-  };
-
-  const editCategoryTableProps = {
-    setEditCategories: setEditCategories,
-    monthInfo: monthInfo,
-  };
-
-  if (categoriesLoading || transactionsLoading || paychecksLoading) {
+  } else if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
     return <Loading />;
   } else {
     return (
@@ -71,9 +60,12 @@ const InnerBudgetLayout = ({ monthInfo }) => {
               </Col>
               <Col className="col-12 col-xl-6">
                 {!editCategories ? (
-                  <CategoryTable {...categoryTableProps} />
+                  <CategoryTable
+                    setEditCategories={setEditCategories}
+                    monthInfo={monthInfo}
+                  />
                 ) : (
-                  <EditCategoryTable {...editCategoryTableProps} />
+                  <EditCategoryTable setEditCategories={setEditCategories} />
                 )}
               </Col>
             </Row>
@@ -114,7 +106,9 @@ const BudgetLayout = ({ monthInfo }) => {
     <CategoriesProvider monthInfo={monthInfo}>
       <TransactionsProvider monthInfo={monthInfo}>
         <PaychecksProvider monthInfo={monthInfo}>
-          <InnerBudgetLayout monthInfo={monthInfo} />
+          <MonthIncomeProvider monthInfo={monthInfo}>
+            <InnerBudgetLayout monthInfo={monthInfo} />
+          </MonthIncomeProvider>
         </PaychecksProvider>
       </TransactionsProvider>
     </CategoriesProvider>

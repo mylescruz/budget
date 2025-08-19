@@ -8,9 +8,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "../layout/loading";
 import {
-  PaychecksContext,
-  PaychecksProvider,
-} from "@/contexts/PaychecksContext";
+  MonthIncomeProvider,
+  MonthIncomeContext,
+} from "@/contexts/MonthIncomeContext";
 
 const InnerHistoryLayout = () => {
   // Using NextAuth.js to authenticate a user's session
@@ -22,7 +22,8 @@ const InnerHistoryLayout = () => {
   const { history, historyLoading, postHistory, getMonthHistory } = useHistory(
     session.user.username
   );
-  const { paychecksLoading, getMonthIncome } = useContext(PaychecksContext);
+  const { monthIncome, monthIncomeLoading } = useContext(MonthIncomeContext);
+
   const [currentYearHistory, setCurrentYearHistory] = useState(history);
   const [historyYears, setHistoryYears] = useState({
     years: [],
@@ -37,14 +38,12 @@ const InnerHistoryLayout = () => {
 
     // Sets the new month object and sends the POST request to the API
     const addNewHistoryMonth = async () => {
-      const newMonthIncome = getMonthIncome(monthInfo);
-
       const newMonth = {
         month: dateInfo.currentMonth,
         year: dateInfo.currentYear,
-        budget: newMonthIncome,
+        budget: monthIncome,
         actual: 0,
-        leftover: newMonthIncome,
+        leftover: monthIncome,
       };
 
       await postHistory(newMonth);
@@ -60,7 +59,7 @@ const InnerHistoryLayout = () => {
     if (!historyLoading && !isMonthInHistory() && history !== null) {
       addNewHistoryMonth();
     }
-  }, [history, historyLoading, postHistory, getMonthHistory, getMonthIncome]);
+  }, [history, historyLoading, postHistory, getMonthHistory, monthIncome]);
 
   // Get all the years in the history, the max, the min and the current year
   useEffect(() => {
@@ -108,7 +107,7 @@ const InnerHistoryLayout = () => {
   // If there is no user session, redirect to the home page
   if (!session) {
     router.push("/");
-  } else if (historyLoading || paychecksLoading) {
+  } else if (historyLoading || monthIncomeLoading) {
     return <Loading />;
   } else {
     return (
@@ -153,9 +152,9 @@ const HistoryLayout = () => {
   const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
 
   return (
-    <PaychecksProvider monthInfo={monthInfo}>
+    <MonthIncomeProvider monthInfo={monthInfo}>
       <InnerHistoryLayout />
-    </PaychecksProvider>
+    </MonthIncomeProvider>
   );
 };
 

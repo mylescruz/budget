@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
+import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 
 const DeletePaycheckModal = ({
   paycheck,
@@ -19,7 +20,9 @@ const DeletePaycheckModal = ({
   const { data: session } = useSession();
 
   const { categories, updateCategories } = useContext(CategoriesContext);
-  const { deletePaycheck, getMonthIncome } = useContext(PaychecksContext);
+  const { deletePaycheck } = useContext(PaychecksContext);
+  const { monthIncome } = useContext(MonthIncomeContext);
+
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
 
   const [deletingPaycheck, setDeletingPaycheck] = useState(false);
@@ -39,9 +42,6 @@ const DeletePaycheckModal = ({
 
       // Update the history for the paycheck's month
       const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
-
-      // Get the income for the month of the paycheck
-      const monthIncome = getMonthIncome(paycheckMonthInfo);
 
       // Get the history for the month of the paycheck
       const paycheckMonth = getMonthHistory(paycheckMonthInfo);

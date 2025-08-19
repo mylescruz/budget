@@ -7,6 +7,7 @@ import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 
 const EditPaycheckModal = ({
   paycheck,
@@ -18,8 +19,9 @@ const EditPaycheckModal = ({
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { categories, updateCategories } = useContext(CategoriesContext);
   const { putPaycheck, getMonthIncome } = useContext(PaychecksContext);
+  const { monthIncome } = useContext(MonthIncomeContext);
+
   const { putHistory, getMonthHistory } = useHistory(session.user.username);
 
   const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);

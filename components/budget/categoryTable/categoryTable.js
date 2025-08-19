@@ -174,7 +174,7 @@ const CategoryTable = ({ setEditCategories, monthInfo }) => {
           )}
       </tbody>
       <tfoot className="table-dark">
-        <CategoryTableFooter monthInfo={monthInfo} />
+        <CategoryTableFooter />
       </tfoot>
     </Table>
   );
