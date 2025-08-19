@@ -56,8 +56,8 @@ const CreateUserForm = ({ csrfToken }) => {
   };
 
   // Function to add user to S3
-  const createUserS3 = async (newUser) => {
-    await fetch(`/api/user/${newUser.username}`, {
+  const addUser = async (newUser) => {
+    await fetch("/api/user", {
       method: "POST",
       headers: {
         Accept: "application.json",
@@ -126,8 +126,8 @@ const CreateUserForm = ({ csrfToken }) => {
     try {
       setCreatingUser(true);
 
-      // Add the user to S3
-      await createUserS3(newUser);
+      // Add the user to the system
+      await addUser(newUser);
 
       setErrorOccurred(false);
     } catch (error) {

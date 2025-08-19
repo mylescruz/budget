@@ -1,68 +1,30 @@
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 const useUsers = () => {
   const [users, setUsers] = useState([]);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const router = useRouter();
+  const [usersLoading, setUsersLoading] = useState(true);
 
   useEffect(() => {
     const getUsers = async () => {
       try {
-        setUsersLoading(true);
         const response = await fetch("/api/admin/users");
 
         if (response.ok) {
           const result = await response.json();
           setUsers(result);
-          setUsersLoading(false);
         } else {
-          setUsersLoading(false);
           const result = await response.text();
           throw new Error(result);
         }
       } catch (error) {
         console.error(error);
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+      } finally {
+        setUsersLoading(false);
       }
     };
 
     getUsers();
-  }, [router]);
-
-  const postUser = useCallback(
-    async (newUser) => {
-      try {
-        const response = await fetch("/api/admin/users", {
-          method: "POST",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newUser),
-        });
-
-        if (response.ok) {
-          const addedUser = await response.json();
-          setUsers([...users, addedUser]);
-          setUsersLoading(false);
-        } else {
-          const result = await response.text();
-          throw new Error(result);
-        }
-      } catch (error) {
-        console.error(error);
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
-      }
-    },
-    [users, router]
-  );
+  }, []);
 
   const putUser = useCallback(
     async (edittedUser) => {
@@ -88,20 +50,17 @@ const useUsers = () => {
           });
 
           setUsers(updatedUsers);
-          setUsersLoading(false);
         } else {
           const result = await response.text();
           throw new Error(result);
         }
       } catch (error) {
         console.error(error);
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+      } finally {
+        setUsersLoading(false);
       }
     },
-    [users, router]
+    [users]
   );
 
   const deleteUser = useCallback(
@@ -131,16 +90,14 @@ const useUsers = () => {
         }
       } catch (error) {
         console.error(error);
-        router.push({
-          pathname: "/error",
-          query: { message: error.message },
-        });
+      } finally {
+        setUsersLoading(false);
       }
     },
-    [users, router]
+    [users]
   );
 
-  return { users, usersLoading, postUser, putUser, deleteUser };
+  return { users, usersLoading, putUser, deleteUser };
 };
 
 export default useUsers;
