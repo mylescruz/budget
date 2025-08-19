@@ -5,19 +5,15 @@ import React, { useContext, useEffect, useState } from "react";
 import FixedCategoryTableRow from "./fixedCategoryTableRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import useHistory from "@/hooks/useHistory";
-import { useSession } from "next-auth/react";
 import PopUp from "@/components/layout/popUp";
 
 const CategoryTable = ({ setEditCategories, monthInfo }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
+  const { categories, categoriesLoading } = useContext(CategoriesContext);
+
+  const { historyLoading, putHistory, getMonthHistory } = useHistory();
 
   const [showFixedExpenses, setShowFixedExpenses] = useState(true);
   const [showVariableExpenses, setShowVariableExpenses] = useState(true);
-  const { categories, categoriesLoading } = useContext(CategoriesContext);
-  const { historyLoading, putHistory, getMonthHistory } = useHistory(
-    session.user.username
-  );
 
   // Updates the budget and the money actual spent in the history array when the categories array changes
   useEffect(() => {

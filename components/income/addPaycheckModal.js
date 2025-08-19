@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
 import useHistory from "@/hooks/useHistory";
-import { useSession } from "next-auth/react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
@@ -16,9 +15,6 @@ const AddPaycheckModal = ({
   addPaycheckClicked,
   setAddPaycheckClicked,
 }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
   const emptyPaycheck = {
     date: dateInfo.currentDate,
     company: "",
@@ -32,7 +28,7 @@ const AddPaycheckModal = ({
   const { postPaycheck } = useContext(PaychecksContext);
   const { monthIncome } = useContext(MonthIncomeContext);
 
-  const { putHistory, getMonthHistory } = useHistory(session.user.username);
+  const { putHistory, getMonthHistory } = useHistory();
 
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const [addingPaycheck, setAddingPaycheck] = useState(false);

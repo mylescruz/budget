@@ -19,9 +19,8 @@ const InnerHistoryLayout = () => {
   // Using the router object to redirect to different pages within the app
   const router = useRouter();
 
-  const { history, historyLoading, postHistory, getMonthHistory } = useHistory(
-    session.user.username
-  );
+  const { history, historyLoading, postHistory, getMonthHistory } =
+    useHistory();
   const { monthIncome, monthIncomeLoading } = useContext(MonthIncomeContext);
 
   const [currentYearHistory, setCurrentYearHistory] = useState(history);

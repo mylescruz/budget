@@ -1,6 +1,5 @@
 import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import useHistory from "@/hooks/useHistory";
-import { useSession } from "next-auth/react";
 import { Button, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
@@ -16,14 +15,11 @@ const DeletePaycheckModal = ({
   setShowDelete,
   setShowDetails,
 }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
   const { categories, updateCategories } = useContext(CategoriesContext);
   const { deletePaycheck } = useContext(PaychecksContext);
   const { monthIncome } = useContext(MonthIncomeContext);
 
-  const { putHistory, getMonthHistory } = useHistory(session.user.username);
+  const { putHistory, getMonthHistory } = useHistory();
 
   const [deletingPaycheck, setDeletingPaycheck] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
