@@ -142,7 +142,7 @@ const EditPaycheckModal = ({
       setErrorOccurred(false);
     } catch (error) {
       setErrorOccurred(true);
-      console.error("Error editting a paycheck: ", error);
+      console.error(error);
       return;
     } finally {
       setUpdatingPaycheck(false);

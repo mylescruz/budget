@@ -49,8 +49,8 @@ const usePaychecks = (year) => {
           throw new Error(message);
         }
       } catch (error) {
-        setPaychecks(null);
-        console.error(error);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setPaychecksLoading(false);
       }
@@ -88,8 +88,8 @@ const usePaychecks = (year) => {
           throw new Error(message);
         }
       } catch (error) {
-        setPaychecks(null);
-        console.error(error);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setPaychecksLoading(false);
       }
@@ -123,8 +123,8 @@ const usePaychecks = (year) => {
           throw new Error(message);
         }
       } catch (error) {
-        setPaychecks(null);
-        console.error(error);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setPaychecksLoading(false);
       }

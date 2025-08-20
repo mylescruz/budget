@@ -9,6 +9,7 @@ import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
 import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
+import ErrorModal from "../layout/errorModal";
 
 const AddPaycheckModal = ({
   yearInfo,
@@ -100,7 +101,7 @@ const AddPaycheckModal = ({
       setErrorOccurred(false);
     } catch (error) {
       setErrorOccurred(true);
-      console.error("Error adding new income: ", error);
+      console.error(error);
       return;
     } finally {
       setAddingPaycheck(false);

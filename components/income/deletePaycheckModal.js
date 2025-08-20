@@ -88,7 +88,9 @@ const DeletePaycheckModal = ({
         <>
           <Modal.Header closeButton>Delete Paycheck</Modal.Header>
           <Modal.Body>
-            Are you sure you want to delete this paycheck?
+            <p className="mb-2">
+              Are you sure you want to delete this paycheck?
+            </p>
             {errorOccurred && <ErrorMessage />}
           </Modal.Body>
           <Modal.Footer>
