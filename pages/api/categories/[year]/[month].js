@@ -54,40 +54,30 @@ export default async function handler(req, res) {
         .sort({ budget: 1 })
         .toArray();
 
-      if (previousDocs.length > 0) {
-        const previousCategories = previousDocs.map((category) => {
-          if (category.fixed) {
-            return category;
+      const previousCategories = previousDocs.map((category) => {
+        if (category.fixed) {
+          return category;
+        } else {
+          if (category.hasSubcategory) {
+            const newSubcategories = category.subcategories.map(
+              (subcategory) => {
+                // Reset the id for each subcategory
+                return { ...subcategory, id: uuidv4(), actual: 0 };
+              }
+            );
+
+            return {
+              ...category,
+              actual: 0,
+              subcategories: newSubcategories,
+            };
           } else {
-            if (category.hasSubcategory) {
-              const newSubcategories = category.subcategories.map(
-                (subcategory) => {
-                  // Reset the id for each subcategory
-                  return { ...subcategory, id: uuidv4(), actual: 0 };
-                }
-              );
-
-              return {
-                ...category,
-                actual: 0,
-                subcategories: newSubcategories,
-              };
-            } else {
-              return { ...category, actual: 0 };
-            }
+            return { ...category, actual: 0 };
           }
-        });
+        }
+      });
 
-        finalDocs = previousCategories;
-      } else {
-        // If the category documents for the current and previous month don't exist, return the default documents
-        const defaultDocs = await categoriesCol
-          .find({ defaultCategory: true })
-          .sort({ budget: 1 })
-          .toArray();
-
-        finalDocs = defaultDocs;
-      }
+      finalDocs = previousCategories;
     }
 
     categories = finalDocs.map((category) => {

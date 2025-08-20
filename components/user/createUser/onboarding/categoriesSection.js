@@ -173,6 +173,8 @@ const CategoriesSection = ({
       categories: [...newUser.categories, newCategory],
     });
 
+    console.log(newUser);
+
     setNewCategory(emptyCategory);
   };
 

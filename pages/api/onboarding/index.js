@@ -120,25 +120,40 @@ export default async function handler(req, res) {
       } else {
         // Add the default categories for the user in MongoDB
         categories = await getDefaultCategories(newUser.username);
+
+        // Get the budget total for all categories
+        let totalBudget = 0;
+        categories.forEach((category) => {
+          if (category.name !== "Guilt Free Spending") {
+            totalBudget += parseFloat(category.budget);
+          }
+        });
+
+        // Update the Guilt Free Spending category to adjust for the user's total income for the month minus the total budget
+        const gfsIndex = categories.findIndex(
+          (category) => category.name === "Guilt Free Spending"
+        );
+
+        categories[gfsIndex].budget = monthIncome - totalBudget;
       }
 
-      // Get the budget total for all categories
-      let totalBudget = 0;
-      categories.forEach((category) => {
-        if (category.name !== "Guilt Free Spending") {
-          totalBudget += parseFloat(category.budget);
-        }
+      const finalCategories = categories.map((category) => {
+        return {
+          username: newUser.username,
+          month: month,
+          year: year,
+          name: category.name,
+          color: category.color,
+          budget: category.budget,
+          actual: category.actual,
+          fixed: category.fixed,
+          hasSubcategory: category.hasSubcategory,
+          subcategories: category.subcategories,
+        };
       });
 
-      // Update the Guilt Free Spending category to adjust for the user's total income for the month minus the total budget
-      const gfsIndex = categories.findIndex(
-        (category) => category.name === "Guilt Free Spending"
-      );
-
-      categories[gfsIndex].budget = monthIncome - totalBudget;
-
       // Insert the updated categories in MongoDB
-      await categoriesCol.insertMany(categories);
+      await categoriesCol.insertMany(finalCategories);
 
       res.status(200).json(insertedUser);
     } catch (error) {

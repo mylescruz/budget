@@ -116,8 +116,6 @@ export default async function handler(req, res) {
               },
             }
           );
-
-          console.log("found parent category: ", result);
         } else {
           // Increment the actual value of the category and subcategory
           const result = await categoriesCol.updateOne(
@@ -132,8 +130,6 @@ export default async function handler(req, res) {
               },
             }
           );
-
-          console.log(result);
         }
       }
 
