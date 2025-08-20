@@ -13,9 +13,11 @@ export default function HistoryMonth() {
   const year = parseInt(router.query.year);
 
   // Create a loading indicator while check on the status of a user's session
-  if (!month || status === "loading") return <Loading />;
-  else if (!session.user.onboarded) router.push("/onboarding");
-  else {
+  if (!month || status === "loading") {
+    return <Loading />;
+  } else if (!session || status === "unauthenticated") {
+    router.push("/redirect");
+  } else {
     const monthInfo = getMonthInfo(month, year);
 
     return (

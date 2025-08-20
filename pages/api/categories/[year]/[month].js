@@ -82,7 +82,7 @@ export default async function handler(req, res) {
       } else {
         // If the category documents for the current and previous month don't exist, return the default documents
         const defaultDocs = await categoriesCol
-          .find({ month: "default", year: "default" })
+          .find({ defaultCategory: true })
           .sort({ budget: 1 })
           .toArray();
 

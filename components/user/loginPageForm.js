@@ -39,14 +39,14 @@ const LoginPageForm = ({ csrfToken }) => {
       });
 
       if (response.ok) {
-        setLoggingIn(false);
         router.push("/");
       } else {
-        setLoggingIn(false);
         throw new Error("Invalid user credentials. Please try again!");
       }
     } catch (error) {
       setLoginError({ error: true, message: error.message });
+    } finally {
+      setLoggingIn(false);
     }
   };
 

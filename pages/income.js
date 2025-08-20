@@ -16,8 +16,6 @@ export default function Income() {
     return <Loading />;
   } else if (!session || status === "unauthenticated") {
     router.push("/redirect");
-  } else if (!session.user.onboarded) {
-    router.push("/onboarding");
   } else {
     return (
       <>

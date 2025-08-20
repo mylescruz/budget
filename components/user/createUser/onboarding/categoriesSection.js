@@ -1,12 +1,58 @@
 import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
-import PopUp from "../layout/popUp";
+import PopUp from "@/components/layout/popUp";
 import { useState } from "react";
 import currencyFormatter from "@/helpers/currencyFormatter";
 import { v4 as uuidv4 } from "uuid";
 
-const OnboardingCategoriesSection = ({
-  newCategories,
-  setNewCategories,
+const defaultExampleCategories = [
+  {
+    name: "Rent",
+    budget: "$2000",
+  },
+  {
+    name: "Savings",
+    budget: "$5000",
+  },
+  {
+    name: "Insurance",
+    budget: "$500",
+  },
+  {
+    name: "Internet/TV",
+    budget: "$100",
+  },
+  {
+    name: "Subscriptions",
+    budget: "$50",
+  },
+];
+
+const customExampleCategories = [
+  {
+    name: "Mortgage",
+    budget: "$1850",
+  },
+  {
+    name: "Student Loans",
+    budget: "$352",
+  },
+  {
+    name: "Spectrum Bill",
+    budget: "$89",
+  },
+  {
+    name: "Disney Plus",
+    budget: "$14.99",
+  },
+  {
+    name: "Travel",
+    budget: "$500",
+  },
+];
+
+const CategoriesSection = ({
+  newUser,
+  setNewUser,
   categoryQuestion,
   defaultCategory,
   customCategory,
@@ -14,7 +60,6 @@ const OnboardingCategoriesSection = ({
   enterCustom,
 }) => {
   const emptyCategory = {
-    id: uuidv4(),
     name: "",
     color: "#000000",
     budget: "",
@@ -30,62 +75,6 @@ const OnboardingCategoriesSection = ({
     actual: 0,
   };
 
-  const defaultExampleCategories = [
-    {
-      id: 0,
-      name: "Rent",
-      budget: "$2000",
-    },
-    {
-      id: 1,
-      name: "Savings",
-      budget: "$5000",
-    },
-    {
-      id: 2,
-      name: "Insurance",
-      budget: "$500",
-    },
-    {
-      id: 3,
-      name: "Internet/TV",
-      budget: "$100",
-    },
-    {
-      id: 4,
-      name: "Subscriptions",
-      budget: "$50",
-    },
-  ];
-
-  const customExampleCategories = [
-    {
-      id: 0,
-      name: "Mortgage",
-      budget: "$1850",
-    },
-    {
-      id: 1,
-      name: "Student Loans",
-      budget: "$352",
-    },
-    {
-      id: 2,
-      name: "Spectrum Bill",
-      budget: "$89",
-    },
-    {
-      id: 3,
-      name: "Disney Plus",
-      budget: "$14.99",
-    },
-    {
-      id: 4,
-      name: "Travel",
-      budget: "$500",
-    },
-  ];
-
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
   const [subcategoryTotal, setSubcategoryTotal] = useState(0);
@@ -98,8 +87,11 @@ const OnboardingCategoriesSection = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") setNewCategory({ ...newCategory, budget: input });
-    else setNewCategory({ ...newCategory, budget: parseFloat(input) });
+    if (input == "") {
+      setNewCategory({ ...newCategory, budget: input });
+    } else {
+      setNewCategory({ ...newCategory, budget: parseFloat(input) });
+    }
   };
 
   const handleSubcategoryInput = (e) => {
@@ -109,19 +101,23 @@ const OnboardingCategoriesSection = ({
   const handleSubcategoryBudget = (e) => {
     const input = e.target.value;
 
-    if (input == "") setNewSubcategory({ ...newSubcategory, actual: input });
-    else setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
+    if (input == "") {
+      setNewSubcategory({ ...newSubcategory, actual: input });
+    } else {
+      setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
+    }
   };
 
   const handleSubcategoryChecked = (e) => {
-    if (e.target.checked)
+    if (e.target.checked) {
       setNewCategory({ ...newCategory, hasSubcategory: true });
-    else
+    } else {
       setNewCategory({
         ...newCategory,
         hasSubcategory: false,
         subcategories: [],
       });
+    }
   };
 
   const handleFixed = (e) => {
@@ -168,10 +164,14 @@ const OnboardingCategoriesSection = ({
     e.preventDefault();
 
     // A fixed category's budget and actual spent are the same
-    if (!newCategory.hasSubcategory && newCategory.fixed)
+    if (!newCategory.hasSubcategory && newCategory.fixed) {
       newCategory.actual = newCategory.budget;
+    }
 
-    setNewCategories([...newCategories, newCategory]);
+    setNewUser({
+      ...newUser,
+      categories: [...newUser.categories, newCategory],
+    });
 
     setNewCategory(emptyCategory);
   };
@@ -197,8 +197,8 @@ const OnboardingCategoriesSection = ({
               <h5 className="text-center">Default</h5>
               <Table borderless className="w-75 mx-auto">
                 <tbody>
-                  {defaultExampleCategories.map((category) => (
-                    <tr key={category.id}>
+                  {defaultExampleCategories.map((category, index) => (
+                    <tr key={index}>
                       <td className="gray-background">{category.name}</td>
                       <td className="gray-background">{category.budget}</td>
                     </tr>
@@ -227,8 +227,8 @@ const OnboardingCategoriesSection = ({
               </h5>
               <Table borderless className="w-75 mx-auto">
                 <tbody>
-                  {customExampleCategories.map((category) => (
-                    <tr key={category.id}>
+                  {customExampleCategories.map((category, index) => (
+                    <tr key={index}>
                       <td className="gray-background">{category.name}</td>
                       <td className="gray-background">{category.budget}</td>
                     </tr>
@@ -393,8 +393,8 @@ const OnboardingCategoriesSection = ({
                 </tr>
               </thead>
               <tbody>
-                {newCategories.map((category) => (
-                  <tr key={category.id} className="d-flex">
+                {newUser.categories.map((category, index) => (
+                  <tr key={index} className="d-flex">
                     <td className="col-8 gray-background">{category.name}</td>
                     <td className="col-4 text-end gray-background">
                       {currencyFormatter.format(category.budget)}
@@ -403,7 +403,7 @@ const OnboardingCategoriesSection = ({
                 ))}
               </tbody>
             </Table>
-            {newCategories.length > 0 && (
+            {newUser.categories.length > 0 && (
               <div className="text-end">
                 <Button onClick={moveToIncome}>Done</Button>
               </div>
@@ -415,4 +415,4 @@ const OnboardingCategoriesSection = ({
   );
 };
 
-export default OnboardingCategoriesSection;
+export default CategoriesSection;

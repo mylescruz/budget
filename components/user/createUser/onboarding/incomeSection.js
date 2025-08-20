@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
-import PopUp from "../layout/popUp";
+import PopUp from "@/components/layout/popUp";
 import dateInfo from "@/helpers/dateInfo";
 import getYearInfo from "@/helpers/getYearInfo";
 import currencyFormatter from "@/helpers/currencyFormatter";
-import { v4 as uuidv4 } from "uuid";
 
-const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
+const IncomeSection = ({ newUser, setNewUser, openComplete }) => {
   const emptyPaycheck = {
-    id: uuidv4(),
     date: dateInfo.currentDate,
     company: "",
     description: "",
@@ -30,15 +28,18 @@ const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
   const handlePaycheckNumInput = (e) => {
     const input = e.target.value;
 
-    if (input === "") setPaycheck({ ...paycheck, [e.target.id]: input });
-    else setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
+    if (input === "") {
+      setPaycheck({ ...paycheck, [e.target.id]: input });
+    } else {
+      setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
+    }
   };
 
   // Update the new income array with the user's inputted paychecks
   const addPaycheck = (e) => {
     e.preventDefault();
 
-    setNewIncome([...newIncome, paycheck]);
+    setNewUser({ ...newUser, paychecks: [...newUser.paychecks, paycheck] });
 
     setPaycheck(emptyPaycheck);
   };
@@ -152,8 +153,8 @@ const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
               </tr>
             </thead>
             <tbody>
-              {newIncome.map((paycheck) => (
-                <tr key={paycheck.id} className="d-flex">
+              {newUser.paychecks.map((paycheck, index) => (
+                <tr key={index} className="d-flex">
                   <td className="col-8 gray-background">{paycheck.company}</td>
                   <td className="col-4 text-end gray-background">
                     {currencyFormatter.format(paycheck.net)}
@@ -162,7 +163,7 @@ const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
               ))}
             </tbody>
           </Table>
-          {newIncome.length > 0 && (
+          {newUser.paychecks.length > 0 && (
             <div className="text-end">
               <Button onClick={completeOnboarding}>Done</Button>
             </div>
@@ -173,4 +174,4 @@ const OnboardingIncomeSection = ({ newIncome, setNewIncome, openComplete }) => {
   );
 };
 
-export default OnboardingIncomeSection;
+export default IncomeSection;

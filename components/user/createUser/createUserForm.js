@@ -1,32 +1,23 @@
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
 import { useState } from "react";
-import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
-import ErrorModal from "../layout/errorModal";
+import { Button, Card, Container, Form } from "react-bootstrap";
+import ErrorModal from "@/components/layout/errorModal";
 
-const CreateUserForm = ({ csrfToken }) => {
-  const emptyUser = {
-    id: "",
-    username: "",
-    email: "",
-    name: "",
-    password: "",
-    confirmPassword: "",
-  };
-
+const CreateUserForm = ({
+  newUser,
+  setNewUser,
+  setCreateFormComplete,
+  errorOccurred,
+  setErrorOccurred,
+}) => {
   const validated = {
     valid: true,
     error: "",
   };
 
-  const [newUser, setNewUser] = useState(emptyUser);
   const [validUsername, setValidUsername] = useState(validated);
   const [validEmail, setValidEmail] = useState(validated);
   const [validPassword, setValidPassword] = useState(validated);
   const [validMatch, setValidMatch] = useState(validated);
-  const [creatingUser, setCreatingUser] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
-  const router = useRouter();
 
   const handleInput = (e) => {
     setNewUser({ ...newUser, [e.target.id]: e.target.value });
@@ -55,23 +46,7 @@ const CreateUserForm = ({ csrfToken }) => {
     return regex.test(password);
   };
 
-  // Function to add user to S3
-  const addUser = async (newUser) => {
-    await fetch("/api/user", {
-      method: "POST",
-      headers: {
-        Accept: "application.json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newUser),
-    });
-  };
-
-  const closeCreatingUser = () => {
-    setCreatingUser(false);
-  };
-
-  const createNewUser = async (e) => {
+  const createUser = async (e) => {
     e.preventDefault();
 
     // Check if entered email is valid
@@ -123,45 +98,7 @@ const CreateUserForm = ({ csrfToken }) => {
       setValidMatch(validated);
     }
 
-    try {
-      setCreatingUser(true);
-
-      // Add the user to the system
-      await addUser(newUser);
-
-      setErrorOccurred(false);
-    } catch (error) {
-      setErrorOccurred(true);
-      console.error(error);
-      return;
-    }
-
-    // Redirect to sign in page
-    try {
-      const response = await signIn("credentials", {
-        username: newUser.username,
-        password: newUser.password,
-        redirect: false,
-        csrfToken,
-      });
-
-      // Take user directly to the onboarding page when done creating their account
-      if (response.ok) {
-        router.push("/onboarding");
-      } else {
-        throw new Error(
-          "There was an issue with directly login. Please sign in using your new credentials."
-        );
-      }
-
-      setErrorOccurred(false);
-    } catch (error) {
-      setErrorOccurred(true);
-      console.error(error);
-      router.push("/auth/signIn");
-    } finally {
-      closeCreatingUser();
-    }
+    setCreateFormComplete(true);
   };
 
   return (
@@ -169,7 +106,7 @@ const CreateUserForm = ({ csrfToken }) => {
       <Container className="d-flex justify-content-center align-items-center">
         <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
           <h1>Create account</h1>
-          <Form onSubmit={createNewUser}>
+          <Form onSubmit={createUser}>
             <Form.Group controlId="name" className="h-100 my-2">
               <Form.Control
                 type="text"
@@ -247,15 +184,6 @@ const CreateUserForm = ({ csrfToken }) => {
           </Form>
         </Card>
       </Container>
-
-      <Modal show={creatingUser} onHide={closeCreatingUser} centered>
-        <Modal.Body>
-          <h3 className="text-center">Creating Your Account</h3>
-          <div className="d-flex justify-content-center align-items-center">
-            <Spinner animation="border" variant="primary" />
-          </div>
-        </Modal.Body>
-      </Modal>
 
       <ErrorModal
         errorOccurred={errorOccurred}

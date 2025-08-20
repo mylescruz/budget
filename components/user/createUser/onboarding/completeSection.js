@@ -1,6 +1,6 @@
 import { Button, Container } from "react-bootstrap";
 
-const OnboardingCompleteSection = ({ setBudget }) => {
+const CompleteSection = ({ finishOnboarding }) => {
   return (
     <>
       <Container className="text-center">
@@ -8,12 +8,12 @@ const OnboardingCompleteSection = ({ setBudget }) => {
           Thanks for setting up your new budget! Let&#39;s see it!
         </h5>
 
-        <Button variant="primary" onClick={setBudget}>
-          Let&#39;s Go!
+        <Button variant="primary" onClick={finishOnboarding}>
+          Create Account!
         </Button>
       </Container>
     </>
   );
 };
 
-export default OnboardingCompleteSection;
+export default CompleteSection;

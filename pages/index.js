@@ -3,15 +3,13 @@ import Home from "@/components/home/home";
 import Loading from "@/components/layout/loading";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { useRouter } from "next/router";
 
 export default function Index() {
   const { data: session, status } = useSession();
-  const router = useRouter();
 
-  if (status === 'loading')
-    return <Loading/>;
-  else if (!session || status === 'unauthenticated') {
+  if (status === "loading") {
+    return <Loading />;
+  } else if (!session || status === "unauthenticated") {
     return (
       <>
         <Head>
@@ -22,10 +20,8 @@ export default function Index() {
         </Head>
         <Home />
       </>
-    )
-  } else if (!session.user.onboarded)
-    router.push('/onboarding');
-  else {
+    );
+  } else {
     return (
       <>
         <Head>
@@ -36,6 +32,6 @@ export default function Index() {
         </Head>
         <Dashboard />
       </>
-    )
+    );
   }
-};
+}
