@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Button, Col, Form } from "react-bootstrap";
+import { Button, Col, Form, Modal } from "react-bootstrap";
+import ErrorModal from "../layout/errorModal";
+import LoadingMessage from "../layout/loadingMessage";
 
 const ChangeEmailTab = ({ user, putUser }) => {
   const oldUser = {
@@ -15,9 +17,12 @@ const ChangeEmailTab = ({ user, putUser }) => {
     error: "",
   };
 
+  const router = useRouter();
+
   const [edittedUser, setEdittedUser] = useState(oldUser);
   const [validEmail, setValidEmail] = useState(validated);
-  const router = useRouter();
+  const [updatingUser, setUpdatingUser] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
     setEdittedUser({ ...edittedUser, [e.target.id]: e.target.value });
@@ -40,17 +45,23 @@ const ChangeEmailTab = ({ user, putUser }) => {
       setValidEmail(validated);
     }
 
-    try {
-      // Add the user to S3
-      await putUser(edittedUser);
+    setUpdatingUser(true);
 
-      window.alert("Your email was updated.");
+    try {
+      // Update the user in the backend
+      await putUser(edittedUser);
 
       setEdittedUser(oldUser);
 
+      setErrorOccurred(false);
+
       router.reload();
     } catch (error) {
-      window.alert(error.message);
+      setErrorOccurred(true);
+      console.error(error);
+      return;
+    } finally {
+      setUpdatingUser(false);
     }
   };
 
@@ -86,11 +97,21 @@ const ChangeEmailTab = ({ user, putUser }) => {
               required
             />
           </Form.Group>
+
           <Form.Group className="my-2 text-end">
             <Button type="submit">Change</Button>
           </Form.Group>
         </Form>
       </Col>
+
+      <Modal show={updatingUser} backdrop="static" centered>
+        <LoadingMessage message="Updating the user's email" />
+      </Modal>
+
+      <ErrorModal
+        errorOccurred={errorOccurred}
+        setErrorOccurred={setErrorOccurred}
+      />
     </>
   );
 };

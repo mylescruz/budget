@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Button, Col, Form } from "react-bootstrap";
+import { Button, Col, Form, Modal } from "react-bootstrap";
+import ErrorModal from "../layout/errorModal";
+import LoadingMessage from "../layout/loadingMessage";
 
 const ChangePasswordTab = ({ user, putUser }) => {
   const oldUser = {
@@ -16,10 +18,13 @@ const ChangePasswordTab = ({ user, putUser }) => {
     error: "",
   };
 
+  const router = useRouter();
+
   const [edittedUser, setEdittedUser] = useState(oldUser);
   const [validPassword, setValidPassword] = useState(validated);
   const [validMatch, setValidMatch] = useState(validated);
-  const router = useRouter();
+  const [updatingUser, setUpdatingUser] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
     setEdittedUser({ ...edittedUser, [e.target.id]: e.target.value });
@@ -56,17 +61,23 @@ const ChangePasswordTab = ({ user, putUser }) => {
       setValidMatch(validated);
     }
 
+    setUpdatingUser(true);
+
     try {
-      // Add the user to S3
+      // Update the user in the backend
       await putUser(edittedUser);
 
       setEdittedUser(oldUser);
 
-      window.alert("Your password was updated.");
+      setErrorOccurred(false);
 
       router.reload();
     } catch (error) {
-      window.alert(error.message);
+      setErrorOccurred(true);
+      console.error(error);
+      return;
+    } finally {
+      setUpdatingUser(false);
     }
   };
 
@@ -126,6 +137,15 @@ const ChangePasswordTab = ({ user, putUser }) => {
           </Form.Group>
         </Form>
       </Col>
+
+      <Modal show={updatingUser} backdrop="static" centered>
+        <LoadingMessage message="Updating the user's password" />
+      </Modal>
+
+      <ErrorModal
+        errorOccurred={errorOccurred}
+        setErrorOccurred={setErrorOccurred}
+      />
     </>
   );
 };

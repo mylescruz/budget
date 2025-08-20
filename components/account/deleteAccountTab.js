@@ -1,10 +1,14 @@
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import ErrorMessage from "../layout/errorMessage";
+import LoadingMessage from "../layout/loadingMessage";
 
 const DeleteAccountTab = ({ user, deleteUser }) => {
   const [password, setPassword] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletingUser, setDeletingUser] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
     setPassword(e.target.value);
@@ -21,6 +25,8 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
   };
 
   const removeAccount = async () => {
+    setDeletingUser(true);
+
     try {
       const userToDelete = { ...user, password: password };
 
@@ -28,9 +34,15 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
 
       window.alert("Your account has been deleted! Sorry to see you go!");
 
+      setErrorOccurred(false);
+
       signOut();
     } catch (error) {
-      window.alert(error.message);
+      setErrorOccurred(true);
+      console.error(error);
+      return;
+    } finally {
+      setDeletingUser(false);
     }
   };
 
@@ -60,7 +72,10 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
 
       <Modal show={confirmDelete} onHide={closeConfirmDelete} centered>
         <Modal.Body>
-          Are you sure you want to delete your account and all of its data?
+          <p className="mb-2">
+            Are you sure you want to delete your account and all of its data?
+          </p>
+          {errorOccurred && <ErrorMessage />}
         </Modal.Body>
         <Modal.Footer>
           <Row className="text-end">
@@ -76,6 +91,10 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
             </Col>
           </Row>
         </Modal.Footer>
+      </Modal>
+
+      <Modal show={deletingUser} backdrop="static" centered>
+        <LoadingMessage message="Deleting your account" />
       </Modal>
     </>
   );

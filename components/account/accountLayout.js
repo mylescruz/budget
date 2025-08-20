@@ -15,10 +15,6 @@ const AccountLayout = () => {
   const [deleteSection, setDeleteSection] = useState(false);
   const { user, userLoading, putUser, deleteUser } = useUser();
 
-  if (userLoading) {
-    return <Loading />;
-  }
-
   const optionsTabProps = {
     accountSection: accountSection,
     setAccountSection: setAccountSection,
@@ -30,19 +26,25 @@ const AccountLayout = () => {
     setDeleteSection: setDeleteSection,
   };
 
-  return (
-    <Container>
-      <Row>
-        <OptionsTab {...optionsTabProps} />
-        {accountSection && <AccountInfoTab user={user} />}
-        {passwordSection && <ChangePasswordTab user={user} putUser={putUser} />}
-        {emailSection && <ChangeEmailTab user={user} putUser={putUser} />}
-        {deleteSection && (
-          <DeleteAccountTab user={user} deleteUser={deleteUser} />
-        )}
-      </Row>
-    </Container>
-  );
+  if (userLoading) {
+    return <Loading />;
+  } else {
+    return (
+      <Container>
+        <Row>
+          <OptionsTab {...optionsTabProps} />
+          {accountSection && <AccountInfoTab user={user} />}
+          {passwordSection && (
+            <ChangePasswordTab user={user} putUser={putUser} />
+          )}
+          {emailSection && <ChangeEmailTab user={user} putUser={putUser} />}
+          {deleteSection && (
+            <DeleteAccountTab user={user} deleteUser={deleteUser} />
+          )}
+        </Row>
+      </Container>
+    );
+  }
 };
 
 export default AccountLayout;

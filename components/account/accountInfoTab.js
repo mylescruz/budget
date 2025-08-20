@@ -1,6 +1,7 @@
 import { Col, Form } from "react-bootstrap";
 
 const AccountInfoTab = ({ user }) => {
+  console.log(user);
   return (
     <Col className="col-12 col-md-8 col-lg-9">
       <h2>{user.name}&#39;s Info</h2>

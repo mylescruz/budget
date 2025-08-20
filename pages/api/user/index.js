@@ -29,9 +29,9 @@ export default async function handler(req, res) {
   }
 
   const username = session.user.username;
+  const id = session.user.id;
 
   const method = req?.method;
-  const id = req?.query?.id;
 
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
@@ -72,57 +72,43 @@ export default async function handler(req, res) {
 
       // Function to update parts of the user
       const updateUser = async (edittedUser) => {
-        if (edittedUser.onboarded === false) {
-          // Update a user confirming they have been onboarded
+        // Get the current user
+        const user = await getUser();
+
+        // Check if the passwords match
+        const passwordsMatch = await checkHashedPassword(
+          edittedUser.currentPassword,
+          user.password_hash
+        );
+
+        if (passwordsMatch) {
+          let updatedPassword = user.password_hash;
+          let updatedEmail = user.email;
+
+          if ("newPassword" in edittedUser) {
+            updatedPassword = await bcrypt.hash(
+              edittedUser.newPassword,
+              saltRounds
+            );
+          }
+
+          if ("newEmail" in edittedUser) {
+            updatedEmail = edittedUser.newEmail;
+          }
+
           await usersCol.updateOne(
             { _id: new ObjectId(id) },
             {
               $set: {
-                onboarded: true,
+                email: updatedEmail,
+                password_hash: updatedPassword,
               },
             }
           );
 
           return true;
         } else {
-          // Get the current user
-          const user = await getUser();
-
-          // Check if the passwords match
-          const passwordsMatch = await checkHashedPassword(
-            edittedUser.currentPassword,
-            user.password_hash
-          );
-
-          if (passwordsMatch) {
-            let updatedPassword = user.password_hash;
-            let updatedEmail = user.email;
-
-            if ("newPassword" in edittedUser) {
-              updatedPassword = await bcrypt.hash(
-                edittedUser.newPassword,
-                saltRounds
-              );
-            }
-
-            if ("newEmail" in edittedUser) {
-              updatedEmail = edittedUser.newEmail;
-            }
-
-            await usersCol.updateOne(
-              { _id: new ObjectId(id) },
-              {
-                $set: {
-                  email: updatedEmail,
-                  password_hash: updatedPassword,
-                },
-              }
-            );
-
-            return true;
-          } else {
-            return false;
-          }
+          return false;
         }
       };
 
