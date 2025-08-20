@@ -1,6 +1,5 @@
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useContext, useState } from "react";
-import editTransactionForCategoryActual from "@/helpers/editTransactionForCategoryActual";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import SelectCategoryOption from "./selectCategoryOption";
@@ -14,7 +13,7 @@ const EditTransactionModal = ({
   setShowEdit,
   setShowDetails,
 }) => {
-  const { categories, updateCategories } = useContext(CategoriesContext);
+  const { categories, getCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
   const [edittedTransaction, setEdittedTransaction] = useState(transaction);
   const [updatingTransaction, setUpdatingTransaction] = useState(false);
@@ -34,20 +33,16 @@ const EditTransactionModal = ({
       // If the Edit Transaction Modal is showing, update the transaction and then close the modal
       if (showEdit) {
         setEdittedTransaction(edittedTransaction);
-        await putTransaction(edittedTransaction);
+        await putTransaction({
+          ...edittedTransaction,
+          oldCategory: transaction.category,
+          oldAmount: transaction.amount,
+          month: monthInfo.monthNumber,
+          year: monthInfo.year,
+        });
 
-        const updatedCategories = editTransactionForCategoryActual(
-          edittedTransaction,
-          transaction,
-          categories
-        );
-
-        // Only update categories that have been updated
-        const changedCategories = updatedCategories.filter(
-          (category) => category.updated
-        );
-        console.log(changedCategories);
-        await updateCategories(changedCategories);
+        // Fetch the categories to update the state for the categories table
+        await getCategories(monthInfo.monthNumber, monthInfo.year);
 
         setShowEdit(false);
       } else {

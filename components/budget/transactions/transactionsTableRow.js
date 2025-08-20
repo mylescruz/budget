@@ -42,6 +42,7 @@ const TransactionsTableRow = ({ transaction, monthInfo }) => {
 
   const deleteTransactionModalProps = {
     transaction: transaction,
+    monthInfo: monthInfo,
     showDelete: showDelete,
     setShowDelete: setShowDelete,
     setShowDetails: setShowDetails,
@@ -98,7 +99,9 @@ const TransactionsTableRow = ({ transaction, monthInfo }) => {
           {transaction.category}
         </td>
         <td
-          className={`col-3 col-md-2 col-lg-1 ${transaction.amount < 0 && "text-danger"}`}
+          className={`col-3 col-md-2 col-lg-1 ${
+            transaction.amount < 0 && "text-danger"
+          }`}
         >
           {currencyFormatter.format(transaction.amount)}
         </td>

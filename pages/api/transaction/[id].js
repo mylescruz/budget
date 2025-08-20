@@ -14,6 +14,8 @@ export default async function handler(req, res) {
     return res.status(401).send("Must login to view your data!");
   }
 
+  const username = session.user.username;
+
   const method = req?.method;
   const id = req?.query?.id;
 
@@ -46,6 +48,7 @@ export default async function handler(req, res) {
     try {
       const edittedTransaction = req?.body;
 
+      // Update the given transaction from the transactions collection in MongoDB
       const result = await transactionsCol.updateOne(
         {
           _id: new ObjectId(id),
@@ -62,6 +65,85 @@ export default async function handler(req, res) {
       );
 
       if (result.modifiedCount === 1) {
+        // Update the corresponding category in the categories collection
+        const categoriesCol = db.collection("categories");
+
+        // Find the new matching category or subcategory
+        const newCategory = await categoriesCol.findOne({
+          username: username,
+          month: edittedTransaction.month,
+          year: edittedTransaction.year,
+          $or: [
+            { name: edittedTransaction.category },
+            { "subcategories.name": edittedTransaction.category },
+          ],
+        });
+
+        // Update the new corresponding category's actual amount
+        if (newCategory.name === edittedTransaction.category) {
+          // Update the actual value of the category
+          await categoriesCol.updateOne(
+            { _id: new ObjectId(newCategory._id) },
+            {
+              $inc: {
+                actual: edittedTransaction.amount,
+              },
+            }
+          );
+        } else {
+          // Update the actual value of the category and subcategory
+          await categoriesCol.updateOne(
+            {
+              _id: new ObjectId(newCategory._id),
+              "subcategories.name": edittedTransaction.category,
+            },
+            {
+              $inc: {
+                actual: edittedTransaction.amount,
+                "subcategories.$.actual": edittedTransaction.amount,
+              },
+            }
+          );
+        }
+
+        // Find the old matching category or subcategory
+        const oldCategory = await categoriesCol.findOne({
+          username: username,
+          month: edittedTransaction.month,
+          year: edittedTransaction.year,
+          $or: [
+            { name: edittedTransaction.oldCategory },
+            { "subcategories.name": edittedTransaction.oldCategory },
+          ],
+        });
+
+        // Update the old corresponding category's actual amount
+        if (oldCategory.name === edittedTransaction.oldCategory) {
+          // Update the actual value of the category
+          await categoriesCol.updateOne(
+            { _id: new ObjectId(oldCategory._id) },
+            {
+              $inc: {
+                actual: -edittedTransaction.oldAmount,
+              },
+            }
+          );
+        } else {
+          // Update the actual value of the category and subcategory
+          await categoriesCol.updateOne(
+            {
+              _id: new ObjectId(newCategory._id),
+              "subcategories.name": edittedTransaction.oldCategory,
+            },
+            {
+              $inc: {
+                actual: -edittedTransaction.oldAmount,
+                "subcategories.$.actual": -edittedTransaction.oldAmount,
+              },
+            }
+          );
+        }
+
         // Send the editted transaction back to the client
         res.status(200).json(edittedTransaction);
       } else {
@@ -73,13 +155,56 @@ export default async function handler(req, res) {
       res.status(500).send("Error occurred while editting a transaction");
     }
   } else if (method === "DELETE") {
-    // Delete the given transaction from the user's transactions in S3
     try {
+      const transaction = req?.body;
+
+      // Delete the given transaction from the transactions collection in MongoDB
       const result = await transactionsCol.deleteOne({
         _id: new ObjectId(id),
       });
 
       if (result.deletedCount === 1) {
+        // Update the corresponding category in the categories collection
+        const categoriesCol = db.collection("categories");
+
+        // Find the matching category or subcategory
+        const category = await categoriesCol.findOne({
+          username: username,
+          month: transaction.month,
+          year: transaction.year,
+          $or: [
+            { name: transaction.category },
+            { "subcategories.name": transaction.category },
+          ],
+        });
+
+        // Decrement the corresponding category's actual amount
+        if (category.name === transaction.category) {
+          // Decrement the actual value of the category
+          await categoriesCol.updateOne(
+            { _id: new ObjectId(category._id) },
+            {
+              $inc: {
+                actual: -transaction.amount,
+              },
+            }
+          );
+        } else {
+          // Decrement the actual value of the category and subcategory
+          await categoriesCol.updateOne(
+            {
+              _id: new ObjectId(category._id),
+              "subcategories.name": transaction.category,
+            },
+            {
+              $inc: {
+                actual: -transaction.amount,
+                "subcategories.$.actual": -transaction.amount,
+              },
+            }
+          );
+        }
+
         // Send a succes message back to the client
         res.status(200).json({ id: id, message: "Transaction was deleted" });
       } else {

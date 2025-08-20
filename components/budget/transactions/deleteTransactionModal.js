@@ -2,17 +2,17 @@ import ErrorMessage from "@/components/layout/errorMessage";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
-import deleteTransactionFromCategoryActual from "@/helpers/deleteTransactionFromCategoryActual";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 const DeleteTransactionModal = ({
   transaction,
+  monthInfo,
   showDelete,
   setShowDelete,
   setShowDetails,
 }) => {
-  const { categories, updateCategories } = useContext(CategoriesContext);
+  const { getCategories } = useContext(CategoriesContext);
   const { deleteTransaction } = useContext(TransactionsContext);
   const [deletingTransaction, setDeletingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -27,19 +27,14 @@ const DeleteTransactionModal = ({
 
     try {
       // Deletes a transaction from the transactions array by sending a DELETE request to the API
-      await deleteTransaction(transaction.id);
+      await deleteTransaction({
+        ...transaction,
+        month: monthInfo.monthNumber,
+        year: monthInfo.year,
+      });
 
-      // Updates the categories array with the new category actual value by sending a DELETE request to the API
-      const updatedCategories = deleteTransactionFromCategoryActual(
-        transaction,
-        categories
-      );
-
-      // Only update categories that have been updated
-      const changedCategories = updatedCategories.filter(
-        (category) => category.updated
-      );
-      await updateCategories(changedCategories);
+      // Fetch the categories to update the state for the categories table
+      await getCategories(monthInfo.monthNumber, monthInfo.year);
 
       setErrorOccurred(false);
     } catch (error) {

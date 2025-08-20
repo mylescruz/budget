@@ -5,29 +5,29 @@ const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
+  const getCategories = useCallback(async (month, year) => {
+    try {
+      const rsp = await fetch(`/api/categories/${year}/${month}`);
+
+      if (rsp.ok) {
+        const fetchedCategories = await rsp.json();
+        setCategories(categorySorter(fetchedCategories));
+      } else {
+        const message = await rsp.text();
+        throw new Error(message);
+      }
+    } catch (error) {
+      console.error(error);
+      setCategories(null);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  }, []);
+
   // GET request that returns all the categories based on the month and year
   useEffect(() => {
-    const getCategories = async () => {
-      try {
-        const rsp = await fetch(`/api/categories/${year}/${month}`);
-
-        if (rsp.ok) {
-          const fetchedCategories = await rsp.json();
-          setCategories(categorySorter(fetchedCategories));
-        } else {
-          const message = await rsp.text();
-          throw new Error(message);
-        }
-      } catch (error) {
-        console.error(error);
-        setCategories(null);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-
-    getCategories();
-  }, [month, year]);
+    getCategories(month, year);
+  }, [month, year, getCategories]);
 
   // POST request that adds a new category based on the month and year
   // Then it sets the categories array to the array returned by the response
@@ -169,6 +169,7 @@ const useCategories = (month, year) => {
   return {
     categories,
     categoriesLoading,
+    getCategories,
     postCategory,
     putCategory,
     deleteCategory,

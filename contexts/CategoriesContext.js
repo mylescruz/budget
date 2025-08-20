@@ -10,6 +10,7 @@ export const CategoriesProvider = ({ children, monthInfo }) => {
   const {
     categories,
     categoriesLoading,
+    getCategories,
     postCategory,
     putCategory,
     deleteCategory,
@@ -21,6 +22,7 @@ export const CategoriesProvider = ({ children, monthInfo }) => {
       value={{
         categories,
         categoriesLoading,
+        getCategories,
         postCategory,
         putCategory,
         deleteCategory,

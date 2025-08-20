@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
-import addTransactionToCategoryActual from "@/helpers/addTransactionToCategoryActual";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import dateInfo from "@/helpers/dateInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
@@ -13,7 +12,7 @@ const AddTransactionModal = ({
   addTransactionClicked,
   setAddTransactionClicked,
 }) => {
-  const { categories, updateCategories } = useContext(CategoriesContext);
+  const { categories, getCategories } = useContext(CategoriesContext);
   const { postTransaction } = useContext(TransactionsContext);
   const [addingTransaction, setAddingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -46,8 +45,11 @@ const AddTransactionModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") setTransaction({ ...newTransaction, amount: input });
-    else setTransaction({ ...newTransaction, amount: parseFloat(input) });
+    if (input == "") {
+      setTransaction({ ...newTransaction, amount: input });
+    } else {
+      setTransaction({ ...newTransaction, amount: parseFloat(input) });
+    }
   };
 
   const AddNewTransaction = async (e) => {
@@ -56,21 +58,11 @@ const AddTransactionModal = ({
     try {
       e.preventDefault();
 
-      // Adds the new transaction to the transactions array by sending a POST request to the API
+      // Adds the new transaction and updates the correlating category in MongoDB
       await postTransaction(newTransaction);
 
-      // Updates the categories array with the new category actual value by sending a PUT request to the API
-      const updatedCategories = addTransactionToCategoryActual(
-        newTransaction,
-        categories
-      );
-
-      // Only update categories that have been updated
-      const changedCategories = updatedCategories.filter(
-        (category) => category.updated
-      );
-      console.log(changedCategories);
-      await updateCategories(changedCategories);
+      // Fetch the categories to update the state for the categories table
+      await getCategories(monthInfo.monthNumber, monthInfo.year);
 
       setTransaction(emptyTransaction);
       setAddTransactionClicked(false);

@@ -90,6 +90,53 @@ export default async function handler(req, res) {
       // Add the new transaction to the transactions collection in MongoDB
       const result = await transactionsCol.insertOne(newTransaction);
 
+      if (result.acknowledged) {
+        // Update the corresponding category in the categories collection
+        const categoriesCol = db.collection("categories");
+
+        // Find the matching category or subcategory
+        const category = await categoriesCol.findOne({
+          username: username,
+          month: month,
+          year: year,
+          $or: [
+            { name: newTransaction.category },
+            { "subcategories.name": newTransaction.category },
+          ],
+        });
+
+        // Update the corresponding category's actual amount
+        if (category.name === newTransaction.category) {
+          // Increment the actual value of the category
+          const result = await categoriesCol.updateOne(
+            { _id: new ObjectId(category._id) },
+            {
+              $inc: {
+                actual: newTransaction.amount,
+              },
+            }
+          );
+
+          console.log("found parent category: ", result);
+        } else {
+          // Increment the actual value of the category and subcategory
+          const result = await categoriesCol.updateOne(
+            {
+              _id: new ObjectId(category._id),
+              "subcategories.name": newTransaction.category,
+            },
+            {
+              $inc: {
+                actual: newTransaction.amount,
+                "subcategories.$.actual": newTransaction.amount,
+              },
+            }
+          );
+
+          console.log(result);
+        }
+      }
+
       // Send the new transaction back to the client
       res.status(200).json({ id: result.insertedId, ...transactionBody });
     } catch (error) {

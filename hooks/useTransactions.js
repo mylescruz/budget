@@ -49,8 +49,8 @@ const useTransactions = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        setTransactions(null);
-        console.error(error);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setTransactionsLoading(false);
       }
@@ -89,8 +89,8 @@ const useTransactions = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        setTransactions(null);
-        console.error(error);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setTransactionsLoading(false);
       }
@@ -101,14 +101,15 @@ const useTransactions = (month, year) => {
   // DELETE request that deletes a transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
   const deleteTransaction = useCallback(
-    async (transactionId) => {
+    async (transaction) => {
       try {
-        const rsp = await fetch(`/api/transaction/${transactionId}`, {
+        const rsp = await fetch(`/api/transaction/${transaction.id}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(transaction),
         });
 
         if (rsp.ok) {
@@ -124,8 +125,8 @@ const useTransactions = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        setTransactions(null);
-        console.error(error);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setTransactionsLoading(false);
       }
