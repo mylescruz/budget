@@ -5,7 +5,9 @@ const updateGuiltFreeSpending = (totalIncome, categories) => {
 
   // Go through each category except "Guilt Free Spending" and add the total budget
   categories.forEach((category) => {
-    if (category.name !== "Guilt Free Spending") totalBudget += category.budget;
+    if (category.name !== "Guilt Free Spending") {
+      totalBudget += category.budget;
+    }
   });
 
   // Find the Guilt Free Spending category and update it's budget to the income minus the rest of the budget
@@ -13,7 +15,9 @@ const updateGuiltFreeSpending = (totalIncome, categories) => {
     if (category.name === "Guilt Free Spending") {
       const budget = parseFloat(totalIncome - totalBudget.toFixed(2));
       return { ...category, budget: budget, updated: true };
-    } else return category;
+    } else {
+      return category;
+    }
   });
 
   return updatedCategories;

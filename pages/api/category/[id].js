@@ -21,39 +21,7 @@ export default async function handler(req, res) {
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const categoriesCol = db.collection("categories");
 
-  if (method === "PUT") {
-    try {
-      const edittedCategory = req?.body;
-
-      const result = await categoriesCol.updateOne(
-        { _id: new ObjectId(edittedCategory.id) },
-        {
-          $set: {
-            name: edittedCategory.name,
-            color: edittedCategory.color,
-            budget: edittedCategory.budget,
-            actual: edittedCategory.actual,
-            fixed: edittedCategory.fixed,
-            hasSubcategory: edittedCategory.hasSubcategory,
-            subcategories: edittedCategory.subcategories,
-          },
-        }
-      );
-
-      if (result.modifiedCount === 1) {
-        res
-          .status(200)
-          .json({
-            message: `Category ${edittedCategory.name} updated successfully`,
-          });
-      } else {
-        throw new Error("Categories could not be updated");
-      }
-    } catch (error) {
-      console.error(`${method} categories request failed: ${error}`);
-      res.status(500).send("Error occurred while updating categories");
-    }
-  } else if (method === "DELETE") {
+  if (method === "DELETE") {
     try {
       // Get the current category to check session validation
       const category = await categoriesCol.findOne({

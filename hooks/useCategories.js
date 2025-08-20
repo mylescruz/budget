@@ -51,8 +51,8 @@ const useCategories = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        console.error(error);
-        setCategories(null);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -60,44 +60,35 @@ const useCategories = (month, year) => {
     [categories, year, month]
   );
 
-  // PUT request that updates a category based on the month and year
+  // PUT request that updates all the categories based on the month and year
   // Then it sets the categories array to the array returned by the response
-  const putCategory = useCallback(
-    async (edittedCategory) => {
+  const updateCategories = useCallback(
+    async (edittedCategories) => {
       try {
-        const rsp = await fetch(`/api/category/${edittedCategory.id}`, {
+        const rsp = await fetch(`/api/categories/${year}/${month}`, {
           method: "PUT",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(edittedCategory),
+          body: JSON.stringify(edittedCategories),
         });
 
         if (rsp.ok) {
-          const updatedCategory = await rsp.json();
-
-          const updatedCategories = categories.map((category) => {
-            if (category.id === edittedCategory.id) {
-              return edittedCategory;
-            } else {
-              return category;
-            }
-          });
-
-          setCategories(updatedCategories);
+          const updatedCategories = await rsp.json();
+          setCategories(categorySorter(updatedCategories));
         } else {
           const message = await rsp.text();
           throw new Error(message);
         }
       } catch (error) {
-        console.error(error);
-        setCategories(null);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setCategoriesLoading(false);
       }
     },
-    [categories]
+    [year, month]
   );
 
   // DELETE request that deletes a category based on the username, year and month
@@ -126,8 +117,8 @@ const useCategories = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        console.error(error);
-        setCategories(null);
+        // Send the error back to the component to show the user
+        throw new Error(error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -135,45 +126,13 @@ const useCategories = (month, year) => {
     [categories]
   );
 
-  // PUT request that updates all the categories based on the month and year
-  // Then it sets the categories array to the array returned by the response
-  const updateCategories = useCallback(
-    async (edittedCategories) => {
-      try {
-        const rsp = await fetch(`/api/categories/${year}/${month}`, {
-          method: "PUT",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(edittedCategories),
-        });
-
-        if (rsp.ok) {
-          const updatedCategories = await rsp.json();
-          setCategories(categorySorter(updatedCategories));
-        } else {
-          const message = await rsp.text();
-          throw new Error(message);
-        }
-      } catch (error) {
-        console.error(error);
-        setCategories(null);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    },
-    [year, month]
-  );
-
   return {
     categories,
     categoriesLoading,
     getCategories,
     postCategory,
-    putCategory,
-    deleteCategory,
     updateCategories,
+    deleteCategory,
   };
 };
 

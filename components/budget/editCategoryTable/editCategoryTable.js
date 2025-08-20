@@ -29,8 +29,6 @@ const EditCategoryTable = ({ setEditCategories }) => {
     try {
       e.preventDefault();
 
-      setEditCategories(false);
-
       // If any category was edited, make a PUT request to the categories API endpoint
       if (categoryValues.current.length > 0) {
         // Maps through the categories array and if the category matches an editted category in categoryValues, replace that category
@@ -134,6 +132,7 @@ const EditCategoryTable = ({ setEditCategories }) => {
       return;
     } finally {
       setUpdatingCategories(false);
+      setEditCategories(false);
     }
   };
 
