@@ -26,10 +26,10 @@ export default async function handler(req, res) {
       .toArray();
 
     // Get the total net income for the given month
-    let monthIncome = 0;
-    paychecks.forEach((paycheck) => {
-      monthIncome += parseFloat(paycheck.net);
-    });
+    const monthIncome = paychecks.reduce(
+      (sum, current) => sum + current.net,
+      0
+    );
 
     // Send the income for the month back to the client
     res.status(200).send(monthIncome);

@@ -22,6 +22,8 @@ export default async function handler(req, res) {
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const paychecksCol = db.collection("paychecks");
+  const categoriesCol = db.collection("categories");
+  const historyCol = db.collection("history");
 
   if (method === "PUT") {
     try {
@@ -43,7 +45,6 @@ export default async function handler(req, res) {
       );
 
       // Update the current month's history document with the new paycheck added to the budget
-      const historyCol = db.collection("history");
 
       // Define the identifiers from the paycheck
       const oldPaycheckDate = new Date(edittedPaycheck.oldDate);
@@ -57,59 +58,66 @@ export default async function handler(req, res) {
         month: "long",
       });
       const year = oldPaycheckDate.getFullYear();
-      const oldPaycheckNet = edittedPaycheck.oldNet;
-      const newPaycheckNet = edittedPaycheck.net;
 
       if (oldMonth === newMonth) {
-        // Only update the current month's history if the month did not change
-        const monthHistory = await historyCol.findOne({
-          username: username,
-          month: newMonth,
-          year: year,
-        });
+        // Update the old month's budget and leftover amount
 
-        // Update the budget and leftover amount
-        const updatedBudget =
-          monthHistory.budget +
-          parseFloat(newPaycheckNet) -
-          parseFloat(oldPaycheckNet);
-        const updatedLeftover = updatedBudget - monthHistory.actual;
+        // Get the total net income for the old month
+        const paychecks = await paychecksCol
+          .find({ username: username, month: newMonth, year: year })
+          .toArray();
+        const updatedBudget = paychecks.reduce(
+          (sum, current) => sum + current.net,
+          0
+        );
 
-        // Update the history month in MongoDB
+        // Get the total actual value for all categories
+        const categories = await categoriesCol
+          .find({ username: username, month: newMonth, year: year })
+          .toArray();
+        const updatedActual = categories.reduce(
+          (sum, current) => sum + current.actual,
+          0
+        );
+
+        const updatedLeftover = updatedBudget - updatedActual;
+
+        // Update the new history month in MongoDB
         await historyCol.updateOne(
-          { _id: new ObjectId(monthHistory._id) },
+          { username: username, month: newMonth, year: year },
           {
             $set: {
+              monthName: newMonthName,
+              month: newMonth,
+              year: year,
               budget: updatedBudget,
-              actual: monthHistory.actual,
+              actual: updatedActual,
               leftover: updatedLeftover,
             },
           }
         );
       } else {
-        // If the month changed, update both the old month's history and new month's history
+        // If the month changed, update both the new month's history and old month's history
 
-        // Find the new history month
-        const newMonthHistory = await historyCol.findOne({
-          username: username,
-          month: newMonth,
-          year: year,
-        });
+        // Get the total net income for the new month
+        const newMonthPaychecks = await paychecksCol
+          .find({ username: username, month: newMonth, year: year })
+          .toArray();
+        const updatedNewBudget = newMonthPaychecks.reduce(
+          (sum, current) => sum + current.net,
+          0
+        );
 
-        let updatedNewBudget = 0;
-        let updatedActual = 0;
-        let updatedNewLeftover = 0;
+        // Get the total actual value for all categories
+        const newMonthCategories = await categoriesCol
+          .find({ username: username, month: newMonth, year: year })
+          .toArray();
+        const updatedNewActual = newMonthCategories.reduce(
+          (sum, current) => sum + current.actual,
+          0
+        );
 
-        if (newMonthHistory) {
-          // Update the new budget and leftover amount
-          updatedNewBudget =
-            newMonthHistory.budget + parseFloat(newPaycheckNet);
-          updatedActual = newMonthHistory.actual;
-          updatedNewLeftover = updatedNewBudget - newMonthHistory.actual;
-        } else {
-          updatedNewBudget = newPaycheckNet;
-          updatedNewLeftover = newPaycheckNet;
-        }
+        const updatedNewLeftover = updatedNewBudget - updatedNewActual;
 
         // Update the new history month in MongoDB
         await historyCol.updateOne(
@@ -120,32 +128,43 @@ export default async function handler(req, res) {
               month: newMonth,
               year: year,
               budget: updatedNewBudget,
-              actual: updatedActual,
+              actual: updatedNewActual,
               leftover: updatedNewLeftover,
             },
           },
           { upsert: true }
         );
 
-        // Find the old history month
-        const oldMonthHistory = await historyCol.findOne({
-          username: username,
-          month: newMonth,
-          year: year,
-        });
+        // Get the total net income for the old month
+        const oldMonthPaychecks = await paychecksCol
+          .find({ username: username, month: oldMonth, year: year })
+          .toArray();
+        const updatedOldBudget = oldMonthPaychecks.reduce(
+          (sum, current) => sum + current.net,
+          0
+        );
 
-        // Update the old budget and leftover amount
-        const updatedOldBudget =
-          oldMonthHistory.budget + parseFloat(newPaycheckNet);
-        const updatedOldLeftover = updatedOldBudget - oldMonthHistory.actual;
+        // Get the total actual value for all categories
+        const oldMonthCategories = await categoriesCol
+          .find({ username: username, month: oldMonth, year: year })
+          .toArray();
+        const updatedOldActual = oldMonthCategories.reduce(
+          (sum, current) => sum + current.actual,
+          0
+        );
 
-        // Update the old history month in MongoDB
+        const updatedOldLeftover = updatedOldBudget - updatedOldActual;
+
+        // Update the new history month in MongoDB
         await historyCol.updateOne(
-          { _id: new ObjectId(oldMonthHistory._id) },
+          { username: username, month: oldMonth, year: year },
           {
             $set: {
+              monthName: oldMonthName,
+              month: oldMonth,
+              year: year,
               budget: updatedOldBudget,
-              actual: oldMonthHistory.actual,
+              actual: updatedOldActual,
               leftover: updatedOldLeftover,
             },
           }
@@ -170,18 +189,27 @@ export default async function handler(req, res) {
       const month = paycheckDate.getMonth() + 1;
       const year = paycheckDate.getFullYear();
 
-      // Update the current month's history document with the new paycheck added to the budget
-      const historyCol = db.collection("history");
-
-      const monthHistory = await historyCol.findOne({
-        username: username,
-        month: month,
-        year: year,
-      });
-
       // Update the budget and leftover amount
-      const updatedBudget = monthHistory.budget - parseFloat(paycheck.net);
-      const updatedLeftover = updatedBudget - monthHistory.actual;
+
+      // Get the total net income for the given month
+      const paychecks = await paychecksCol
+        .find({ username: username, month: month, year: year })
+        .toArray();
+      const updatedBudget = paychecks.reduce(
+        (sum, current) => sum + current.net,
+        0
+      );
+
+      // Get the total actual value for all categories
+      const categories = await categoriesCol
+        .find({ username: username, month: month, year: year })
+        .toArray();
+      const updatedActual = categories.reduce(
+        (sum, current) => sum + current.actual,
+        0
+      );
+
+      const updatedLeftover = updatedBudget - updatedActual;
 
       // Update the history month in MongoDB
       await historyCol.updateOne(
@@ -189,7 +217,7 @@ export default async function handler(req, res) {
         {
           $set: {
             budget: updatedBudget,
-            actual: monthHistory.actual,
+            actual: updatedActual,
             leftover: updatedLeftover,
           },
         }

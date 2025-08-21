@@ -22,6 +22,8 @@ export default async function handler(req, res) {
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const paychecksCol = db.collection("paychecks");
+  const categoriesCol = db.collection("categories");
+  const historyCol = db.collection("history");
 
   // Fucntion that returns the user's paychecks from MongoDB
   const getPaychecks = async () => {
@@ -79,29 +81,26 @@ export default async function handler(req, res) {
       const insertedPaycheck = await paychecksCol.insertOne(newPaycheck);
 
       // Update the current month's history document with the new paycheck added to the budget
-      const historyCol = db.collection("history");
 
-      let updatedBudget = 0;
-      let updatedActual = 0;
-      let updatedLeftover = 0;
+      // Get the total net income for the old month
+      const paychecks = await paychecksCol
+        .find({ username: username, month: month, year: year })
+        .toArray();
+      const updatedBudget = paychecks.reduce(
+        (sum, current) => sum + current.net,
+        0
+      );
 
-      // Find the history object in MongoDB
-      const monthHistory = await historyCol.findOne({
-        username: username,
-        month: month,
-        year: year,
-      });
+      // Get the total actual value for all categories
+      const categories = await categoriesCol
+        .find({ username: username, month: month, year: year })
+        .toArray();
+      const updatedActual = categories.reduce(
+        (sum, current) => sum + current.actual,
+        0
+      );
 
-      // Update the budget and leftover amount
-      if (monthHistory) {
-        updatedActual = monthHistory.actual;
-
-        updatedBudget = monthHistory.budget + parseFloat(newPaycheck.net);
-        updatedLeftover = updatedBudget - updatedActual;
-      } else {
-        updatedBudget = parseFloat(newPaycheck.net);
-        updatedActual = parseFloat(newPaycheck.net);
-      }
+      const updatedLeftover = updatedBudget - updatedActual;
 
       // Update the history month in MongoDB
       await historyCol.updateOne(

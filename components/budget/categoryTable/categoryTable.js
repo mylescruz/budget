@@ -1,61 +1,16 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryTableRow from "./categoryTableRow";
 import CategoryTableFooter from "./categoryTableFooter";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import FixedCategoryTableRow from "./fixedCategoryTableRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import useHistory from "@/hooks/useHistory";
 import PopUp from "@/components/layout/popUp";
 
-const CategoryTable = ({ setEditCategories, monthInfo }) => {
-  const { categories, categoriesLoading } = useContext(CategoriesContext);
-
-  const { historyLoading, putHistory, getMonthHistory } = useHistory();
+const CategoryTable = ({ setEditCategories }) => {
+  const { categories } = useContext(CategoriesContext);
 
   const [showFixedExpenses, setShowFixedExpenses] = useState(true);
   const [showVariableExpenses, setShowVariableExpenses] = useState(true);
-
-  // Updates the budget and the money actual spent in the history array when the categories array changes
-  useEffect(() => {
-    const updateHistoryValues = async () => {
-      let totalActual = 0;
-      categories.forEach((category) => {
-        totalActual += parseFloat(category.actual);
-      });
-
-      const foundMonth = getMonthHistory(monthInfo);
-
-      // Updates the given month's actual and leftover value by sending a PUT request to the API
-      if (foundMonth) {
-        const newActual = parseFloat(totalActual.toFixed(2));
-        const newLeftover = parseFloat(
-          (foundMonth.budget - totalActual).toFixed(2)
-        );
-
-        if (
-          newActual !== foundMonth.actual &&
-          newLeftover !== foundMonth.leftover
-        ) {
-          putHistory({
-            ...foundMonth,
-            actual: newActual,
-            leftover: newLeftover,
-          });
-        }
-      }
-    };
-
-    if (!categoriesLoading && !historyLoading) {
-      updateHistoryValues();
-    }
-  }, [
-    categories,
-    categoriesLoading,
-    getMonthHistory,
-    historyLoading,
-    monthInfo,
-    putHistory,
-  ]);
 
   const handleEdit = () => {
     setEditCategories(true);
