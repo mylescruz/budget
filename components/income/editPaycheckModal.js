@@ -1,5 +1,3 @@
-import dateToMonthInfo from "@/helpers/dateToMonthInfo";
-import useHistory from "@/hooks/useHistory";
 import { useContext, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
@@ -13,9 +11,7 @@ const EditPaycheckModal = ({
   setShowEdit,
   setShowDetails,
 }) => {
-  const { putPaycheck, getMonthIncome } = useContext(PaychecksContext);
-
-  const { putHistory, getMonthHistory } = useHistory();
+  const { putPaycheck } = useContext(PaychecksContext);
 
   const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
   const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
@@ -54,89 +50,11 @@ const EditPaycheckModal = ({
       );
 
       // Edits a paycheck in the income array by sending a PUT request to the API
-      await putPaycheck(edittedPaycheck);
-
-      // Updates the budget value for the given month in the history array by sending a PUT request to the API
-      if (edittedPaycheck.date === paycheck.date) {
-        // Update the history for the current month
-        const paycheckMonthInfo = dateToMonthInfo(edittedPaycheck.date);
-
-        // Get the income for the month of the editted paycheck
-        const paycheckMonthIncome = getMonthIncome(paycheckMonthInfo);
-
-        // Get the history for the month of the editted paycheck
-        const paycheckMonth = getMonthHistory(paycheckMonthInfo);
-
-        if (paycheckMonth) {
-          // Update the budget for the month the editted paycheck is in
-          const updatedCurrentBudget =
-            paycheckMonthIncome - paycheck.net + edittedPaycheck.net;
-          const updatedCurrentLeftover = parseFloat(
-            (updatedCurrentBudget - paycheckMonth.actual).toFixed(2)
-          );
-
-          // Update the budget and leftover in the history and send it to the API
-          const updatedMonth = {
-            ...paycheckMonth,
-            budget: updatedCurrentBudget,
-            leftover: updatedCurrentLeftover,
-          };
-
-          await putHistory(updatedMonth);
-        }
-      } else {
-        // Update the history for the old month
-        const oldMonthInfo = dateToMonthInfo(edittedPaycheck.date);
-
-        // Get the income for the month of the old paycheck
-        const oldIncome = getMonthIncome(oldMonthInfo);
-
-        // Get the history for the month of the old paycheck
-        const oldMonth = getMonthHistory(oldMonthInfo);
-
-        if (oldMonth) {
-          // Update the budget for the month the old paycheck is in
-          const updatedOldBudget = oldIncome - paycheck.net;
-          const updatedOldLeftover = parseFloat(
-            (updatedOldBudget - oldMonth.actual).toFixed(2)
-          );
-
-          // Update the budget and leftover in the history and send it to the API
-          const updatedOldMonth = {
-            ...oldMonth,
-            budget: updatedOldBudget,
-            leftover: updatedOldLeftover,
-          };
-
-          await putHistory(updatedOldMonth);
-        }
-
-        // Update the history for the editted month
-        const newMonthInfo = dateToMonthInfo(edittedPaycheck.date);
-
-        // Get the income for the month of the editted paycheck
-        const newIncome = getMonthIncome(newMonthInfo);
-
-        // Get the history for the month of the editted paycheck
-        const newMonth = getMonthHistory(newMonthInfo);
-
-        if (newMonth) {
-          // Update the budget for the month the editted paycheck is in
-          const updatedNewBudget = newIncome - paycheck.net;
-          const updatedNewLeftover = parseFloat(
-            (updatedNewBudget - newMonth.actual).toFixed(2)
-          );
-
-          // Update the budget and leftover in the history and send it to the API
-          const updatedNewMonth = {
-            ...newMonth,
-            budget: updatedNewBudget,
-            leftover: updatedNewLeftover,
-          };
-
-          await putHistory(updatedNewMonth);
-        }
-      }
+      await putPaycheck({
+        ...edittedPaycheck,
+        oldDate: paycheck.date,
+        oldNet: paycheck.net,
+      });
 
       setShowEdit(false);
       setErrorOccurred(false);

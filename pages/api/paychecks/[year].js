@@ -3,6 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -60,6 +61,9 @@ export default async function handler(req, res) {
 
       // Define the identifiers from the paycheck
       const paycheckDate = new Date(paycheckBody.date);
+      const monthName = paycheckDate.toLocaleDateString("en-US", {
+        month: "long",
+      });
       const month = paycheckDate.getMonth() + 1;
       const year = paycheckDate.getFullYear();
 
@@ -72,10 +76,53 @@ export default async function handler(req, res) {
       };
 
       // Add the new paycheck to the paychecks collection in MongoDB
-      const result = await paychecksCol.insertOne(newPaycheck);
+      const insertedPaycheck = await paychecksCol.insertOne(newPaycheck);
+
+      // Update the current month's history document with the new paycheck added to the budget
+      const historyCol = db.collection("history");
+
+      let updatedBudget = 0;
+      let updatedActual = 0;
+      let updatedLeftover = 0;
+
+      // Find the history object in MongoDB
+      const monthHistory = await historyCol.findOne({
+        username: username,
+        month: month,
+        year: year,
+      });
+
+      // Update the budget and leftover amount
+      if (monthHistory) {
+        updatedActual = monthHistory.actual;
+
+        updatedBudget = monthHistory.budget + parseFloat(newPaycheck.net);
+        updatedLeftover = updatedBudget - updatedActual;
+      } else {
+        updatedBudget = parseFloat(newPaycheck.net);
+        updatedActual = parseFloat(newPaycheck.net);
+      }
+
+      // Update the history month in MongoDB
+      await historyCol.updateOne(
+        { username: username, month: month, year: year },
+        {
+          $set: {
+            monthName: monthName,
+            month: month,
+            year: year,
+            budget: updatedBudget,
+            actual: updatedActual,
+            leftover: updatedLeftover,
+          },
+        },
+        { upsert: true }
+      );
 
       // Send the new paycheck back to the client
-      res.status(200).json({ id: result.insertedId, ...paycheckBody });
+      res
+        .status(200)
+        .json({ id: insertedPaycheck.insertedId, ...paycheckBody });
     } catch (error) {
       console.error(`${method} paychecks request failed: ${error}`);
       res.status(500).send("Error occured while adding a paycheck");

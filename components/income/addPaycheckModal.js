@@ -1,15 +1,9 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import dateInfo from "@/helpers/dateInfo";
-import useHistory from "@/hooks/useHistory";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
-import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
-import dateToMonthInfo from "@/helpers/dateToMonthInfo";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
-import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
-import ErrorModal from "../layout/errorModal";
 
 const AddPaycheckModal = ({
   yearInfo,
@@ -25,11 +19,7 @@ const AddPaycheckModal = ({
     net: 0,
   };
 
-  const { categories, updateCategories } = useContext(CategoriesContext);
   const { postPaycheck } = useContext(PaychecksContext);
-  const { monthIncome } = useContext(MonthIncomeContext);
-
-  const { putHistory, getMonthHistory } = useHistory();
 
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const [addingPaycheck, setAddingPaycheck] = useState(false);
@@ -60,41 +50,6 @@ const AddPaycheckModal = ({
 
       // Adds the new paycheck to the income array by sending a POST request to the API
       await postPaycheck(paycheck);
-
-      const paycheckMonthInfo = dateToMonthInfo(paycheck.date);
-
-      // Get the history for the month of the paycheck
-      const paycheckMonth = getMonthHistory(paycheckMonthInfo);
-
-      if (paycheckMonth) {
-        // Update the budget for the month the paycheck is in
-        const updatedBudget = monthIncome + paycheck.net;
-        const updatedLeftover = parseFloat(
-          (updatedBudget - paycheckMonth.actual).toFixed(2)
-        );
-
-        // Update the budget and leftover in the history and send it to the API
-        const updatedPaycheckMonth = {
-          ...paycheckMonth,
-          budget: updatedBudget,
-          leftover: updatedLeftover,
-        };
-
-        await putHistory(updatedPaycheckMonth);
-
-        // Updates the categories by sending a PUT request to the API
-        const updatedCategories = updateGuiltFreeSpending(
-          updatedBudget,
-          categories
-        );
-
-        // Only update the categories that were changed
-        const changedCategories = updatedCategories.filter(
-          (category) => category.updated
-        );
-
-        await updateCategories(changedCategories);
-      }
 
       setAddPaycheckClicked(false);
       setPaycheck(emptyPaycheck);

@@ -24,7 +24,7 @@ const AddTransactionModal = ({
 
   // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at current budget or history
   const newTransactionDate =
-    dateInfo.currentMonth === monthInfo.month
+    dateInfo.currentMonthName === monthInfo.month
       ? dateInfo.currentDate
       : monthInfo.startOfMonthDate;
 

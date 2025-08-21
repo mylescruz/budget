@@ -61,15 +61,15 @@ const HistoryTable = ({ history }) => {
                   <Link
                     href={{
                       pathname: "/history/[month]",
-                      query: { month: month.month, year: month.year },
+                      query: { month: month.monthName, year: month.year },
                     }}
                   >
                     <>
                       <span className="d-sm-none">
-                        {monthFormatter(`${month.month} 01, ${month.year}`)}
+                        {monthFormatter(`${month.month}/01/${month.year}`)}
                       </span>
                       <span className="d-none d-sm-block">
-                        {month.month} {month.year}
+                        {month.monthName} {month.year}
                       </span>
                     </>
                   </Link>
@@ -81,7 +81,9 @@ const HistoryTable = ({ history }) => {
                   {currencyFormatter.format(month.actual)}
                 </td>
                 <td
-                  className={`d-none d-md-block col-md-3 ${month.leftover < 0 && "text-danger"}`}
+                  className={`d-none d-md-block col-md-3 ${
+                    month.leftover < 0 && "text-danger"
+                  }`}
                 >
                   {currencyFormatter.format(month.leftover)}
                 </td>
@@ -107,7 +109,9 @@ const HistoryTable = ({ history }) => {
             {currencyFormatter.format(historyTotals.actual)}
           </th>
           <th
-            className={`d-none d-md-block col-md-3 ${historyTotals.remaining > 0 ? "text-white" : "text-danger"}`}
+            className={`d-none d-md-block col-md-3 ${
+              historyTotals.remaining > 0 ? "text-white" : "text-danger"
+            }`}
           >
             {currencyFormatter.format(historyTotals.remaining)}
           </th>

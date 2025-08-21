@@ -196,7 +196,7 @@ const InnerDashboard = ({ monthInfo }) => {
 };
 
 const Dashboard = () => {
-  const month = dateInfo.currentMonth;
+  const month = dateInfo.currentMonthName;
   const year = dateInfo.currentYear;
   const monthInfo = getMonthInfo(month, year);
 

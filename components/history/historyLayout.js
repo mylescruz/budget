@@ -1,27 +1,12 @@
 import { Button, Col, Row } from "react-bootstrap";
 import HistoryTable from "./historyTable";
 import useHistory from "@/hooks/useHistory";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import dateInfo from "@/helpers/dateInfo";
-import getMonthInfo from "@/helpers/getMonthInfo";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import Loading from "../layout/loading";
-import {
-  MonthIncomeProvider,
-  MonthIncomeContext,
-} from "@/contexts/MonthIncomeContext";
 
-const InnerHistoryLayout = () => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
-  // Using the router object to redirect to different pages within the app
-  const router = useRouter();
-
-  const { history, historyLoading, postHistory, getMonthHistory } =
-    useHistory();
-  const { monthIncome, monthIncomeLoading } = useContext(MonthIncomeContext);
+const HistoryLayout = () => {
+  const { history, historyLoading } = useHistory();
 
   const [currentYearHistory, setCurrentYearHistory] = useState(history);
   const [historyYears, setHistoryYears] = useState({
@@ -30,35 +15,6 @@ const InnerHistoryLayout = () => {
     max: dateInfo.currentYear,
     min: dateInfo.currentYear,
   });
-
-  // Adds the current month to the history array if not already added
-  useEffect(() => {
-    const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
-
-    // Sets the new month object and sends the POST request to the API
-    const addNewHistoryMonth = async () => {
-      const newMonth = {
-        month: dateInfo.currentMonth,
-        year: dateInfo.currentYear,
-        budget: monthIncome,
-        actual: 0,
-        leftover: monthIncome,
-      };
-
-      await postHistory(newMonth);
-    };
-
-    // Checks if the current dates' month and year is already history array
-    const isMonthInHistory = () => {
-      const foundMonth = getMonthHistory(monthInfo);
-
-      return foundMonth !== undefined;
-    };
-
-    if (!historyLoading && !isMonthInHistory() && history !== null) {
-      addNewHistoryMonth();
-    }
-  }, [history, historyLoading, postHistory, getMonthHistory, monthIncome]);
 
   // Get all the years in the history, the max, the min and the current year
   useEffect(() => {
@@ -85,7 +41,7 @@ const InnerHistoryLayout = () => {
 
       if (historyYears.current === dateInfo.currentYear) {
         const filteredHistory = givenYearHistory.filter(
-          (historyMonth) => historyMonth.month !== dateInfo.currentMonth
+          (historyMonth) => historyMonth.month < dateInfo.currentMonth
         );
 
         setCurrentYearHistory(filteredHistory);
@@ -103,10 +59,7 @@ const InnerHistoryLayout = () => {
     setHistoryYears({ ...historyYears, current: historyYears.current - 1 });
   };
 
-  // If there is no user session, redirect to the home page
-  if (!session) {
-    router.push("/");
-  } else if (historyLoading || monthIncomeLoading) {
+  if (historyLoading) {
     return <Loading />;
   } else {
     return (
@@ -145,16 +98,6 @@ const InnerHistoryLayout = () => {
       </>
     );
   }
-};
-
-const HistoryLayout = () => {
-  const monthInfo = getMonthInfo(dateInfo.currentMonth, dateInfo.currentYear);
-
-  return (
-    <MonthIncomeProvider monthInfo={monthInfo}>
-      <InnerHistoryLayout />
-    </MonthIncomeProvider>
-  );
 };
 
 export default HistoryLayout;

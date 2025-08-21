@@ -10,7 +10,7 @@ export default function Budget() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const month = dateInfo.currentMonth;
+  const month = dateInfo.currentMonthName;
   const year = dateInfo.currentYear;
   const monthInfo = getMonthInfo(month, year);
 

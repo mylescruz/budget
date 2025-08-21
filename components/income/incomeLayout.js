@@ -94,7 +94,7 @@ const InnerIncomeLayout = ({ year }) => {
 };
 
 const IncomeLayout = ({ year }) => {
-  const monthInfo = getMonthInfo(dateInfo.currentMonth, year);
+  const monthInfo = getMonthInfo(dateInfo.currentMonthName, year);
 
   return (
     <CategoriesProvider monthInfo={monthInfo}>

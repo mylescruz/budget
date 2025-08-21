@@ -28,6 +28,7 @@ export default async function handler(req, res) {
     const history = docs.map((mth) => {
       return {
         id: mth._id,
+        monthName: mth.monthName,
         month: mth.month,
         year: mth.year,
         budget: mth.budget,
