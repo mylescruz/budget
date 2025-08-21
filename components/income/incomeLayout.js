@@ -3,8 +3,6 @@ import AddIncomeModal from "./addPaycheckModal";
 import { Button, Col, Row } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import getYearInfo from "@/helpers/getYearInfo";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import Loading from "../layout/loading";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import getMonthInfo from "@/helpers/getMonthInfo";
@@ -19,12 +17,6 @@ import {
 } from "@/contexts/MonthIncomeContext";
 
 const InnerIncomeLayout = ({ year }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
-  // Using the router object to redirect to different pages within the app
-  const router = useRouter();
-
   const { paychecks, paychecksLoading } = useContext(PaychecksContext);
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
@@ -52,10 +44,7 @@ const InnerIncomeLayout = ({ year }) => {
     setAddPaycheckClicked: setAddPaycheckClicked,
   };
 
-  // If there is no user session, redirect to the home page
-  if (!session) {
-    router.push("/");
-  } else if (paychecksLoading || monthIncomeLoading) {
+  if (paychecksLoading || monthIncomeLoading) {
     return <Loading />;
   } else {
     return (

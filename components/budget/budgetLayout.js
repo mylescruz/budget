@@ -7,8 +7,6 @@ import {
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
 import CategoryPieChart from "../categories/categoryPieChart";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import Loading from "../layout/loading";
 import TransactionsLayout from "./transactions/transactionsLayout";
 import {
@@ -22,21 +20,13 @@ import {
 } from "@/contexts/MonthIncomeContext";
 
 const InnerBudgetLayout = ({ monthInfo }) => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
-  const router = useRouter();
-
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
   const [editCategories, setEditCategories] = useState(false);
 
-  // If there is no user session, redirect to the home page
-  if (!session) {
-    router.push("/");
-  } else if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
+  if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
     return <Loading />;
   } else {
     return (
