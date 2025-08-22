@@ -82,6 +82,32 @@ export default async function handler(req, res) {
 
         const updatedLeftover = updatedBudget - updatedActual;
 
+        // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
+        const foundCategory = categories.find(
+          (category) => category.name === "Guilt Free Spending"
+        );
+
+        if (foundCategory) {
+          // Get the budget total for all categories
+          let totalBudget = 0;
+          categories.forEach((category) => {
+            if (category.name !== "Guilt Free Spending") {
+              totalBudget += parseFloat(category.budget);
+            }
+          });
+
+          const gfsBudget = updatedBudget - totalBudget;
+
+          await categoriesCol.updateOne(
+            { _id: foundCategory._id },
+            {
+              $set: {
+                budget: gfsBudget,
+              },
+            }
+          );
+        }
+
         // Update the new history month in MongoDB
         await historyCol.updateOne(
           { username: username, month: newMonth, year: year },
@@ -119,6 +145,32 @@ export default async function handler(req, res) {
 
         const updatedNewLeftover = updatedNewBudget - updatedNewActual;
 
+        // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
+        const foundNewCategory = newMonthCategories.find(
+          (category) => category.name === "Guilt Free Spending"
+        );
+
+        if (foundNewCategory) {
+          // Get the budget total for all categories
+          let totalBudget = 0;
+          newMonthCategories.forEach((category) => {
+            if (category.name !== "Guilt Free Spending") {
+              totalBudget += parseFloat(category.budget);
+            }
+          });
+
+          const gfsBudget = updatedNewBudget - totalBudget;
+
+          await categoriesCol.updateOne(
+            { _id: foundNewCategory._id },
+            {
+              $set: {
+                budget: gfsBudget,
+              },
+            }
+          );
+        }
+
         // Update the new history month in MongoDB
         await historyCol.updateOne(
           { username: username, month: newMonth, year: year },
@@ -154,6 +206,32 @@ export default async function handler(req, res) {
         );
 
         const updatedOldLeftover = updatedOldBudget - updatedOldActual;
+
+        // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
+        const foundOldCategory = oldMonthCategories.find(
+          (category) => category.name === "Guilt Free Spending"
+        );
+
+        if (foundOldCategory) {
+          // Get the budget total for all categories
+          let totalBudget = 0;
+          oldMonthCategories.forEach((category) => {
+            if (category.name !== "Guilt Free Spending") {
+              totalBudget += parseFloat(category.budget);
+            }
+          });
+
+          const gfsBudget = updatedOldBudget - totalBudget;
+
+          await categoriesCol.updateOne(
+            { _id: foundOldCategory._id },
+            {
+              $set: {
+                budget: gfsBudget,
+              },
+            }
+          );
+        }
 
         // Update the new history month in MongoDB
         await historyCol.updateOne(
@@ -210,6 +288,32 @@ export default async function handler(req, res) {
       );
 
       const updatedLeftover = updatedBudget - updatedActual;
+
+      // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
+      const foundCategory = categories.find(
+        (category) => category.name === "Guilt Free Spending"
+      );
+
+      if (foundCategory) {
+        // Get the budget total for all categories
+        let totalBudget = 0;
+        categories.forEach((category) => {
+          if (category.name !== "Guilt Free Spending") {
+            totalBudget += parseFloat(category.budget);
+          }
+        });
+
+        const gfsBudget = updatedBudget - totalBudget;
+
+        await categoriesCol.updateOne(
+          { _id: foundCategory._id },
+          {
+            $set: {
+              budget: gfsBudget,
+            },
+          }
+        );
+      }
 
       // Update the history month in MongoDB
       await historyCol.updateOne(

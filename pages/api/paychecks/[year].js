@@ -102,6 +102,32 @@ export default async function handler(req, res) {
 
       const updatedLeftover = updatedBudget - updatedActual;
 
+      // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
+      const foundCategory = categories.find(
+        (category) => category.name === "Guilt Free Spending"
+      );
+
+      if (foundCategory) {
+        // Get the budget total for all categories
+        let totalBudget = 0;
+        categories.forEach((category) => {
+          if (category.name !== "Guilt Free Spending") {
+            totalBudget += parseFloat(category.budget);
+          }
+        });
+
+        const gfsBudget = updatedBudget - totalBudget;
+
+        await categoriesCol.updateOne(
+          { _id: foundCategory._id },
+          {
+            $set: {
+              budget: gfsBudget,
+            },
+          }
+        );
+      }
+
       // Update the history month in MongoDB
       await historyCol.updateOne(
         { username: username, month: month, year: year },
