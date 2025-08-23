@@ -1,7 +1,6 @@
 import { Button, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import EditCategoryRow from "./editCategoryRow";
 import { useContext, useRef, useState } from "react";
-import AddCategoryModal from "./addCategoryModal";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import updateGuiltFreeSpending from "@/helpers/updateGuiltFreeSpending";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
@@ -9,13 +8,11 @@ import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
 import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 
-const EditCategoryTable = ({ setEditCategories }) => {
-  const { categories, deleteCategory, updateCategories } =
-    useContext(CategoriesContext);
+const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
+  const { categories, updateCategories } = useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
   const { monthIncome } = useContext(MonthIncomeContext);
 
-  const [addCategoryClicked, setAddCategoryClicked] = useState(false);
   const [updatingCategories, setUpdatingCategories] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -148,17 +145,8 @@ const EditCategoryTable = ({ setEditCategories }) => {
     }
   };
 
-  const addNewCategory = () => {
-    setAddCategoryClicked(true);
-  };
-
-  const addCategoryProps = {
-    addCategoryClicked: addCategoryClicked,
-    setAddCategoryClicked: setAddCategoryClicked,
-  };
-
   const editCategoryProps = {
-    deleteCategory: deleteCategory,
+    monthInfo: monthInfo,
     updateCategoryValues: updateCategoryValues,
   };
 
@@ -172,16 +160,7 @@ const EditCategoryTable = ({ setEditCategories }) => {
         <Table striped bordered className="mx-auto">
           <thead>
             <tr className="table-dark d-flex">
-              <th className="col-7 col-md-8">
-                Category{" "}
-                <Button
-                  className="btn-sm mx-lg-2"
-                  id="save-all-btn"
-                  onClick={addNewCategory}
-                >
-                  Add New
-                </Button>
-              </th>
+              <th className="col-7 col-md-8">Category </th>
               <th className="col-3 col-md-2">Budget</th>
               <th className="col-2 col-md-2">Color</th>
             </tr>
@@ -234,8 +213,6 @@ const EditCategoryTable = ({ setEditCategories }) => {
           </Col>
         </Row>
       </Form>
-
-      <AddCategoryModal {...addCategoryProps} />
 
       <Modal show={updatingCategories} backdrop="static" centered>
         <LoadingMessage message="Updating these categories" />

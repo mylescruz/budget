@@ -6,7 +6,11 @@ import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row, Container } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 
-const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
+const AddCategoryModal = ({
+  monthInfo,
+  addCategoryClicked,
+  setAddCategoryClicked,
+}) => {
   const emptyCategory = {
     name: "",
     color: "#000000",
@@ -23,7 +27,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
     actual: 0,
   };
 
-  const { postCategory } = useContext(CategoriesContext);
+  const { getCategories, postCategory } = useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
   const [subcategoryTotal, setSubcategoryTotal] = useState(0);
@@ -90,6 +94,9 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
 
       // Adds the new category to the category array by sending a POST request to the API
       await postCategory(newCategory);
+
+      // Fetch the categories to update the state for the categories table
+      await getCategories(monthInfo.monthNumber, monthInfo.year);
 
       closeModal();
 

@@ -1,16 +1,15 @@
-import { useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { useContext, useState } from "react";
+import { Col, Form, Modal, Row } from "react-bootstrap";
 import AddSubcategoryForm from "./addSubcategoryForm";
 import EditSubcategoryRow from "./editSubcategoryRow";
 import PopUp from "@/components/layout/popUp";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditCategoryRow = ({
-  category,
-  deleteCategory,
-  updateCategoryValues,
-}) => {
+const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
+  const { getCategories, deleteCategory } = useContext(CategoriesContext);
+
   const [edittedCategory, setEdittedCategory] = useState(category);
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
   const [deletingCategory, setDeletingCategory] = useState(false);
@@ -101,6 +100,9 @@ const EditCategoryRow = ({
     try {
       // Removes a category from the categories array by sending a DELETE request to the API
       await deleteCategory(category);
+
+      // Fetch the categories to update the state for the categories table
+      await getCategories(monthInfo.monthNumber, monthInfo.year);
 
       setErrorOccurred(false);
     } catch (error) {

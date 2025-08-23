@@ -6,6 +6,8 @@ import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 
+const GUILT_FREE = "Guilt Free Spending";
+
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
   const session = await getServerSession(req, res, authOptions);
@@ -25,6 +27,7 @@ export default async function handler(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
   const categoriesCol = db.collection("categories");
+  const paychecksCol = db.collection("paychecks");
 
   // Function that returns the user's categories from MongoDB
   async function getCategories() {
@@ -150,6 +153,44 @@ export default async function handler(req, res) {
 
       // Add the new category to the categories collection in MongoDB
       const result = await categoriesCol.insertOne(newCategory);
+
+      // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
+      const categories = await getCategories();
+
+      const foundCategory = categories.find(
+        (category) => category.name === GUILT_FREE
+      );
+
+      if (foundCategory) {
+        // Get the budget total for all categories except Guilt Free Spending
+        let categoriesBudget = 0;
+        categories.forEach((category) => {
+          if (category.name !== GUILT_FREE) {
+            categoriesBudget += parseFloat(category.budget);
+          }
+        });
+
+        // Get the total net income for the month
+        const paychecks = await paychecksCol
+          .find({ username: username, month: month, year: year })
+          .toArray();
+        const totalBudget = paychecks.reduce(
+          (sum, current) => sum + current.net,
+          0
+        );
+
+        const gfsBudget = totalBudget - categoriesBudget;
+
+        // Update the Guilt Free Spending category in MongoDB
+        await categoriesCol.updateOne(
+          { _id: foundCategory.id },
+          {
+            $set: {
+              budget: gfsBudget,
+            },
+          }
+        );
+      }
 
       // Send the new category back to the client
       res.status(200).json({ id: result.insertedId, ...newCategory });

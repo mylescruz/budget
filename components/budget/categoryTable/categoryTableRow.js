@@ -31,10 +31,21 @@ const CategoryTableRow = ({ category }) => {
                   >
                     {category.name}
                   </Button>
+                  {/* Show the pop up message for the Guilt Free Spending category */}
+                  {category.name === "Guilt Free Spending" && (
+                    <PopUp
+                      title="The money you can spend on whatever you want after all other expenses have been covered."
+                      id="guilt-free-info"
+                    >
+                      <span> &#9432;</span>
+                    </PopUp>
+                  )}
                 </Col>
                 <Col className="col-3 text-end">
                   <i
-                    className={`clicker bi ${showSubcategories ? "bi-chevron-up" : "bi-chevron-down"}`}
+                    className={`clicker bi ${
+                      showSubcategories ? "bi-chevron-up" : "bi-chevron-down"
+                    }`}
                   />
                 </Col>
               </>
@@ -46,21 +57,14 @@ const CategoryTableRow = ({ category }) => {
                 >
                   {category.name}
                 </Button>
-                {/* Show the pop up message for the Guilt Free Spending category */}
-                {category.name === "Guilt Free Spending" && (
-                  <PopUp
-                    title="The money you can spend on whatever you want after all other expenses have been covered."
-                    id="guilt-free-info"
-                  >
-                    <span> &#9432;</span>
-                  </PopUp>
-                )}
               </Col>
             )}
           </Row>
         </th>
         <td
-          className={`col-3 col-md-2 cell fw-bold ${category.budget < 0 && "text-danger "}`}
+          className={`col-3 col-md-2 cell fw-bold ${
+            category.budget < 0 && "text-danger "
+          }`}
         >
           {currencyFormatter.format(category.budget)}
         </td>
@@ -68,7 +72,9 @@ const CategoryTableRow = ({ category }) => {
           {currencyFormatter.format(category.actual)}
         </td>
         <td
-          className={`d-none d-md-block col-md-2 cell ${category.budget - category.actual < 0 && "text-danger fw-bold"}`}
+          className={`d-none d-md-block col-md-2 cell ${
+            category.budget - category.actual < 0 && "text-danger fw-bold"
+          }`}
         >
           {currencyFormatter.format(category.budget - category.actual)}
         </td>

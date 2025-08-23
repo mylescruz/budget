@@ -55,7 +55,10 @@ const InnerBudgetLayout = ({ monthInfo }) => {
                     monthInfo={monthInfo}
                   />
                 ) : (
-                  <EditCategoryTable setEditCategories={setEditCategories} />
+                  <EditCategoryTable
+                    monthInfo={monthInfo}
+                    setEditCategories={setEditCategories}
+                  />
                 )}
               </Col>
             </Row>
