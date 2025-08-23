@@ -8,6 +8,8 @@ const saltRounds = 10;
 
 const USER_ROLE = "User";
 
+const GUILT_FREE = "Guilt Free Spending";
+
 export default async function handler(req, res) {
   const method = req?.method;
 
@@ -120,22 +122,19 @@ export default async function handler(req, res) {
       } else {
         // Add the default categories for the user in MongoDB
         categories = await getDefaultCategories(newUser.username);
-
-        // Get the budget total for all categories
-        let totalBudget = 0;
-        categories.forEach((category) => {
-          if (category.name !== "Guilt Free Spending") {
-            totalBudget += parseFloat(category.budget);
-          }
-        });
-
-        // Update the Guilt Free Spending category to adjust for the user's total income for the month minus the total budget
-        const gfsIndex = categories.findIndex(
-          (category) => category.name === "Guilt Free Spending"
-        );
-
-        categories[gfsIndex].budget = monthIncome - totalBudget;
       }
+
+      // Get the budget total for all categories
+      const filteredBudget = categories
+        .filter((category) => category.name !== GUILT_FREE)
+        .reduce((sum, current) => sum + parseFloat(current.budget), 0);
+
+      // Update the Guilt Free Spending category to adjust for the user's total income for the month minus the total budget
+      const gfsIndex = categories.findIndex(
+        (category) => category.name === GUILT_FREE
+      );
+
+      categories[gfsIndex].budget = monthIncome - filteredBudget;
 
       const finalCategories = categories.map((category) => {
         return {

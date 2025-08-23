@@ -45,8 +45,8 @@ const customExampleCategories = [
     budget: "$14.99",
   },
   {
-    name: "Travel",
-    budget: "$500",
+    name: "Car Insurance",
+    budget: "$250",
   },
 ];
 
@@ -172,8 +172,6 @@ const CategoriesSection = ({
       ...newUser,
       categories: [...newUser.categories, newCategory],
     });
-
-    console.log(newUser);
 
     setNewCategory(emptyCategory);
   };
@@ -397,7 +395,18 @@ const CategoriesSection = ({
               <tbody>
                 {newUser.categories.map((category, index) => (
                   <tr key={index} className="d-flex">
-                    <td className="col-8 gray-background">{category.name}</td>
+                    <td className="col-8 gray-background">
+                      {category.name}
+                      {/* Show the pop up message for the Guilt Free Spending category */}
+                      {category.name === "Guilt Free Spending" && (
+                        <PopUp
+                          title="The money you can spend on whatever you want after all other expenses have been covered. Includes food, entertainment, travel, etc."
+                          id="guilt-free-info"
+                        >
+                          <span> &#9432;</span>
+                        </PopUp>
+                      )}
+                    </td>
                     <td className="col-4 text-end gray-background">
                       {currencyFormatter.format(category.budget)}
                     </td>
