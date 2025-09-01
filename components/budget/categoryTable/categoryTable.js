@@ -43,15 +43,7 @@ const CategoryTable = ({ monthInfo, setEditCategories }) => {
           <tr className="d-flex">
             <th className="col-6">
               <Row className="d-flex">
-                <Col className="col-5">
-                  Category
-                  <PopUp
-                    title="You can add and edit a category's budget, color and its subcategories."
-                    id="categories-info"
-                  >
-                    <span> &#9432;</span>
-                  </PopUp>
-                </Col>
+                <Col className="col-5">Category</Col>
                 <Col className="col-3">
                   <Button
                     className="btn-sm"

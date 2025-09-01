@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
   // Function that returns the user's categories from MongoDB
   async function getCategories() {
-    let finalDocs = [];
+    let finalCategoryDocs = [];
 
     // Get the category documents for the current month and year
     const currentDocs = await categoriesCol
@@ -39,10 +39,8 @@ export default async function handler(req, res) {
       .sort({ budget: 1 })
       .toArray();
 
-    let categories = [];
-
     if (currentDocs.length > 0) {
-      finalDocs = currentDocs;
+      finalCategoryDocs = currentDocs;
     } else {
       // If the category documents for the current month and year don't exist, get the documents from last month
       let previousMonth = month - 1;
@@ -57,9 +55,13 @@ export default async function handler(req, res) {
         .sort({ budget: 1 })
         .toArray();
 
-      const previousCategories = previousDocs.map((category) => {
+      // Set the new month's categories equal to the previous months categories
+      const newCategories = previousDocs.map((category) => {
         if (category.fixed) {
-          return category;
+          // Return the new category without the previous _id
+          const { _id, ...previousCategory } = category;
+
+          return { ...previousCategory, month: month, year: year };
         } else {
           if (category.hasSubcategory) {
             const newSubcategories = category.subcategories.map(
@@ -69,42 +71,51 @@ export default async function handler(req, res) {
               }
             );
 
+            // Return the new category without the previous _id
+            const { _id, ...previousCategory } = category;
+
             return {
-              ...category,
+              ...previousCategory,
+              month: month,
+              year: year,
               actual: 0,
               subcategories: newSubcategories,
             };
           } else {
-            return { ...category, actual: 0 };
+            // Return the new category without the previous _id
+            const { _id, ...previousCategory } = category;
+
+            return { ...previousCategory, month: month, year: year, actual: 0 };
           }
         }
       });
 
-      finalDocs = previousCategories;
+      // Insert all the categories for the new month into MongoDB
+      await categoriesCol.insertMany(newCategories);
+
+      // Get the newly added category documents for the current month and year
+      const newCategoryDocs = await categoriesCol
+        .find({ username: username, month: month, year: year })
+        .sort({ budget: 1 })
+        .toArray();
+
+      finalCategoryDocs = newCategoryDocs;
     }
 
-    categories = finalDocs.map((category) => {
-      return {
-        id: category._id,
-        name: category.name,
-        color: category.color,
-        budget: category.budget,
-        actual: category.actual,
-        fixed: category.fixed,
-        hasSubcategory: category.hasSubcategory,
-        subcategories: category.subcategories,
-      };
+    // Return the final categories to the client
+    const finalCategories = finalCategoryDocs.map((category) => {
+      const { _id, username, month, year, ...finalCategory } = category;
+
+      return { id: _id, ...finalCategory };
     });
 
-    return categories;
+    return finalCategories;
   }
 
+  // Function to update each editted category in MongoDB
   async function updateCategories(edittedCategories) {
-    // Update the given categories in MongoDB
-    let numUpdated = 0;
-
     for (const category of edittedCategories) {
-      const result = await categoriesCol.updateOne(
+      await categoriesCol.updateOne(
         { _id: new ObjectId(category.id) },
         {
           $set: {
@@ -118,13 +129,7 @@ export default async function handler(req, res) {
           },
         }
       );
-
-      if (result.modifiedCount === 1) {
-        numUpdated++;
-      }
     }
-
-    return numUpdated === edittedCategories.length;
   }
 
   if (method === "GET") {
@@ -202,16 +207,13 @@ export default async function handler(req, res) {
     try {
       const edittedCategories = req?.body;
 
-      const results = await updateCategories(edittedCategories);
+      // Update the given editted categories in MongoDB
+      await updateCategories(edittedCategories);
 
-      if (results) {
-        // Send the updated categories back to the client
-        const categories = await getCategories();
+      // Send the updated categories back to the client
+      const categories = await getCategories();
 
-        res.status(200).json(categories);
-      } else {
-        throw new Error("Categories could not be updated");
-      }
+      res.status(200).json(categories);
     } catch (error) {
       console.error(`${method} categories request failed: ${error}`);
       res.status(500).send("Error occurred while updating categories");

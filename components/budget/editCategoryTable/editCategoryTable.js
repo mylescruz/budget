@@ -7,6 +7,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
 import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
+import PopUp from "@/components/layout/popUp";
 
 const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
   const { categories, updateCategories } = useContext(CategoriesContext);
@@ -160,7 +161,15 @@ const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
         <Table striped bordered className="mx-auto">
           <thead>
             <tr className="table-dark d-flex">
-              <th className="col-7 col-md-8">Category </th>
+              <th className="col-7 col-md-8">
+                Category
+                <PopUp
+                  title="Edit a category's budget and color. Add, edit or delete subcategories."
+                  id="categories-info"
+                >
+                  <span> &#9432;</span>
+                </PopUp>
+              </th>
               <th className="col-3 col-md-2">Budget</th>
               <th className="col-2 col-md-2">Color</th>
             </tr>

@@ -14,7 +14,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
     putTransaction,
     deleteTransaction,
     updateTransactions,
-  } = useTransactions(monthInfo.monthString, monthInfo.year);
+  } = useTransactions(monthInfo.monthNumber, monthInfo.year);
 
   return (
     <TransactionsContext.Provider

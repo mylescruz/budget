@@ -14,7 +14,7 @@ export const CategoriesProvider = ({ children, monthInfo }) => {
     postCategory,
     updateCategories,
     deleteCategory,
-  } = useCategories(monthInfo.monthString, monthInfo.year);
+  } = useCategories(monthInfo.monthNumber, monthInfo.year);
 
   return (
     <CategoriesContext.Provider

@@ -3,6 +3,7 @@ import styles from "@/styles/history/historyBudget.module.css";
 import Link from "next/link";
 
 const HistoryBudgetLayout = ({ monthInfo }) => {
+  console.log(monthInfo);
   return (
     <>
       <div className={styles.backContainer}>
