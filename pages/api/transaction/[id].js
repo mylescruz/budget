@@ -49,6 +49,8 @@ export default async function handler(req, res) {
     try {
       const edittedTransaction = req?.body;
 
+      console.log(edittedTransaction);
+
       // Update the given transaction from the transactions collection in MongoDB
       const result = await transactionsCol.updateOne(
         {
@@ -81,6 +83,8 @@ export default async function handler(req, res) {
 
         // Update the new corresponding category's actual amount
         if (newCategory.name === edittedTransaction.category) {
+          // If new category name matches the parent category
+
           // Update the actual value of the category
           await categoriesCol.updateOne(
             { _id: new ObjectId(newCategory._id) },
@@ -91,6 +95,8 @@ export default async function handler(req, res) {
             }
           );
         } else {
+          // If new category name matches the subcategory
+
           // Update the actual value of the category and subcategory
           await categoriesCol.updateOne(
             {
@@ -119,6 +125,8 @@ export default async function handler(req, res) {
 
         // Update the old corresponding category's actual amount
         if (oldCategory.name === edittedTransaction.oldCategory) {
+          // If old category name matches the parent category
+
           // Update the actual value of the category
           await categoriesCol.updateOne(
             { _id: new ObjectId(oldCategory._id) },
@@ -129,10 +137,12 @@ export default async function handler(req, res) {
             }
           );
         } else {
+          // If old category name matches the subcategory
+
           // Update the actual value of the category and subcategory
           await categoriesCol.updateOne(
             {
-              _id: new ObjectId(newCategory._id),
+              _id: new ObjectId(oldCategory._id),
               "subcategories.name": edittedTransaction.oldCategory,
             },
             {
