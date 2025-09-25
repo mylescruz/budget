@@ -45,9 +45,6 @@ const AddPaycheckModal = ({
     try {
       e.preventDefault();
 
-      // Update the paycheck's taxes taken out
-      paycheck.taxes = parseFloat((paycheck.gross - paycheck.net).toFixed(2));
-
       // Adds the new paycheck to the income array by sending a POST request to the API
       await postPaycheck(paycheck);
 

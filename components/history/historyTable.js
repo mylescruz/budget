@@ -1,35 +1,35 @@
 import { Table } from "react-bootstrap";
-import currencyFormatter from "@/helpers/currencyFormatter";
 import Link from "next/link";
 import monthFormatter from "@/helpers/monthFormatter";
 import PopUp from "../layout/popUp";
 import historySorter from "@/helpers/historySorter";
 import { useEffect, useState } from "react";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const HistoryTable = ({ history }) => {
   const [historyTotals, setHistoryTotals] = useState({
     budget: 0,
     actual: 0,
-    remaining: 0,
+    leftover: 0,
   });
 
-  // Get the totals for the budget, actual value spent and the remaining value for all history months
+  // Get the totals for the budget, actual value spent and the leftover value for all history months
   useEffect(() => {
     if (history) {
       let totalActual = 0;
       let totalBudget = 0;
-      let totalRemaining = 0;
+      let totalLeftover = 0;
 
       history.forEach((month) => {
-        totalBudget += parseFloat(month.budget);
-        totalActual += parseFloat(month.actual);
-        totalRemaining += parseFloat(month.leftover);
+        totalBudget += month.budget;
+        totalActual += month.actual;
+        totalLeftover += month.leftover;
       });
 
       setHistoryTotals({
         budget: totalBudget,
         actual: totalActual,
-        remaining: totalRemaining,
+        leftover: totalLeftover,
       });
     }
   }, [history]);
@@ -75,17 +75,17 @@ const HistoryTable = ({ history }) => {
                   </Link>
                 </td>
                 <td className="col-4 col-md-3">
-                  {currencyFormatter.format(month.budget)}
+                  {centsToDollars(month.budget)}
                 </td>
                 <td className="col-4 col-md-3">
-                  {currencyFormatter.format(month.actual)}
+                  {centsToDollars(month.actual)}
                 </td>
                 <td
                   className={`d-none d-md-block col-md-3 ${
                     month.leftover < 0 && "text-danger"
                   }`}
                 >
-                  {currencyFormatter.format(month.leftover)}
+                  {centsToDollars(month.leftover)}
                 </td>
               </tr>
             ))}
@@ -103,17 +103,17 @@ const HistoryTable = ({ history }) => {
         <tr className="d-flex table-dark">
           <th className="col-4 col-md-3">Totals</th>
           <th className="col-4 col-md-3">
-            {currencyFormatter.format(historyTotals.budget)}
+            {centsToDollars(historyTotals.budget)}
           </th>
           <th className="col-4 col-md-3">
-            {currencyFormatter.format(historyTotals.actual)}
+            {centsToDollars(historyTotals.actual)}
           </th>
           <th
             className={`d-none d-md-block col-md-3 ${
-              historyTotals.remaining > 0 ? "text-white" : "text-danger"
+              historyTotals.leftover > 0 ? "text-white" : "text-danger"
             }`}
           >
-            {currencyFormatter.format(historyTotals.remaining)}
+            {centsToDollars(historyTotals.leftover)}
           </th>
         </tr>
       </tfoot>

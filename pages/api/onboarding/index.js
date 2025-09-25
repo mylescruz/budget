@@ -95,9 +95,9 @@ export default async function handler(req, res) {
           date: paycheck.date,
           company: paycheck.company,
           description: paycheck.description,
-          gross: paycheck.gross,
-          taxes: paycheck.taxes,
-          net: paycheck.net,
+          gross: paycheck.gross * 100,
+          taxes: paycheck.taxes * 100,
+          net: paycheck.net * 100,
         };
       });
 
@@ -110,7 +110,7 @@ export default async function handler(req, res) {
         .toArray();
 
       const monthIncome = userPaychecks.reduce(
-        (sum, paycheck) => sum + parseFloat(paycheck.net),
+        (sum, paycheck) => sum + paycheck.net,
         0
       );
 
@@ -118,7 +118,24 @@ export default async function handler(req, res) {
       let categories = [];
       if (newUser.customCategories) {
         // Add the users inputted categories in MongoDB
-        categories = newUser.categories;
+        categories = newUser.categories.map((category) => {
+          // Set all subcategory values to cents
+          const finalSubcategories = category.subcategories.map(
+            (subcategory) => {
+              return {
+                ...subcategory,
+                actual: subcategory.actual * 100,
+              };
+            }
+          );
+
+          // Set the budget values to cents
+          return {
+            ...category,
+            budget: category.budget * 100,
+            subcategories: finalSubcategories,
+          };
+        });
       } else {
         // Add the default categories for the user in MongoDB
         categories = await getDefaultCategories(newUser.username);
@@ -127,7 +144,7 @@ export default async function handler(req, res) {
       // Get the budget total for all categories
       const filteredBudget = categories
         .filter((category) => category.name !== GUILT_FREE)
-        .reduce((sum, current) => sum + parseFloat(current.budget), 0);
+        .reduce((sum, current) => sum + current.budget, 0);
 
       // Update the Guilt Free Spending category to adjust for the user's total income for the month minus the total budget
       const gfsIndex = categories.findIndex(

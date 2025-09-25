@@ -1,8 +1,8 @@
 import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
 import PopUp from "@/components/layout/popUp";
 import { useState } from "react";
-import currencyFormatter from "@/helpers/currencyFormatter";
 import { v4 as uuidv4 } from "uuid";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const defaultExampleCategories = [
   {
@@ -87,7 +87,7 @@ const CategoriesSection = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") {
+    if (input === "") {
       setNewCategory({ ...newCategory, budget: input });
     } else {
       setNewCategory({ ...newCategory, budget: parseFloat(input) });
@@ -363,7 +363,7 @@ const CategoriesSection = ({
                     <p key={subcategory.id} className="my-1">
                       {subcategory.name}
                       {newCategory.fixed &&
-                        `: ${currencyFormatter.format(subcategory.actual)}`}
+                        `: ${centsToDollars(subcategory.actual)}`}
                     </p>
                   ))}
                 </Container>
@@ -408,7 +408,7 @@ const CategoriesSection = ({
                       )}
                     </td>
                     <td className="col-4 text-end gray-background">
-                      {currencyFormatter.format(category.budget)}
+                      {centsToDollars(category.budget)}
                     </td>
                   </tr>
                 ))}

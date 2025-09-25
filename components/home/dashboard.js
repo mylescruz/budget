@@ -8,7 +8,6 @@ import {
   CategoriesContext,
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
-import currencyFormatter from "@/helpers/currencyFormatter";
 import Loading from "../layout/loading";
 import { useContext, useEffect, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
@@ -21,6 +20,7 @@ import {
   MonthIncomeProvider,
   MonthIncomeContext,
 } from "@/contexts/MonthIncomeContext";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const InnerDashboard = ({ monthInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -104,7 +104,7 @@ const InnerDashboard = ({ monthInfo }) => {
                                 <td
                                   className={`col-5 text-end ${styles.grayBackground}`}
                                 >
-                                  {currencyFormatter.format(category.actual)}
+                                  {centsToDollars(category.actual)}
                                 </td>
                               </tr>
                             ))}
@@ -148,7 +148,7 @@ const InnerDashboard = ({ monthInfo }) => {
                     <h4>
                       {monthInfo.month} Income:{" "}
                       {monthIncome !== null ? (
-                        <p>{currencyFormatter.format(monthIncome)} </p>
+                        <p>{centsToDollars(monthIncome)} </p>
                       ) : (
                         <p className="text-danger fw-bold">
                           Income Unavailable

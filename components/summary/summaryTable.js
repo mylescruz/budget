@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import SummaryTableRow from "./summaryTableRow";
 import PopUp from "../layout/popUp";
 import { useEffect, useState } from "react";
-import currencyFormatter from "@/helpers/currencyFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const SummaryTable = ({ summary }) => {
   const [summaryTotals, setSummaryTotals] = useState({
@@ -81,15 +81,17 @@ const SummaryTable = ({ summary }) => {
         <tr className="d-flex">
           <th className="col-6">Totals</th>
           <th className="col-3 col-md-2 cell">
-            {currencyFormatter.format(summaryTotals.budget)}
+            {centsToDollars(summaryTotals.budget)}
           </th>
           <th className="col-3 col-md-2 cell">
-            {currencyFormatter.format(summaryTotals.actual)}
+            {centsToDollars(summaryTotals.actual)}
           </th>
           <th
-            className={`d-none d-md-block col-md-2 cell ${summaryTotals.remaining > 0 ? "text-white" : "text-danger"}`}
+            className={`d-none d-md-block col-md-2 cell ${
+              summaryTotals.remaining > 0 ? "text-white" : "text-danger"
+            }`}
           >
-            {currencyFormatter.format(summaryTotals.remaining)}
+            {centsToDollars(summaryTotals.remaining)}
           </th>
         </tr>
       </tfoot>

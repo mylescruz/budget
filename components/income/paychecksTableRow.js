@@ -1,9 +1,9 @@
-import currencyFormatter from "@/helpers/currencyFormatter";
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
 import PaycheckDetailsModal from "./paycheckDetailsModal";
 import EditPaycheckModal from "./editPaycheckModal";
 import DeletePaycheckModal from "./deletePaycheckModal";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const PaychecksTableRow = ({ paycheck, yearInfo }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -70,13 +70,13 @@ const PaychecksTableRow = ({ paycheck, yearInfo }) => {
           )}
         </td>
         <td className="d-none d-md-block col-md-2 col-lg-2">
-          {currencyFormatter.format(paycheck.gross)}
+          {centsToDollars(paycheck.gross)}
         </td>
         <td className="d-none d-md-block col-md-2 col-lg-2">
-          {currencyFormatter.format(paycheck.taxes)}
+          {centsToDollars(paycheck.taxes)}
         </td>
         <td className="col-3 col-md-2 col-lg-2">
-          {currencyFormatter.format(paycheck.net)}
+          {centsToDollars(paycheck.net)}
         </td>
       </tr>
 

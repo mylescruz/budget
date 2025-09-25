@@ -1,7 +1,6 @@
 import { useState } from "react";
-import SubcategoryRow from "../budget/categoryTable/subcategoryRow";
-import currencyFormatter from "@/helpers/currencyFormatter";
 import { Button, Col, Row } from "react-bootstrap";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const SummaryTableRow = ({ category }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
@@ -32,7 +31,9 @@ const SummaryTableRow = ({ category }) => {
                 </Col>
                 <Col className="col-3 text-end">
                   <i
-                    className={`clicker bi ${showSubcategories ? "bi-chevron-up" : "bi-chevron-down"}`}
+                    className={`clicker bi ${
+                      showSubcategories ? "bi-chevron-up" : "bi-chevron-down"
+                    }`}
                   />
                 </Col>
               </>
@@ -49,18 +50,21 @@ const SummaryTableRow = ({ category }) => {
           </Row>
         </th>
         <td
-          className={`col-3 col-md-2 cell fw-bold ${category.budget < 0 && "text-danger "}`}
+          className={`col-3 col-md-2 cell fw-bold ${
+            category.budget < 0 && "text-danger "
+          }`}
         >
-          {!category.fixed && currencyFormatter.format(category.budget)}
+          {!category.fixed && centsToDollars(category.budget)}
         </td>
         <td className="col-3 col-md-2 cell">
-          {currencyFormatter.format(category.actual)}
+          {centsToDollars(category.actual)}
         </td>
         <td
-          className={`d-none d-md-block col-md-2 cell ${category.budget - category.actual < 0 && "text-danger fw-bold"}`}
+          className={`d-none d-md-block col-md-2 cell ${
+            category.budget - category.actual < 0 && "text-danger fw-bold"
+          }`}
         >
-          {!category.fixed &&
-            currencyFormatter.format(category.budget - category.actual)}
+          {!category.fixed && centsToDollars(category.budget - category.actual)}
         </td>
       </tr>
       {showSubcategories &&
@@ -69,7 +73,7 @@ const SummaryTableRow = ({ category }) => {
             <th className="col-6 cell text-end">{subcategory.name}</th>
             <td className="col-3 col-md-2"></td>
             <td className="col-3 col-md-2 text-end">
-              {currencyFormatter.format(subcategory.actual)}
+              {centsToDollars(subcategory.actual)}
             </td>
             <td className="d-none d-md-block col-md-2"></td>
           </tr>

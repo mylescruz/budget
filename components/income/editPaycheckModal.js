@@ -13,7 +13,12 @@ const EditPaycheckModal = ({
 }) => {
   const { putPaycheck } = useContext(PaychecksContext);
 
-  const [edittedPaycheck, setEdittedPaycheck] = useState(paycheck);
+  const [edittedPaycheck, setEdittedPaycheck] = useState({
+    ...paycheck,
+    gross: paycheck.gross / 100,
+    taxes: paycheck.taxes / 100,
+    net: paycheck.net / 100,
+  });
   const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -45,15 +50,10 @@ const EditPaycheckModal = ({
     try {
       e.preventDefault();
 
-      edittedPaycheck.taxes = parseFloat(
-        (edittedPaycheck.gross - edittedPaycheck.net).toFixed(2)
-      );
-
       // Edits a paycheck in the income array by sending a PUT request to the API
       await putPaycheck({
         ...edittedPaycheck,
         oldDate: paycheck.date,
-        oldNet: paycheck.net,
       });
 
       setShowEdit(false);

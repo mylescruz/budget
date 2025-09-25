@@ -47,9 +47,13 @@ export default async function handler(req, res) {
     }
   } else if (method === "PUT") {
     try {
-      const edittedTransaction = req?.body;
+      const edittedTransactionBody = req?.body;
 
-      console.log(edittedTransaction);
+      const edittedTransaction = {
+        ...edittedTransactionBody,
+        amount: edittedTransactionBody.amount * 100,
+        oldAmount: edittedTransactionBody.oldAmount,
+      };
 
       // Update the given transaction from the transactions collection in MongoDB
       const result = await transactionsCol.updateOne(

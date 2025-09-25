@@ -84,10 +84,11 @@ export default async function handler(req, res) {
 
       // Assign an id to the new transaction
       const newTransaction = {
+        ...transactionBody,
+        amount: transactionBody.amount * 100,
         username: username,
         month: month,
         year: year,
-        ...transactionBody,
       };
 
       // Add the new transaction to the transactions collection in MongoDB
@@ -182,7 +183,7 @@ export default async function handler(req, res) {
       }
 
       // Send the new transaction back to the client
-      res.status(200).json({ id: result.insertedId, ...transactionBody });
+      res.status(200).json({ id: result.insertedId, ...newTransaction });
     } catch (error) {
       console.error(`${method} transactions request failed: ${error}`);
       res.status(500).send("Error occurred while adding a transaction");

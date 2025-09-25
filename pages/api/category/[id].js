@@ -60,7 +60,7 @@ export default async function handler(req, res) {
           let categoriesBudget = 0;
           categories.forEach((category) => {
             if (category.name !== GUILT_FREE) {
-              categoriesBudget += parseFloat(category.budget);
+              categoriesBudget += category.budget;
             }
           });
 

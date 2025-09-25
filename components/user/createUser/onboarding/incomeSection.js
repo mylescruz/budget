@@ -3,7 +3,7 @@ import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import PopUp from "@/components/layout/popUp";
 import dateInfo from "@/helpers/dateInfo";
 import getYearInfo from "@/helpers/getYearInfo";
-import currencyFormatter from "@/helpers/currencyFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const IncomeSection = ({ newUser, setNewUser, openComplete }) => {
   const emptyPaycheck = {
@@ -157,7 +157,7 @@ const IncomeSection = ({ newUser, setNewUser, openComplete }) => {
                 <tr key={index} className="d-flex">
                   <td className="col-8 gray-background">{paycheck.company}</td>
                   <td className="col-4 text-end gray-background">
-                    {currencyFormatter.format(paycheck.net)}
+                    {centsToDollars(paycheck.net)}
                   </td>
                 </tr>
               ))}

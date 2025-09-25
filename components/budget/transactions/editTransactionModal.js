@@ -15,7 +15,10 @@ const EditTransactionModal = ({
 }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
-  const [edittedTransaction, setEdittedTransaction] = useState(transaction);
+  const [edittedTransaction, setEdittedTransaction] = useState({
+    ...transaction,
+    amount: transaction.amount / 100,
+  });
   const [updatingTransaction, setUpdatingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 

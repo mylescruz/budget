@@ -59,15 +59,19 @@ export default async function handler(req, res) {
 
       // Assign the identifier to the history
       const newHistory = {
-        username: username,
         ...historyBody,
+        username: username,
+        budget: historyBody.budget * 100,
+        actual: historyBody.actual * 100,
+        leftover: historyBody.leftover * 100,
       };
 
       // Add the new history month to the history collection in MongoDB
       const result = await historyCol.insertOne(newHistory);
 
       // Send the new history object back to the client
-      res.status(200).json({ id: result.insertedId, ...historyBody });
+      const { username, ...finalHistory } = newHistory;
+      res.status(200).json({ id: result.insertedId, ...finalHistory });
     } catch (error) {
       console.error(`${method} history request failed: ${error}`);
       res.status(500).send("Error occurred while adding to the history");

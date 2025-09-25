@@ -66,15 +66,18 @@ export default async function handler(req, res) {
       const monthName = paycheckDate.toLocaleDateString("en-US", {
         month: "long",
       });
-      const month = paycheckDate.getMonth() + 1;
-      const year = paycheckDate.getFullYear();
+      const paycheckMonth = paycheckDate.getMonth() + 1;
+      const paycheckYear = paycheckDate.getFullYear();
 
       // Assign the identifiers to the paycheck
       const newPaycheck = {
-        username: username,
-        month: month,
-        year: year,
         ...paycheckBody,
+        gross: paycheckBody.gross * 100,
+        taxes: paycheckBody.gross * 100 - paycheckBody.net * 100,
+        net: paycheckBody.net * 100,
+        username: username,
+        month: paycheckMonth,
+        year: paycheckYear,
       };
 
       // Add the new paycheck to the paychecks collection in MongoDB
@@ -84,7 +87,7 @@ export default async function handler(req, res) {
 
       // Get the total net income for the old month
       const paychecks = await paychecksCol
-        .find({ username: username, month: month, year: year })
+        .find({ username: username, month: paycheckMonth, year: paycheckYear })
         .toArray();
       const updatedBudget = paychecks.reduce(
         (sum, current) => sum + current.net,
@@ -93,7 +96,7 @@ export default async function handler(req, res) {
 
       // Get the total actual value for all categories
       const categories = await categoriesCol
-        .find({ username: username, month: month, year: year })
+        .find({ username: username, month: paycheckMonth, year: paycheckYear })
         .toArray();
       const updatedActual = categories.reduce(
         (sum, current) => sum + current.actual,
@@ -112,7 +115,7 @@ export default async function handler(req, res) {
         let totalBudget = 0;
         categories.forEach((category) => {
           if (category.name !== "Guilt Free Spending") {
-            totalBudget += parseFloat(category.budget);
+            totalBudget += category.budget;
           }
         });
 
@@ -130,12 +133,12 @@ export default async function handler(req, res) {
 
       // Update the history month in MongoDB
       await historyCol.updateOne(
-        { username: username, month: month, year: year },
+        { username: username, month: paycheckMonth, year: paycheckYear },
         {
           $set: {
             monthName: monthName,
-            month: month,
-            year: year,
+            month: paycheckMonth,
+            year: paycheckYear,
             budget: updatedBudget,
             actual: updatedActual,
             leftover: updatedLeftover,
@@ -145,9 +148,7 @@ export default async function handler(req, res) {
       );
 
       // Send the new paycheck back to the client
-      res
-        .status(200)
-        .json({ id: insertedPaycheck.insertedId, ...paycheckBody });
+      res.status(200).json({ id: insertedPaycheck.insertedId, ...newPaycheck });
     } catch (error) {
       console.error(`${method} paychecks request failed: ${error}`);
       res.status(500).send("Error occured while adding a paycheck");

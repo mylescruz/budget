@@ -148,13 +148,33 @@ export default async function handler(req, res) {
     try {
       const categoryBody = req?.body;
 
-      // Assign the identifiers to the category
-      const newCategory = {
+      // Assign the identifiers to the new category
+      let newCategory = {
+        ...categoryBody,
         username: username,
         month: month,
         year: year,
-        ...categoryBody,
+        budget: categoryBody.budget * 100,
+        subcategories: categoryBody.subcategories,
       };
+
+      // Update the subcategories actual values to cents
+      if (newCategory.hasSubcategory && newCategory.fixed) {
+        const newSubcategories = categoryBody.subcategories.map(
+          (subcategory) => {
+            if (categoryBody.fixed) {
+              return {
+                ...subcategory,
+                actual: subcategory.actual * 100,
+              };
+            } else {
+              return subcategory;
+            }
+          }
+        );
+
+        newCategory.subcategories = newSubcategories;
+      }
 
       // Add the new category to the categories collection in MongoDB
       const result = await categoriesCol.insertOne(newCategory);
@@ -171,7 +191,7 @@ export default async function handler(req, res) {
         let categoriesBudget = 0;
         categories.forEach((category) => {
           if (category.name !== GUILT_FREE) {
-            categoriesBudget += parseFloat(category.budget);
+            categoriesBudget += category.budget;
           }
         });
 

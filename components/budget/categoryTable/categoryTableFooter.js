@@ -1,7 +1,7 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
-import currencyFormatter from "@/helpers/currencyFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
 import { useContext, useEffect, useState } from "react";
 
 const CategoryFooter = () => {
@@ -49,10 +49,10 @@ const CategoryFooter = () => {
             </PopUp>
           </th>
           <td className="col-3 col-md-2 cell">
-            {currencyFormatter.format(categoryTotals.budget)}
+            {centsToDollars(categoryTotals.budget)}
           </td>
           <td className="col-3 col-md-2 cell">
-            {currencyFormatter.format(categoryTotals.actual)}
+            {centsToDollars(categoryTotals.actual)}
           </td>
           <td
             className={`d-none d-md-block col-md-2 cell ${
@@ -61,7 +61,7 @@ const CategoryFooter = () => {
                 : "text-danger fw-bold"
             }`}
           >
-            {currencyFormatter.format(categoryTotals.remaining)}
+            {centsToDollars(categoryTotals.remaining)}
           </td>
         </tr>
       ) : (

@@ -10,7 +10,11 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
   const { getCategories, deleteCategory } = useContext(CategoriesContext);
 
-  const [edittedCategory, setEdittedCategory] = useState(category);
+  const [edittedCategory, setEdittedCategory] = useState({
+    ...category,
+    budget: category.budget / 100,
+    actual: category.actual / 100,
+  });
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
   const [deletingCategory, setDeletingCategory] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -22,7 +26,7 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
     const input = e.target.value;
     const actualValue = edittedCategory.fixed ? input : edittedCategory.actual;
 
-    if (input == "") {
+    if (input === "") {
       setEdittedCategory({
         ...edittedCategory,
         budget: input,
@@ -37,8 +41,8 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
       });
       updateCategoryValues({
         ...edittedCategory,
-        budget: parseFloat(input),
-        actual: parseFloat(actualValue),
+        budget: parseFloat(input) * 100,
+        actual: parseFloat(actualValue) * 100,
       });
     }
   };
@@ -52,31 +56,27 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
   };
 
   const updateSubcategory = (subcategory) => {
-    let budgetTotal = edittedCategory.budget;
+    let budgetTotal = edittedCategory.budget * 100;
 
     // Map through each subcategory and remove the current subcategory actual value and add the new value to the budget
     const updatedSubcategories = edittedCategory.subcategories.map((sub) => {
       if (sub.id === subcategory.id) {
-        budgetTotal = parseFloat(
-          (budgetTotal - sub.actual + subcategory.actual).toFixed(2)
-        );
+        budgetTotal = budgetTotal - sub.actual + subcategory.actual;
         return { ...sub, name: subcategory.name, actual: subcategory.actual };
       } else {
         return sub;
       }
     });
 
-    /* 
-            If the category is fixed, set the actual equal to the budget
-            If not, keep it set to the category's current actual value
-        */
+    // If the category is fixed, set the actual equal to the budget
+    // If not, keep it set to the category's current actual value
     const actualTotal = edittedCategory.fixed
       ? budgetTotal
       : edittedCategory.actual;
 
     setEdittedCategory({
       ...edittedCategory,
-      budget: budgetTotal,
+      budget: budgetTotal / 100,
       actual: actualTotal,
       hasSubcategory: true,
       subcategories: updatedSubcategories,
@@ -198,7 +198,7 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
             max="100000"
             step="0.01"
             className="px-1 text-end"
-            value={edittedCategory.budget}
+            value={edittedCategory.budget.toFixed(2)}
             onChange={handleBudgetInput}
             disabled={
               (edittedCategory.hasSubcategory && edittedCategory.fixed) ||

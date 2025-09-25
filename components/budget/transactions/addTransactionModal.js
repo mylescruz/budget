@@ -45,7 +45,7 @@ const AddTransactionModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") {
+    if (input === "") {
       setTransaction({ ...newTransaction, amount: input });
     } else {
       setTransaction({ ...newTransaction, amount: parseFloat(input) });

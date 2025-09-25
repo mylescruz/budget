@@ -1,4 +1,4 @@
-import currencyFormatter from "@/helpers/currencyFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
 import dateFormatter from "@/helpers/dateFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
@@ -33,14 +33,10 @@ const PaycheckDetailsModal = ({
         <Row className="m-2">Company: {paycheck.company}</Row>
         <Row className="m-2">Description: {paycheck.description}</Row>
         <Row className="m-2">
-          Gross Income: {currencyFormatter.format(paycheck.gross)}
+          Gross Income: {centsToDollars(paycheck.gross)}
         </Row>
-        <Row className="m-2">
-          Taxes: {currencyFormatter.format(paycheck.taxes)}
-        </Row>
-        <Row className="m-2">
-          Net Income: {currencyFormatter.format(paycheck.net)}
-        </Row>
+        <Row className="m-2">Taxes: {centsToDollars(paycheck.taxes)}</Row>
+        <Row className="m-2">Net Income: {centsToDollars(paycheck.net)}</Row>
       </Modal.Body>
       <Modal.Footer>
         <Row>

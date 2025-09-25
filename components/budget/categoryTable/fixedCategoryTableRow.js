@@ -1,7 +1,7 @@
-import currencyFormatter from "@/helpers/currencyFormatter";
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const FixedCategoryTableRow = ({ category }) => {
   const hasSubcategory = category.hasSubcategory;
@@ -33,7 +33,9 @@ const FixedCategoryTableRow = ({ category }) => {
                 </Col>
                 <Col className="col-3 text-end">
                   <i
-                    className={`clicker bi ${showSubcategories ? "bi-chevron-up" : "bi-chevron-down"}`}
+                    className={`clicker bi ${
+                      showSubcategories ? "bi-chevron-up" : "bi-chevron-down"
+                    }`}
                   />
                 </Col>
               </>
@@ -51,7 +53,7 @@ const FixedCategoryTableRow = ({ category }) => {
         </th>
         <td className="col-3 col-md-2"></td>
         <td className="col-3 col-md-2 cell">
-          {currencyFormatter.format(category.actual)}
+          {centsToDollars(category.actual)}
         </td>
         <td className="d-none d-md-block col-md-2 cell"></td>
       </tr>

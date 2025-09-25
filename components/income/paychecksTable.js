@@ -1,4 +1,3 @@
-import currencyFormatter from "@/helpers/currencyFormatter";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Table } from "react-bootstrap";
 import PaychecksTableRow from "./paychecksTableRow";
@@ -7,6 +6,7 @@ import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
 import styles from "@/styles/income/paychecksTable.module.css";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const PaychecksTable = ({ yearInfo }) => {
   const { paychecks } = useContext(PaychecksContext);
@@ -103,13 +103,13 @@ const PaychecksTable = ({ yearInfo }) => {
               <th className="col-3 col-md-2">Total</th>
               <th className="col-6 col-md-4"></th>
               <th className="d-none d-md-block col-md-2">
-                {currencyFormatter.format(paychecksTotals.totalGross)}
+                {centsToDollars(paychecksTotals.totalGross)}
               </th>
               <th className="d-none d-md-block col-md-2">
-                {currencyFormatter.format(paychecksTotals.totalTaxes)}
+                {centsToDollars(paychecksTotals.totalTaxes)}
               </th>
               <th className="col-3 col-md-2">
-                {currencyFormatter.format(paychecksTotals.totalNet)}
+                {centsToDollars(paychecksTotals.totalNet)}
               </th>
             </tr>
           </tfoot>

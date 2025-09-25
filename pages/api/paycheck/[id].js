@@ -27,7 +27,14 @@ export default async function handler(req, res) {
 
   if (method === "PUT") {
     try {
-      const edittedPaycheck = req?.body;
+      const edittedPaycheckBody = req?.body;
+
+      const edittedPaycheck = {
+        ...edittedPaycheckBody,
+        gross: edittedPaycheckBody.gross * 100,
+        taxes: edittedPaycheckBody.gross * 100 - edittedPaycheckBody.net * 100,
+        net: edittedPaycheckBody.net * 100,
+      };
 
       // Update the editted paycheck in MongoDB
       await paychecksCol.updateOne(
@@ -92,7 +99,7 @@ export default async function handler(req, res) {
           let totalBudget = 0;
           categories.forEach((category) => {
             if (category.name !== "Guilt Free Spending") {
-              totalBudget += parseFloat(category.budget);
+              totalBudget += category.budget;
             }
           });
 
@@ -155,7 +162,7 @@ export default async function handler(req, res) {
           let totalBudget = 0;
           newMonthCategories.forEach((category) => {
             if (category.name !== "Guilt Free Spending") {
-              totalBudget += parseFloat(category.budget);
+              totalBudget += category.budget;
             }
           });
 
@@ -217,7 +224,7 @@ export default async function handler(req, res) {
           let totalBudget = 0;
           oldMonthCategories.forEach((category) => {
             if (category.name !== "Guilt Free Spending") {
-              totalBudget += parseFloat(category.budget);
+              totalBudget += category.budget;
             }
           });
 
@@ -299,7 +306,7 @@ export default async function handler(req, res) {
         let totalBudget = 0;
         categories.forEach((category) => {
           if (category.name !== "Guilt Free Spending") {
-            totalBudget += parseFloat(category.budget);
+            totalBudget += category.budget;
           }
         });
 
