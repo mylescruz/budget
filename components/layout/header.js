@@ -1,8 +1,11 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import AdminNavbar from "../admin/adminNavbar";
+import AdminNavbar from "./navbar/adminNavbar";
 import { useState } from "react";
+import LoadingNavbar from "./navbar/loadingNavbar";
+import LoginNavbar from "./navbar/loginNavbar";
+import UserNavbar from "./navbar/userNavbar";
 
 const Header = () => {
   // Using NextAuth.js to authenticate a user's session
@@ -32,65 +35,42 @@ const Header = () => {
   };
 
   if (status === "loading") {
+    return <LoadingNavbar />;
+  } else if (status === "unauthenticated") {
     return (
-      <Navbar expand="lg" bg="dark" data-bs-theme="dark" fixed="top">
-        <Container>
-          <Navbar.Brand href="/">Type-A Budget</Navbar.Brand>
-        </Container>
-      </Navbar>
+      <LoginNavbar
+        navbarExpanded={navbarExpanded}
+        toggleNavbar={toggleNavbar}
+        userSignIn={userSignIn}
+      />
     );
   } else if (session) {
     if (session.user.role === "Administrator") {
-      return <AdminNavbar />;
+      return (
+        <AdminNavbar
+          navbarExpanded={navbarExpanded}
+          toggleNavbar={toggleNavbar}
+          linkClicked={linkClicked}
+          userSignOut={userSignOut}
+        />
+      );
     } else {
       return (
-        <Navbar expand="lg" bg="dark" data-bs-theme="dark" fixed="top">
-          <Container>
-            <Navbar.Brand href="/">Type-A Budget</Navbar.Brand>
-            <Navbar.Toggle
-              onClick={toggleNavbar}
-              aria-controls="basic-navbar-nav"
-            />
-            <Navbar.Collapse id="basic-navbar-nav" in={navbarExpanded}>
-              <Nav className="me-auto">
-                <Nav.Link as={Link} href="/budget" onClick={linkClicked}>
-                  Budget
-                </Nav.Link>
-                <Nav.Link as={Link} href="/income" onClick={linkClicked}>
-                  Income
-                </Nav.Link>
-                <Nav.Link as={Link} href="/summary" onClick={linkClicked}>
-                  Summary
-                </Nav.Link>
-                <Nav.Link as={Link} href="/history" onClick={linkClicked}>
-                  History
-                </Nav.Link>
-                <Nav.Link as={Link} href="/account" onClick={linkClicked}>
-                  Account
-                </Nav.Link>
-                <Nav.Link onClick={userSignOut}>Logout</Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
+        <UserNavbar
+          navbarExpanded={navbarExpanded}
+          toggleNavbar={toggleNavbar}
+          linkClicked={linkClicked}
+          userSignOut={userSignOut}
+        />
       );
     }
   } else {
     return (
-      <Navbar expand="lg" bg="dark" data-bs-theme="dark" fixed="top">
-        <Container>
-          <Navbar.Brand href="/">Type-A Budget</Navbar.Brand>
-          <Navbar.Toggle
-            onClick={toggleNavbar}
-            aria-controls="basic-navbar-nav"
-          />
-          <Navbar.Collapse id="basic-navbar-nav" in={navbarExpanded}>
-            <Nav className="me-auto">
-              <Nav.Link onClick={userSignIn}>Login</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      <LoginNavbar
+        navbarExpanded={navbarExpanded}
+        toggleNavbar={toggleNavbar}
+        userSignIn={userSignIn}
+      />
     );
   }
 };
