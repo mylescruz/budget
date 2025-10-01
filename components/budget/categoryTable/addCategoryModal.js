@@ -41,7 +41,7 @@ const AddCategoryModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") {
+    if (input === "") {
       setNewCategory({ ...newCategory, budget: input });
     } else {
       setNewCategory({ ...newCategory, budget: parseFloat(input) });
@@ -55,7 +55,7 @@ const AddCategoryModal = ({
   const handleSubcategoryBudget = (e) => {
     const input = e.target.value;
 
-    if (input == "") {
+    if (input === "") {
       setNewSubcategory({ ...newSubcategory, actual: input });
     } else {
       setNewSubcategory({ ...newSubcategory, actual: parseFloat(input) });
@@ -63,31 +63,65 @@ const AddCategoryModal = ({
   };
 
   const handleSubcategoryChecked = (e) => {
-    if (e.target.checked)
+    if (e.target.checked) {
       setNewCategory({ ...newCategory, hasSubcategory: true });
-    else
+    } else {
       setNewCategory({
         ...newCategory,
         hasSubcategory: false,
         subcategories: [],
       });
+    }
   };
 
   const handleFixed = (e) => {
-    if (e.target.checked) setNewCategory({ ...newCategory, fixed: true });
-    else setNewCategory({ ...newCategory, fixed: false });
+    if (e.target.checked && newCategory.hasSubcategory) {
+      setNewCategory({ ...newCategory, budget: 0, fixed: true });
+    } else if (e.target.checked && !newCategory.hasSubcategory) {
+      setNewCategory({ ...newCategory, fixed: true });
+    } else {
+      setNewCategory({ ...newCategory, fixed: false });
+    }
   };
 
   const closeModal = () => {
+    setNewCategory(emptyCategory);
+
+    setSubcategoryTotal(0);
+
     setAddCategoryClicked(false);
   };
 
+  const addToSubcategories = () => {
+    if (newCategory.fixed) {
+      const fixedBudget = subcategoryTotal + newSubcategory.actual;
+
+      // If the new category is fixed, set the budget and actual equal to the subcategory total and add the subcategory to the array
+      setNewCategory({
+        ...newCategory,
+        budget: fixedBudget,
+        actual: fixedBudget,
+        hasSubcategory: true,
+        subcategories: [...newCategory.subcategories, newSubcategory],
+      });
+
+      setSubcategoryTotal(fixedBudget);
+    } else {
+      // If the new category is not fixed, just add the subcategory to the array
+      setNewCategory({
+        ...newCategory,
+        hasSubcategory: true,
+        subcategories: [...newCategory.subcategories, newSubcategory],
+      });
+    }
+
+    setNewSubcategory(emptySubcategory);
+  };
+
   const addNewCategory = async (e) => {
-    setAddingCategory(true);
+    e.preventDefault();
 
     try {
-      e.preventDefault();
-
       // A fixed category's budget and actual spent are the same
       if (!newCategory.hasSubcategory && newCategory.fixed)
         newCategory.actual = newCategory.budget;
@@ -108,36 +142,6 @@ const AddCategoryModal = ({
     } finally {
       setAddingCategory(false);
     }
-  };
-
-  const addToSubcategories = () => {
-    setSubcategoryTotal(
-      parseFloat((subcategoryTotal + newSubcategory.actual).toFixed(2))
-    );
-
-    if (newCategory.fixed) {
-      // If the new category is fixed, set the budget and actual equal to the subcategory total and add the subcategory to the array
-      setNewCategory({
-        ...newCategory,
-        budget: parseFloat(
-          (subcategoryTotal + newSubcategory.actual).toFixed(2)
-        ),
-        actual: parseFloat(
-          (subcategoryTotal + newSubcategory.actual).toFixed(2)
-        ),
-        hasSubcategory: true,
-        subcategories: [...newCategory.subcategories, newSubcategory],
-      });
-    } else {
-      // If the new category is not fixed, just add the subcategory to the array
-      setNewCategory({
-        ...newCategory,
-        hasSubcategory: true,
-        subcategories: [...newCategory.subcategories, newSubcategory],
-      });
-    }
-
-    setNewSubcategory(emptySubcategory);
   };
 
   return (
@@ -197,6 +201,7 @@ const AddCategoryModal = ({
                       type="checkbox"
                       value={newCategory.fixed}
                       onChange={handleFixed}
+                      disabled={newCategory.subcategories.length > 0}
                     />
                   </Form.Group>
                 </Col>
@@ -208,6 +213,7 @@ const AddCategoryModal = ({
                       type="checkbox"
                       value={newCategory.hasSubcategory}
                       onChange={handleSubcategoryChecked}
+                      disabled={newCategory.subcategories.length > 0}
                     />
                   </Form.Group>
                 </Col>

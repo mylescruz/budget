@@ -148,33 +148,27 @@ export default async function handler(req, res) {
     try {
       const categoryBody = req?.body;
 
+      // If category has fixed subcategories, update their actual values to cents
+      let updatedSubcategories = [];
+      if (categoryBody.hasSubcategory && categoryBody.fixed) {
+        updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
+          return {
+            ...subcategory,
+            actual: subcategory.actual * 100,
+          };
+        });
+      }
+
       // Assign the identifiers to the new category
-      let newCategory = {
+      const newCategory = {
         ...categoryBody,
         username: username,
         month: month,
         year: year,
         budget: categoryBody.budget * 100,
-        subcategories: categoryBody.subcategories,
+        actual: categoryBody.actual * 100,
+        subcategories: updatedSubcategories,
       };
-
-      // Update the subcategories actual values to cents
-      if (newCategory.hasSubcategory && newCategory.fixed) {
-        const newSubcategories = categoryBody.subcategories.map(
-          (subcategory) => {
-            if (categoryBody.fixed) {
-              return {
-                ...subcategory,
-                actual: subcategory.actual * 100,
-              };
-            } else {
-              return subcategory;
-            }
-          }
-        );
-
-        newCategory.subcategories = newSubcategories;
-      }
 
       // Add the new category to the categories collection in MongoDB
       const result = await categoriesCol.insertOne(newCategory);
