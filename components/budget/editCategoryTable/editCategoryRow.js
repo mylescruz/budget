@@ -55,7 +55,7 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
       updateCategoryValues({
         ...edittedCategory,
         budget: budgetValue * 100,
-        actual: actualValue * 100,
+        actual: actualValue,
       });
     }
   };
@@ -210,7 +210,7 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
             max="100000"
             step="0.01"
             className="px-1 text-end"
-            value={edittedCategory.budget.toFixed(2)}
+            value={edittedCategory.budget}
             onChange={handleBudgetInput}
             disabled={
               (edittedCategory.hasSubcategory && edittedCategory.fixed) ||

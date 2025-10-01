@@ -34,33 +34,34 @@ const AddSubcategoryForm = ({
     if (edittedCategory.hasSubcategory) {
       // If the editted category already has a subcategory
 
-      // Updates the category with the new subcategory and new ID
+      // Updates the state's category with the new subcategory
       setEdittedCategory({
         ...edittedCategory,
         subcategories: [...edittedCategory.subcategories, newSubcategory],
       });
+
+      // Updates the useRef's category with the new subcategory
       updateCategoryValues({
         ...edittedCategory,
+        budget: edittedCategory.budget * 100,
         subcategories: [...edittedCategory.subcategories, newSubcategory],
       });
     } else {
-      // If the editted category didn't already have a subcategory
+      // If the editted category doesn't already have a subcategory
 
-      /* 
-                If the category is fixed, the budget is now dependent on the subcategories' totals
-                If not, the budget still remains the same
-            */
-      const budgetValue = edittedCategory.fixed ? 0 : edittedCategory.budget;
+      // If the category is fixed, the budget is now dependent on the subcategories' totals
+      // If not, the budget still remains the same
+      const budgetValue = edittedCategory.fixed
+        ? newSubcategory.actual
+        : edittedCategory.budget;
 
-      /*
-                If the category is fixed, the actual spent is the same as the budget
-                If not, the actual value remains the same
-            */
+      // If the category is fixed, the actual spent is the same as the budget
+      // If not, the actual value remains the same
       const actualValue = edittedCategory.fixed
         ? budgetValue
         : edittedCategory.actual;
 
-      // Updates the category's budget, actual and hasSubcategory flag and adds the new subcategory
+      // Updates the state category's budget, actual and hasSubcategory flag and adds the new subcategory
       setEdittedCategory({
         ...edittedCategory,
         budget: budgetValue,
@@ -68,9 +69,11 @@ const AddSubcategoryForm = ({
         hasSubcategory: true,
         subcategories: [newSubcategory],
       });
+
+      // Updates the useRef category's budget, actual and hasSubcategory flag and adds the new subcategory
       updateCategoryValues({
         ...edittedCategory,
-        budget: budgetValue,
+        budget: budgetValue * 100,
         actual: actualValue,
         hasSubcategory: true,
         subcategories: [newSubcategory],
