@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { act, useContext, useState } from "react";
 import { Col, Form, Modal, Row } from "react-bootstrap";
 import AddSubcategoryForm from "./addSubcategoryForm";
 import EditSubcategoryRow from "./editSubcategoryRow";
@@ -13,7 +13,6 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
   const [edittedCategory, setEdittedCategory] = useState({
     ...category,
     budget: category.budget / 100,
-    actual: category.actual / 100,
   });
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
   const [deletingCategory, setDeletingCategory] = useState(false);
@@ -24,25 +23,39 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
 
   const handleBudgetInput = (e) => {
     const input = e.target.value;
-    const actualValue = edittedCategory.fixed ? input : edittedCategory.actual;
 
     if (input === "") {
+      // Update the state object
       setEdittedCategory({
         ...edittedCategory,
         budget: input,
-        actual: actualValue,
       });
-      updateCategoryValues({ ...edittedCategory, budget: 0, actual: 0 });
-    } else {
-      setEdittedCategory({
-        ...edittedCategory,
-        budget: parseFloat(input),
-        actual: parseFloat(actualValue),
-      });
+
+      // Update the useRef object
       updateCategoryValues({
         ...edittedCategory,
-        budget: parseFloat(input) * 100,
-        actual: parseFloat(actualValue) * 100,
+        budget: 0,
+        actual: edittedCategory.fixed ? 0 : edittedCategory.actual,
+      });
+    } else {
+      const budgetValue = parseFloat(input);
+
+      // Set the actual value equal to the budget value if the category is fixed
+      const actualValue = edittedCategory.fixed
+        ? budgetValue
+        : edittedCategory.actual;
+
+      // Update the state object
+      setEdittedCategory({
+        ...edittedCategory,
+        budget: budgetValue,
+      });
+
+      // Update the useRef object
+      updateCategoryValues({
+        ...edittedCategory,
+        budget: budgetValue * 100,
+        actual: actualValue * 100,
       });
     }
   };
@@ -51,7 +64,10 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
     const property = e.target.name;
     const input = e.target.value;
 
+    // Update the state object
     setEdittedCategory({ ...edittedCategory, [property]: input });
+
+    // Update the useRef object
     updateCategoryValues({ ...edittedCategory, [property]: input });
   };
 
@@ -68,8 +84,7 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
       }
     });
 
-    // If the category is fixed, set the actual equal to the budget
-    // If not, keep it set to the category's current actual value
+    // Set the actual value equal to the budget value if the category is fixed
     const actualTotal = edittedCategory.fixed
       ? budgetTotal
       : edittedCategory.actual;
@@ -77,7 +92,6 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
     setEdittedCategory({
       ...edittedCategory,
       budget: budgetTotal / 100,
-      actual: actualTotal,
       hasSubcategory: true,
       subcategories: updatedSubcategories,
     });
@@ -121,24 +135,22 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
     });
 
     // Update the category's budget to remove the subcategory's actual value
-    const budgetTotal = parseFloat(
-      (edittedCategory.budget - subcategory.actual).toFixed(2)
-    );
+    const budgetTotal = edittedCategory.budget * 100 - subcategory.actual;
 
-    // If the category is fixed, keep the actual value to the current budget
-    // If the category isn't fixed, keep the current actual value
+    // Set the actual value equal to the budget value if the category is fixed
     const actualTotal = edittedCategory.fixed
       ? budgetTotal
       : edittedCategory.actual;
 
-    // Updates the category's budget and actual value and set the hasSubcategory flag based on if there are any subcategories left
+    // Updates the state category's budget value and sets the hasSubcategory flag
     setEdittedCategory({
       ...edittedCategory,
-      budget: budgetTotal,
-      actual: actualTotal,
+      budget: budgetTotal / 100,
       hasSubcategory: updatedSubcategories.length > 0,
       subcategories: updatedSubcategories,
     });
+
+    // Updates the useRef category's budget value and sets the hasSubcategory flag
     updateCategoryValues({
       ...edittedCategory,
       budget: budgetTotal,
