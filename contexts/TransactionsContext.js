@@ -10,6 +10,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
   const {
     transactions,
     transactionsLoading,
+    getTransactions,
     postTransaction,
     putTransaction,
     deleteTransaction,
@@ -21,6 +22,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
       value={{
         transactions,
         transactionsLoading,
+        getTransactions,
         postTransaction,
         putTransaction,
         deleteTransaction,

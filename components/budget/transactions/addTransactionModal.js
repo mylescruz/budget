@@ -13,7 +13,7 @@ const AddTransactionModal = ({
   setAddTransactionClicked,
 }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
-  const { postTransaction } = useContext(TransactionsContext);
+  const { getTransactions, postTransaction } = useContext(TransactionsContext);
   const [addingTransaction, setAddingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -63,6 +63,9 @@ const AddTransactionModal = ({
 
       // Fetch the categories to update the state for the categories table
       await getCategories(monthInfo.monthNumber, monthInfo.year);
+
+      // Fetch the transactions to update the state for the transactions table
+      await getTransactions(monthInfo.monthNumber, monthInfo.year);
 
       setTransaction(emptyTransaction);
       setAddTransactionClicked(false);

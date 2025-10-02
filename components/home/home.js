@@ -15,7 +15,7 @@ const Home = () => {
     {
       id: 0,
       name: "Mortgage",
-      actual: 2000,
+      actual: 200000,
       color: "#3058e8",
       style: {
         backgroundColor: "#3058e8",
@@ -25,7 +25,7 @@ const Home = () => {
     {
       id: 1,
       name: "Insurances",
-      actual: 750,
+      actual: 75000,
       color: "#e83030",
       style: {
         backgroundColor: "#e83030",
@@ -35,7 +35,7 @@ const Home = () => {
     {
       id: 2,
       name: "Internet",
-      actual: 200,
+      actual: 20000,
       color: "#920381",
       style: {
         backgroundColor: "#920381",
@@ -45,7 +45,7 @@ const Home = () => {
     {
       id: 3,
       name: "Subscriptions",
-      actual: 50,
+      actual: 5000,
       color: "#137a03",
       style: {
         backgroundColor: "#137a03",

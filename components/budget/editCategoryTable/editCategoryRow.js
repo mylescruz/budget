@@ -197,9 +197,18 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
                 disabled={edittedCategory.name === dontDelete}
               />
             </Col>
-            <Col className="col-2 text-end">
-              <i className="bi bi-plus-circle plus" onClick={addSubcategory} />
-            </Col>
+            {!edittedCategory.fixed &&
+            !edittedCategory.hasSubcategory &&
+            edittedCategory.actual !== 0 ? (
+              <Col className="col-1" />
+            ) : (
+              <Col className="col-2 text-end">
+                <i
+                  className="bi bi-plus-circle plus"
+                  onClick={addSubcategory}
+                />
+              </Col>
+            )}
           </Row>
         </th>
         <td className="col-3 col-md-2">

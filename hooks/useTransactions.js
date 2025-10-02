@@ -4,28 +4,30 @@ const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState([]);
   const [transactionsLoading, setTransactionsLoading] = useState(true);
 
+  // Function to retrieve transactions from the server
+  const getTransactions = useCallback(async (month, year) => {
+    try {
+      const rsp = await fetch(`/api/transactions/${year}/${month}`);
+
+      if (rsp.ok) {
+        const fetchedTransactions = await rsp.json();
+        setTransactions(fetchedTransactions);
+      } else {
+        const message = await rsp.text();
+        throw new Error(message);
+      }
+    } catch (error) {
+      setTransactions(null);
+      console.error(error);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  }, []);
+
   // GET request that returns the user's transaction based on the month and year
   useEffect(() => {
-    const getTransactions = async () => {
-      try {
-        const rsp = await fetch(`/api/transactions/${year}/${month}`);
-
-        if (rsp.ok) {
-          const fetchedTransactions = await rsp.json();
-          setTransactions(fetchedTransactions);
-        } else {
-          const message = await rsp.text();
-          throw new Error(message);
-        }
-      } catch (error) {
-        setTransactions(null);
-        console.error(error);
-      } finally {
-        setTransactionsLoading(false);
-      }
-    };
-    getTransactions();
-  }, [month, year]);
+    getTransactions(month, year);
+  }, [month, year, getTransactions]);
 
   // POST request that adds a new transaction based on the month and year
   // Then it sets the transactions array to the array returned by the response
@@ -166,6 +168,7 @@ const useTransactions = (month, year) => {
   return {
     transactions,
     transactionsLoading,
+    getTransactions,
     postTransaction,
     putTransaction,
     deleteTransaction,
