@@ -8,7 +8,7 @@ import styles from "@/styles/income/paychecksTable.module.css";
 import { PaychecksContext } from "@/contexts/PaychecksContext";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const PaychecksTable = ({ yearInfo }) => {
+const PaychecksTable = ({ dateInfo }) => {
   const { paychecks } = useContext(PaychecksContext);
 
   const [sortedPaychecks, setSortedPaychecks] = useState(paychecks);
@@ -94,7 +94,7 @@ const PaychecksTable = ({ yearInfo }) => {
               <PaychecksTableRow
                 key={paycheck.id}
                 paycheck={paycheck}
-                yearInfo={yearInfo}
+                dateInfo={dateInfo}
               />
             ))}
           </tbody>

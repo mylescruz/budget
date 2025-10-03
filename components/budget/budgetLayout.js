@@ -19,7 +19,7 @@ import {
   MonthIncomeContext,
 } from "@/contexts/MonthIncomeContext";
 
-const InnerBudgetLayout = ({ monthInfo }) => {
+const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
@@ -33,7 +33,7 @@ const InnerBudgetLayout = ({ monthInfo }) => {
       <Container className="w-100">
         <aside className="info-text mx-auto text-center">
           <h1>
-            {monthInfo.month} {monthInfo.year}
+            {dateInfo.monthName} {dateInfo.year}
           </h1>
           <p className="fs-6">
             Set your budget for your fixed and variable expenses. Log all your
@@ -52,18 +52,18 @@ const InnerBudgetLayout = ({ monthInfo }) => {
                 {!editCategories ? (
                   <CategoryTable
                     setEditCategories={setEditCategories}
-                    monthInfo={monthInfo}
+                    dateInfo={dateInfo}
                   />
                 ) : (
                   <EditCategoryTable
-                    monthInfo={monthInfo}
+                    dateInfo={dateInfo}
                     setEditCategories={setEditCategories}
                   />
                 )}
               </Col>
             </Row>
 
-            {!editCategories && <TransactionsLayout monthInfo={monthInfo} />}
+            {!editCategories && <TransactionsLayout dateInfo={dateInfo} />}
           </>
         ) : (
           <Row className="d-flex">
@@ -94,13 +94,13 @@ const InnerBudgetLayout = ({ monthInfo }) => {
   }
 };
 
-const BudgetLayout = ({ monthInfo }) => {
+const BudgetLayout = ({ dateInfo }) => {
   return (
-    <CategoriesProvider monthInfo={monthInfo}>
-      <TransactionsProvider monthInfo={monthInfo}>
-        <PaychecksProvider monthInfo={monthInfo}>
-          <MonthIncomeProvider monthInfo={monthInfo}>
-            <InnerBudgetLayout monthInfo={monthInfo} />
+    <CategoriesProvider dateInfo={dateInfo}>
+      <TransactionsProvider dateInfo={dateInfo}>
+        <PaychecksProvider dateInfo={dateInfo}>
+          <MonthIncomeProvider dateInfo={dateInfo}>
+            <InnerBudgetLayout dateInfo={dateInfo} />
           </MonthIncomeProvider>
         </PaychecksProvider>
       </TransactionsProvider>

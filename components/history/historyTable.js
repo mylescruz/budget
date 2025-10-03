@@ -61,7 +61,7 @@ const HistoryTable = ({ history }) => {
                   <Link
                     href={{
                       pathname: "/history/[month]",
-                      query: { month: month.monthName, year: month.year },
+                      query: { month: month.month, year: month.year },
                     }}
                   >
                     <>

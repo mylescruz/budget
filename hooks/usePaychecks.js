@@ -132,44 +132,12 @@ const usePaychecks = (year) => {
     [paychecks]
   );
 
-  // Function that returns a user's total paychecks for a given month
-  const getMonthIncome = useCallback(
-    (monthInfo) => {
-      let totalIncome = 0;
-
-      if (paychecks) {
-        // Checks each paycheck to see if it falls within the month and year given
-        paychecks.forEach((paycheck) => {
-          // Added a time component to the paycheck date avoid the automatic UTC timezone conversion
-          const paycheckDate = new Date(paycheck.date + "T00:00:00");
-          const paycheckMonth = paycheckDate.toLocaleString("default", {
-            month: "long",
-          });
-          const paycheckYear = paycheckDate.getFullYear();
-
-          // If the paycheck month and year matches the given month, then include that paycheck for the month
-          if (
-            paycheckMonth === monthInfo.month &&
-            paycheckYear === monthInfo.year
-          )
-            totalIncome += paycheck.net;
-        });
-
-        return totalIncome;
-      } else {
-        return null;
-      }
-    },
-    [paychecks]
-  );
-
   return {
     paychecks,
     paychecksLoading,
     postPaycheck,
     putPaycheck,
     deletePaycheck,
-    getMonthIncome,
   };
 };
 

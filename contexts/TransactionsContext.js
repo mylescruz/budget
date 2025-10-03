@@ -6,7 +6,7 @@ import { createContext } from "react";
 
 export const TransactionsContext = createContext({});
 
-export const TransactionsProvider = ({ children, monthInfo }) => {
+export const TransactionsProvider = ({ children, dateInfo }) => {
   const {
     transactions,
     transactionsLoading,
@@ -15,7 +15,7 @@ export const TransactionsProvider = ({ children, monthInfo }) => {
     putTransaction,
     deleteTransaction,
     updateTransactions,
-  } = useTransactions(monthInfo.monthNumber, monthInfo.year);
+  } = useTransactions(dateInfo.month, dateInfo.year);
 
   return (
     <TransactionsContext.Provider

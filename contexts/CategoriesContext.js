@@ -6,7 +6,7 @@ import { createContext } from "react";
 
 export const CategoriesContext = createContext({});
 
-export const CategoriesProvider = ({ children, monthInfo }) => {
+export const CategoriesProvider = ({ children, dateInfo }) => {
   const {
     categories,
     categoriesLoading,
@@ -14,7 +14,7 @@ export const CategoriesProvider = ({ children, monthInfo }) => {
     postCategory,
     updateCategories,
     deleteCategory,
-  } = useCategories(monthInfo.monthNumber, monthInfo.year);
+  } = useCategories(dateInfo.month, dateInfo.year);
 
   return (
     <CategoriesContext.Provider

@@ -7,7 +7,7 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import PopUp from "@/components/layout/popUp";
 import AddCategoryModal from "./addCategoryModal";
 
-const CategoryTable = ({ monthInfo, setEditCategories }) => {
+const CategoryTable = ({ dateInfo, setEditCategories }) => {
   const { categories } = useContext(CategoriesContext);
 
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
@@ -31,7 +31,7 @@ const CategoryTable = ({ monthInfo, setEditCategories }) => {
   };
 
   const addCategoryProps = {
-    monthInfo: monthInfo,
+    dateInfo: dateInfo,
     addCategoryClicked: addCategoryClicked,
     setAddCategoryClicked: setAddCategoryClicked,
   };

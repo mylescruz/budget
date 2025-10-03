@@ -8,7 +8,7 @@ import ErrorTransactionsTable from "./errorTransactionsTable";
 const VIEW_TEXT = "View Transactions";
 const HIDE_TEXT = "Hide Transactions";
 
-const TransactionsLayout = ({ monthInfo }) => {
+const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const [viewTransactions, setViewTransactions] = useState(true);
   const [viewText, setViewText] = useState(HIDE_TEXT);
@@ -29,7 +29,7 @@ const TransactionsLayout = ({ monthInfo }) => {
   };
 
   const addTransactionModalProps = {
-    monthInfo: monthInfo,
+    dateInfo: dateInfo,
     addTransactionClicked: addTransactionClicked,
     setAddTransactionClicked: setAddTransactionClicked,
   };
@@ -64,7 +64,7 @@ const TransactionsLayout = ({ monthInfo }) => {
           {viewTransactions && (
             <Row className="d-flex">
               <Col className="col-12 col-xl-10 mx-auto">
-                <TransactionsTable monthInfo={monthInfo} />
+                <TransactionsTable dateInfo={dateInfo} />
               </Col>
             </Row>
           )}

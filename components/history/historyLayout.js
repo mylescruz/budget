@@ -2,18 +2,18 @@ import { Button, Col, Row } from "react-bootstrap";
 import HistoryTable from "./historyTable";
 import useHistory from "@/hooks/useHistory";
 import { useEffect, useState } from "react";
-import dateInfo from "@/helpers/dateInfo";
+import todayInfo from "@/helpers/todayInfo";
 import Loading from "../layout/loading";
 
-const HistoryLayout = () => {
+const HistoryLayout = ({ dateInfo }) => {
   const { history, historyLoading } = useHistory();
 
   const [currentYearHistory, setCurrentYearHistory] = useState(history);
   const [historyYears, setHistoryYears] = useState({
     years: [],
-    current: dateInfo.currentYear,
-    max: dateInfo.currentYear,
-    min: dateInfo.currentYear,
+    current: dateInfo.year,
+    max: dateInfo.year,
+    min: dateInfo.year,
   });
 
   // Get all the years in the history, the max, the min and the current year
@@ -25,12 +25,12 @@ const HistoryLayout = () => {
 
       setHistoryYears({
         years: years,
-        current: dateInfo.currentYear,
+        current: dateInfo.year,
         max: maxYear,
         min: minYear,
       });
     }
-  }, [history]);
+  }, [history, dateInfo]);
 
   // Filter the history to the current year
   useEffect(() => {
@@ -39,9 +39,9 @@ const HistoryLayout = () => {
         (historyMonth) => historyMonth.year === historyYears.current
       );
 
-      if (historyYears.current === dateInfo.currentYear) {
+      if (historyYears.current === dateInfo.year) {
         const filteredHistory = givenYearHistory.filter(
-          (historyMonth) => historyMonth.month < dateInfo.currentMonth
+          (historyMonth) => historyMonth.month < todayInfo.month
         );
 
         setCurrentYearHistory(filteredHistory);
@@ -49,7 +49,7 @@ const HistoryLayout = () => {
         setCurrentYearHistory(givenYearHistory);
       }
     }
-  }, [history, historyYears]);
+  }, [history, historyYears, dateInfo]);
 
   const nextYear = () => {
     setHistoryYears({ ...historyYears, current: historyYears.current + 1 });

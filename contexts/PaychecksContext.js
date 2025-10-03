@@ -5,15 +5,14 @@ import { createContext } from "react";
 
 export const PaychecksContext = createContext({});
 
-export const PaychecksProvider = ({ children, monthInfo }) => {
+export const PaychecksProvider = ({ children, dateInfo }) => {
   const {
     paychecks,
     paychecksLoading,
     postPaycheck,
     putPaycheck,
     deletePaycheck,
-    getMonthIncome,
-  } = usePaychecks(monthInfo.year);
+  } = usePaychecks(dateInfo.year);
 
   return (
     <PaychecksContext.Provider
@@ -23,7 +22,6 @@ export const PaychecksProvider = ({ children, monthInfo }) => {
         postPaycheck,
         putPaycheck,
         deletePaycheck,
-        getMonthIncome,
       }}
     >
       {children}

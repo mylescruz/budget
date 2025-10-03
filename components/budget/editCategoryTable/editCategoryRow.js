@@ -1,4 +1,4 @@
-import { act, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Col, Form, Modal, Row } from "react-bootstrap";
 import AddSubcategoryForm from "./addSubcategoryForm";
 import EditSubcategoryRow from "./editSubcategoryRow";
@@ -7,7 +7,7 @@ import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorModal from "@/components/layout/errorModal";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
-const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
+const EditCategoryRow = ({ category, dateInfo, updateCategoryValues }) => {
   const { getCategories, deleteCategory } = useContext(CategoriesContext);
 
   const [edittedCategory, setEdittedCategory] = useState({
@@ -116,7 +116,7 @@ const EditCategoryRow = ({ category, monthInfo, updateCategoryValues }) => {
       await deleteCategory(category);
 
       // Fetch the categories to update the state for the categories table
-      await getCategories(monthInfo.monthNumber, monthInfo.year);
+      await getCategories(dateInfo.month, dateInfo.year);
 
       setErrorOccurred(false);
     } catch (error) {

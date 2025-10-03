@@ -1,14 +1,14 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import dateInfo from "@/helpers/dateInfo";
+import todayInfo from "@/helpers/todayInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import SelectCategoryOption from "./selectCategoryOption";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorMessage from "@/components/layout/errorMessage";
 
 const AddTransactionModal = ({
-  monthInfo,
+  dateInfo,
   addTransactionClicked,
   setAddTransactionClicked,
 }) => {
@@ -24,9 +24,7 @@ const AddTransactionModal = ({
 
   // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at current budget or history
   const newTransactionDate =
-    dateInfo.currentMonthName === monthInfo.month
-      ? dateInfo.currentDate
-      : monthInfo.startOfMonthDate;
+    todayInfo.month === dateInfo.month ? todayInfo.date : dateInfo.startOfMonth;
 
   const emptyTransaction = {
     date: newTransactionDate,
@@ -62,10 +60,10 @@ const AddTransactionModal = ({
       await postTransaction(newTransaction);
 
       // Fetch the categories to update the state for the categories table
-      await getCategories(monthInfo.monthNumber, monthInfo.year);
+      await getCategories(dateInfo.month, dateInfo.year);
 
       // Fetch the transactions to update the state for the transactions table
-      await getTransactions(monthInfo.monthNumber, monthInfo.year);
+      await getTransactions(dateInfo.month, dateInfo.year);
 
       setTransaction(emptyTransaction);
       setAddTransactionClicked(false);
@@ -101,8 +99,8 @@ const AddTransactionModal = ({
                     <Form.Control
                       className="h-100"
                       type="date"
-                      min={monthInfo.startOfMonthDate}
-                      max={monthInfo.endOfMonthDate}
+                      min={dateInfo.startOfMonth}
+                      max={dateInfo.endOfMonth}
                       value={newTransaction.date}
                       onChange={handleInput}
                       required

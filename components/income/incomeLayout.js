@@ -1,12 +1,8 @@
-import IncomeTable from "./paychecksTable";
-import AddIncomeModal from "./addPaycheckModal";
+import AddPaycheckModal from "./addPaycheckModal";
 import { Button, Col, Row } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
-import getYearInfo from "@/helpers/getYearInfo";
 import Loading from "../layout/loading";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
-import getMonthInfo from "@/helpers/getMonthInfo";
-import dateInfo from "@/helpers/dateInfo";
 import {
   PaychecksContext,
   PaychecksProvider,
@@ -15,8 +11,9 @@ import {
   MonthIncomeProvider,
   MonthIncomeContext,
 } from "@/contexts/MonthIncomeContext";
+import PaychecksTable from "./paychecksTable";
 
-const InnerIncomeLayout = ({ year }) => {
+const InnerIncomeLayout = ({ dateInfo }) => {
   const { paychecks, paychecksLoading } = useContext(PaychecksContext);
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
@@ -32,14 +29,12 @@ const InnerIncomeLayout = ({ year }) => {
     }
   }, [paychecks]);
 
-  const yearInfo = getYearInfo(year);
-
   const addPay = () => {
     setAddPaycheckClicked(true);
   };
 
-  const AddIncomeModalProps = {
-    yearInfo: yearInfo,
+  const AddPaycheckModalProps = {
+    dateInfo: dateInfo,
     addPaycheckClicked: addPaycheckClicked,
     setAddPaycheckClicked: setAddPaycheckClicked,
   };
@@ -50,7 +45,7 @@ const InnerIncomeLayout = ({ year }) => {
     return (
       <>
         <aside className="info-text text-center mx-auto">
-          <h1>{year} Income</h1>
+          <h1>{dateInfo.year} Income</h1>
           <p>
             View and add your paychecks for the current year. View your gross
             and net paychecks and see how much taxes have been taken out.
@@ -72,24 +67,22 @@ const InnerIncomeLayout = ({ year }) => {
 
         <Row className="d-flex my-4">
           <Col className="col-11 col-md-10 col-xl-8 mx-auto">
-            <IncomeTable yearInfo={yearInfo} />
+            <PaychecksTable dateInfo={dateInfo} />
           </Col>
         </Row>
 
-        {addPaycheckClicked && <AddIncomeModal {...AddIncomeModalProps} />}
+        {addPaycheckClicked && <AddPaycheckModal {...AddPaycheckModalProps} />}
       </>
     );
   }
 };
 
-const IncomeLayout = ({ year }) => {
-  const monthInfo = getMonthInfo(dateInfo.currentMonthName, year);
-
+const IncomeLayout = ({ dateInfo }) => {
   return (
-    <CategoriesProvider monthInfo={monthInfo}>
-      <PaychecksProvider monthInfo={monthInfo}>
-        <MonthIncomeProvider monthInfo={monthInfo}>
-          <InnerIncomeLayout year={year} />
+    <CategoriesProvider dateInfo={dateInfo}>
+      <PaychecksProvider dateInfo={dateInfo}>
+        <MonthIncomeProvider dateInfo={dateInfo}>
+          <InnerIncomeLayout dateInfo={dateInfo} />
         </MonthIncomeProvider>
       </PaychecksProvider>
     </CategoriesProvider>

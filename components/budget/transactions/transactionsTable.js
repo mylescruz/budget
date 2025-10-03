@@ -14,7 +14,7 @@ import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
 import styles from "@/styles/budget/transactions/transactionsTable.module.css";
 
-const TransactionsTable = ({ monthInfo }) => {
+const TransactionsTable = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const [sortedTransactions, setSortedTransactions] = useState(transactions);
   const [transactionCategories, setTransactionCategories] = useState([]);
@@ -120,7 +120,7 @@ const TransactionsTable = ({ monthInfo }) => {
           <TransactionsTableRow
             key={transaction.id}
             transaction={transaction}
-            monthInfo={monthInfo}
+            dateInfo={dateInfo}
           />
         ))}
       </tbody>

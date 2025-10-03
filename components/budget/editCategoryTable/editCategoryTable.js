@@ -9,7 +9,7 @@ import ErrorModal from "@/components/layout/errorModal";
 import { MonthIncomeContext } from "@/contexts/MonthIncomeContext";
 import PopUp from "@/components/layout/popUp";
 
-const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
+const EditCategoryTable = ({ dateInfo, setEditCategories }) => {
   const { categories, updateCategories } = useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
   const { monthIncome } = useContext(MonthIncomeContext);
@@ -146,8 +146,8 @@ const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
     }
   };
 
-  const editCategoryProps = {
-    monthInfo: monthInfo,
+  const editCategoryRowProps = {
+    dateInfo: dateInfo,
     updateCategoryValues: updateCategoryValues,
   };
 
@@ -186,7 +186,7 @@ const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
                   <EditCategoryRow
                     key={category.id}
                     category={category}
-                    {...editCategoryProps}
+                    {...editCategoryRowProps}
                   />
                 )
             )}
@@ -201,7 +201,7 @@ const EditCategoryTable = ({ monthInfo, setEditCategories }) => {
                   <EditCategoryRow
                     key={category.id}
                     category={category}
-                    {...editCategoryProps}
+                    {...editCategoryRowProps}
                   />
                 )
             )}

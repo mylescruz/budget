@@ -7,7 +7,7 @@ import { Form, Button, Modal, Col, Row, Container } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 
 const AddCategoryModal = ({
-  monthInfo,
+  dateInfo,
   addCategoryClicked,
   setAddCategoryClicked,
 }) => {
@@ -130,7 +130,7 @@ const AddCategoryModal = ({
       await postCategory(newCategory);
 
       // Fetch the categories to update the state for the categories table
-      await getCategories(monthInfo.monthNumber, monthInfo.year);
+      await getCategories(dateInfo.month, dateInfo.year);
 
       closeModal();
 

@@ -8,7 +8,7 @@ import ErrorMessage from "@/components/layout/errorMessage";
 
 const EditTransactionModal = ({
   transaction,
-  monthInfo,
+  dateInfo,
   showEdit,
   setShowEdit,
   setShowDetails,
@@ -40,12 +40,12 @@ const EditTransactionModal = ({
           ...edittedTransaction,
           oldCategory: transaction.category,
           oldAmount: transaction.amount,
-          month: monthInfo.monthNumber,
-          year: monthInfo.year,
+          month: dateInfo.month,
+          year: dateInfo.year,
         });
 
         // Fetch the categories to update the state for the categories table
-        await getCategories(monthInfo.monthNumber, monthInfo.year);
+        await getCategories(dateInfo.month, dateInfo.year);
 
         setShowEdit(false);
       } else {
@@ -95,8 +95,8 @@ const EditTransactionModal = ({
                   id="date"
                   className="h-100"
                   type="date"
-                  min={monthInfo.startOfMonthDate}
-                  max={monthInfo.endOfMonthDate}
+                  min={dateInfo.startOfMonth}
+                  max={dateInfo.endOfMonth}
                   value={edittedTransaction.date}
                   onChange={handleInput}
                   required

@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import PopUp from "@/components/layout/popUp";
-import dateInfo from "@/helpers/dateInfo";
-import getYearInfo from "@/helpers/getYearInfo";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const IncomeSection = ({ newUser, setNewUser, openComplete }) => {
+const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const emptyPaycheck = {
-    date: dateInfo.currentDate,
+    date: dateInfo.date,
     company: "",
     description: "",
     gross: 0,
@@ -16,7 +14,6 @@ const IncomeSection = ({ newUser, setNewUser, openComplete }) => {
   };
 
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
-  const yearInfo = getYearInfo(dateInfo.currentYear);
 
   // Functions to set the input when adding a new category
   const handlePaycheckInput = (e) => {
@@ -70,8 +67,8 @@ const IncomeSection = ({ newUser, setNewUser, openComplete }) => {
               <Form.Control
                 className="h-100"
                 type="date"
-                min={yearInfo.startOfYear}
-                max={yearInfo.endOfYear}
+                min={dateInfo.startOfYear}
+                max={dateInfo.endOfYear}
                 value={paycheck.date}
                 onChange={handlePaycheckInput}
                 required

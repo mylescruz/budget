@@ -5,10 +5,10 @@ import { createContext } from "react";
 
 export const MonthIncomeContext = createContext({});
 
-export const MonthIncomeProvider = ({ children, monthInfo }) => {
+export const MonthIncomeProvider = ({ children, dateInfo }) => {
   const { monthIncome, monthIncomeLoading } = useMonthIncome(
-    monthInfo.monthNumber,
-    monthInfo.year
+    dateInfo.month,
+    dateInfo.year
   );
 
   return (

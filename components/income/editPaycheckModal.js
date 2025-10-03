@@ -6,7 +6,7 @@ import { PaychecksContext } from "@/contexts/PaychecksContext";
 
 const EditPaycheckModal = ({
   paycheck,
-  yearInfo,
+  dateInfo,
   showEdit,
   setShowEdit,
   setShowDetails,
@@ -82,8 +82,8 @@ const EditPaycheckModal = ({
                   id="date"
                   className="h-100"
                   type="date"
-                  min={yearInfo.startOfYear}
-                  max={yearInfo.endOfYear}
+                  min={dateInfo.startOfYear}
+                  max={dateInfo.endOfYear}
                   value={edittedPaycheck.date}
                   onChange={handleInput}
                   required

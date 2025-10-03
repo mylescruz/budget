@@ -75,7 +75,7 @@ const EditSubcategoryRow = ({
             min="0"
             max="100000"
             step="0.01"
-            value={subcategoryValues.actual.toFixed(2)}
+            value={subcategoryValues.actual}
             onChange={handleSubcategoryBudget}
           />
         )}

@@ -4,8 +4,8 @@ import SummaryTable from "./summaryTable";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categories/categoryPieChart";
 
-const SummaryLayout = ({ year }) => {
-  const { summary, summaryLoading } = useSummary(year);
+const SummaryLayout = ({ dateInfo }) => {
+  const { summary, summaryLoading } = useSummary(dateInfo.year);
 
   if (summaryLoading) {
     return <Loading />;
@@ -13,7 +13,7 @@ const SummaryLayout = ({ year }) => {
     return (
       <Container className="w-100">
         <aside className="info-text text-center mx-auto">
-          <h1>{year} Summary</h1>
+          <h1>{dateInfo.year} Summary</h1>
           <p>View all your spending by category for the year.</p>
         </aside>
 

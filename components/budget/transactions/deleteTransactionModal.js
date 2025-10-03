@@ -7,7 +7,7 @@ import { Button, Modal } from "react-bootstrap";
 
 const DeleteTransactionModal = ({
   transaction,
-  monthInfo,
+  dateInfo,
   showDelete,
   setShowDelete,
   setShowDetails,
@@ -29,12 +29,12 @@ const DeleteTransactionModal = ({
       // Deletes a transaction from the transactions array by sending a DELETE request to the API
       await deleteTransaction({
         ...transaction,
-        month: monthInfo.monthNumber,
-        year: monthInfo.year,
+        month: dateInfo.month,
+        year: dateInfo.year,
       });
 
       // Fetch the categories to update the state for the categories table
-      await getCategories(monthInfo.monthNumber, monthInfo.year);
+      await getCategories(dateInfo.month, dateInfo.year);
 
       setErrorOccurred(false);
     } catch (error) {

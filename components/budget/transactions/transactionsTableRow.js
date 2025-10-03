@@ -5,7 +5,7 @@ import EditTransactionModal from "./editTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const TransactionsTableRow = ({ transaction, monthInfo }) => {
+const TransactionsTableRow = ({ transaction, dateInfo }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -34,7 +34,7 @@ const TransactionsTableRow = ({ transaction, monthInfo }) => {
 
   const editTransactionModalProps = {
     transaction: transaction,
-    monthInfo: monthInfo,
+    dateInfo: dateInfo,
     showEdit: showEdit,
     setShowEdit: setShowEdit,
     setShowDetails: setShowDetails,
@@ -42,7 +42,7 @@ const TransactionsTableRow = ({ transaction, monthInfo }) => {
 
   const deleteTransactionModalProps = {
     transaction: transaction,
-    monthInfo: monthInfo,
+    dateInfo: dateInfo,
     showDelete: showDelete,
     setShowDelete: setShowDelete,
     setShowDetails: setShowDetails,

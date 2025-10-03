@@ -5,6 +5,7 @@ import IncomeSection from "./incomeSection";
 import CategoriesSection from "./categoriesSection";
 import CompleteSection from "./completeSection";
 import { v4 as uuidv4 } from "uuid";
+import getDateInfo from "@/helpers/getDateInfo";
 
 const gfsCategory = {
   name: "Guilt Free Spending",
@@ -51,6 +52,9 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
   const [enterCustom, setEnterCustom] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
+  const today = new Date();
+  const dateInfo = getDateInfo(today);
+
   // Functions to change screens in boarding
   const openIncome = () => {
     setChooseCategory(false);
@@ -92,6 +96,7 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
   };
 
   const incomeSectionProps = {
+    dateInfo: dateInfo,
     newUser: newUser,
     setNewUser: setNewUser,
     openComplete: openComplete,

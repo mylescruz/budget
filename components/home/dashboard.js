@@ -2,8 +2,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import CategoryPieChart from "../categories/categoryPieChart";
-import dateInfo from "@/helpers/dateInfo";
-import getMonthInfo from "@/helpers/getMonthInfo";
 import {
   CategoriesContext,
   CategoriesProvider,
@@ -21,8 +19,9 @@ import {
   MonthIncomeContext,
 } from "@/contexts/MonthIncomeContext";
 import centsToDollars from "@/helpers/centsToDollars";
+import getDateInfo from "@/helpers/getDateInfo";
 
-const InnerDashboard = ({ monthInfo }) => {
+const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
@@ -63,7 +62,7 @@ const InnerDashboard = ({ monthInfo }) => {
   };
 
   const addTransactionModalProps = {
-    monthInfo: monthInfo,
+    dateInfo: dateInfo,
     addTransactionClicked: addTransactionClicked,
     setAddTransactionClicked: setAddTransactionClicked,
   };
@@ -78,7 +77,7 @@ const InnerDashboard = ({ monthInfo }) => {
           <Col className="col-12 col-xl-8">
             <Card className="my-2 card-background">
               <Card.Body>
-                <h3>{monthInfo.month} Spending</h3>
+                <h3>{dateInfo.monthName} Spending</h3>
                 <Row className="mx-auto d-flex">
                   {categories ? (
                     <>
@@ -146,7 +145,7 @@ const InnerDashboard = ({ monthInfo }) => {
                 <Card className="my-2 card-background">
                   <Card.Body>
                     <h4>
-                      {monthInfo.month} Income:{" "}
+                      {dateInfo.monthName} Income:{" "}
                       {monthIncome !== null ? (
                         <p>{centsToDollars(monthIncome)} </p>
                       ) : (
@@ -165,7 +164,7 @@ const InnerDashboard = ({ monthInfo }) => {
               <Col className="col-12">
                 <Card className="my-2 card-background">
                   <Card.Body>
-                    <h4>{monthInfo.year} Summary</h4>
+                    <h4>{dateInfo.year} Summary</h4>
                     <p>View your total spending for the year</p>
                     <Button
                       as={Link}
@@ -191,15 +190,14 @@ const InnerDashboard = ({ monthInfo }) => {
 };
 
 const Dashboard = () => {
-  const month = dateInfo.currentMonthName;
-  const year = dateInfo.currentYear;
-  const monthInfo = getMonthInfo(month, year);
+  const today = new Date();
+  const dateInfo = getDateInfo(today);
 
   return (
-    <CategoriesProvider monthInfo={monthInfo}>
-      <TransactionsProvider monthInfo={monthInfo}>
-        <MonthIncomeProvider monthInfo={monthInfo}>
-          <InnerDashboard monthInfo={monthInfo} />
+    <CategoriesProvider dateInfo={dateInfo}>
+      <TransactionsProvider dateInfo={dateInfo}>
+        <MonthIncomeProvider dateInfo={dateInfo}>
+          <InnerDashboard dateInfo={dateInfo} />
         </MonthIncomeProvider>
       </TransactionsProvider>
     </CategoriesProvider>
