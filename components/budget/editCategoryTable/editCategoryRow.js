@@ -55,7 +55,7 @@ const EditCategoryRow = ({ category, dateInfo, updateCategoryValues }) => {
       updateCategoryValues({
         ...edittedCategory,
         budget: budgetValue * 100,
-        actual: actualValue,
+        actual: edittedCategory.fixed ? actualValue * 100 : actualValue,
       });
     }
   };
