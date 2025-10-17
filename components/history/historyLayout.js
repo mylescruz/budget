@@ -66,9 +66,7 @@ const HistoryLayout = ({ dateInfo }) => {
       <>
         <aside className="info-text text-center mx-auto">
           <h1>History</h1>
-          <p>
-            View your budget versus what you actually spent for previous months.
-          </p>
+          <p>Click on a previous month to view its full budget</p>
         </aside>
 
         <Row className="d-flex">

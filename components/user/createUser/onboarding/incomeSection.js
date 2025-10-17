@@ -154,7 +154,7 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
                 <tr key={index} className="d-flex">
                   <td className="col-8 gray-background">{paycheck.company}</td>
                   <td className="col-4 text-end gray-background">
-                    {centsToDollars(paycheck.net)}
+                    ${paycheck.net.toFixed(2)}
                   </td>
                 </tr>
               ))}

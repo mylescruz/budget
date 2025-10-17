@@ -29,6 +29,7 @@ export default async function handler(req, res) {
   const categoriesCol = db.collection("categories");
   const paychecksCol = db.collection("paychecks");
   const historyCol = db.collection("history");
+  const usersCol = db.collection("users");
 
   // Function that returns the user's categories from MongoDB
   async function getCategories() {
@@ -43,6 +44,15 @@ export default async function handler(req, res) {
     if (currentDocs.length > 0) {
       finalCategoryDocs = currentDocs;
     } else {
+      const user = await usersCol.find(
+        { username: username },
+        { projection: { created_date: 1, _id: 0 } }
+      );
+      const createdDate = new Date(user.created_date);
+
+      const createdMonth = createdDate.getMonth() + 1;
+      const createdYear = createdDate.getFullYear();
+
       // If the category documents for the current month and year don't exist, get the documents from last month
       let previousMonth = month - 1;
       let previousYear = year;
@@ -51,45 +61,72 @@ export default async function handler(req, res) {
         previousMonth = 12;
         previousYear = year - 1;
       }
-      const previousDocs = await categoriesCol
-        .find({ username: username, month: previousMonth, year: previousYear })
-        .sort({ budget: 1 })
-        .toArray();
 
-      // Set the new month's categories equal to the previous months categories
-      const newCategories = previousDocs.map((category) => {
-        if (category.fixed) {
-          // Return the new category without the previous _id
-          const { _id, ...previousCategory } = category;
+      let newCategories = [];
 
-          return { ...previousCategory, month: month, year: year };
-        } else {
-          if (category.hasSubcategory) {
-            const newSubcategories = category.subcategories.map(
-              (subcategory) => {
-                // Reset the id for each subcategory
-                return { ...subcategory, id: uuidv4(), actual: 0 };
+      let foundMonth = false;
+
+      while (!foundMonth) {
+        const previousDocs = await categoriesCol
+          .find({
+            username: username,
+            month: previousMonth,
+            year: previousYear,
+          })
+          .sort({ budget: 1 })
+          .toArray();
+
+        if (previousDocs.length > 0) {
+          // Set the new month's categories equal to the previous months categories
+          newCategories = previousDocs.map((category) => {
+            if (category.fixed) {
+              // Return the new category without the previous _id
+              const { _id, ...previousCategory } = category;
+
+              return { ...previousCategory, month: month, year: year };
+            } else {
+              if (category.hasSubcategory) {
+                const newSubcategories = category.subcategories.map(
+                  (subcategory) => {
+                    // Reset the id for each subcategory
+                    return { ...subcategory, id: uuidv4(), actual: 0 };
+                  }
+                );
+
+                // Return the new category without the previous _id
+                const { _id, ...previousCategory } = category;
+
+                return {
+                  ...previousCategory,
+                  month: month,
+                  year: year,
+                  actual: 0,
+                  subcategories: newSubcategories,
+                };
+              } else {
+                // Return the new category without the previous _id
+                const { _id, ...previousCategory } = category;
+
+                return {
+                  ...previousCategory,
+                  month: month,
+                  year: year,
+                  actual: 0,
+                };
               }
-            );
+            }
+          });
 
-            // Return the new category without the previous _id
-            const { _id, ...previousCategory } = category;
+          foundMonth = true;
+        } else {
+          previousMonth -= 1;
 
-            return {
-              ...previousCategory,
-              month: month,
-              year: year,
-              actual: 0,
-              subcategories: newSubcategories,
-            };
-          } else {
-            // Return the new category without the previous _id
-            const { _id, ...previousCategory } = category;
-
-            return { ...previousCategory, month: month, year: year, actual: 0 };
+          if (previousMonth === 0) {
+            previousMonth = 12;
+            previousYear -= 1;
           }
         }
-      });
+      }
 
       // Insert all the categories for the new month into MongoDB
       await categoriesCol.insertMany(newCategories);
