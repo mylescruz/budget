@@ -283,7 +283,14 @@ const AddCategoryModal = ({
                     </Button>
                   </Col>
                   <Col>
-                    <Button variant="primary" type="submit">
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={
+                        newCategory.hasSubcategory &&
+                        newCategory.subcategories.length === 0
+                      }
+                    >
                       Add
                     </Button>
                   </Col>
