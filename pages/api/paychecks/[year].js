@@ -23,7 +23,6 @@ export default async function handler(req, res) {
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const paychecksCol = db.collection("paychecks");
   const categoriesCol = db.collection("categories");
-  const historyCol = db.collection("history");
 
   // Fucntion that returns the user's paychecks from MongoDB
   const getPaychecks = async () => {
@@ -83,8 +82,6 @@ export default async function handler(req, res) {
       // Add the new paycheck to the paychecks collection in MongoDB
       const insertedPaycheck = await paychecksCol.insertOne(newPaycheck);
 
-      // Update the current month's history document with the new paycheck added to the budget
-
       // Get the total net income for the old month
       const paychecks = await paychecksCol
         .find({ username: username, month: paycheckMonth, year: paycheckYear })
@@ -98,12 +95,6 @@ export default async function handler(req, res) {
       const categories = await categoriesCol
         .find({ username: username, month: paycheckMonth, year: paycheckYear })
         .toArray();
-      const updatedActual = categories.reduce(
-        (sum, current) => sum + current.actual,
-        0
-      );
-
-      const updatedLeftover = updatedBudget - updatedActual;
 
       // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
       const foundCategory = categories.find(
@@ -130,22 +121,6 @@ export default async function handler(req, res) {
           }
         );
       }
-
-      // Update the history month in MongoDB
-      await historyCol.updateOne(
-        { username: username, month: paycheckMonth, year: paycheckYear },
-        {
-          $set: {
-            monthName: monthName,
-            month: paycheckMonth,
-            year: paycheckYear,
-            budget: updatedBudget,
-            actual: updatedActual,
-            leftover: updatedLeftover,
-          },
-        },
-        { upsert: true }
-      );
 
       // Send the new paycheck back to the client
       res.status(200).json({ id: insertedPaycheck.insertedId, ...newPaycheck });

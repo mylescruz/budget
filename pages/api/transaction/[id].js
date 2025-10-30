@@ -23,8 +23,6 @@ export default async function handler(req, res) {
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const transactionsCol = db.collection("transactions");
   const categoriesCol = db.collection("categories");
-  const paychecksCol = db.collection("paychecks");
-  const historyCol = db.collection("history");
 
   if (method === "GET") {
     try {
@@ -158,59 +156,6 @@ export default async function handler(req, res) {
           );
         }
 
-        // Update the history's actual amount for the month of the transaction
-        const transactionDate = new Date(edittedTransaction.date);
-        const monthName = transactionDate.toLocaleDateString("en-US", {
-          month: "long",
-        });
-
-        // Get the total net income for the month
-        const paychecks = await paychecksCol
-          .find({
-            username: username,
-            month: edittedTransaction.month,
-            year: edittedTransaction.year,
-          })
-          .toArray();
-        const updatedBudget = paychecks.reduce(
-          (sum, current) => sum + current.net,
-          0
-        );
-
-        // Get the total actual value for all categories
-        const categories = await categoriesCol
-          .find({
-            username: username,
-            month: edittedTransaction.month,
-            year: edittedTransaction.year,
-          })
-          .toArray();
-        const updatedActual = categories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        );
-
-        const updatedLeftover = updatedBudget - updatedActual;
-
-        // Update the history month
-        await historyCol.updateOne(
-          {
-            username: username,
-            month: edittedTransaction.month,
-            year: edittedTransaction.year,
-          },
-          {
-            $set: {
-              monthName: monthName,
-              month: edittedTransaction.month,
-              year: edittedTransaction.year,
-              budget: updatedBudget,
-              actual: updatedActual,
-              leftover: updatedLeftover,
-            },
-          }
-        );
-
         // Send the editted transaction back to the client
         res.status(200).json(edittedTransaction);
       } else {
@@ -270,59 +215,6 @@ export default async function handler(req, res) {
             }
           );
         }
-
-        // Update the history's actual amount for the month of the transaction
-        const transactionDate = new Date(transaction.date);
-        const monthName = transactionDate.toLocaleDateString("en-US", {
-          month: "long",
-        });
-
-        // Get the total net income for the month
-        const paychecks = await paychecksCol
-          .find({
-            username: username,
-            month: transaction.month,
-            year: transaction.year,
-          })
-          .toArray();
-        const updatedBudget = paychecks.reduce(
-          (sum, current) => sum + current.net,
-          0
-        );
-
-        // Get the total actual value for all categories
-        const categories = await categoriesCol
-          .find({
-            username: username,
-            month: transaction.month,
-            year: transaction.year,
-          })
-          .toArray();
-        const updatedActual = categories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        );
-
-        const updatedLeftover = updatedBudget - updatedActual;
-
-        // Update the history month
-        await historyCol.updateOne(
-          {
-            username: username,
-            month: transaction.month,
-            year: transaction.year,
-          },
-          {
-            $set: {
-              monthName: monthName,
-              month: transaction.month,
-              year: transaction.year,
-              budget: updatedBudget,
-              actual: updatedActual,
-              leftover: updatedLeftover,
-            },
-          }
-        );
 
         // Send a succes message back to the client
         res.status(200).json({ id: id, message: "Transaction was deleted" });

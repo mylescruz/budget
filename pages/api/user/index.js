@@ -163,9 +163,6 @@ export default async function handler(req, res) {
         // Delete the users documents from the paychecks collection
         await db.collection("paychecks").deleteMany({ username: username });
 
-        // Delete the users documents from the history collection
-        await db.collection("history").deleteMany({ username: username });
-
         // Send back a successful status that the user was deleted
         res.status(200).send();
       } else {

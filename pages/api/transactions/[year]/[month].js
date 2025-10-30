@@ -24,8 +24,6 @@ export default async function handler(req, res) {
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const transactionsCol = db.collection("transactions");
   const categoriesCol = db.collection("categories");
-  const paychecksCol = db.collection("paychecks");
-  const historyCol = db.collection("history");
 
   // Get the transactions from MongoDB and return the necessary fields
   const getTransactions = async () => {
@@ -95,9 +93,6 @@ export default async function handler(req, res) {
       const result = await transactionsCol.insertOne(newTransaction);
 
       if (result.acknowledged) {
-        // Update the corresponding category in the categories collection
-        const categoriesCol = db.collection("categories");
-
         // Find the matching category or subcategory
         const category = await categoriesCol.findOne({
           username: username,
@@ -135,51 +130,6 @@ export default async function handler(req, res) {
             }
           );
         }
-
-        // Add the transactions amount to the history's actual amount for the month of the transaction
-        const transactionDate = new Date(newTransaction.date);
-        const monthName = transactionDate.toLocaleDateString("en-US", {
-          month: "long",
-        });
-
-        // Get the total net income for the old month
-        const paychecks = await paychecksCol
-          .find({ username: username, month: month, year: year })
-          .toArray();
-        const updatedBudget = paychecks.reduce(
-          (sum, current) => sum + current.net,
-          0
-        );
-
-        // Get the total actual value for all categories
-        const categories = await categoriesCol
-          .find({
-            username: username,
-            month: month,
-            year: year,
-          })
-          .toArray();
-        const updatedActual = categories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        );
-
-        const updatedLeftover = updatedBudget - updatedActual;
-
-        // Update the history month
-        await historyCol.updateOne(
-          { username: username, month: month, year: year },
-          {
-            $set: {
-              monthName: monthName,
-              month: month,
-              year: year,
-              budget: updatedBudget,
-              actual: updatedActual,
-              leftover: updatedLeftover,
-            },
-          }
-        );
       }
 
       // Send the new transaction back to the client

@@ -3,7 +3,7 @@ import Link from "next/link";
 import monthFormatter from "@/helpers/monthFormatter";
 import historySorter from "@/helpers/historySorter";
 import { useEffect, useState } from "react";
-import centsToDollars from "@/helpers/centsToDollars";
+import currencyFormatter from "@/helpers/currencyFormatter";
 
 const HistoryTable = ({ history }) => {
   const [historyTotals, setHistoryTotals] = useState({
@@ -56,8 +56,8 @@ const HistoryTable = ({ history }) => {
             </>
           ) : (
             <>
-              {historySorter(history).map((month) => (
-                <tr key={month.id} className="d-flex">
+              {historySorter(history).map((month, index) => (
+                <tr key={index} className="d-flex">
                   <td className="col-4 col-md-3 click">
                     <Link
                       href={{
@@ -67,26 +67,32 @@ const HistoryTable = ({ history }) => {
                     >
                       <>
                         <span className="d-sm-none">
-                          {monthFormatter(`${month.month}/01/${month.year}`)}
+                          {monthFormatter(
+                            `${month.month}/01/${month.year}`,
+                            "2-digit"
+                          )}
                         </span>
                         <span className="d-none d-sm-block">
-                          {month.monthName} {month.year}
+                          {monthFormatter(
+                            `${month.month}/01/${month.year}`,
+                            "long"
+                          )}
                         </span>
                       </>
                     </Link>
                   </td>
                   <td className="col-4 col-md-3">
-                    {centsToDollars(month.budget)}
+                    {currencyFormatter.format(month.budget)}
                   </td>
                   <td className="col-4 col-md-3">
-                    {centsToDollars(month.actual)}
+                    {currencyFormatter.format(month.actual)}
                   </td>
                   <td
                     className={`d-none d-md-block col-md-3 ${
                       month.leftover < 0 && "text-danger"
                     }`}
                   >
-                    {centsToDollars(month.leftover)}
+                    {currencyFormatter.format(month.leftover)}
                   </td>
                 </tr>
               ))}
@@ -105,17 +111,17 @@ const HistoryTable = ({ history }) => {
         <tr className="d-flex table-dark">
           <th className="col-4 col-md-3">Totals</th>
           <th className="col-4 col-md-3">
-            {centsToDollars(historyTotals.budget)}
+            {currencyFormatter.format(historyTotals.budget)}
           </th>
           <th className="col-4 col-md-3">
-            {centsToDollars(historyTotals.actual)}
+            {currencyFormatter.format(historyTotals.actual)}
           </th>
           <th
             className={`d-none d-md-block col-md-3 ${
               historyTotals.leftover > 0 ? "text-white" : "text-danger"
             }`}
           >
-            {centsToDollars(historyTotals.leftover)}
+            {currencyFormatter.format(historyTotals.leftover)}
           </th>
         </tr>
       </tfoot>

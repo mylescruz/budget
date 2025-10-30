@@ -112,11 +112,6 @@ export default async function handler(req, res) {
         .collection("paychecks")
         .deleteMany({ username: deletedUser.username });
 
-      // Delete the users documents from the history collection
-      await db
-        .collection("history")
-        .deleteMany({ username: deletedUser.username });
-
       // Send back the deleted user to the client
       res.status(200).json({ id: deletedUser.id });
     } catch (error) {

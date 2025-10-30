@@ -19,23 +19,76 @@ export default async function handler(req, res) {
 
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
-  const historyCol = db.collection("history");
+  const categoriesCol = db.collection("categories");
+  const paychecksCol = db.collection("paychecks");
 
   // Function to get a user's history data from MongoDB
   const getHistory = async () => {
-    const docs = await historyCol.find({ username: username }).toArray();
+    const actual = await categoriesCol
+      .aggregate([
+        { $match: { username: username } },
+        { $project: { month: 1, year: 1, actual: 1 } },
+        {
+          $group: {
+            _id: { month: "$month", year: "$year" },
+            totalActual: { $sum: "$actual" },
+          },
+        },
+        {
+          $project: {
+            month: "$_id.month",
+            year: "$_id.year",
+            actual: "$totalActual",
+            _id: 0,
+          },
+        },
+        { $sort: { year: 1, month: 1 } },
+      ])
+      .toArray();
 
-    const history = docs.map((mth) => {
-      return {
-        id: mth._id,
-        monthName: mth.monthName,
-        month: mth.month,
-        year: mth.year,
-        budget: mth.budget,
-        actual: mth.actual,
-        leftover: mth.leftover,
-      };
-    });
+    const budget = await paychecksCol
+      .aggregate([
+        { $match: { username: username } },
+        { $project: { month: 1, year: 1, net: 1 } },
+        {
+          $group: {
+            _id: { month: "$month", year: "$year" },
+            totalNet: { $sum: "$net" },
+          },
+        },
+        {
+          $project: {
+            month: "$_id.month",
+            year: "$_id.year",
+            budget: "$totalNet",
+            _id: 0,
+          },
+        },
+        { $sort: { year: 1, month: 1 } },
+      ])
+      .toArray();
+
+    let history = [];
+    if (budget.length >= actual.length) {
+      for (let i = 0; i < actual.length; i++) {
+        if (
+          budget[i].month === actual[i].month &&
+          budget[i].year === actual[i].year
+        ) {
+          history.push({
+            month: budget[i].month,
+            year: budget[i].year,
+            budget: budget[i].budget / 100,
+            actual: actual[i].actual / 100,
+            leftover: (budget[i].budget - actual[i].actual) / 100,
+          });
+        }
+      }
+    } else {
+      throw new Error(
+        "Invalid history pull. The budget and actual months do not line up."
+      );
+    }
 
     return history;
   };
@@ -51,30 +104,6 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(`Error occurred while getting ${username}'s history`);
-    }
-  } else if (method === "POST") {
-    // Add the new month to the user's history in S3
-    try {
-      const historyBody = req?.body;
-
-      // Assign the identifier to the history
-      const newHistory = {
-        ...historyBody,
-        username: username,
-        budget: historyBody.budget * 100,
-        actual: historyBody.actual * 100,
-        leftover: historyBody.leftover * 100,
-      };
-
-      // Add the new history month to the history collection in MongoDB
-      const result = await historyCol.insertOne(newHistory);
-
-      // Send the new history object back to the client
-      const { username, ...finalHistory } = newHistory;
-      res.status(200).json({ id: result.insertedId, ...finalHistory });
-    } catch (error) {
-      console.error(`${method} history request failed: ${error}`);
-      res.status(500).send("Error occurred while adding to the history");
     }
   } else {
     res.status(405).send(`Method ${method} not allowed`);

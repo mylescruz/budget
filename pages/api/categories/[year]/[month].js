@@ -28,7 +28,6 @@ export default async function handler(req, res) {
   const db = client.db(process.env.MONGO_DB);
   const categoriesCol = db.collection("categories");
   const paychecksCol = db.collection("paychecks");
-  const historyCol = db.collection("history");
   const usersCol = db.collection("users");
 
   // Function that returns the user's categories from MongoDB
@@ -250,24 +249,6 @@ export default async function handler(req, res) {
             },
           }
         );
-
-        // Update the month's history in MongoDB
-        await historyCol.updateOne(
-          {
-            username: username,
-            month: month,
-            year: year,
-          },
-          [
-            {
-              $set: {
-                budget: totalBudget,
-                actual: categoriesActual,
-                leftover: totalBudget - categoriesActual,
-              },
-            },
-          ]
-        );
       }
 
       // Send the new category back to the client
@@ -285,38 +266,6 @@ export default async function handler(req, res) {
 
       // Get the total actual from the categories
       const categories = await getCategories();
-
-      const totalActual = categories.reduce(
-        (sum, current) => sum + current.actual,
-        0
-      );
-
-      // Get the total net income for the month
-      const paychecks = await paychecksCol
-        .find({ username: username, month: month, year: year })
-        .toArray();
-      const totalBudget = paychecks.reduce(
-        (sum, current) => sum + current.net,
-        0
-      );
-
-      // Update the month's history in MongoDB
-      await historyCol.updateOne(
-        {
-          username: username,
-          month: month,
-          year: year,
-        },
-        [
-          {
-            $set: {
-              budget: totalBudget,
-              actual: totalActual,
-              leftover: totalBudget - totalActual,
-            },
-          },
-        ]
-      );
 
       // Send the updated categories back to the client
       res.status(200).json(categories);

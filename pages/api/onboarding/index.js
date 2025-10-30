@@ -18,7 +18,6 @@ export default async function handler(req, res) {
   const usersCol = db.collection("users");
   const categoriesCol = db.collection("categories");
   const paychecksCol = db.collection("paychecks");
-  const historyCol = db.collection("history");
 
   // Define the current month and year
   const today = new Date();
@@ -175,23 +174,6 @@ export default async function handler(req, res) {
 
       // Insert the updated categories in MongoDB
       await categoriesCol.insertMany(finalCategories);
-
-      // Get current actual value spent during this month
-      const monthActual = finalCategories.reduce(
-        (sum, current) => sum + current.actual,
-        0
-      );
-
-      // Add the month to the history in MongoDB
-      await historyCol.insertOne({
-        username: newUser.username,
-        month: month,
-        year: year,
-        budget: monthIncome,
-        actual: monthActual,
-        leftover: monthIncome - monthActual,
-        monthName: monthName,
-      });
 
       // Return the new user
       res.status(200).json(insertedUser);

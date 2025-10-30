@@ -23,7 +23,6 @@ export default async function handler(req, res) {
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const paychecksCol = db.collection("paychecks");
   const categoriesCol = db.collection("categories");
-  const historyCol = db.collection("history");
 
   if (method === "PUT") {
     try {
@@ -51,19 +50,11 @@ export default async function handler(req, res) {
         }
       );
 
-      // Update the current month's history document with the new paycheck added to the budget
-
       // Define the identifiers from the paycheck
       const oldPaycheckDate = new Date(edittedPaycheck.oldDate);
       const newPaycheckDate = new Date(edittedPaycheck.date);
       const oldMonth = oldPaycheckDate.getMonth() + 1;
-      const oldMonthName = oldPaycheckDate.toLocaleDateString("en-US", {
-        month: "long",
-      });
       const newMonth = newPaycheckDate.getMonth() + 1;
-      const newMonthName = newPaycheckDate.toLocaleDateString("en-US", {
-        month: "long",
-      });
       const year = oldPaycheckDate.getFullYear();
 
       if (oldMonth === newMonth) {
@@ -82,12 +73,6 @@ export default async function handler(req, res) {
         const categories = await categoriesCol
           .find({ username: username, month: newMonth, year: year })
           .toArray();
-        const updatedActual = categories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        );
-
-        const updatedLeftover = updatedBudget - updatedActual;
 
         // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
         const foundCategory = categories.find(
@@ -114,24 +99,7 @@ export default async function handler(req, res) {
             }
           );
         }
-
-        // Update the new history month in MongoDB
-        await historyCol.updateOne(
-          { username: username, month: newMonth, year: year },
-          {
-            $set: {
-              monthName: newMonthName,
-              month: newMonth,
-              year: year,
-              budget: updatedBudget,
-              actual: updatedActual,
-              leftover: updatedLeftover,
-            },
-          }
-        );
       } else {
-        // If the month changed, update both the new month's history and old month's history
-
         // Get the total net income for the new month
         const newMonthPaychecks = await paychecksCol
           .find({ username: username, month: newMonth, year: year })
@@ -145,12 +113,6 @@ export default async function handler(req, res) {
         const newMonthCategories = await categoriesCol
           .find({ username: username, month: newMonth, year: year })
           .toArray();
-        const updatedNewActual = newMonthCategories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        );
-
-        const updatedNewLeftover = updatedNewBudget - updatedNewActual;
 
         // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
         const foundNewCategory = newMonthCategories.find(
@@ -178,22 +140,6 @@ export default async function handler(req, res) {
           );
         }
 
-        // Update the new history month in MongoDB
-        await historyCol.updateOne(
-          { username: username, month: newMonth, year: year },
-          {
-            $set: {
-              monthName: newMonthName,
-              month: newMonth,
-              year: year,
-              budget: updatedNewBudget,
-              actual: updatedNewActual,
-              leftover: updatedNewLeftover,
-            },
-          },
-          { upsert: true }
-        );
-
         // Get the total net income for the old month
         const oldMonthPaychecks = await paychecksCol
           .find({ username: username, month: oldMonth, year: year })
@@ -207,12 +153,6 @@ export default async function handler(req, res) {
         const oldMonthCategories = await categoriesCol
           .find({ username: username, month: oldMonth, year: year })
           .toArray();
-        const updatedOldActual = oldMonthCategories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        );
-
-        const updatedOldLeftover = updatedOldBudget - updatedOldActual;
 
         // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
         const foundOldCategory = oldMonthCategories.find(
@@ -239,21 +179,6 @@ export default async function handler(req, res) {
             }
           );
         }
-
-        // Update the new history month in MongoDB
-        await historyCol.updateOne(
-          { username: username, month: oldMonth, year: year },
-          {
-            $set: {
-              monthName: oldMonthName,
-              month: oldMonth,
-              year: year,
-              budget: updatedOldBudget,
-              actual: updatedOldActual,
-              leftover: updatedOldLeftover,
-            },
-          }
-        );
       }
 
       // Send the updated paycheck back to the client
@@ -289,12 +214,6 @@ export default async function handler(req, res) {
       const categories = await categoriesCol
         .find({ username: username, month: month, year: year })
         .toArray();
-      const updatedActual = categories.reduce(
-        (sum, current) => sum + current.actual,
-        0
-      );
-
-      const updatedLeftover = updatedBudget - updatedActual;
 
       // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
       const foundCategory = categories.find(
@@ -321,18 +240,6 @@ export default async function handler(req, res) {
           }
         );
       }
-
-      // Update the history month in MongoDB
-      await historyCol.updateOne(
-        { username: username, month: month, year: year },
-        {
-          $set: {
-            budget: updatedBudget,
-            actual: updatedActual,
-            leftover: updatedLeftover,
-          },
-        }
-      );
 
       // Send a success message back to the client
       res
