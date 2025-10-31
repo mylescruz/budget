@@ -20,77 +20,95 @@ export default async function handler(req, res) {
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const categoriesCol = db.collection("categories");
-  const paychecksCol = db.collection("paychecks");
 
   // Function to get a user's history data from MongoDB
   const getHistory = async () => {
-    const actual = await categoriesCol
-      .aggregate([
-        { $match: { username: username } },
-        { $project: { month: 1, year: 1, actual: 1 } },
-        {
-          $group: {
-            _id: { month: "$month", year: "$year" },
-            totalActual: { $sum: "$actual" },
+    try {
+      const history = await categoriesCol
+        .aggregate([
+          { $match: { username: username } },
+          { $project: { month: 1, year: 1, actual: 1 } },
+          {
+            $group: {
+              _id: { month: "$month", year: "$year" },
+              totalActual: { $sum: "$actual" },
+            },
           },
-        },
-        {
-          $project: {
-            month: "$_id.month",
-            year: "$_id.year",
-            actual: "$totalActual",
-            _id: 0,
+          {
+            $project: {
+              month: "$_id.month",
+              year: "$_id.year",
+              actual: "$totalActual",
+              _id: 0,
+            },
           },
-        },
-        { $sort: { year: 1, month: 1 } },
-      ])
-      .toArray();
+          { $sort: { year: 1, month: 1 } },
+          {
+            $lookup: {
+              from: "paychecks",
+              let: { year: "$year", month: "$month" },
+              pipeline: [
+                { $match: { username: username } },
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ["$year", "$$year"] },
+                        { $eq: ["$month", "$$month"] },
+                      ],
+                    },
+                  },
+                },
+                {
+                  $group: {
+                    _id: { month: "$month", year: "$year" },
+                    budget: { $sum: "$net" },
+                  },
+                },
+                { $sort: { year: 1, month: 1 } },
+                {
+                  $project: {
+                    month: "$_id.month",
+                    year: "$_id.year",
+                    budget: 1,
+                    _id: 0,
+                  },
+                },
+              ],
+              as: "budgets",
+            },
+          },
+          {
+            $replaceRoot: {
+              newRoot: {
+                $mergeObjects: [{ $arrayElemAt: ["$budgets", 0] }, "$$ROOT"],
+              },
+            },
+          },
+          {
+            $project: {
+              month: 1,
+              year: 1,
+              budget: { $divide: ["$budget", 100] },
+              actual: { $divide: ["$actual", 100] },
+              leftover: {
+                $divide: [{ $subtract: ["$budget", "$actual"] }, 100],
+              },
+              budgets: 1,
+            },
+          },
+          {
+            $project: {
+              budgets: 0,
+            },
+          },
+        ])
+        .toArray();
 
-    const budget = await paychecksCol
-      .aggregate([
-        { $match: { username: username } },
-        { $project: { month: 1, year: 1, net: 1 } },
-        {
-          $group: {
-            _id: { month: "$month", year: "$year" },
-            totalNet: { $sum: "$net" },
-          },
-        },
-        {
-          $project: {
-            month: "$_id.month",
-            year: "$_id.year",
-            budget: "$totalNet",
-            _id: 0,
-          },
-        },
-        { $sort: { year: 1, month: 1 } },
-      ])
-      .toArray();
-
-    let history = [];
-    if (budget.length >= actual.length) {
-      for (let i = 0; i < actual.length; i++) {
-        if (
-          budget[i].month === actual[i].month &&
-          budget[i].year === actual[i].year
-        ) {
-          history.push({
-            month: budget[i].month,
-            year: budget[i].year,
-            budget: budget[i].budget / 100,
-            actual: actual[i].actual / 100,
-            leftover: (budget[i].budget - actual[i].actual) / 100,
-          });
-        }
-      }
-    } else {
-      throw new Error(
-        "Invalid history pull. The budget and actual months do not line up."
-      );
+      return history;
+    } catch (error) {
+      throw new Error(error);
     }
-
-    return history;
   };
 
   if (method === "GET") {
