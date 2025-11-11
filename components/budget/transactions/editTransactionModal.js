@@ -40,8 +40,6 @@ const EditTransactionModal = ({
           ...edittedTransaction,
           oldCategory: transaction.category,
           oldAmount: transaction.amount,
-          month: dateInfo.month,
-          year: dateInfo.year,
         });
 
         // Fetch the categories to update the state for the categories table
@@ -72,7 +70,7 @@ const EditTransactionModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "")
+    if (input === "")
       setEdittedTransaction({ ...edittedTransaction, amount: input });
     else
       setEdittedTransaction({

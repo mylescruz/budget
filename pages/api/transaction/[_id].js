@@ -1,4 +1,4 @@
-// API Endpoint for a user's transactions data
+// API Endpoint for a user's transaction data
 
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -14,219 +14,194 @@ export default async function handler(req, res) {
     return res.status(401).send("Must login to view your data!");
   }
 
-  const username = session.user.username;
-
-  const method = req?.method;
-  const _id = req?.query?._id;
-
   // Configure MongoDB
-  const db = (await clientPromise).db(process.env.MONGO_DB);
-  const transactionsCol = db.collection("transactions");
-  const categoriesCol = db.collection("categories");
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB);
 
-  if (method === "GET") {
-    try {
-      const doc = await transactionsCol.findOne({ _id: new ObjectId(_id) });
+  // Object with parameters used in HTTP methods
+  const transactionContext = {
+    client: client,
+    transactionsCol: db.collection("transactions"),
+    categoriesCol: db.collection("categories"),
+    username: session.user.username,
+  };
 
-      // If a user tries to directly access a different user's data, send an error message
-      if (session.user.username !== doc.username) {
-        return res.status(401).send("Access denied to this user's data");
-      }
+  switch (req.method) {
+    case "PUT":
+      return updateTransaction(req, res, transactionContext);
+    case "DELETE":
+      return deleteTransaction(req, res, transactionContext);
+    default:
+      return res.status(405).send(`${req.method} method not allowed`);
+  }
+}
 
-      const { _id, transaction } = doc;
+async function updateTransaction(
+  req,
+  res,
+  { client, transactionsCol, categoriesCol, username }
+) {
+  const mongoSession = client.startSession();
 
-      // Send the transaction back to the client
-      res.status(200).json({ _id: _id.toString(), ...transaction });
-    } catch (error) {
-      console.error(`${method} transactions request failed: ${error}`);
-      res
-        .status(500)
-        .send(`Error occurred while getting ${username}'s transactions`);
-    }
-  } else if (method === "PUT") {
-    try {
-      const edittedTransactionBody = req?.body;
+  try {
+    const transactionId = req.query._id;
+    const transaction = {
+      ...req.body,
+      amount: req.body.amount * 100,
+      oldAmount: req.body.oldAmount,
+    };
 
-      const edittedTransaction = {
-        ...edittedTransactionBody,
-        amount: edittedTransactionBody.amount * 100,
-        oldAmount: edittedTransactionBody.oldAmount,
-      };
+    // Get the month and date for the given transaction
+    const transactionDate = new Date(transaction.date);
+    const month = transactionDate.getMonth() + 1;
+    const year = transactionDate.getFullYear();
 
-      // Update the given transaction from the transactions collection in MongoDB
-      const result = await transactionsCol.updateOne(
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
+      // Update the transaction with the new values in MongoDB
+      await transactionsCol.updateOne(
         {
-          _id: new ObjectId(_id),
+          _id: new ObjectId(transactionId),
         },
         {
           $set: {
-            date: edittedTransaction.date,
-            store: edittedTransaction.store,
-            items: edittedTransaction.items,
-            category: edittedTransaction.category,
-            amount: edittedTransaction.amount,
+            date: transaction.date,
+            store: transaction.store,
+            items: transaction.items,
+            category: transaction.category,
+            amount: transaction.amount,
           },
-        }
+        },
+        { session: mongoSession }
       );
 
-      if (result.modifiedCount === 1) {
-        // Update the corresponding category in the categories collection
+      // Update the old category
+      await updateCategoryActual(
+        mongoSession,
+        categoriesCol,
+        username,
+        month,
+        year,
+        transaction.oldCategory,
+        -transaction.oldAmount
+      );
 
-        // Find the new matching category or subcategory
-        const newCategory = await categoriesCol.findOne({
-          username: username,
-          month: edittedTransaction.month,
-          year: edittedTransaction.year,
-          $or: [
-            { name: edittedTransaction.category },
-            { "subcategories.name": edittedTransaction.category },
-          ],
-        });
+      // Update the new category
+      await updateCategoryActual(
+        mongoSession,
+        categoriesCol,
+        username,
+        month,
+        year,
+        transaction.category,
+        transaction.amount
+      );
+    });
 
-        // Update the new corresponding category's actual amount
-        if (newCategory.name === edittedTransaction.category) {
-          // If new category name matches the parent category
+    const { oldCategory, oldAmount, ...updatedTransaction } = transaction;
 
-          // Update the actual value of the category
-          await categoriesCol.updateOne(
-            { _id: new ObjectId(newCategory._id) },
-            {
-              $inc: {
-                actual: edittedTransaction.amount,
-              },
-            }
-          );
-        } else {
-          // If new category name matches the subcategory
+    // Send the updated transaction back to the client
+    return res.status(200).json(updatedTransaction);
+  } catch (error) {
+    console.error(`PUT transaction request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(`Error occurred while editting a transaction for ${username}`);
+  } finally {
+    await mongoSession.endSession();
+  }
+}
 
-          // Update the actual value of the category and subcategory
-          await categoriesCol.updateOne(
-            {
-              _id: new ObjectId(newCategory._id),
-              "subcategories.name": edittedTransaction.category,
-            },
-            {
-              $inc: {
-                actual: edittedTransaction.amount,
-                "subcategories.$.actual": edittedTransaction.amount,
-              },
-            }
-          );
-        }
+async function deleteTransaction(
+  req,
+  res,
+  { client, transactionsCol, categoriesCol, username }
+) {
+  const mongoSession = client.startSession();
 
-        // Find the old matching category or subcategory
-        const oldCategory = await categoriesCol.findOne({
-          username: username,
-          month: edittedTransaction.month,
-          year: edittedTransaction.year,
-          $or: [
-            { name: edittedTransaction.oldCategory },
-            { "subcategories.name": edittedTransaction.oldCategory },
-          ],
-        });
+  try {
+    const transactionId = req.query._id;
+    const transaction = req.body;
 
-        // Update the old corresponding category's actual amount
-        if (oldCategory.name === edittedTransaction.oldCategory) {
-          // If old category name matches the parent category
+    // Get the month and date for the given transaction
+    const transactionDate = new Date(transaction.date);
+    const month = transactionDate.getMonth() + 1;
+    const year = transactionDate.getFullYear();
 
-          // Update the actual value of the category
-          await categoriesCol.updateOne(
-            { _id: new ObjectId(oldCategory._id) },
-            {
-              $inc: {
-                actual: -edittedTransaction.oldAmount,
-              },
-            }
-          );
-        } else {
-          // If old category name matches the subcategory
-
-          // Update the actual value of the category and subcategory
-          await categoriesCol.updateOne(
-            {
-              _id: new ObjectId(oldCategory._id),
-              "subcategories.name": edittedTransaction.oldCategory,
-            },
-            {
-              $inc: {
-                actual: -edittedTransaction.oldAmount,
-                "subcategories.$.actual": -edittedTransaction.oldAmount,
-              },
-            }
-          );
-        }
-
-        // Send the editted transaction back to the client
-        res.status(200).json(edittedTransaction);
-      } else {
-        // Send an error message back to the client
-        return res.status(404).send("Transaction not found");
-      }
-    } catch (error) {
-      console.error(`${method} transactions request failed: ${error}`);
-      res.status(500).send("Error occurred while editting a transaction");
-    }
-  } else if (method === "DELETE") {
-    try {
-      const transaction = req?.body;
-
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
       // Delete the given transaction from the transactions collection in MongoDB
-      const result = await transactionsCol.deleteOne({
-        _id: new ObjectId(_id),
-      });
+      await transactionsCol.deleteOne(
+        { _id: new ObjectId(transactionId) },
+        { session: mongoSession }
+      );
 
-      if (result.deletedCount === 1) {
-        // Update the corresponding category in the categories collection
+      // Update the correlating category to remove old transaction amount
+      await updateCategoryActual(
+        mongoSession,
+        categoriesCol,
+        username,
+        month,
+        year,
+        transaction.category,
+        -transaction.amount
+      );
+    });
 
-        // Find the matching category or subcategory
-        const category = await categoriesCol.findOne({
-          username: username,
-          month: transaction.month,
-          year: transaction.year,
-          $or: [
-            { name: transaction.category },
-            { "subcategories.name": transaction.category },
-          ],
-        });
+    // Send a success message back to the client
+    return res
+      .status(200)
+      .json({ _id: transactionId, message: "Transaction was deleted" });
+  } catch (error) {
+    console.error(
+      `DELETE transaction request failed for ${username}: ${error}`
+    );
+    return res
+      .status(500)
+      .send(`Error occurred while deleting a transaction for ${username}`);
+  } finally {
+    await mongoSession.endSession();
+  }
+}
 
-        // Decrement the corresponding category's actual amount
-        if (category.name === transaction.category) {
-          // Decrement the actual value of the category
-          await categoriesCol.updateOne(
-            { _id: new ObjectId(category._id) },
-            {
-              $inc: {
-                actual: -transaction.amount,
-              },
-            }
-          );
-        } else {
-          // Decrement the actual value of the category and subcategory
-          await categoriesCol.updateOne(
-            {
-              _id: new ObjectId(category._id),
-              "subcategories.name": transaction.category,
-            },
-            {
-              $inc: {
-                actual: -transaction.amount,
-                "subcategories.$.actual": -transaction.amount,
-              },
-            }
-          );
-        }
+// Update the given category or subcategory's actual value
+async function updateCategoryActual(
+  mongoSession,
+  categoriesCol,
+  username,
+  month,
+  year,
+  categoryName,
+  amount
+) {
+  const category = await categoriesCol.findOne(
+    {
+      username,
+      month,
+      year,
+      $or: [{ name: categoryName }, { "subcategories.name": categoryName }],
+    },
+    { session: mongoSession }
+  );
 
-        // Send a succes message back to the client
-        res.status(200).json({ _id: _id, message: "Transaction was deleted" });
-      } else {
-        // Send an error message back to the client
-        return res.status(404).send("Transaction not found");
-      }
-    } catch (error) {
-      console.error(`${method} transactions request failed: ${error}`);
-      res.status(500).send("Error occurred while deleting a transaction");
-    }
+  if (!category) {
+    throw new Error(`Category ${categoryName} was not found`);
+  }
+
+  // Check if the category is a parent or subcategory
+  if (category.name === categoryName) {
+    // Update parent category
+    await categoriesCol.updateOne(
+      { _id: new ObjectId(category._id) },
+      { $inc: { actual: amount } },
+      { session: mongoSession }
+    );
   } else {
-    res.status(405).send(`Method ${method} not allowed`);
+    // Update parent category and subcategory
+    await categoriesCol.updateOne(
+      { _id: new ObjectId(category._id), "subcategories.name": categoryName },
+      { $inc: { actual: amount, "subcategories.$.actual": amount } },
+      { session: mongoSession }
+    );
   }
 }

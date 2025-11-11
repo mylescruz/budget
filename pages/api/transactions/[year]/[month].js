@@ -80,12 +80,10 @@ async function addTransaction(
   const mongoSession = client.startSession();
 
   try {
-    const transactionBody = req.body;
-
-    // Assign an id to the new transaction
+    // Assign identifiers to the new transaction
     const newTransaction = {
-      ...transactionBody,
-      amount: transactionBody.amount * 100,
+      ...req.body,
+      amount: req.body.amount * 100,
       username,
       month,
       year,
@@ -98,7 +96,7 @@ async function addTransaction(
       // Add the new transaction to the transactions collection in MongoDB
       const insertedTransaction = await transactionsCol.insertOne(
         newTransaction,
-        { mongoSession }
+        { session: mongoSession }
       );
 
       insertedId = insertedTransaction.insertedId;
@@ -114,7 +112,7 @@ async function addTransaction(
             { "subcategories.name": newTransaction.category },
           ],
         },
-        { mongoSession }
+        { session: mongoSession }
       );
 
       if (category) {
