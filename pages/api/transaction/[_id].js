@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   const username = session.user.username;
 
   const method = req?.method;
-  const id = req?.query?.id;
+  const _id = req?.query?._id;
 
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
   if (method === "GET") {
     try {
-      const doc = await transactionsCol.findOne({ _id: new ObjectId(id) });
+      const doc = await transactionsCol.findOne({ _id: new ObjectId(_id) });
 
       // If a user tries to directly access a different user's data, send an error message
       if (session.user.username !== doc.username) {
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       const { _id, transaction } = doc;
 
       // Send the transaction back to the client
-      res.status(200).json({ id: _id.toString(), ...transaction });
+      res.status(200).json({ _id: _id.toString(), ...transaction });
     } catch (error) {
       console.error(`${method} transactions request failed: ${error}`);
       res
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
       // Update the given transaction from the transactions collection in MongoDB
       const result = await transactionsCol.updateOne(
         {
-          _id: new ObjectId(id),
+          _id: new ObjectId(_id),
         },
         {
           $set: {
@@ -172,7 +172,7 @@ export default async function handler(req, res) {
 
       // Delete the given transaction from the transactions collection in MongoDB
       const result = await transactionsCol.deleteOne({
-        _id: new ObjectId(id),
+        _id: new ObjectId(_id),
       });
 
       if (result.deletedCount === 1) {
@@ -217,7 +217,7 @@ export default async function handler(req, res) {
         }
 
         // Send a succes message back to the client
-        res.status(200).json({ id: id, message: "Transaction was deleted" });
+        res.status(200).json({ _id: _id, message: "Transaction was deleted" });
       } else {
         // Send an error message back to the client
         return res.status(404).send("Transaction not found");

@@ -65,7 +65,7 @@ const useTransactions = (month, year) => {
   const putTransaction = useCallback(
     async (edittedTransaction) => {
       try {
-        const rsp = await fetch(`/api/transaction/${edittedTransaction.id}`, {
+        const rsp = await fetch(`/api/transaction/${edittedTransaction._id}`, {
           method: "PUT",
           headers: {
             Accept: "application.json",
@@ -78,7 +78,7 @@ const useTransactions = (month, year) => {
           const updatedTransaction = await rsp.json();
 
           const updatedTransactions = transactions.map((transaction) => {
-            if (transaction.id === updatedTransaction.id) {
+            if (transaction._id === updatedTransaction._id) {
               return updatedTransaction;
             } else {
               return transaction;
@@ -105,7 +105,7 @@ const useTransactions = (month, year) => {
   const deleteTransaction = useCallback(
     async (transaction) => {
       try {
-        const rsp = await fetch(`/api/transaction/${transaction.id}`, {
+        const rsp = await fetch(`/api/transaction/${transaction._id}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
@@ -118,7 +118,7 @@ const useTransactions = (month, year) => {
           const deleteResult = await rsp.json();
 
           const updatedTransactions = transactions.filter((transaction) => {
-            return transaction.id !== deleteResult.id;
+            return transaction._id !== deleteResult._id;
           });
 
           setTransactions(updatedTransactions);

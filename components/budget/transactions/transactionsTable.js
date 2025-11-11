@@ -118,7 +118,7 @@ const TransactionsTable = ({ dateInfo }) => {
       <tbody>
         {sortedTransactions.map((transaction) => (
           <TransactionsTableRow
-            key={transaction.id}
+            key={transaction._id}
             transaction={transaction}
             dateInfo={dateInfo}
           />
