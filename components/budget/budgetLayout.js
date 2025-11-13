@@ -1,7 +1,6 @@
 import CategoryTable from "./categoryTable/categoryTable";
-import { useContext, useState } from "react";
-import { Col, Container, Row, Table } from "react-bootstrap";
-import EditCategoryTable from "./editCategoryTable/editCategoryTable";
+import { useContext } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import {
   CategoriesContext,
   CategoriesProvider,
@@ -24,11 +23,9 @@ const InnerBudgetLayout = ({ dateInfo }) => {
   const { transactionsLoading } = useContext(TransactionsContext);
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
-  const [editCategories, setEditCategories] = useState(false);
-
   if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
     return <Loading />;
-  } else {
+  } else if (categories) {
     return (
       <Container className="w-100">
         <aside className="info-text mx-auto text-center">
@@ -42,53 +39,16 @@ const InnerBudgetLayout = ({ dateInfo }) => {
           </p>
         </aside>
 
-        {categories ? (
-          <>
-            <Row>
-              <Col className="col-12 col-xl-6">
-                <CategoryPieChart categories={categories} />
-              </Col>
-              <Col className="col-12 col-xl-6">
-                {!editCategories ? (
-                  <CategoryTable
-                    setEditCategories={setEditCategories}
-                    dateInfo={dateInfo}
-                  />
-                ) : (
-                  <EditCategoryTable
-                    dateInfo={dateInfo}
-                    setEditCategories={setEditCategories}
-                  />
-                )}
-              </Col>
-            </Row>
+        <Row>
+          <Col className="col-12 col-xl-6">
+            <CategoryPieChart categories={categories} />
+          </Col>
+          <Col className="col-12 col-xl-6">
+            <CategoryTable dateInfo={dateInfo} />
+          </Col>
+        </Row>
 
-            {!editCategories && <TransactionsLayout dateInfo={dateInfo} />}
-          </>
-        ) : (
-          <Row className="d-flex">
-            <Col className="col-12 col-xl-10 mx-auto">
-              <Table striped className="mb-4">
-                <thead className="table-dark">
-                  <tr className="d-flex">
-                    <th className="col-6">Category</th>
-                    <th className="d-none d-md-block col-md-2">Budget</th>
-                    <th className="col-3 col-md-2">Spent</th>
-                    <th className="col-3 col-md-2 cell">Remaining</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td colSpan={1} className="text-danger fw-bold text-center">
-                      &#9432; There was an error loading your categories. Please
-                      try again later!
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        )}
+        <TransactionsLayout dateInfo={dateInfo} />
       </Container>
     );
   }

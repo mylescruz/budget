@@ -6,8 +6,6 @@ import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 
-const GUILT_FREE = "Guilt Free Spending";
-
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
   const session = await getServerSession(req, res, authOptions);
@@ -32,16 +30,25 @@ export default async function handler(req, res) {
 
   // Function that returns the user's categories from MongoDB
   async function getCategories() {
-    let finalCategoryDocs = [];
+    let finalCategories = [];
 
     // Get the category documents for the current month and year
-    const currentDocs = await categoriesCol
-      .find({ username: username, month: month, year: year })
-      .sort({ budget: 1 })
+    const categories = await categoriesCol
+      .find(
+        { username, month, year },
+        {
+          projection: {
+            username: 0,
+            month: 0,
+            year: 0,
+          },
+        }
+      )
+      .sort({ budget: -1 })
       .toArray();
 
-    if (currentDocs.length > 0) {
-      finalCategoryDocs = currentDocs;
+    if (categories.length > 0) {
+      finalCategories = categories;
     } else {
       const user = await usersCol.find(
         { username: username },
@@ -136,37 +143,10 @@ export default async function handler(req, res) {
         .sort({ budget: 1 })
         .toArray();
 
-      finalCategoryDocs = newCategoryDocs;
+      finalCategories = newCategoryDocs;
     }
-
-    // Return the final categories to the client
-    const finalCategories = finalCategoryDocs.map((category) => {
-      const { _id, username, month, year, ...finalCategory } = category;
-
-      return { id: _id, ...finalCategory };
-    });
 
     return finalCategories;
-  }
-
-  // Function to update each editted category in MongoDB
-  async function updateCategories(edittedCategories) {
-    for (const category of edittedCategories) {
-      await categoriesCol.updateOne(
-        { _id: new ObjectId(category.id) },
-        {
-          $set: {
-            name: category.name,
-            color: category.color,
-            budget: category.budget,
-            actual: category.actual,
-            fixed: category.fixed,
-            hasSubcategory: category.hasSubcategory,
-            subcategories: category.subcategories,
-          },
-        }
-      );
-    }
   }
 
   if (method === "GET") {
@@ -256,22 +236,6 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error(`${method} categories request failed: ${error}`);
       res.status(500).send("Error occurred while adding a category");
-    }
-  } else if (method === "PUT") {
-    try {
-      const edittedCategories = req?.body;
-
-      // Update the given editted categories in MongoDB
-      await updateCategories(edittedCategories);
-
-      // Get the total actual from the categories
-      const categories = await getCategories();
-
-      // Send the updated categories back to the client
-      res.status(200).json(categories);
-    } catch (error) {
-      console.error(`${method} categories request failed: ${error}`);
-      res.status(500).send("Error occurred while updating categories");
     }
   } else {
     res.status(405).send(`Method ${method} not allowed`);

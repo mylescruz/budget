@@ -8,30 +8,21 @@ const CategoryFooter = () => {
   const { categories } = useContext(CategoriesContext);
   const { monthIncome } = useContext(MonthIncomeContext);
 
-  const [categoryTotals, setCategoryTotals] = useState({
-    budget: 0,
-    actual: 0,
-    remaining: 0,
-  });
+  const [categoryTotals, setCategoryTotals] = useState(null);
 
   // Get the budget, actual value spent and the remaining value for each category
   useEffect(() => {
-    if (categories) {
-      let totalActual = 0;
+    if (categories && monthIncome) {
+      const categoriesActual = categories.reduce(
+        (sum, current) => sum + current.actual,
+        0
+      );
 
-      categories.forEach((category) => {
-        totalActual += category.actual;
+      setCategoryTotals({
+        budget: monthIncome,
+        actual: categoriesActual,
+        remaining: monthIncome - categoriesActual,
       });
-
-      if (monthIncome !== null) {
-        setCategoryTotals({
-          budget: monthIncome,
-          actual: totalActual,
-          remaining: monthIncome - totalActual,
-        });
-      } else {
-        setCategoryTotals(null);
-      }
     }
   }, [categories, monthIncome]);
 
@@ -39,7 +30,7 @@ const CategoryFooter = () => {
     <>
       {categoryTotals ? (
         <tr className="d-flex">
-          <th className="col-6 cell">
+          <th className="col-5 cell">
             Total
             <PopUp
               title="Your budget is your total income for the month."
@@ -63,6 +54,7 @@ const CategoryFooter = () => {
           >
             {centsToDollars(categoryTotals.remaining)}
           </td>
+          <td className="col-1" />
         </tr>
       ) : (
         <tr>

@@ -3,10 +3,12 @@ import { Button, Col, Row } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
 import PopUp from "@/components/layout/popUp";
 import centsToDollars from "@/helpers/centsToDollars";
+import EditCategoryModal from "./editCategoryModal";
 
-const CategoryTableRow = ({ category }) => {
+const CategoryTableRow = ({ category, dateInfo }) => {
   const hasSubcategory = category.hasSubcategory;
   const [showSubcategories, setShowSubcategories] = useState(false);
+  const [editCategoryClicked, setEditCategoryClicked] = useState(false);
 
   const categoryColor = {
     backgroundColor: category.color,
@@ -17,10 +19,14 @@ const CategoryTableRow = ({ category }) => {
     setShowSubcategories(!showSubcategories);
   };
 
+  const editCategory = () => {
+    setEditCategoryClicked(true);
+  };
+
   return (
     <>
       <tr className="d-flex">
-        <th className="col-6 col-md-6" onClick={dropdownSubcategories}>
+        <th className="col-5 col-md-5" onClick={dropdownSubcategories}>
           <Row className="d-flex">
             {hasSubcategory ? (
               <>
@@ -32,9 +38,9 @@ const CategoryTableRow = ({ category }) => {
                     {category.name}
                   </Button>
                   {/* Show the pop up message for the Guilt Free Spending category */}
-                  {category.name === "Guilt Free Spending" && (
+                  {category.noDelete && (
                     <PopUp
-                      title="The money you can spend on whatever you want after all other expenses have been covered."
+                      title="The money you can spend on anything after all other expenses have been covered."
                       id="guilt-free-info"
                     >
                       <span> &#9432;</span>
@@ -63,10 +69,10 @@ const CategoryTableRow = ({ category }) => {
         </th>
         <td
           className={`col-3 col-md-2 cell fw-bold ${
-            category.budget < 0 && "text-danger "
+            category.budget < 0 && "text-danger"
           }`}
         >
-          {centsToDollars(category.budget)}
+          {!category.fixed && centsToDollars(category.budget)}
         </td>
         <td className="col-3 col-md-2 cell">
           {centsToDollars(category.actual)}
@@ -76,13 +82,25 @@ const CategoryTableRow = ({ category }) => {
             category.budget - category.actual < 0 && "text-danger fw-bold"
           }`}
         >
-          {centsToDollars(category.budget - category.actual)}
+          {!category.fixed && centsToDollars(category.budget - category.actual)}
+        </td>
+        <td className="col-1 cell clicker" onClick={editCategory}>
+          &#8286;
         </td>
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
           <SubcategoryRow key={subcategory.id} subcategory={subcategory} />
         ))}
+
+      {editCategoryClicked && (
+        <EditCategoryModal
+          category={category}
+          dateInfo={dateInfo}
+          editCategoryClicked={editCategoryClicked}
+          setEditCategoryClicked={setEditCategoryClicked}
+        />
+      )}
     </>
   );
 };

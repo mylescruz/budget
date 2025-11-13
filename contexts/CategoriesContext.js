@@ -12,7 +12,7 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
     categoriesLoading,
     getCategories,
     postCategory,
-    updateCategories,
+    putCategory,
     deleteCategory,
   } = useCategories(dateInfo.month, dateInfo.year);
 
@@ -23,7 +23,7 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
         categoriesLoading,
         getCategories,
         postCategory,
-        updateCategories,
+        putCategory,
         deleteCategory,
       }}
     >

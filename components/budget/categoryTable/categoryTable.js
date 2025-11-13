@@ -2,12 +2,11 @@ import { Button, Col, Row, Table } from "react-bootstrap";
 import CategoryTableRow from "./categoryTableRow";
 import CategoryTableFooter from "./categoryTableFooter";
 import React, { useContext, useState } from "react";
-import FixedCategoryTableRow from "./fixedCategoryTableRow";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import PopUp from "@/components/layout/popUp";
 import AddCategoryModal from "./addCategoryModal";
 
-const CategoryTable = ({ dateInfo, setEditCategories }) => {
+const CategoryTable = ({ dateInfo }) => {
   const { categories } = useContext(CategoriesContext);
 
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
@@ -16,10 +15,6 @@ const CategoryTable = ({ dateInfo, setEditCategories }) => {
 
   const addNewCategory = () => {
     setAddCategoryClicked(true);
-  };
-
-  const handleEdit = () => {
-    setEditCategories(true);
   };
 
   const displayFixedExpenses = () => {
@@ -41,10 +36,10 @@ const CategoryTable = ({ dateInfo, setEditCategories }) => {
       <Table striped>
         <thead className="table-dark">
           <tr className="d-flex">
-            <th className="col-6">
+            <th className="col-5">
               <Row className="d-flex">
-                <Col className="col-5">Category</Col>
-                <Col className="col-3">
+                <Col className="col-6">Category</Col>
+                <Col className="col-6">
                   <Button
                     className="btn-sm"
                     id="save-all-btn"
@@ -53,21 +48,12 @@ const CategoryTable = ({ dateInfo, setEditCategories }) => {
                     Add
                   </Button>
                 </Col>
-                <Col className="col-3">
-                  <Button
-                    className="btn-sm"
-                    id="edit-categories-btn"
-                    variant="secondary"
-                    onClick={handleEdit}
-                  >
-                    Edit
-                  </Button>
-                </Col>
               </Row>
             </th>
             <th className="col-3 col-md-2">Budget</th>
             <th className="col-3 col-md-2">Spent</th>
             <th className="d-none d-md-block col-md-2 cell">Remaining</th>
+            <th className="col-1" />
           </tr>
         </thead>
         <tbody>
@@ -101,9 +87,10 @@ const CategoryTable = ({ dateInfo, setEditCategories }) => {
             categories.map(
               (category) =>
                 category.fixed && (
-                  <FixedCategoryTableRow
-                    key={category.id}
+                  <CategoryTableRow
+                    key={category._id}
                     category={category}
+                    dateInfo={dateInfo}
                   />
                 )
             )}
@@ -137,7 +124,11 @@ const CategoryTable = ({ dateInfo, setEditCategories }) => {
             categories.map(
               (category) =>
                 !category.fixed && (
-                  <CategoryTableRow key={category.id} category={category} />
+                  <CategoryTableRow
+                    key={category._id}
+                    category={category}
+                    dateInfo={dateInfo}
+                  />
                 )
             )}
         </tbody>

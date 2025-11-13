@@ -60,23 +60,36 @@ const useCategories = (month, year) => {
     [categories, year, month]
   );
 
-  // PUT request that updates all the categories based on the month and year
-  // Then it sets the categories array to the array returned by the response
-  const updateCategories = useCallback(
-    async (edittedCategories) => {
+  // Update a category in the database
+  const putCategory = useCallback(
+    async (updatedCategory) => {
       try {
-        const rsp = await fetch(`/api/categories/${year}/${month}`, {
+        const rsp = await fetch(`/api/category/${updatedCategory._id}`, {
           method: "PUT",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(edittedCategories),
+          body: JSON.stringify(updatedCategory),
         });
 
         if (rsp.ok) {
-          const updatedCategories = await rsp.json();
-          setCategories(categorySorter(updatedCategories));
+          const updatedCategory = await rsp.json();
+
+          // Replace old category with new new category in array
+          const updatedCategories = [...categories];
+
+          const categoryIndex = updatedCategories.findIndex(
+            (cat) => cat._id === updatedCategory._id
+          );
+
+          updatedCategories[categoryIndex] = updatedCategory;
+
+          if (categoryIndex !== -1) {
+            setCategories(updatedCategories);
+          } else {
+            throw new Error(`Could not find category ${updatedCategory.name}`);
+          }
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -88,15 +101,15 @@ const useCategories = (month, year) => {
         setCategoriesLoading(false);
       }
     },
-    [year, month]
+    [categories]
   );
 
   // DELETE request that deletes a category based on the username, year and month
   // Then it sets the categories array to the array returned by the response
   const deleteCategory = useCallback(
-    async (categoryToDelete) => {
+    async (category) => {
       try {
-        const rsp = await fetch(`/api/category/${categoryToDelete.id}`, {
+        const rsp = await fetch(`/api/category/${category.id}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
@@ -131,7 +144,7 @@ const useCategories = (month, year) => {
     categoriesLoading,
     getCategories,
     postCategory,
-    updateCategories,
+    putCategory,
     deleteCategory,
   };
 };
