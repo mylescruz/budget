@@ -2,9 +2,10 @@
 
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
+
+const GUILT_FREE = "Guilt Free Spending";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server

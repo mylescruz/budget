@@ -27,9 +27,9 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "PUT":
-      await updateCategory(req, res, categoriesContext);
+      return updateCategory(req, res, categoriesContext);
     case "DELETE":
-      await deleteCategory(req, res, categoriesContext);
+      return deleteCategory(req, res, categoriesContext);
     default:
       return res.status(405).send(`${req.method} method not allowed`);
   }
@@ -81,7 +81,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       });
     });
 
-    // Send the updated category back to the client
+    // // Send the updated category back to the client
     return res.status(200).json(category);
   } catch (error) {
     console.error(`PUT categories request failed for ${username}: ${error}`);

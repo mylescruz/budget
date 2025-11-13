@@ -88,7 +88,7 @@ const EditCategoryModal = ({
     try {
       // A fixed category's budget and actual spent are the same
       if (!updatedCategory.hasSubcategory && updatedCategory.fixed) {
-        updatedCategory.actual = updatedCategory.budget;
+        updatedCategory.actual = updatedCategory.budget * 100;
       }
 
       // PUT request to update category in the database
@@ -106,6 +106,7 @@ const EditCategoryModal = ({
 
       setErrorOccurred(false);
     } catch (error) {
+      setMakingChanges(true);
       setErrorOccurred(true);
       console.error(error);
       return;
@@ -131,6 +132,7 @@ const EditCategoryModal = ({
 
       setErrorOccurred(false);
     } catch (error) {
+      setMakingChanges(true);
       setErrorOccurred(true);
       console.error(error);
       return;
@@ -144,15 +146,10 @@ const EditCategoryModal = ({
     let categoryBudget = updatedCategory.budget;
     let categoryActual = updatedCategory.actual;
 
-    console.log("B: ", categoryBudget);
-    console.log("A: ", categoryActual);
     if (updatedCategory.fixed) {
       categoryBudget = (categoryBudget * 100 - subcategory.actual) / 100;
       categoryActual -= subcategory.actual;
     }
-
-    console.log("B: ", categoryBudget);
-    console.log("A: ", categoryActual);
 
     setUpdatedCategory({
       ...updatedCategory,
