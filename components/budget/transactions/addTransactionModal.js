@@ -145,7 +145,7 @@ const AddTransactionModal = ({
                         (category) =>
                           !category.fixed && (
                             <SelectCategoryOption
-                              key={category.id}
+                              key={category._id}
                               category={category}
                             />
                           )

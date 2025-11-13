@@ -56,7 +56,7 @@ const SummaryTable = ({ summary }) => {
         {categorySorter(summary).map(
           (category) =>
             category.fixed && (
-              <SummaryTableRow key={category.id} category={category} />
+              <SummaryTableRow key={category._id} category={category} />
             )
         )}
         <tr>
@@ -73,7 +73,7 @@ const SummaryTable = ({ summary }) => {
         {categorySorter(summary).map(
           (category) =>
             !category.fixed && (
-              <SummaryTableRow key={category.id} category={category} />
+              <SummaryTableRow key={category._id} category={category} />
             )
         )}
       </tbody>

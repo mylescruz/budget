@@ -1,11 +1,10 @@
 // API Endpoint for a user's categories data
 
 import clientPromise from "@/lib/mongodb";
+import { updateGuiltFreeSpending } from "@/lib/updateGuiltFreeSpending";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
-
-const GUILT_FREE = "Guilt Free Spending";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -16,24 +15,33 @@ export default async function handler(req, res) {
     return res.status(401).send("Must login to view your data!");
   }
 
-  const username = session.user.username;
-
-  const month = parseInt(req?.query?.month);
-  const year = parseInt(req?.query?.year);
-  const method = req?.method;
-
   // Configure MongoDB
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
-  const categoriesCol = db.collection("categories");
-  const paychecksCol = db.collection("paychecks");
-  const usersCol = db.collection("users");
 
-  // Function that returns the user's categories from MongoDB
-  async function getCategories() {
-    let finalCategories = [];
+  const categoriesContext = {
+    client: client,
+    categoriesCol: db.collection("categories"),
+    username: session.user.username,
+  };
 
-    // Get the category documents for the current month and year
+  switch (req.method) {
+    case "GET":
+      return getCategories(req, res, categoriesContext);
+    case "POST":
+      return addCategory(req, res, categoriesContext);
+    default:
+      return res.status(405).send(`${req.method} method not allowed`);
+  }
+}
+
+// Get the user's categories from MongoDB
+async function getCategories(req, res, { categoriesCol, username }) {
+  try {
+    const month = parseInt(req.query.month);
+    const year = parseInt(req.query.year);
+
+    // Get the categories for the current month and year
     const categories = await categoriesCol
       .find(
         { username, month, year },
@@ -48,197 +56,140 @@ export default async function handler(req, res) {
       .sort({ budget: -1 })
       .toArray();
 
+    // If the categories already exist, send the categories array back to the client
     if (categories.length > 0) {
-      finalCategories = categories;
-    } else {
-      const user = await usersCol.find(
-        { username: username },
-        { projection: { created_date: 1, _id: 0 } }
-      );
-      const createdDate = new Date(user.created_date);
-
-      const createdMonth = createdDate.getMonth() + 1;
-      const createdYear = createdDate.getFullYear();
-
-      // If the category documents for the current month and year don't exist, get the documents from last month
-      let previousMonth = month - 1;
-      let previousYear = year;
-
-      if (previousMonth === 0) {
-        previousMonth = 12;
-        previousYear = year - 1;
-      }
-
-      let newCategories = [];
-
-      let foundMonth = false;
-
-      while (!foundMonth) {
-        const previousDocs = await categoriesCol
-          .find({
-            username: username,
-            month: previousMonth,
-            year: previousYear,
-          })
-          .sort({ budget: 1 })
-          .toArray();
-
-        if (previousDocs.length > 0) {
-          // Set the new month's categories equal to the previous months categories
-          newCategories = previousDocs.map((category) => {
-            if (category.fixed) {
-              // Return the new category without the previous _id
-              const { _id, ...previousCategory } = category;
-
-              return { ...previousCategory, month: month, year: year };
-            } else {
-              if (category.hasSubcategory) {
-                const newSubcategories = category.subcategories.map(
-                  (subcategory) => {
-                    // Reset the id for each subcategory
-                    return { ...subcategory, id: uuidv4(), actual: 0 };
-                  }
-                );
-
-                // Return the new category without the previous _id
-                const { _id, ...previousCategory } = category;
-
-                return {
-                  ...previousCategory,
-                  month: month,
-                  year: year,
-                  actual: 0,
-                  subcategories: newSubcategories,
-                };
-              } else {
-                // Return the new category without the previous _id
-                const { _id, ...previousCategory } = category;
-
-                return {
-                  ...previousCategory,
-                  month: month,
-                  year: year,
-                  actual: 0,
-                };
-              }
-            }
-          });
-
-          foundMonth = true;
-        } else {
-          previousMonth -= 1;
-
-          if (previousMonth === 0) {
-            previousMonth = 12;
-            previousYear -= 1;
-          }
-        }
-      }
-
-      // Insert all the categories for the new month into MongoDB
-      await categoriesCol.insertMany(newCategories);
-
-      // Get the newly added category documents for the current month and year
-      const newCategoryDocs = await categoriesCol
-        .find({ username: username, month: month, year: year })
-        .sort({ budget: 1 })
-        .toArray();
-
-      finalCategories = newCategoryDocs;
+      return res.status(200).json(categories);
     }
 
-    return finalCategories;
-  }
-
-  if (method === "GET") {
-    try {
-      const categories = await getCategories();
-
-      // Send the categories array back to the client
-      res.status(200).json(categories);
-    } catch (err) {
-      console.error(`${method} categories request failed: ${err}`);
-      res
-        .status(500)
-        .send(`Error occurred while getting ${username}'s categories`);
-    }
-  } else if (method === "POST") {
-    try {
-      const categoryBody = req?.body;
-
-      // If category has fixed subcategories, update their actual values to cents
-      let updatedSubcategories = [];
-      if (categoryBody.hasSubcategory && categoryBody.fixed) {
-        updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
-          return {
-            ...subcategory,
-            actual: subcategory.actual * 100,
-          };
-        });
-      }
-
-      // Assign the identifiers to the new category
-      const newCategory = {
-        ...categoryBody,
+    // If the categories for the current month and year don't exist, get the categories from the last populated month
+    const latestCategories = await categoriesCol
+      .find({
         username: username,
-        month: month,
-        year: year,
-        budget: categoryBody.budget * 100,
-        actual: categoryBody.actual * 100,
-        subcategories: updatedSubcategories,
-      };
+        $or: [{ year: { $lt: year } }, { year: year, month: { $lt: month } }],
+      })
+      .sort({ year: -1, month: -1 })
+      .limit(1)
+      .toArray();
 
-      // Add the new category to the categories collection in MongoDB
-      const result = await categoriesCol.insertOne(newCategory);
+    if (latestCategories.length === 0) {
+      throw new Error("User has no previous categories");
+    }
 
-      // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
-      const categories = await getCategories();
+    // Define the previous month and year
+    const { month: previousMonth, year: previousYear } = latestCategories[0];
 
-      const foundCategory = categories.find(
-        (category) => category.name === GUILT_FREE
-      );
+    // Get the previous categories and format it to a new month
+    const previousCategories = await categoriesCol
+      .aggregate([
+        { $match: { username, month: previousMonth, year: previousYear } },
+        {
+          $project: {
+            username: 1,
+            month: month,
+            year: year,
+            name: 1,
+            budget: 1,
+            actual: { $cond: ["$fixed", "$actual", 0] },
+            fixed: 1,
+            hasSubcategory: 1,
+            subcategories: 1,
+            _id: 0,
+          },
+        },
+        { sort: { budget: -1 } },
+      ])
+      .toArray();
 
-      if (foundCategory) {
-        // Get the budget total for all categories except Guilt Free Spending
-        let categoriesBudget = 0;
-        let categoriesActual = 0;
-        categories.forEach((category) => {
-          if (category.name !== GUILT_FREE) {
-            categoriesBudget += category.budget;
-          }
+    // Reset the non-fixed subcategories
+    const newCategories = previousCategories.map((category) => {
+      if (category.hasSubcategory) {
+        const newSubcategories = category.subcategories.map((subcategory) => {
+          const actualValue = category.fixed ? subcategory.actual : 0;
 
-          categoriesActual += category.actual;
+          return { ...subcategory, id: uuidv4(), actual: actualValue };
         });
 
-        // Get the total net income for the month
-        const paychecks = await paychecksCol
-          .find({ username: username, month: month, year: year })
-          .toArray();
-        const totalBudget = paychecks.reduce(
-          (sum, current) => sum + current.net,
-          0
-        );
-
-        const gfsBudget = totalBudget - categoriesBudget;
-
-        // Update the Guilt Free Spending category in MongoDB
-        await categoriesCol.updateOne(
-          { _id: foundCategory.id },
-          {
-            $set: {
-              budget: gfsBudget,
-            },
-          }
-        );
+        return {
+          ...category,
+          subcategories: newSubcategories,
+        };
+      } else {
+        return category;
       }
+    });
 
-      // Send the new category back to the client
-      res.status(200).json({ id: result.insertedId, ...newCategory });
-    } catch (error) {
-      console.error(`${method} categories request failed: ${error}`);
-      res.status(500).send("Error occurred while adding a category");
+    // Insert the newly created categories into MongoDB
+    const result = await categoriesCol.insertMany(newCategories);
+
+    // Add each insertedId to the corresponding category
+    const insertedCategories = newCategories.map((category, index) => {
+      return {
+        ...category,
+        _id: result.insertedIds[index],
+      };
+    });
+
+    // Send the categories array back to the client
+    return res.status(200).json(insertedCategories);
+  } catch (error) {
+    console.error(`GET categories request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(`Error occurred while getting categories for ${username}`);
+  }
+}
+
+// Add a new category for the user in MongoDB
+async function addCategory(req, res, { client, categoriesCol, username }) {
+  const mongoSession = await client.startSession();
+  try {
+    const month = parseInt(req.query.month);
+    const year = parseInt(req.query.year);
+
+    const categoryBody = req.body;
+
+    // If category has fixed subcategories, update their actual values to cents
+    let updatedSubcategories = [];
+    if (categoryBody.hasSubcategory && categoryBody.fixed) {
+      updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
+        return {
+          ...subcategory,
+          actual: subcategory.actual * 100,
+        };
+      });
     }
-  } else {
-    res.status(405).send(`Method ${method} not allowed`);
+
+    // Assign the identifiers to the new category
+    const newCategory = {
+      ...categoryBody,
+      username: username,
+      month: month,
+      year: year,
+      budget: categoryBody.budget * 100,
+      actual: categoryBody.actual * 100,
+      subcategories: updatedSubcategories,
+    };
+
+    let insertedCategory;
+
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
+      // Add the new category to the categories collection in MongoDB
+      insertedCategory = await categoriesCol.insertOne(newCategory);
+
+      await updateGuiltFreeSpending(username, month, year, mongoSession);
+    });
+
+    const { username: u, month: m, year: y, ...addedCategory } = newCategory;
+
+    // Send the new category back to the client
+    res.status(200).json({ id: insertedCategory.insertedId, ...addedCategory });
+  } catch (error) {
+    console.error(`POST categories request failed for ${username}: ${error}`);
+    res
+      .status(500)
+      .send(`Error occurred while adding a category for ${username}`);
+  } finally {
+    await mongoSession.endSession();
   }
 }

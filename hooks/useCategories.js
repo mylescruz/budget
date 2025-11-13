@@ -7,13 +7,13 @@ const useCategories = (month, year) => {
 
   const getCategories = useCallback(async (month, year) => {
     try {
-      const rsp = await fetch(`/api/categories/${year}/${month}`);
+      const response = await fetch(`/api/categories/${year}/${month}`);
 
-      if (rsp.ok) {
-        const fetchedCategories = await rsp.json();
-        setCategories(categorySorter(fetchedCategories));
+      if (response.ok) {
+        const fetchedCategories = await response.json();
+        setCategories(fetchedCategories);
       } else {
-        const message = await rsp.text();
+        const message = await response.text();
         throw new Error(message);
       }
     } catch (error) {
@@ -34,7 +34,7 @@ const useCategories = (month, year) => {
   const postCategory = useCallback(
     async (newCategory) => {
       try {
-        const rsp = await fetch(`/api/categories/${year}/${month}`, {
+        const response = await fetch(`/api/categories/${year}/${month}`, {
           method: "POST",
           headers: {
             Accept: "application.json",
@@ -43,11 +43,11 @@ const useCategories = (month, year) => {
           body: JSON.stringify(newCategory),
         });
 
-        if (rsp.ok) {
-          const addedCategory = await rsp.json();
+        if (response.ok) {
+          const addedCategory = await response.json();
           setCategories(categorySorter([...categories, addedCategory]));
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
@@ -64,7 +64,7 @@ const useCategories = (month, year) => {
   const putCategory = useCallback(
     async (updatedCategory) => {
       try {
-        const rsp = await fetch(`/api/category/${updatedCategory._id}`, {
+        const response = await fetch(`/api/category/${updatedCategory._id}`, {
           method: "PUT",
           headers: {
             Accept: "application.json",
@@ -73,8 +73,8 @@ const useCategories = (month, year) => {
           body: JSON.stringify(updatedCategory),
         });
 
-        if (rsp.ok) {
-          const updatedCategory = await rsp.json();
+        if (response.ok) {
+          const updatedCategory = await response.json();
 
           // Replace old category with new new category in array
           const updatedCategories = [...categories];
@@ -91,7 +91,7 @@ const useCategories = (month, year) => {
             throw new Error(`Could not find category ${updatedCategory.name}`);
           }
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
@@ -109,7 +109,7 @@ const useCategories = (month, year) => {
   const deleteCategory = useCallback(
     async (category) => {
       try {
-        const rsp = await fetch(`/api/category/${category.id}`, {
+        const response = await fetch(`/api/category/${category._id}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
@@ -117,16 +117,16 @@ const useCategories = (month, year) => {
           },
         });
 
-        if (rsp.ok) {
-          const result = await rsp.json();
+        if (response.ok) {
+          const deletedCategory = await response.json();
 
           const updatedCategories = categories.filter((category) => {
-            return category.id !== result.id;
+            return category._id !== deletedCategory._id;
           });
 
-          setCategories(categorySorter(updatedCategories));
+          setCategories(updatedCategories);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {

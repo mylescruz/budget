@@ -1,16 +1,4 @@
-// Sorts the categories based on their budget value
-
-const categorySorter = (givenArray) => {
-    givenArray.sort((a,b) => {
-        if (a.budget < b.budget)
-            return 1;
-        else if (a.budget > b.budget)
-            return -1;
-        else
-            return 0;
-    });
-
-    return givenArray;
-};
-
-export default categorySorter;
+// Sorts the categories based on their actual values
+export default function categorySorter(givenArray) {
+  return givenArray.sort((a, b) => b.actual - a.actual);
+}

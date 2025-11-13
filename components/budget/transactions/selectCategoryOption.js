@@ -12,7 +12,7 @@ const SelectCategoryOption = ({ category }) => {
           ))}
         </optgroup>
       ) : (
-        <option key={category.id} value={category.name}>
+        <option key={category._id} value={category.name}>
           {category.name}
         </option>
       )}

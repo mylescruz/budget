@@ -89,7 +89,7 @@ const InnerDashboard = ({ dateInfo }) => {
                         <Table borderless>
                           <tbody>
                             {topCategories.map((category) => (
-                              <tr key={category.id} className="d-flex">
+                              <tr key={category._id} className="d-flex">
                                 <td
                                   className={`col-7 ${styles.grayBackground}`}
                                 >

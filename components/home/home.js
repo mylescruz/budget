@@ -113,7 +113,7 @@ const Home = () => {
                     </thead>
                     <tbody>
                       {exampleCategories.map((category) => (
-                        <tr key={category.id} className="d-flex">
+                        <tr key={category._id} className="d-flex">
                           <td
                             className={`col-6 col-lg-7 col-xl-6 ${styles.grayBackground}`}
                           >
