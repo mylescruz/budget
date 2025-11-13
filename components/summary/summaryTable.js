@@ -1,35 +1,12 @@
-import categorySorter from "@/helpers/categorySorter";
 import { Table } from "react-bootstrap";
 import SummaryTableRow from "./summaryTableRow";
 import PopUp from "../layout/popUp";
-import { useEffect, useState } from "react";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const SummaryTable = ({ summary }) => {
-  const [summaryTotals, setSummaryTotals] = useState({
-    budget: 0,
-    actual: 0,
-    remaining: 0,
-  });
-
-  // Get the totals for the budget, actual value spent and the remaining value for all categories
-  useEffect(() => {
-    if (summary) {
-      let totalActual = 0;
-      let totalBudget = 0;
-
-      summary.forEach((category) => {
-        totalBudget += parseFloat(category.budget);
-        totalActual += parseFloat(category.actual);
-      });
-
-      setSummaryTotals({
-        budget: totalBudget,
-        actual: totalActual,
-        remaining: totalBudget - totalActual,
-      });
-    }
-  }, [summary]);
+const SummaryTable = ({ summary, year }) => {
+  const totalBudget = summary.reduce((sum, current) => sum + current.budget, 0);
+  const totalActual = summary.reduce((sum, current) => sum + current.actual, 0);
+  const totalRemaining = totalBudget - totalActual;
 
   return (
     <Table striped>
@@ -53,45 +30,49 @@ const SummaryTable = ({ summary }) => {
             </PopUp>
           </th>
         </tr>
-        {categorySorter(summary).map(
+        {summary.map(
           (category) =>
             category.fixed && (
-              <SummaryTableRow key={category._id} category={category} />
+              <SummaryTableRow
+                key={category._id}
+                category={category}
+                year={year}
+              />
             )
         )}
         <tr>
           <th className="bg-secondary text-white clicker" colSpan={1}>
             Changing Expenses
             <PopUp
-              title="Your expenses that change depending on your spending."
+              title="Click a category or subcategory to view the transactions"
               id="variable-expenses-info"
             >
               <span> &#9432;</span>
             </PopUp>
           </th>
         </tr>
-        {categorySorter(summary).map(
+        {summary.map(
           (category) =>
             !category.fixed && (
-              <SummaryTableRow key={category._id} category={category} />
+              <SummaryTableRow
+                key={category._id}
+                category={category}
+                year={year}
+              />
             )
         )}
       </tbody>
       <tfoot className="table-dark">
         <tr className="d-flex">
           <th className="col-6">Totals</th>
-          <th className="col-3 col-md-2 cell">
-            {centsToDollars(summaryTotals.budget)}
-          </th>
-          <th className="col-3 col-md-2 cell">
-            {centsToDollars(summaryTotals.actual)}
-          </th>
+          <th className="col-3 col-md-2 cell">{centsToDollars(totalBudget)}</th>
+          <th className="col-3 col-md-2 cell">{centsToDollars(totalActual)}</th>
           <th
             className={`d-none d-md-block col-md-2 cell ${
-              summaryTotals.remaining > 0 ? "text-white" : "text-danger"
+              totalRemaining > 0 ? "text-white" : "text-danger"
             }`}
           >
-            {centsToDollars(summaryTotals.remaining)}
+            {centsToDollars(totalRemaining)}
           </th>
         </tr>
       </tfoot>

@@ -11,98 +11,102 @@ export default async function handler(req, res) {
     return res.status(401).send("Must login to view your data!");
   }
 
-  const username = session.user.username;
-
-  const method = req?.method;
-  const year = parseInt(req?.query?.year);
-
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
-  const categoriesCol = db.collection("categories");
 
-  // Function to get all the categories for the given year
-  const getCategories = async () => {
-    const docs = await categoriesCol
-      .find({ username: username, year: year })
-      .sort({ budget: 1 })
-      .toArray();
-
-    const categories = docs.map((category) => {
-      const { username, month, year, ...categoryBody } = category;
-
-      return categoryBody;
-    });
-
-    return categories;
+  const summaryContext = {
+    categoriesCol: db.collection("categories"),
+    username: session.user.username,
   };
 
-  if (method === "GET") {
-    try {
-      const summary = [];
+  switch (req.method) {
+    case "GET":
+      return getYearSummary(req, res, summaryContext);
+    default:
+      res.status(405).send(`${req.method} method not allowed`);
+  }
+}
 
-      // Get the categories for the given file
-      const categories = await getCategories();
+async function getYearSummary(req, res, { categoriesCol, username }) {
+  const year = parseInt(req.query.year);
 
-      categories.forEach((category) => {
-        // Find the category based on the index
-        const categoryIndex = summary.findIndex(
-          (cat) => cat.name === category.name
-        );
-
-        if (categoryIndex !== -1) {
-          const foundCategory = summary[categoryIndex];
-
-          // Check if the category has subcategories
-          if (category.hasSubcategory) {
-            summary[categoryIndex].hasSubcategory = true;
-
-            // Create a set of subcategory names
-            const subcategoryNames = new Set(
-              foundCategory.subcategories.map((subcategory) => subcategory.name)
-            );
-
-            category.subcategories.forEach((subcategory) => {
-              // Check a category's subcategory is already in the summary array
-              if (subcategoryNames.has(subcategory.name.trim())) {
-                const foundSubcategoryIndex =
-                  foundCategory.subcategories.findIndex(
-                    (sub) => sub.name === subcategory.name
-                  );
-
-                // Get the current actual value for the subcategory
-                const subcategoryActual =
-                  foundCategory.subcategories[foundSubcategoryIndex].actual;
-
-                // Add the subcategory's actual to the actual value in the summary array
-                summary[categoryIndex].subcategories[
-                  foundSubcategoryIndex
-                ].actual = subcategory.actual + subcategoryActual;
-              } else {
-                // If the subcategory is not in the summary array, add it
-                summary[categoryIndex].subcategories.push(subcategory);
-              }
-            });
-          }
-
-          // Add the totals for the budget and the actual values to the summary array for that category
-          summary[categoryIndex].budget =
-            foundCategory.budget + category.budget;
-          summary[categoryIndex].actual =
-            foundCategory.actual + category.actual;
-        } else {
-          summary.push(category);
+  try {
+    const categories = await categoriesCol
+      .find(
+        { username, year },
+        {
+          projection: {
+            name: 1,
+            color: 1,
+            budget: 1,
+            actual: 1,
+            fixed: 1,
+            subcategories: 1,
+          },
         }
-      });
+      )
+      .sort({ actual: -1 })
+      .toArray();
 
-      // Send the summary array back to the client
-      res.status(200).json(summary);
-    } catch (error) {
-      console.error(`${method} summary request failed: ${error}`);
-      res
-        .status(500)
-        .send("Error occurred while retrieving the user's summary");
-    }
-  } else {
-    res.status(405).send(`Method ${method} not allowed`);
+    const summary = [];
+
+    categories.forEach((category) => {
+      // Find the category based on the index
+      const categoryIndex = summary.findIndex(
+        (cat) => cat.name === category.name
+      );
+
+      if (categoryIndex !== -1) {
+        const foundCategory = summary[categoryIndex];
+
+        // Check if the category has subcategories
+        if (category.subcategories.length > 0) {
+          // Create a set of subcategory names
+          const subcategoryNames = new Set(
+            foundCategory.subcategories.map((subcategory) => subcategory.name)
+          );
+
+          category.subcategories.forEach((subcategory) => {
+            // Check a category's subcategory is already in the summary array
+            if (subcategoryNames.has(subcategory.name.trim())) {
+              const foundSubcategoryIndex =
+                foundCategory.subcategories.findIndex(
+                  (sub) => sub.name === subcategory.name
+                );
+
+              // Get the current actual value for the subcategory
+              const subcategoryActual =
+                foundCategory.subcategories[foundSubcategoryIndex].actual;
+
+              // Add the subcategory's actual to the actual value in the summary array
+              summary[categoryIndex].subcategories[
+                foundSubcategoryIndex
+              ].actual = subcategory.actual + subcategoryActual;
+            } else {
+              // If the subcategory is not in the summary array, add it
+              summary[categoryIndex].subcategories.push(subcategory);
+            }
+          });
+        }
+
+        // Add the totals for the budget and the actual values to the summary array for that category
+        summary[categoryIndex].budget = foundCategory.budget + category.budget;
+        summary[categoryIndex].actual = foundCategory.actual + category.actual;
+
+        summary[categoryIndex].subcategories.sort(
+          (a, b) => b.actual - a.actual
+        );
+      } else {
+        summary.push(category);
+      }
+    });
+
+    // Send the year summary back to the client
+    return res.status(200).json(summary);
+  } catch (error) {
+    console.error(`GET summary request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(`Error occurred while getting the summary for ${username}`);
   }
 }

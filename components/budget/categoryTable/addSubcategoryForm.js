@@ -76,12 +76,12 @@ const AddSubcategoryForm = ({
     } else {
       // If the category is fixed, the budget is now dependent on the new subcategory total
       const budgetValue = updatedCategory.fixed
-        ? newSubcategory.actual
+        ? newSubcategory.actual / 100
         : updatedCategory.budget;
 
       // If the category is fixed, the actual is set to the subcategory total
       const actualValue = updatedCategory.fixed
-        ? newSubcategory.actual
+        ? newSubcategory.actual / 100
         : updatedCategory.actual;
 
       setUpdatedCategory({

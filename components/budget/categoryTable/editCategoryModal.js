@@ -24,6 +24,7 @@ const EditCategoryModal = ({
             0
           ) / 100
         : category.budget / 100,
+    actual: category.actual / 100,
   });
 
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
@@ -62,10 +63,11 @@ const EditCategoryModal = ({
     if (e.target.checked && updatedCategory.hasSubcategory) {
       setUpdatedCategory({
         ...updatedCategory,
-        budget: category.subcategories.reduce(
-          (sum, current) => sum + current.actual,
-          0
-        ),
+        budget:
+          category.subcategories.reduce(
+            (sum, current) => sum + current.actual,
+            0
+          ) / 100,
         fixed: true,
       });
     } else if (e.target.checked && !updatedCategory.hasSubcategory) {
@@ -88,13 +90,14 @@ const EditCategoryModal = ({
     try {
       // A fixed category's budget and actual spent are the same
       if (!updatedCategory.hasSubcategory && updatedCategory.fixed) {
-        updatedCategory.actual = updatedCategory.budget * 100;
+        updatedCategory.actual = updatedCategory.budget;
       }
 
       // PUT request to update category in the database
       await putCategory({
         ...updatedCategory,
         budget: updatedCategory.budget * 100,
+        actual: updatedCategory.actual * 100,
         month: dateInfo.month,
         year: dateInfo.year,
       });

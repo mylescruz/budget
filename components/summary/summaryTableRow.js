@@ -1,9 +1,22 @@
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import centsToDollars from "@/helpers/centsToDollars";
+import CategoryTransactionsModal from "./categoryTransactionsModal";
 
-const SummaryTableRow = ({ category }) => {
+const SummaryTableRow = ({ category, year }) => {
+  const [categoryName, setCategoryName] = useState(category.name);
   const [showSubcategories, setShowSubcategories] = useState(false);
+  const [showCategoryTransactions, setShowCategoryTransactions] =
+    useState(false);
+
+  const openTransactionsModal = (category) => {
+    setCategoryName(category);
+    setShowCategoryTransactions(true);
+  };
+
+  const closeTransactionsModal = () => {
+    setShowCategoryTransactions(false);
+  };
 
   const categoryColor = {
     backgroundColor: category.color,
@@ -17,28 +30,10 @@ const SummaryTableRow = ({ category }) => {
   return (
     <>
       <tr className="d-flex">
-        <th className="col-6 col-md-6" onClick={dropdownSubcategories}>
-          <Row className="d-flex">
-            {category.hasSubcategory ? (
-              <>
-                <Col className="col-9 cell">
-                  <Button
-                    style={categoryColor}
-                    className="btn-sm fw-bold pe-none"
-                  >
-                    {category.name}
-                  </Button>
-                </Col>
-                <Col className="col-3 text-end">
-                  <i
-                    className={`clicker bi ${
-                      showSubcategories ? "bi-chevron-up" : "bi-chevron-down"
-                    }`}
-                  />
-                </Col>
-              </>
-            ) : (
-              <Col className="col-12 cell">
+        <th className="col-6 col-md-6">
+          {category.subcategories.length > 0 ? (
+            <Row className="d-flex" onClick={dropdownSubcategories}>
+              <Col className="col-9 cell">
                 <Button
                   style={categoryColor}
                   className="btn-sm fw-bold pe-none"
@@ -46,8 +41,31 @@ const SummaryTableRow = ({ category }) => {
                   {category.name}
                 </Button>
               </Col>
-            )}
-          </Row>
+              <Col className="col-3 text-end">
+                <i
+                  className={`clicker bi ${
+                    showSubcategories ? "bi-chevron-up" : "bi-chevron-down"
+                  }`}
+                />
+              </Col>
+            </Row>
+          ) : (
+            <Row
+              className={`col-12 cell ${!category.fixed && "clicker"}`}
+              onClick={() => {
+                !category.fixed && openTransactionsModal(category.name);
+              }}
+            >
+              <Col>
+                <Button
+                  style={categoryColor}
+                  className="btn-sm fw-bold pe-none"
+                >
+                  {category.name}
+                </Button>
+              </Col>
+            </Row>
+          )}
         </th>
         <td
           className={`col-3 col-md-2 cell fw-bold ${
@@ -70,7 +88,14 @@ const SummaryTableRow = ({ category }) => {
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
           <tr key={subcategory.id} className="d-flex">
-            <th className="col-6 cell text-end">{subcategory.name}</th>
+            <th
+              className={`col-6 cell text-end ${!category.fixed && "clicker"}`}
+              onClick={() => {
+                !category.fixed && openTransactionsModal(subcategory.name);
+              }}
+            >
+              {subcategory.name}
+            </th>
             <td className="col-3 col-md-2"></td>
             <td className="col-3 col-md-2 text-end">
               {centsToDollars(subcategory.actual)}
@@ -78,6 +103,15 @@ const SummaryTableRow = ({ category }) => {
             <td className="d-none d-md-block col-md-2"></td>
           </tr>
         ))}
+
+      {showCategoryTransactions && (
+        <CategoryTransactionsModal
+          year={year}
+          category={categoryName}
+          showCategoryTransactions={showCategoryTransactions}
+          closeTransactionsModal={closeTransactionsModal}
+        />
+      )}
     </>
   );
 };

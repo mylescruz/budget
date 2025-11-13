@@ -22,7 +22,7 @@ const SummaryLayout = ({ dateInfo }) => {
             <CategoryPieChart categories={summary} />
           </Col>
           <Col className="col-12 col-xl-6">
-            <SummaryTable summary={summary} />
+            <SummaryTable summary={summary} year={dateInfo.year} />
           </Col>
         </Row>
       </Container>

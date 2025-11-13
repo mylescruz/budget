@@ -7,13 +7,13 @@ const useSummary = (year) => {
   useEffect(() => {
     const getSummary = async () => {
       try {
-        const rsp = await fetch(`/api/summary/${year}`);
+        const response = await fetch(`/api/summary/${year}`);
 
-        if (rsp.ok) {
-          const fetchedSummary = await rsp.json();
+        if (response.ok) {
+          const fetchedSummary = await response.json();
           setSummary(fetchedSummary);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
