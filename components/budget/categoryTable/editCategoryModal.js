@@ -120,6 +120,7 @@ const EditCategoryModal = ({
 
   // Delete category from current budget
   const removeCategory = async () => {
+    setMakingChanges(false);
     setDeletingCategory(true);
 
     try {

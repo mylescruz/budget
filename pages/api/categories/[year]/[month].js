@@ -59,78 +59,89 @@ async function getCategories(req, res, { categoriesCol, username }) {
     // If the categories already exist, send the categories array back to the client
     if (categories.length > 0) {
       return res.status(200).json(categories);
-    }
-
-    // If the categories for the current month and year don't exist, get the categories from the last populated month
-    const latestCategories = await categoriesCol
-      .find({
-        username: username,
-        $or: [{ year: { $lt: year } }, { year: year, month: { $lt: month } }],
-      })
-      .sort({ year: -1, month: -1 })
-      .limit(1)
-      .toArray();
-
-    if (latestCategories.length === 0) {
-      throw new Error("User has no previous categories");
-    }
-
-    // Define the previous month and year
-    const { month: previousMonth, year: previousYear } = latestCategories[0];
-
-    // Get the previous categories and format it to a new month
-    const previousCategories = await categoriesCol
-      .aggregate([
-        { $match: { username, month: previousMonth, year: previousYear } },
-        {
-          $project: {
-            username: 1,
-            month: month,
-            year: year,
-            name: 1,
-            budget: 1,
-            actual: { $cond: ["$fixed", "$actual", 0] },
-            fixed: 1,
-            hasSubcategory: 1,
-            subcategories: 1,
-            _id: 0,
+    } else {
+      // If the categories for the current month and year don't exist, get the categories from the last populated month
+      const latestCategories = await categoriesCol
+        .find(
+          {
+            username: username,
+            $or: [
+              { year: { $lt: year } },
+              { year: year, month: { $lt: month } },
+            ],
           },
-        },
-        { sort: { budget: -1 } },
-      ])
-      .toArray();
+          { projection: { month: 1, year: 1, _id: 0 } }
+        )
+        .sort({ year: -1, month: -1 })
+        .limit(1)
+        .toArray();
 
-    // Reset the non-fixed subcategories
-    const newCategories = previousCategories.map((category) => {
-      if (category.hasSubcategory) {
-        const newSubcategories = category.subcategories.map((subcategory) => {
-          const actualValue = category.fixed ? subcategory.actual : 0;
+      if (latestCategories.length === 0) {
+        throw new Error("User has no previous categories");
+      }
 
-          return { ...subcategory, id: uuidv4(), actual: actualValue };
-        });
+      // Define the previous month and year
+      const { month: previousMonth, year: previousYear } = latestCategories[0];
+
+      // Get the previous categories and format it to a new month
+      const previousCategories = await categoriesCol
+        .aggregate([
+          { $match: { username, month: previousMonth, year: previousYear } },
+          {
+            $project: {
+              username: 1,
+              name: 1,
+              color: 1,
+              budget: 1,
+              actual: { $cond: ["$fixed", "$actual", 0] },
+              fixed: 1,
+              hasSubcategory: 1,
+              subcategories: 1,
+              _id: 0,
+            },
+          },
+          { $sort: { budget: -1 } },
+        ])
+        .toArray();
+
+      // Reset the non-fixed subcategories
+      const newCategories = previousCategories.map((category) => {
+        let formattedSubcategories;
+
+        if (category.hasSubcategory) {
+          formattedSubcategories = category.subcategories.map((subcategory) => {
+            return {
+              ...subcategory,
+              id: uuidv4(),
+              actual: category.fixed ? subcategory.actual : 0,
+            };
+          });
+        } else {
+          formattedSubcategories = category.subcategories;
+        }
 
         return {
           ...category,
-          subcategories: newSubcategories,
+          subcategories: formattedSubcategories,
+          month,
+          year,
         };
-      } else {
-        return category;
-      }
-    });
+      });
 
-    // Insert the newly created categories into MongoDB
-    const result = await categoriesCol.insertMany(newCategories);
+      // Insert the newly created categories into MongoDB
+      const result = await categoriesCol.insertMany(newCategories);
 
-    // Add each insertedId to the corresponding category
-    const insertedCategories = newCategories.map((category, index) => {
-      return {
-        ...category,
-        _id: result.insertedIds[index],
-      };
-    });
+      // Add each insertedId to the corresponding category
+      const insertedCategories = newCategories.map((category, index) => {
+        return {
+          ...category,
+          _id: result.insertedIds[index],
+        };
+      });
 
-    // Send the categories array back to the client
-    return res.status(200).json(insertedCategories);
+      // Send the categories array back to the client
+      return res.status(200).json(insertedCategories);
+    }
   } catch (error) {
     console.error(`GET categories request failed for ${username}: ${error}`);
     return res

@@ -35,11 +35,17 @@ export default async function handler(req, res) {
         net: edittedPaycheckBody.net * 100,
       };
 
+      const updatedDate = new Date(`${edittedPaycheck.date}T00:00:00Z`);
+      const updatedMonth = updatedDate.getMonth() + 1;
+      const updatedYear = updatedDate.getFullYear();
+
       // Update the editted paycheck in MongoDB
       await paychecksCol.updateOne(
         { _id: new ObjectId(paycheckId), username: username },
         {
           $set: {
+            month: updatedMonth,
+            year: updatedYear,
             date: edittedPaycheck.date,
             company: edittedPaycheck.company,
             description: edittedPaycheck.description,
@@ -51,8 +57,8 @@ export default async function handler(req, res) {
       );
 
       // Define the identifiers from the paycheck
-      const oldPaycheckDate = new Date(edittedPaycheck.oldDate);
-      const newPaycheckDate = new Date(edittedPaycheck.date);
+      const oldPaycheckDate = new Date(`${edittedPaycheck.oldDate}T00:00:00Z`);
+      const newPaycheckDate = new Date(`${edittedPaycheck.date}T00:00:00Z`);
       const oldMonth = oldPaycheckDate.getMonth() + 1;
       const newMonth = newPaycheckDate.getMonth() + 1;
       const year = oldPaycheckDate.getFullYear();

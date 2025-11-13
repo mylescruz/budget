@@ -25,6 +25,9 @@ export default async function handler(req, res) {
       .find({ username: username, month: month, year: year })
       .toArray();
 
+    if (paychecks.length === 0) {
+      return res.status(200).send(0);
+    }
     // Get the total net income for the given month
     const monthIncome = paychecks.reduce(
       (sum, current) => sum + current.net,
@@ -32,7 +35,7 @@ export default async function handler(req, res) {
     );
 
     // Send the income for the month back to the client
-    res.status(200).send(monthIncome);
+    return res.status(200).send(monthIncome);
   } else {
     console.error(`${method} method is not allowed`);
     return res.status(405).send(`${method} method is not allowed`);

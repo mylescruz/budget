@@ -61,10 +61,7 @@ export default async function handler(req, res) {
       const paycheckBody = req?.body;
 
       // Define the identifiers from the paycheck
-      const paycheckDate = new Date(paycheckBody.date);
-      const monthName = paycheckDate.toLocaleDateString("en-US", {
-        month: "long",
-      });
+      const paycheckDate = new Date(`${paycheckBody.date}T00:00:00Z`);
       const paycheckMonth = paycheckDate.getMonth() + 1;
       const paycheckYear = paycheckDate.getFullYear();
 
