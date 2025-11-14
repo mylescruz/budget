@@ -28,24 +28,23 @@ const PaychecksTable = ({ dateInfo }) => {
     }
   }, [paychecks]);
 
-  // Sets a user's total gross paychecks, taxes and net paychecks
+  // Sets a user's totals for their gross, taxes and net values from their paychecks
   useEffect(() => {
     if (paychecks) {
-      let grossTotal = 0;
-      let taxesTotal = 0;
+      const grossTotal = paychecks.reduce(
+        (sum, current) => sum + current.gross,
+        0
+      );
+      const taxesTotal = paychecks.reduce(
+        (sum, current) => sum + current.taxes,
+        0
+      );
 
-      if (paychecks) {
-        paychecks.forEach((paycheck) => {
-          grossTotal += paycheck.gross;
-          taxesTotal += paycheck.taxes;
-        });
-
-        setPaychecksTotals({
-          totalGross: grossTotal,
-          totalTaxes: taxesTotal,
-          totalNet: grossTotal - taxesTotal,
-        });
-      }
+      setPaychecksTotals({
+        totalGross: grossTotal,
+        totalTaxes: taxesTotal,
+        totalNet: grossTotal - taxesTotal,
+      });
     }
   }, [paychecks]);
 
@@ -92,7 +91,7 @@ const PaychecksTable = ({ dateInfo }) => {
           <tbody>
             {sortedPaychecks.map((paycheck) => (
               <PaychecksTableRow
-                key={paycheck.id}
+                key={paycheck._id}
                 paycheck={paycheck}
                 dateInfo={dateInfo}
               />

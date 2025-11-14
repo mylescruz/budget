@@ -1,6 +1,6 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dateFormatter from "@/helpers/dateFormatter";
-import { Button, Col, Modal, Row } from "react-bootstrap";
+import { Button, Modal, Row } from "react-bootstrap";
 
 const PaycheckDetailsModal = ({
   paycheck,
@@ -38,19 +38,13 @@ const PaycheckDetailsModal = ({
         <Row className="m-2">Taxes: {centsToDollars(paycheck.taxes)}</Row>
         <Row className="m-2">Net Income: {centsToDollars(paycheck.net)}</Row>
       </Modal.Body>
-      <Modal.Footer>
-        <Row>
-          <Col>
-            <Button variant="danger" onClick={openDelete}>
-              Delete
-            </Button>
-          </Col>
-          <Col>
-            <Button variant="info" onClick={openEdit}>
-              Edit
-            </Button>
-          </Col>
-        </Row>
+      <Modal.Footer className="d-flex justify-content-between">
+        <Button variant="danger" onClick={openDelete}>
+          Delete
+        </Button>
+        <Button variant="info" onClick={openEdit}>
+          Edit
+        </Button>
       </Modal.Footer>
     </Modal>
   );

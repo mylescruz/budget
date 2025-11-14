@@ -12,34 +12,35 @@ const DeletePaycheckModal = ({
 }) => {
   const { deletePaycheck } = useContext(PaychecksContext);
 
-  const [deletingPaycheck, setDeletingPaycheck] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
-  const closeDelete = () => {
+  const closeDeleteModal = () => {
     setShowDelete(false);
     setShowDetails(true);
   };
 
   const confirmDelete = async () => {
-    setDeletingPaycheck(true);
+    setConfirmingDelete(true);
 
     try {
       // Deletes a paycheck from the income array by sending a DELETE request to the API
       await deletePaycheck(paycheck);
 
+      setShowDelete(false);
       setErrorOccurred(false);
     } catch (error) {
       setErrorOccurred(true);
       console.error(error);
       return;
     } finally {
-      setDeletingPaycheck(false);
+      setConfirmingDelete(false);
     }
   };
 
   return (
-    <Modal show={showDelete} onHide={closeDelete} centered>
-      {!deletingPaycheck ? (
+    <Modal show={showDelete} onHide={closeDeleteModal} centered>
+      {!confirmingDelete ? (
         <>
           <Modal.Header closeButton>Delete Paycheck</Modal.Header>
           <Modal.Body>
@@ -48,8 +49,8 @@ const DeletePaycheckModal = ({
             </p>
             {errorOccurred && <ErrorMessage />}
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="info" onClick={closeDelete}>
+          <Modal.Footer className="d-flex justify-content-between">
+            <Button variant="info" onClick={closeDeleteModal}>
               Cancel
             </Button>
             <Button variant="danger" onClick={confirmDelete}>

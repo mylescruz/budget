@@ -19,7 +19,7 @@ const EditPaycheckModal = ({
     taxes: paycheck.taxes / 100,
     net: paycheck.net / 100,
   });
-  const [updatingPaycheck, setUpdatingPaycheck] = useState(false);
+  const [makingChanges, setMakingChanges] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
@@ -29,7 +29,7 @@ const EditPaycheckModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") {
+    if (input === "") {
       setEdittedPaycheck({ ...edittedPaycheck, [e.target.id]: input });
     } else {
       setEdittedPaycheck({
@@ -39,18 +39,17 @@ const EditPaycheckModal = ({
     }
   };
 
-  const closeEdit = () => {
+  const closeEditModal = () => {
     setShowEdit(false);
     setShowDetails(true);
   };
 
-  const editPaycheck = async (e) => {
-    setUpdatingPaycheck(true);
+  const updatePaycheck = async (e) => {
+    e.preventDefault();
+
+    setMakingChanges(true);
 
     try {
-      e.preventDefault();
-
-      // Edits a paycheck in the income array by sending a PUT request to the API
       await putPaycheck({
         ...edittedPaycheck,
         oldDate: paycheck.date,
@@ -63,18 +62,18 @@ const EditPaycheckModal = ({
       console.error(error);
       return;
     } finally {
-      setUpdatingPaycheck(false);
+      setMakingChanges(false);
     }
   };
 
   return (
-    <Modal show={showEdit} onHide={closeEdit} centered>
-      {!updatingPaycheck ? (
+    <Modal show={showEdit} onHide={closeEditModal} centered>
+      {!makingChanges ? (
         <>
           <Modal.Header>
             <Modal.Title>Edit Paycheck</Modal.Title>
           </Modal.Header>
-          <Form onSubmit={editPaycheck}>
+          <Form onSubmit={updatePaycheck}>
             <Modal.Body>
               <Form.Group className="my-2">
                 <Form.Label>Pay Date</Form.Label>
@@ -157,21 +156,13 @@ const EditPaycheckModal = ({
               </Form.Group>
               {errorOccurred && <ErrorMessage />}
             </Modal.Body>
-            <Modal.Footer>
-              <Form.Group className="my-2">
-                <Row>
-                  <Col>
-                    <Button variant="secondary" onClick={closeEdit}>
-                      Cancel
-                    </Button>
-                  </Col>
-                  <Col className="text-nowrap">
-                    <Button variant="primary" type="submit">
-                      Save Changes
-                    </Button>
-                  </Col>
-                </Row>
-              </Form.Group>
+            <Modal.Footer className="my-2 d-flex justify-content-between">
+              <Button variant="secondary" onClick={closeEditModal}>
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit" className="text-nowrap">
+                Save Changes
+              </Button>
             </Modal.Footer>
           </Form>
         </>

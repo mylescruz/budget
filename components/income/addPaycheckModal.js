@@ -32,7 +32,7 @@ const AddPaycheckModal = ({
   const handleNumInput = (e) => {
     const input = e.target.value;
 
-    if (input == "") {
+    if (input === "") {
       setPaycheck({ ...paycheck, [e.target.id]: input });
     } else {
       setPaycheck({ ...paycheck, [e.target.id]: parseFloat(input) });
@@ -40,11 +40,11 @@ const AddPaycheckModal = ({
   };
 
   const AddNewPaycheck = async (e) => {
+    e.preventDefault();
+
     setAddingPaycheck(true);
 
     try {
-      e.preventDefault();
-
       // Adds the new paycheck to the income array by sending a POST request to the API
       await postPaycheck(paycheck);
 
@@ -60,14 +60,14 @@ const AddPaycheckModal = ({
     }
   };
 
-  const closeModal = () => {
+  const closeAddModal = () => {
     setPaycheck(emptyPaycheck);
     setAddPaycheckClicked(false);
   };
 
   return (
     <>
-      <Modal show={addPaycheckClicked} onHide={closeModal} centered>
+      <Modal show={addPaycheckClicked} onHide={closeAddModal} centered>
         {!addingPaycheck ? (
           <>
             <Modal.Header closeButton>
@@ -155,21 +155,13 @@ const AddPaycheckModal = ({
                 </Form.Group>
                 {errorOccurred && <ErrorMessage />}
               </Modal.Body>
-              <Modal.Footer>
-                <Form.Group className="my-2">
-                  <Row>
-                    <Col>
-                      <Button variant="secondary" onClick={closeModal}>
-                        Close
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button variant="primary" type="submit">
-                        Add
-                      </Button>
-                    </Col>
-                  </Row>
-                </Form.Group>
+              <Modal.Footer className="my-2 d-flex justify-content-between">
+                <Button variant="secondary" onClick={closeAddModal}>
+                  Close
+                </Button>
+                <Button variant="primary" type="submit">
+                  Add
+                </Button>
               </Modal.Footer>
             </Form>
           </>

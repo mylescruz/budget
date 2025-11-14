@@ -4,17 +4,16 @@ const usePaychecks = (year) => {
   const [paychecks, setPaychecks] = useState([]);
   const [paychecksLoading, setPaychecksLoading] = useState(true);
 
-  // GET request that returns all the paychecks based on the year
   useEffect(() => {
     const getPaychecks = async () => {
       try {
-        const rsp = await fetch(`/api/paychecks/${year}`);
+        const response = await fetch(`/api/paychecks/${year}`);
 
-        if (rsp.ok) {
-          const fetchedPaychecks = await rsp.json();
+        if (response.ok) {
+          const fetchedPaychecks = await response.json();
           setPaychecks(fetchedPaychecks);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
@@ -28,28 +27,26 @@ const usePaychecks = (year) => {
     getPaychecks();
   }, [year]);
 
-  // POST request that adds a new paycheck based on the month and year
   const postPaycheck = useCallback(
-    async (newPaycheck) => {
+    async (paycheck) => {
       try {
-        const rsp = await fetch(`/api/paychecks/${year}`, {
+        const response = await fetch(`/api/paychecks/${year}`, {
           method: "POST",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newPaycheck),
+          body: JSON.stringify(paycheck),
         });
 
-        if (rsp.ok) {
-          const addedPaycheck = await rsp.json();
+        if (response.ok) {
+          const addedPaycheck = await response.json();
           setPaychecks([...paychecks, addedPaycheck]);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
-        // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setPaychecksLoading(false);
@@ -58,24 +55,23 @@ const usePaychecks = (year) => {
     [paychecks, year]
   );
 
-  // PUT request that updates a paycheck based on the id
   const putPaycheck = useCallback(
-    async (edittedPaycheck) => {
+    async (paycheck) => {
       try {
-        const rsp = await fetch(`/api/paycheck/${edittedPaycheck.id}`, {
+        const response = await fetch(`/api/paycheck/${paycheck._id}`, {
           method: "PUT",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(edittedPaycheck),
+          body: JSON.stringify(paycheck),
         });
 
-        if (rsp.ok) {
-          const updatedPaycheck = await rsp.json();
+        if (response.ok) {
+          const updatedPaycheck = await response.json();
 
           const updatedPaychecks = paychecks.map((paycheck) => {
-            if (paycheck.id === updatedPaycheck.id) {
+            if (paycheck._id === updatedPaycheck._id) {
               return updatedPaycheck;
             } else {
               return paycheck;
@@ -84,11 +80,10 @@ const usePaychecks = (year) => {
 
           setPaychecks(updatedPaychecks);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
-        // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setPaychecksLoading(false);
@@ -97,33 +92,31 @@ const usePaychecks = (year) => {
     [paychecks]
   );
 
-  // DELETE request that deletes a paycheck based on the id
   const deletePaycheck = useCallback(
-    async (paycheckToDelete) => {
+    async (paycheck) => {
       try {
-        const rsp = await fetch(`/api/paycheck/${paycheckToDelete.id}`, {
+        const response = await fetch(`/api/paycheck/${paycheck._id}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(paycheckToDelete),
+          body: JSON.stringify(paycheck),
         });
 
-        if (rsp.ok) {
-          const deletedPaycheck = await rsp.json();
+        if (response.ok) {
+          const deletedPaycheck = await response.json();
 
           const updatedPaychecks = paychecks.filter((paycheck) => {
-            return paycheck.id !== deletedPaycheck.id;
+            return paycheck._id !== deletedPaycheck._id;
           });
 
           setPaychecks(updatedPaychecks);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
-        // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setPaychecksLoading(false);

@@ -10,7 +10,7 @@ const PaychecksTableRow = ({ paycheck, dateInfo }) => {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const openDetails = () => {
+  const openDetailsModal = () => {
     setShowDetails(true);
   };
 
@@ -39,7 +39,7 @@ const PaychecksTableRow = ({ paycheck, dateInfo }) => {
 
   return (
     <>
-      <tr className="d-flex click" onClick={openDetails}>
+      <tr className="d-flex click" onClick={openDetailsModal}>
         <td className="col-3 col-md-2 col-lg-1">
           {dateFormatter(paycheck.date)}
         </td>

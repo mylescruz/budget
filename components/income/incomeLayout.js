@@ -18,14 +18,12 @@ const InnerIncomeLayout = ({ dateInfo }) => {
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
   const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
-  const [nullPaychecks, setNullPaychecks] = useState(paychecks === null);
+  const [nullPaychecks, setNullPaychecks] = useState(true);
 
-  // Checks if there is an error loading paychecks
+  // Marks the flag to enable the add paycheck button
   useEffect(() => {
     if (paychecks) {
       setNullPaychecks(false);
-    } else {
-      setNullPaychecks(true);
     }
   }, [paychecks]);
 

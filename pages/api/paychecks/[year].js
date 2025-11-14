@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
+import { updateGuiltFreeSpending } from "@/lib/updateGuiltFreeSpending";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -14,118 +14,99 @@ export default async function handler(req, res) {
     return res.status(401).send("Must login to view your data!");
   }
 
-  const username = session.user.username;
-
-  const year = parseInt(req?.query?.year);
-  const method = req?.method;
-
   // Configure MongoDB
-  const db = (await clientPromise).db(process.env.MONGO_DB);
-  const paychecksCol = db.collection("paychecks");
-  const categoriesCol = db.collection("categories");
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB);
 
-  // Fucntion that returns the user's paychecks from MongoDB
-  const getPaychecks = async () => {
-    const docs = await paychecksCol
-      .find({ username: username, year: year })
+  const paychecksContext = {
+    client: client,
+    paychecksCol: db.collection("paychecks"),
+    username: session.user.username,
+  };
+
+  switch (req.method) {
+    case "GET":
+      return getPaychecks(req, res, paychecksContext);
+    case "POST":
+      return addPaycheck(req, res, paychecksContext);
+    default:
+      es.status(405).send(`${req.method} method not allowed`);
+  }
+}
+
+// Get the user's paychecks from MongoDB
+async function getPaychecks(req, res, { paychecksCol, username }) {
+  const year = parseInt(req.query.year);
+
+  try {
+    const paychecks = await paychecksCol
+      .find(
+        { username, year },
+        { projection: { username: 0, month: 0, year: 0 } }
+      )
       .sort({ date: 1 })
       .toArray();
 
-    const paychecks = docs.map((paycheck) => {
-      return {
-        id: paycheck._id,
-        date: paycheck.date,
-        company: paycheck.company,
-        description: paycheck.description,
-        gross: paycheck.gross,
-        taxes: paycheck.taxes,
-        net: paycheck.net,
-      };
-    });
+    // Send the user's paychecks back to the client
+    return res.status(200).json(paychecks);
+  } catch (error) {
+    console.error(`GET paychecks request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(`Error occurred while getting the paychecks for ${username}`);
+  }
+}
 
-    return paychecks;
-  };
+async function addPaycheck(req, res, { client, paychecksCol, username }) {
+  const mongoSession = client.startSession();
 
-  if (method === "GET") {
-    try {
-      const paychecks = await getPaychecks();
+  try {
+    // Define the date identifiers from the paycheck
+    const paycheckDate = new Date(`${req.body.date}T00:00:00Z`);
+    const paycheckMonth = paycheckDate.getMonth() + 1;
+    const paycheckYear = paycheckDate.getFullYear();
 
-      // Send the paychecks array in the response
-      res.status(200).json(paychecks);
-    } catch (error) {
-      console.error(`${method} paychecks request failed: ${error}`);
-      res.status(500).send(`Error occurred while getting ${username}'s income`);
-    }
-  } else if (method === "POST") {
-    try {
-      const paycheckBody = req?.body;
+    // Assign the identifiers to the paycheck
+    const newPaycheck = {
+      ...req.body,
+      gross: req.body.gross * 100,
+      taxes: req.body.gross * 100 - req.body.net * 100,
+      net: req.body.net * 100,
+      username,
+      month: paycheckMonth,
+      year: paycheckYear,
+    };
 
-      // Define the identifiers from the paycheck
-      const paycheckDate = new Date(`${paycheckBody.date}T00:00:00Z`);
-      const paycheckMonth = paycheckDate.getMonth() + 1;
-      const paycheckYear = paycheckDate.getFullYear();
+    let insertedPaycheck;
 
-      // Assign the identifiers to the paycheck
-      const newPaycheck = {
-        ...paycheckBody,
-        gross: paycheckBody.gross * 100,
-        taxes: paycheckBody.gross * 100 - paycheckBody.net * 100,
-        net: paycheckBody.net * 100,
-        username: username,
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
+      // Add the new paycheck to the paychecks collection in MongoDB
+      insertedPaycheck = await paychecksCol.insertOne(newPaycheck, {
+        session: mongoSession,
+      });
+
+      // Update the Guilt Free Spending category for the paycheck's month
+      await updateGuiltFreeSpending({
+        username,
         month: paycheckMonth,
         year: paycheckYear,
-      };
+        mongoSession,
+      });
+    });
 
-      // Add the new paycheck to the paychecks collection in MongoDB
-      const insertedPaycheck = await paychecksCol.insertOne(newPaycheck);
+    const { username: u, month: m, year: y, ...addedPaycheck } = newPaycheck;
 
-      // Get the total net income for the old month
-      const paychecks = await paychecksCol
-        .find({ username: username, month: paycheckMonth, year: paycheckYear })
-        .toArray();
-      const updatedBudget = paychecks.reduce(
-        (sum, current) => sum + current.net,
-        0
-      );
-
-      // Get the total actual value for all categories
-      const categories = await categoriesCol
-        .find({ username: username, month: paycheckMonth, year: paycheckYear })
-        .toArray();
-
-      // Update the Guilt Free Spending category's budget to adjust for the user's total income for the month minus the total budget
-      const foundCategory = categories.find(
-        (category) => category.name === "Guilt Free Spending"
-      );
-
-      if (foundCategory) {
-        // Get the budget total for all categories
-        let totalBudget = 0;
-        categories.forEach((category) => {
-          if (category.name !== "Guilt Free Spending") {
-            totalBudget += category.budget;
-          }
-        });
-
-        const gfsBudget = updatedBudget - totalBudget;
-
-        await categoriesCol.updateOne(
-          { _id: foundCategory._id },
-          {
-            $set: {
-              budget: gfsBudget,
-            },
-          }
-        );
-      }
-
-      // Send the new paycheck back to the client
-      res.status(200).json({ id: insertedPaycheck.insertedId, ...newPaycheck });
-    } catch (error) {
-      console.error(`${method} paychecks request failed: ${error}`);
-      res.status(500).send("Error occured while adding a paycheck");
-    }
-  } else {
-    res.status(405).send(`Method ${method} not allowed`);
+    // Send the new paycheck back to the client
+    return res
+      .status(200)
+      .json({ _id: insertedPaycheck.insertedId, ...addedPaycheck });
+  } catch (error) {
+    console.error(`POST paychecks request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(`Error occured while adding a paycheck for ${username}`);
+  } finally {
+    await mongoSession.endSession();
   }
 }
