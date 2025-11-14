@@ -6,9 +6,10 @@ const CategoryTransactionsTable = ({ transactions }) => {
     <Table striped>
       <thead className="table-dark">
         <tr className="d-flex">
-          <th className="col-3">Date</th>
-          <th className="col-6">Store</th>
-          <th className="col-3">Amount</th>
+          <th className="col-3 col-md-2">Date</th>
+          <th className="col-6 col-md-4">Store</th>
+          <th className="d-none d-md-block col-md-4">Items</th>
+          <th className="col-3 col-md-2">Amount</th>
         </tr>
       </thead>
       <tbody>

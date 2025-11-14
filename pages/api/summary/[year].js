@@ -16,6 +16,7 @@ export default async function handler(req, res) {
 
   const summaryContext = {
     categoriesCol: db.collection("categories"),
+    transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
 
@@ -27,86 +28,188 @@ export default async function handler(req, res) {
   }
 }
 
-async function getYearSummary(req, res, { categoriesCol, username }) {
+async function getYearSummary(
+  req,
+  res,
+  { categoriesCol, transactionsCol, username }
+) {
   const year = parseInt(req.query.year);
 
   try {
-    const categories = await categoriesCol
-      .find(
-        { username, year },
-        {
-          projection: {
-            name: 1,
-            color: 1,
-            budget: 1,
-            actual: 1,
-            fixed: 1,
-            subcategories: 1,
-          },
-        }
-      )
-      .sort({ actual: -1 })
-      .toArray();
+    const categories = await getCategoriesSummary(
+      categoriesCol,
+      username,
+      year
+    );
 
-    const summary = [];
+    const months = await getMonthsStats(categoriesCol, username, year);
 
-    categories.forEach((category) => {
-      // Find the category based on the index
-      const categoryIndex = summary.findIndex(
-        (cat) => cat.name === category.name
-      );
-
-      if (categoryIndex !== -1) {
-        const foundCategory = summary[categoryIndex];
-
-        // Check if the category has subcategories
-        if (category.subcategories.length > 0) {
-          // Create a set of subcategory names
-          const subcategoryNames = new Set(
-            foundCategory.subcategories.map((subcategory) => subcategory.name)
-          );
-
-          category.subcategories.forEach((subcategory) => {
-            // Check a category's subcategory is already in the summary array
-            if (subcategoryNames.has(subcategory.name.trim())) {
-              const foundSubcategoryIndex =
-                foundCategory.subcategories.findIndex(
-                  (sub) => sub.name === subcategory.name
-                );
-
-              // Get the current actual value for the subcategory
-              const subcategoryActual =
-                foundCategory.subcategories[foundSubcategoryIndex].actual;
-
-              // Add the subcategory's actual to the actual value in the summary array
-              summary[categoryIndex].subcategories[
-                foundSubcategoryIndex
-              ].actual = subcategory.actual + subcategoryActual;
-            } else {
-              // If the subcategory is not in the summary array, add it
-              summary[categoryIndex].subcategories.push(subcategory);
-            }
-          });
-        }
-
-        // Add the totals for the budget and the actual values to the summary array for that category
-        summary[categoryIndex].budget = foundCategory.budget + category.budget;
-        summary[categoryIndex].actual = foundCategory.actual + category.actual;
-
-        summary[categoryIndex].subcategories.sort(
-          (a, b) => b.actual - a.actual
-        );
-      } else {
-        summary.push(category);
-      }
-    });
+    const topStores = await getTopStores(transactionsCol, username, year);
 
     // Send the year summary back to the client
-    return res.status(200).json(summary);
+    return res.status(200).json({
+      categories,
+      months,
+      topStores,
+    });
   } catch (error) {
     console.error(`GET summary request failed for ${username}: ${error}`);
     return res
       .status(500)
       .send(`Error occurred while getting the summary for ${username}`);
   }
+}
+
+// Get the total spent for each summary
+async function getCategoriesSummary(categoriesCol, username, year) {
+  const categories = await categoriesCol
+    .find(
+      { username, year },
+      {
+        projection: {
+          name: 1,
+          color: 1,
+          budget: 1,
+          actual: 1,
+          fixed: 1,
+          subcategories: 1,
+        },
+      }
+    )
+    .sort({ actual: -1 })
+    .toArray();
+
+  const categoriesSummary = [];
+
+  categories.forEach((category) => {
+    // Find the category based on the index
+    const categoryIndex = categoriesSummary.findIndex(
+      (cat) => cat.name === category.name
+    );
+
+    if (categoryIndex !== -1) {
+      const foundCategory = categoriesSummary[categoryIndex];
+
+      // Check if the category has subcategories
+      if (category.subcategories.length > 0) {
+        // Create a set of subcategory names
+        const subcategoryNames = new Set(
+          foundCategory.subcategories.map((subcategory) => subcategory.name)
+        );
+
+        category.subcategories.forEach((subcategory) => {
+          // Check a category's subcategory is already in the categoriesSummary array
+          if (subcategoryNames.has(subcategory.name.trim())) {
+            const foundSubcategoryIndex = foundCategory.subcategories.findIndex(
+              (sub) => sub.name === subcategory.name
+            );
+
+            // Get the current actual value for the subcategory
+            const subcategoryActual =
+              foundCategory.subcategories[foundSubcategoryIndex].actual;
+
+            // Add the subcategory's actual to the actual value in the categoriesSummary array
+            categoriesSummary[categoryIndex].subcategories[
+              foundSubcategoryIndex
+            ].actual = subcategory.actual + subcategoryActual;
+          } else {
+            // If the subcategory is not in the categoriesSummary array, add it
+            categoriesSummary[categoryIndex].subcategories.push(subcategory);
+          }
+        });
+      }
+
+      // Add the totals for the budget and the actual values to the categoriesSummary array for that category
+      categoriesSummary[categoryIndex].budget =
+        foundCategory.budget + category.budget;
+      categoriesSummary[categoryIndex].actual =
+        foundCategory.actual + category.actual;
+
+      categoriesSummary[categoryIndex].subcategories.sort(
+        (a, b) => b.actual - a.actual
+      );
+    } else {
+      categoriesSummary.push(category);
+    }
+  });
+
+  const fixedCategories = categoriesSummary
+    .filter((category) => category.fixed)
+    .sort((a, b) => b.actual - a.actual);
+  const changingCategories = categoriesSummary
+    .filter((category) => !category.fixed)
+    .sort((a, b) => b.actual - a.actual);
+
+  return {
+    fixed: fixedCategories,
+    changing: changingCategories,
+  };
+}
+
+// Get the max, min and average amount spent for each month
+async function getMonthsStats(categoriesCol, username, year) {
+  const months = await categoriesCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $group: {
+          _id: "$month",
+          totalSpent: { $sum: "$actual" },
+        },
+      },
+      {
+        $project: {
+          month: "$_id",
+          amount: "$totalSpent",
+          _id: 0,
+        },
+      },
+    ])
+    .toArray();
+
+  // Get the total spent for the year
+  let totalSpent = 0;
+
+  // Add the month name to each month
+  const formattedMonths = months
+    .map((month) => {
+      totalSpent += month.amount;
+
+      const monthNumber = month.month;
+      const monthDate = new Date(year, monthNumber - 1);
+      const monthName = monthDate.toLocaleDateString("en-US", {
+        month: "long",
+      });
+
+      return {
+        ...month,
+        monthName,
+      };
+    })
+    .sort((a, b) => b.amount - a.amount);
+
+  return {
+    max: formattedMonths[0],
+    min: formattedMonths[formattedMonths.length - 1],
+    avg: totalSpent / formattedMonths.length,
+  };
+}
+
+// Get the top 10 spending stores for the year
+async function getTopStores(transactionsCol, username, year) {
+  return await transactionsCol
+    .aggregate([
+      { $match: { username, year } },
+      { $group: { _id: "$store", totalAmount: { $sum: "$amount" } } },
+      {
+        $project: {
+          store: "$_id",
+          amount: "$totalAmount",
+          _id: 0,
+        },
+      },
+      { $sort: { amount: -1 } },
+      { $limit: 10 },
+    ])
+    .toArray();
 }

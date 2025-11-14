@@ -72,7 +72,7 @@ const SummaryTableRow = ({ category, year }) => {
             category.budget < 0 && "text-danger "
           }`}
         >
-          {!category.fixed && centsToDollars(category.budget)}
+          {centsToDollars(category.budget)}
         </td>
         <td className="col-3 col-md-2 cell">
           {centsToDollars(category.actual)}

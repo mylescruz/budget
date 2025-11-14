@@ -43,9 +43,10 @@ async function getYearTransactions(req, res, { transactionsCol, username }) {
         { projection: { username: 0, month: 0, year: 0, category: 0, _id: 0 } }
       )
       .sort({ amount: -1 })
+      .limit(10)
       .toArray();
 
-    // Send the transactions array back to the client
+    // Send the top 10 transactions back to the client
     return res.status(200).json(transactions);
   } catch (error) {
     console.error(

@@ -29,9 +29,7 @@ const CategoryTransactionsModal = ({
           <Modal.Title>{category} Transactions</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="mb-2">
-            &#9432; Sorted from most expensive transaction to least
-          </p>
+          <p className="mb-2">&#9432; Top 10 Most Expensive Transactions</p>
           <CategoryTransactionsTable transactions={transactions} />
         </Modal.Body>
       </Modal>
