@@ -80,10 +80,10 @@ async function addPaycheck(req, res, { client, paychecksCol, username }) {
     let insertedPaycheck;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Add the new paycheck to the paychecks collection in MongoDB
       insertedPaycheck = await paychecksCol.insertOne(newPaycheck, {
-        session: mongoSession,
+        session,
       });
 
       // Update the Guilt Free Spending category for the paycheck's month
@@ -91,7 +91,7 @@ async function addPaycheck(req, res, { client, paychecksCol, username }) {
         username,
         month: paycheckMonth,
         year: paycheckYear,
-        mongoSession,
+        session,
       });
     });
 

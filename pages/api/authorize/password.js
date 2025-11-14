@@ -25,56 +25,52 @@ export default async function handler(req, res) {
 
 // Verify given credentials with the credentials stored in MongoDB
 async function verifyLogin(req, res, { client, usersCol }) {
-  const mongoSession = client.startSession();
-
   try {
     const credentials = req.body;
 
-    // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
-      // Get the user from MongoDB
-      const user = await usersCol.findOne({ username: credentials.username });
+    // Get the user from MongoDB
+    const user = await usersCol.findOne({ username: credentials.username });
 
-      if (user) {
-        // Check if password given matches the stored password
-        const passwordsMatch = await checkHashedPassword(
-          credentials.password,
-          user.password_hash
-        );
+    if (!user) {
+      // Send an error status for an invalid username
+      return res.status(401).json(null);
+    }
 
-        if (passwordsMatch) {
-          const lastLogin = new Date();
-          // Update the user's last login date
-          await usersCol.updateOne(
-            { _id: new ObjectId(user._id) },
-            {
-              $set: {
-                lastLoginDate: lastLogin,
-              },
-            }
-          );
+    // Check if password given matches the stored password
+    const passwordsMatch = await checkHashedPassword(
+      credentials.password,
+      user.password_hash
+    );
 
-          const verifiedUser = {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            username: user.username,
-            role: user.role,
-            onboarded: user.onboarded,
-            lastLoginDate: lastLogin,
-          };
+    if (!passwordsMatch) {
+      // Send an error status for an invalid password
+      return res.status(401).json(null);
+    }
 
-          // Send back verified user to NextAuth
-          res.status(200).json(verifiedUser);
-        } else {
-          // Send an error status for an invalid password
-          return res.status(401).json(null);
-        }
-      } else {
-        // Send an error status for an invalid username
-        return res.status(401).json(null);
+    // Update the user's last login date
+    const lastLogin = new Date();
+
+    await usersCol.updateOne(
+      { _id: new ObjectId(user._id) },
+      {
+        $set: {
+          lastLoginDate: lastLogin,
+        },
       }
-    });
+    );
+
+    const verifiedUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      onboarded: user.onboarded,
+      lastLoginDate: lastLogin,
+    };
+
+    // Send back verified user to NextAuth
+    return res.status(200).json(verifiedUser);
   } catch (error) {
     console.error(`POST authorize request failed for : ${error}`);
     return res
@@ -82,8 +78,6 @@ async function verifyLogin(req, res, { client, usersCol }) {
       .send(
         "An error occurred while authorizing this user's credentials. Please try again later!"
       );
-  } finally {
-    await mongoSession.endSession();
   }
 }
 

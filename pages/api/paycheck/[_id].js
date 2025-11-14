@@ -54,7 +54,7 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
     const updatedMonth = updatedDate.getMonth() + 1;
     const updatedYear = updatedDate.getFullYear();
 
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Update the editted paycheck in MongoDB
       await paychecksCol.updateOne(
         { _id: new ObjectId(paycheckId), username },
@@ -69,7 +69,8 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
             taxes: updatedPaycheck.taxes,
             net: updatedPaycheck.net,
           },
-        }
+        },
+        { session }
       );
 
       // Define the date identifiers from the old paycheck
@@ -82,7 +83,7 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
         username,
         month: updatedMonth,
         year: updatedYear,
-        mongoSession,
+        session,
       });
 
       if (updatedMonth !== oldMonth) {
@@ -91,7 +92,7 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
           username,
           month: oldMonth,
           year: oldYear,
-          mongoSession,
+          session,
         });
       }
     });
@@ -116,9 +117,12 @@ async function deletePaycheck(req, res, { client, paychecksCol, username }) {
     const paycheckId = req.query._id;
     const paycheck = req.body;
 
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Delete the given paycheck from MongoDB
-      await paychecksCol.deleteOne({ _id: new ObjectId(paycheckId) });
+      await paychecksCol.deleteOne(
+        { _id: new ObjectId(paycheckId) },
+        { session }
+      );
 
       // Define the identifiers from the paycheck
       const paycheckDate = new Date(`${paycheck.date}T00:00:00Z`);
@@ -126,7 +130,7 @@ async function deletePaycheck(req, res, { client, paychecksCol, username }) {
       const year = paycheckDate.getFullYear();
 
       // Update the Guilt Free Spending category for the deleted paycheck's month
-      await updateGuiltFreeSpending({ username, month, year, mongoSession });
+      await updateGuiltFreeSpending({ username, month, year, session });
     });
 
     // Send a success message back to the client

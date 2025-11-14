@@ -153,6 +153,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
 // Add a new category for the user in MongoDB
 async function addCategory(req, res, { client, categoriesCol, username }) {
   const mongoSession = await client.startSession();
+
   try {
     const month = parseInt(req.query.month);
     const year = parseInt(req.query.year);
@@ -184,20 +185,24 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     let insertedCategory;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Add the new category to the categories collection in MongoDB
-      insertedCategory = await categoriesCol.insertOne(newCategory);
+      insertedCategory = await categoriesCol.insertOne(newCategory, {
+        session,
+      });
 
-      await updateGuiltFreeSpending(username, month, year, mongoSession);
+      await updateGuiltFreeSpending({ username, month, year, session });
     });
 
     const { username: u, month: m, year: y, ...addedCategory } = newCategory;
 
     // Send the new category back to the client
-    res.status(200).json({ id: insertedCategory.insertedId, ...addedCategory });
+    return res
+      .status(200)
+      .json({ id: insertedCategory.insertedId, ...addedCategory });
   } catch (error) {
     console.error(`POST categories request failed for ${username}: ${error}`);
-    res
+    return res
       .status(500)
       .send(`Error occurred while adding a category for ${username}`);
   } finally {

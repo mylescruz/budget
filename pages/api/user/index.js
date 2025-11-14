@@ -69,11 +69,8 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
     const updatedUser = req.body;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
-      const storedUser = await usersCol.findOne(
-        { username },
-        { session: mongoSession }
-      );
+    await mongoSession.withTransaction(async (session) => {
+      const storedUser = await usersCol.findOne({ username }, { session });
 
       // Check if the given password matches the stored password
       const passwordsMatch = await checkHashedPassword(
@@ -106,7 +103,7 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
             password_hash: userPassword,
           },
         },
-        { session: mongoSession }
+        { session }
       );
     });
 
@@ -130,14 +127,11 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
 async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
   const mongoSession = client.startSession();
   try {
-    const deletedUser = req?.body;
+    const deletedUser = req.body;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
-      const storedUser = await usersCol.findOne(
-        { username },
-        { session: mongoSession }
-      );
+    await mongoSession.withTransaction(async (session) => {
+      const storedUser = await usersCol.findOne({ username }, { session });
 
       // Check if the given password matches the stored password
       const passwordsMatch = await checkHashedPassword(
@@ -152,25 +146,16 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
       }
 
       // Delete the user from the users collection
-      await usersCol.deleteOne(
-        { _id: new ObjectId(_id) },
-        { session: mongoSession }
-      );
+      await usersCol.deleteOne({ _id: new ObjectId(_id) }, { session });
 
       // Delete the user's documents from the categories collection
-      await db
-        .collection("categories")
-        .deleteMany({ username }, { session: mongoSession });
+      await db.collection("categories").deleteMany({ username }, { session });
 
       // Delete the user's documents from the transactions collection
-      await db
-        .collection("transactions")
-        .deleteMany({ username }, { session: mongoSession });
+      await db.collection("transactions").deleteMany({ username }, { session });
 
       // Delete the user's documents from the paychecks collection
-      await db
-        .collection("paychecks")
-        .deleteMany({ username }, { session: mongoSession });
+      await db.collection("paychecks").deleteMany({ username }, { session });
     });
 
     // Send back a successful status that the user was deleted

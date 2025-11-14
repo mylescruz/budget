@@ -44,7 +44,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const category = req.body;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Update the new fields for the category in MongoDB
       await categoriesCol.updateOne(
         { _id: new ObjectId(categoryId) },
@@ -58,7 +58,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             subcategories: category.subcategories,
           },
         },
-        { session: mongoSession }
+        { session }
       );
 
       // Update the color for all the categories with that name
@@ -69,7 +69,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             color: category.color,
           },
         },
-        { session: mongoSession }
+        { session }
       );
 
       // Update the Guilt Free Spending category for the category's month
@@ -77,7 +77,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         username,
         month: category.month,
         year: category.year,
-        mongoSession,
+        session,
       });
     });
 
@@ -102,11 +102,11 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
     const category = req.body;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Delete category from MongoDB
       await categoriesCol.deleteOne(
         { _id: new ObjectId(categoryId) },
-        { session: mongoSession }
+        { session }
       );
 
       // Update the Guilt Free Spending category for the category's month
@@ -114,7 +114,7 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
         username,
         month: category.month,
         year: category.year,
-        mongoSession,
+        session,
       });
     });
 

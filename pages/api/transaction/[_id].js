@@ -57,7 +57,7 @@ async function updateTransaction(
     const year = transactionDate.getFullYear();
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Update the transaction with the new values in MongoDB
       await transactionsCol.updateOne(
         {
@@ -72,12 +72,12 @@ async function updateTransaction(
             amount: transaction.amount,
           },
         },
-        { session: mongoSession }
+        { session }
       );
 
       // Update the old category
       await updateCategoryActual(
-        mongoSession,
+        session,
         categoriesCol,
         username,
         month,
@@ -88,7 +88,7 @@ async function updateTransaction(
 
       // Update the new category
       await updateCategoryActual(
-        mongoSession,
+        session,
         categoriesCol,
         username,
         month,
@@ -129,16 +129,16 @@ async function deleteTransaction(
     const year = transactionDate.getFullYear();
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Delete the given transaction from the transactions collection in MongoDB
       await transactionsCol.deleteOne(
         { _id: new ObjectId(transactionId) },
-        { session: mongoSession }
+        { session }
       );
 
       // Update the correlating category to remove old transaction amount
       await updateCategoryActual(
-        mongoSession,
+        session,
         categoriesCol,
         username,
         month,
@@ -166,7 +166,7 @@ async function deleteTransaction(
 
 // Update the given category or subcategory's actual value
 async function updateCategoryActual(
-  mongoSession,
+  session,
   categoriesCol,
   username,
   month,
@@ -181,7 +181,7 @@ async function updateCategoryActual(
       year,
       $or: [{ name: categoryName }, { "subcategories.name": categoryName }],
     },
-    { session: mongoSession }
+    { session }
   );
 
   if (!category) {
@@ -194,14 +194,14 @@ async function updateCategoryActual(
     await categoriesCol.updateOne(
       { _id: new ObjectId(category._id) },
       { $inc: { actual: amount } },
-      { session: mongoSession }
+      { session }
     );
   } else {
     // Update parent category and subcategory
     await categoriesCol.updateOne(
       { _id: new ObjectId(category._id), "subcategories.name": categoryName },
       { $inc: { actual: amount, "subcategories.$.actual": amount } },
-      { session: mongoSession }
+      { session }
     );
   }
 }

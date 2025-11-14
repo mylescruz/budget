@@ -92,11 +92,11 @@ async function addTransaction(
     let insertedId;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async () => {
+    await mongoSession.withTransaction(async (session) => {
       // Add the new transaction to the transactions collection in MongoDB
       const insertedTransaction = await transactionsCol.insertOne(
         newTransaction,
-        { session: mongoSession }
+        { session }
       );
 
       insertedId = insertedTransaction.insertedId;
@@ -112,7 +112,7 @@ async function addTransaction(
             { "subcategories.name": newTransaction.category },
           ],
         },
-        { session: mongoSession }
+        { session }
       );
 
       if (category) {
@@ -126,7 +126,7 @@ async function addTransaction(
                 actual: newTransaction.amount,
               },
             },
-            { mongoSession }
+            { session }
           );
         } else {
           // Increment the actual value of the category and subcategory
@@ -141,7 +141,7 @@ async function addTransaction(
                 "subcategories.$.actual": newTransaction.amount,
               },
             },
-            { mongoSession }
+            { session }
           );
         }
       } else {
