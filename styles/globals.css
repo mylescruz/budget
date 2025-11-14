@@ -49,7 +49,6 @@ a {
   min-height: 100vh;
 }
 
-.login,
 .create-account,
 .redirect {
   min-height: 50vh;
@@ -184,22 +183,4 @@ a {
     margin: 0em 0.25em 0em 0.5em;
     padding: 0;
   }
-}
-
-/* Small Device */
-@media (min-width: 576px) and (max-width: 767.99px) {
-}
-
-/* Medium Device */
-@media (min-width: 768px) and (max-width: 991.99px) {
-}
-
-/* Large Device */
-@media (min-width: 992px) and (max-width: 1199.99px) {
-}
-
-@media (min-width: 1200px) and (max-width: 1399.99px) {
-}
-
-@media (min-width: 1400px) {
 }

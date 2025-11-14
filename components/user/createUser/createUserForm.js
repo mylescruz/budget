@@ -105,7 +105,7 @@ const CreateUserForm = ({
     <>
       <Container className="d-flex justify-content-center align-items-center">
         <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
-          <h1>Create account</h1>
+          <h1 className="text-center">Create account</h1>
           <Form onSubmit={createUser}>
             <Form.Group controlId="name" className="h-100 my-2">
               <Form.Control

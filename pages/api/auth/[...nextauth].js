@@ -13,7 +13,7 @@ export const authOptions = {
       async authorize(credentials, req) {
         // Authorize a user's credentials in the server
         try {
-          const res = await fetch(
+          const response = await fetch(
             `${process.env.NEXTAUTH_URL}/api/authorize/password`,
             {
               method: "POST",
@@ -21,17 +21,17 @@ export const authOptions = {
               headers: { "Content-Type": "application/json" },
             }
           );
-          const user = await res.json();
+          const user = await response.json();
 
-          if (res.ok && user) {
-            // If there is a proper response and user, return a user
+          if (response.ok && user) {
+            // Successfully login the user
             return user;
           } else {
-            // Otherwise, return null which would give a login error to the user
+            // Give a login error to the user
             return null;
           }
-        } catch (err) {
-          console.error("Error fetching user: ", err);
+        } catch (error) {
+          console.error(`Error fetching ${credentials.username}: ${error}`);
           return null;
         }
       },
@@ -55,6 +55,7 @@ export const authOptions = {
         token.email = user.email;
         token.role = user.role;
         token.onboarded = user.onboarded;
+        token.lastLogin = user.lastLogin;
       }
       return token;
     },
@@ -71,6 +72,8 @@ export const authOptions = {
       session.user.email = token.email;
       session.user.role = token.role;
       session.user.onboarded = token.onboarded;
+      session.user.lastLogin = token.lastLogin;
+
       return session;
     },
   },

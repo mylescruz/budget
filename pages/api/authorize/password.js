@@ -1,30 +1,37 @@
 // API Endpoint to authorize a user's credentials
 
 import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
 
 const bcrypt = require("bcrypt");
 
-// Use bcrypt to check the encrypted password
-async function checkHashedPassword(password, hashedPassword) {
-  try {
-    return await bcrypt.compare(password, hashedPassword);
-  } catch (error) {
-    console.error("Error comparing passwords: ", error);
-    return false;
+export default async function handler(req, res) {
+  // Configure MongoDB
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB);
+
+  const usersContext = {
+    client: client,
+    usersCol: db.collection("users"),
+  };
+
+  switch (req.method) {
+    case "POST":
+      return verifyLogin(req, res, usersContext);
+    default:
+      res.status(405).send(`${req.method} method not allowed`);
   }
 }
 
-export default async function handler(req, res) {
-  const method = req?.method;
+// Verify given credentials with the credentials stored in MongoDB
+async function verifyLogin(req, res, { client, usersCol }) {
+  const mongoSession = client.startSession();
 
-  // Configure MongoDB
-  const db = (await clientPromise).db(process.env.MONGO_DB);
-  const usersCol = db.collection("users");
+  try {
+    const credentials = req.body;
 
-  if (method === "POST") {
-    try {
-      const credentials = req?.body;
-
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
       // Get the user from MongoDB
       const user = await usersCol.findOne({ username: credentials.username });
 
@@ -36,6 +43,17 @@ export default async function handler(req, res) {
         );
 
         if (passwordsMatch) {
+          const lastLogin = new Date();
+          // Update the user's last login date
+          await usersCol.updateOne(
+            { _id: new ObjectId(user._id) },
+            {
+              $set: {
+                lastLoginDate: lastLogin,
+              },
+            }
+          );
+
           const verifiedUser = {
             id: user._id,
             name: user.name,
@@ -43,27 +61,38 @@ export default async function handler(req, res) {
             username: user.username,
             role: user.role,
             onboarded: user.onboarded,
+            lastLoginDate: lastLogin,
           };
 
           // Send back verified user to NextAuth
           res.status(200).json(verifiedUser);
         } else {
-          // Send back a null if the credentials are incorrect
-          res.status(401).json(null);
+          // Send an error status for an invalid password
+          return res.status(401).json(null);
         }
       } else {
-        // If no user found, return a null object
-        res.status(401).json(null);
+        // Send an error status for an invalid username
+        return res.status(401).json(null);
       }
-    } catch (error) {
-      console.error(`${method} authorize request failed: ${error}`);
-      res
-        .status(500)
-        .send(
-          "An error occurred while authorizing this user's credentials. Please try again later!"
-        );
-    }
-  } else {
-    res.status(405).send(`${method} method not allowed`);
+    });
+  } catch (error) {
+    console.error(`POST authorize request failed for : ${error}`);
+    return res
+      .status(500)
+      .send(
+        "An error occurred while authorizing this user's credentials. Please try again later!"
+      );
+  } finally {
+    await mongoSession.endSession();
+  }
+}
+
+// Check the encrypted password
+async function checkHashedPassword(password, hashedPassword) {
+  try {
+    return await bcrypt.compare(password, hashedPassword);
+  } catch (error) {
+    console.error("Error comparing passwords: ", error);
+    return false;
   }
 }

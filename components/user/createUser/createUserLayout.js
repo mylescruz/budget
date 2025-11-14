@@ -98,9 +98,7 @@ const CreateUserLayout = ({ csrfToken }) => {
       {!createFormComplete ? (
         <CreateUserForm {...createUserFormProps} />
       ) : (
-        <>
-          <OnboardingLayout {...onboardingLayoutProps} />
-        </>
+        <OnboardingLayout {...onboardingLayoutProps} />
       )}
 
       <Modal show={creatingUser} onHide={closeCreatingUser} centered>

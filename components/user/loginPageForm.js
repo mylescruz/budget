@@ -4,20 +4,17 @@ import { useState } from "react";
 import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
 import styles from "@/styles/user/loginPage.module.css";
 import Link from "next/link";
+import Image from "next/image";
 
 const LoginPageForm = ({ csrfToken }) => {
-  const emptyUser = {
+  const [user, setUser] = useState({
     username: "",
     password: "",
-  };
-
-  const newError = {
+  });
+  const [loginError, setLoginError] = useState({
     error: false,
     message: "",
-  };
-
-  const [user, setUser] = useState(emptyUser);
-  const [loginError, setLoginError] = useState(newError);
+  });
   const [loggingIn, setLoggingIn] = useState(false);
   const router = useRouter();
 
@@ -56,7 +53,16 @@ const LoginPageForm = ({ csrfToken }) => {
 
   return (
     <>
-      <Container className="d-flex justify-content-center align-items-center login">
+      <Container className="d-flex flex-column justify-content-center align-items-center">
+        <div className="d-flex flex-column align-items-center">
+          <Image
+            src={"/type-a-logo.png"}
+            alt="Type-A Budget Logo"
+            width={150}
+            height={150}
+          />
+          <p>Login to get back on track with your finances</p>
+        </div>
         <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
           <Form onSubmit={loginUser}>
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
