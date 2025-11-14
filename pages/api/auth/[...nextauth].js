@@ -49,7 +49,7 @@ export const authOptions = {
     // Update the token to include the user's username
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token._id = user._id;
         token.username = user.username;
         token.name = user.name;
         token.email = user.email;
@@ -66,7 +66,7 @@ export const authOptions = {
     },
     // Update the session to include the accessToken and username
     async session({ session, token }) {
-      session.user.id = token.id;
+      session.user._id = token._id;
       session.user.username = token.username;
       session.user.name = token.name;
       session.user.email = token.email;

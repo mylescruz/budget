@@ -20,14 +20,14 @@ const ChangePasswordTab = ({ user, putUser }) => {
 
   const router = useRouter();
 
-  const [edittedUser, setEdittedUser] = useState(oldUser);
+  const [updatedUser, setUpdatedUser] = useState(oldUser);
   const [validPassword, setValidPassword] = useState(validated);
   const [validMatch, setValidMatch] = useState(validated);
   const [updatingUser, setUpdatingUser] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
-    setEdittedUser({ ...edittedUser, [e.target.id]: e.target.value });
+    setUpdatedUser({ ...updatedUser, [e.target.id]: e.target.value });
   };
 
   // Checks if the given password matches the required format
@@ -37,12 +37,12 @@ const ChangePasswordTab = ({ user, putUser }) => {
     return regex.test(password);
   };
 
-  // Does all the validation checks to make sure the given input matches all the criteria
+  // Validates the given input matches the password criteria
   const updatePassword = async (e) => {
     e.preventDefault();
 
     // Check if entered password is valid
-    if (!checkPassword(edittedUser.newPassword)) {
+    if (!checkPassword(updatedUser.newPassword)) {
       setValidPassword({
         valid: false,
         error:
@@ -54,7 +54,7 @@ const ChangePasswordTab = ({ user, putUser }) => {
     }
 
     // Check if entered password and password confirmation match
-    if (edittedUser.newPassword !== edittedUser.confirmPassword) {
+    if (updatedUser.newPassword !== updatedUser.confirmPassword) {
       setValidMatch({ valid: false, error: "Passwords do not match" });
       return;
     } else {
@@ -65,9 +65,9 @@ const ChangePasswordTab = ({ user, putUser }) => {
 
     try {
       // Update the user in the backend
-      await putUser(edittedUser);
+      await putUser(updatedUser);
 
-      setEdittedUser(oldUser);
+      setUpdatedUser(oldUser);
 
       setErrorOccurred(false);
 
@@ -91,7 +91,7 @@ const ChangePasswordTab = ({ user, putUser }) => {
             <Form.Label>Enter Current Password</Form.Label>
             <Form.Control
               type="password"
-              value={edittedUser.currentPassword}
+              value={updatedUser.currentPassword}
               onChange={handleInput}
               required
             />
@@ -100,7 +100,7 @@ const ChangePasswordTab = ({ user, putUser }) => {
             <Form.Label>Enter New Password</Form.Label>
             <Form.Control
               type="password"
-              value={edittedUser.newPassword}
+              value={updatedUser.newPassword}
               onChange={handleInput}
               required
               isInvalid={validPassword.error && !validPassword.valid}
@@ -113,7 +113,7 @@ const ChangePasswordTab = ({ user, putUser }) => {
             <Form.Label>Confirm New Password</Form.Label>
             <Form.Control
               type="password"
-              value={edittedUser.confirmPassword}
+              value={updatedUser.confirmPassword}
               onChange={handleInput}
               required
               isInvalid={validMatch.error && !validMatch.valid}

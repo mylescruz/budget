@@ -4,7 +4,6 @@ const useUser = () => {
   const [user, setUser] = useState({});
   const [userLoading, setUserLoading] = useState(false);
 
-  // GET request that gets a user based on their id
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -12,8 +11,8 @@ const useUser = () => {
         const response = await fetch("/api/user");
 
         if (response.ok) {
-          const result = await response.json();
-          setUser(result);
+          const fetchedUser = await response.json();
+          setUser(fetchedUser);
         } else {
           const result = await response.text();
           throw new Error(result);
@@ -29,8 +28,7 @@ const useUser = () => {
     getUser();
   }, []);
 
-  // PUT request that updates a user based on their id
-  const putUser = useCallback(async (edittedUser) => {
+  const putUser = useCallback(async (updatedUser) => {
     try {
       const response = await fetch("/api/user", {
         method: "PUT",
@@ -38,7 +36,7 @@ const useUser = () => {
           Accept: "application.json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(edittedUser),
+        body: JSON.stringify(updatedUser),
       });
 
       if (response.ok) {

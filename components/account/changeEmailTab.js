@@ -19,13 +19,13 @@ const ChangeEmailTab = ({ user, putUser }) => {
 
   const router = useRouter();
 
-  const [edittedUser, setEdittedUser] = useState(oldUser);
+  const [updatedUser, setUpdatedUser] = useState(oldUser);
   const [validEmail, setValidEmail] = useState(validated);
   const [updatingUser, setUpdatingUser] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
   const handleInput = (e) => {
-    setEdittedUser({ ...edittedUser, [e.target.id]: e.target.value });
+    setUpdatedUser({ ...updatedUser, [e.target.id]: e.target.value });
   };
 
   const checkEmail = (email) => {
@@ -33,12 +33,12 @@ const ChangeEmailTab = ({ user, putUser }) => {
     return regex.test(email);
   };
 
-  // Does all the validation checks to make sure the given input matches all the criteria
+  // Validates the given input matches the email criteria
   const updateEmail = async (e) => {
     e.preventDefault();
 
     // Check if entered email is valid
-    if (!checkEmail(edittedUser.newEmail)) {
+    if (!checkEmail(updatedUser.newEmail)) {
       setValidEmail({ valid: false, error: "Not a valid email address" });
       return;
     } else {
@@ -49,9 +49,9 @@ const ChangeEmailTab = ({ user, putUser }) => {
 
     try {
       // Update the user in the backend
-      await putUser(edittedUser);
+      await putUser(updatedUser);
 
-      setEdittedUser(oldUser);
+      setUpdatedUser(oldUser);
 
       setErrorOccurred(false);
 
@@ -73,13 +73,13 @@ const ChangeEmailTab = ({ user, putUser }) => {
         <Form onSubmit={updateEmail} className="col-12 col-md-8 col-lg-6">
           <Form.Group controlId="email" className="my-2">
             <Form.Label>Current Email</Form.Label>
-            <Form.Control type="text" value={edittedUser.email} disabled />
+            <Form.Control type="text" value={updatedUser.email} disabled />
           </Form.Group>
           <Form.Group controlId="newEmail" className="my-2">
             <Form.Label>Enter New Email</Form.Label>
             <Form.Control
               type="text"
-              value={edittedUser.newEmail}
+              value={updatedUser.newEmail}
               onChange={handleInput}
               required
               isInvalid={validEmail.error && !validEmail.valid}
@@ -92,7 +92,7 @@ const ChangeEmailTab = ({ user, putUser }) => {
             <Form.Label>Enter Password</Form.Label>
             <Form.Control
               type="password"
-              value={edittedUser.currentPassword}
+              value={updatedUser.currentPassword}
               onChange={handleInput}
               required
             />

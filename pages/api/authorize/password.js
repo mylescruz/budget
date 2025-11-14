@@ -55,7 +55,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
           );
 
           const verifiedUser = {
-            id: user._id,
+            _id: user._id,
             name: user.name,
             email: user.email,
             username: user.username,

@@ -9,16 +9,6 @@ import { ObjectId } from "mongodb";
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-// Function to compare the given password with the stored encrypted password
-async function checkHashedPassword(password, hashedPassword) {
-  try {
-    return await bcrypt.compare(password, hashedPassword);
-  } catch (err) {
-    console.error("Error comparing passwords: ", err);
-    return false;
-  }
-}
-
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
   const session = await getServerSession(req, res, authOptions);
@@ -28,158 +18,181 @@ export default async function handler(req, res) {
     return res.status(401).send("You must login to view this information");
   }
 
-  const username = session.user.username;
-  const id = session.user.id;
-
-  const method = req?.method;
-
   // Configure MongoDB
-  const db = (await clientPromise).db(process.env.MONGO_DB);
-  const usersCol = db.collection("users");
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB);
 
-  // Function to get a user's information from MongoDB
-  const getUser = async () => {
-    const result = await usersCol.findOne({ _id: new ObjectId(id) });
-
-    const { _id, ...user } = result;
-
-    return {
-      id: _id,
-      ...user,
-    };
+  const userContext = {
+    client: client,
+    db: db,
+    usersCol: db.collection("users"),
+    username: session.user.username,
+    _id: session.user._id,
   };
 
-  if (method === "GET") {
-    try {
-      const user = await getUser();
+  switch (req.method) {
+    case "GET":
+      return getUser(res, userContext);
+    case "PUT":
+      return updateUser(req, res, userContext);
+    case "DELETE":
+      return deleteUser(req, res, userContext);
+    default:
+      res.status(405).send(`${req.method} method not allowed`);
+  }
+}
 
-      // Return the user without their password
-      const { password_hash, ...userInfo } = user;
+// Function to get a user's information from MongoDB
+async function getUser(res, { usersCol, username, _id }) {
+  try {
+    const user = await usersCol.findOne({ _id: new ObjectId(_id) });
 
-      // Send the user back to the client
-      res.status(200).json(userInfo);
-    } catch (error) {
-      console.error(`${method} user request failed: ${error}`);
-      res
-        .status(500)
-        .send(
-          "An error occurred while getting your account info. Please try again later!"
-        );
-    }
-  } else if (method === "PUT") {
-    try {
-      const edittedUser = req?.body;
+    // Return the user without their password
+    const { password_hash, ...userInfo } = user;
 
-      // Function to update parts of the user
-      const updateUser = async (edittedUser) => {
-        // Get the current user
-        const user = await getUser();
+    // Send the user back to the client
+    return res.status(200).json(userInfo);
+  } catch (error) {
+    console.error(`GET user request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(
+        "An error occurred while getting your account info. Please try again later!"
+      );
+  }
+}
 
-        // Check if the passwords match
-        const passwordsMatch = await checkHashedPassword(
-          edittedUser.currentPassword,
-          user.password_hash
-        );
+async function updateUser(req, res, { client, usersCol, username, _id }) {
+  const mongoSession = client.startSession();
 
-        if (passwordsMatch) {
-          let updatedPassword = user.password_hash;
-          let updatedEmail = user.email;
+  try {
+    const updatedUser = req.body;
 
-          if ("newPassword" in edittedUser) {
-            updatedPassword = await bcrypt.hash(
-              edittedUser.newPassword,
-              saltRounds
-            );
-          }
-
-          if ("newEmail" in edittedUser) {
-            updatedEmail = edittedUser.newEmail;
-          }
-
-          await usersCol.updateOne(
-            { _id: new ObjectId(id) },
-            {
-              $set: {
-                email: updatedEmail,
-                password_hash: updatedPassword,
-              },
-            }
-          );
-
-          return true;
-        } else {
-          return false;
-        }
-      };
-
-      const result = await updateUser(edittedUser);
-
-      if (!result) {
-        // If the passwords don't match, send back a null object signifying invalid credentials
-        return res
-          .status(401)
-          .send("Passwords do not match. Cannot update the password.");
-      }
-
-      // Get the updated user
-      const updatedUser = await getUser();
-
-      // Return the updatedUser without their password
-      const { password_hash, ...userInfo } = updatedUser;
-
-      // Send the verified user object back to the client
-      res.status(200).json(userInfo);
-    } catch (err) {
-      console.error(`${method} user request failed: ${err}`);
-      res
-        .status(500)
-        .send(
-          "An error occurred while updating your account. Please try again later!"
-        );
-    }
-  } else if (method === "DELETE") {
-    try {
-      const deletedUser = req?.body;
-
-      // Get the current users information
-      const user = await getUser();
-
-      // Check if the passwords match
-      const passwordsMatch = await checkHashedPassword(
-        deletedUser.password,
-        user.password_hash
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
+      const storedUser = await usersCol.findOne(
+        { username },
+        { session: mongoSession }
       );
 
-      if (passwordsMatch) {
-        // Delete the user from the users collection
-        await usersCol.deleteOne({ _id: new ObjectId(id) });
+      // Check if the given password matches the stored password
+      const passwordsMatch = await checkHashedPassword(
+        updatedUser.currentPassword,
+        storedUser.password_hash
+      );
 
-        // Delete the users documents from the categories collection
-        await db.collection("categories").deleteMany({ username: username });
-
-        // Delete the users documents from the transactions collection
-        await db.collection("transactions").deleteMany({ username: username });
-
-        // Delete the users documents from the paychecks collection
-        await db.collection("paychecks").deleteMany({ username: username });
-
-        // Send back a successful status that the user was deleted
-        res.status(200).send();
-      } else {
-        // If the passwords don't match, send back an error message
-        res
+      if (!passwordsMatch) {
+        return res
           .status(401)
-          .send("Passwords do not match. Cannot delete your account.");
+          .send("Passwords do not match. Cannot update the user.");
       }
-    } catch (err) {
-      console.error(`${method} user request failed: ${err}`);
-      res
-        .status(500)
-        .send(
-          "An error occurred while deleting your account. Please try again later!"
-        );
-    }
-  } else {
-    res.status(405).send(`${method} method not allowed`);
+
+      let userPassword = storedUser.password_hash;
+      let userEmail = storedUser.email;
+
+      if ("newPassword" in updatedUser) {
+        userPassword = await bcrypt.hash(updatedUser.newPassword, saltRounds);
+      }
+
+      if ("newEmail" in updatedUser) {
+        userEmail = updatedUser.newEmail;
+      }
+
+      await usersCol.updateOne(
+        { _id: new ObjectId(_id) },
+        {
+          $set: {
+            email: userEmail,
+            password_hash: userPassword,
+          },
+        },
+        { session: mongoSession }
+      );
+    });
+
+    // Return the user with the updated details
+    const { currentPassword, newPassword, newEmail, ...user } = updatedUser;
+
+    // Send the user back to the client
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(`PUT user request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(
+        "An error occurred while updating your account. Please try again later!"
+      );
+  } finally {
+    await mongoSession.endSession();
+  }
+}
+
+async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
+  const mongoSession = client.startSession();
+  try {
+    const deletedUser = req?.body;
+
+    // Start a transaction to process all MongoDB statements or rollback any failures
+    await mongoSession.withTransaction(async () => {
+      const storedUser = await usersCol.findOne(
+        { username },
+        { session: mongoSession }
+      );
+
+      // Check if the given password matches the stored password
+      const passwordsMatch = await checkHashedPassword(
+        deletedUser.password,
+        storedUser.password_hash
+      );
+
+      if (!passwordsMatch) {
+        return res
+          .status(401)
+          .send("Passwords do not match. Cannot delete the user.");
+      }
+
+      // Delete the user from the users collection
+      await usersCol.deleteOne(
+        { _id: new ObjectId(_id) },
+        { session: mongoSession }
+      );
+
+      // Delete the user's documents from the categories collection
+      await db
+        .collection("categories")
+        .deleteMany({ username }, { session: mongoSession });
+
+      // Delete the user's documents from the transactions collection
+      await db
+        .collection("transactions")
+        .deleteMany({ username }, { session: mongoSession });
+
+      // Delete the user's documents from the paychecks collection
+      await db
+        .collection("paychecks")
+        .deleteMany({ username }, { session: mongoSession });
+    });
+
+    // Send back a successful status that the user was deleted
+    return res.status(200).send();
+  } catch (error) {
+    console.error(`DELETE user request failed for ${username}: ${error}`);
+    return res
+      .status(500)
+      .send(
+        "An error occurred while deleting your account. Please try again later!"
+      );
+  } finally {
+    await mongoSession.endSession();
+  }
+}
+
+// Function to compare the given password with the stored encrypted password
+async function checkHashedPassword(password, hashedPassword) {
+  try {
+    return await bcrypt.compare(password, hashedPassword);
+  } catch (error) {
+    console.error("Error comparing passwords: ", error);
+    return false;
   }
 }
