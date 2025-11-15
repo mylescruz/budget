@@ -1,16 +1,4 @@
-import { BarChart, Bar, Tooltip, XAxis, YAxis, LabelList } from "recharts";
-
-const CustomBarLabel = ({ x, y, value }) => (
-  <text
-    x={x + 35}
-    y={y + 100}
-    fill="#ffffff" // your color
-    textAnchor="middle"
-    fontSize={20}
-  >
-    ${(value / 100).toFixed(0)}
-  </text>
-);
+import { BarChart, Bar, Tooltip, XAxis, YAxis } from "recharts";
 
 const TopStoresChart = ({ topStores }) => {
   return (
@@ -31,9 +19,7 @@ const TopStoresChart = ({ topStores }) => {
         tickFormatter={(value) => `$${(value / 100).toFixed(0)}`}
       />
       <Tooltip formatter={(value) => `$${(value / 100).toFixed(0)}`} />
-      <Bar dataKey="amount" fill="#d94412ff">
-        <LabelList content={<CustomBarLabel />} />
-      </Bar>
+      <Bar dataKey="amount" fill="#d94412ff" />
     </BarChart>
   );
 };

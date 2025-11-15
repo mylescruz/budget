@@ -1,4 +1,4 @@
-import Loading from "@/components/layout/loading";
+import LoadingIndicator from "@/components/layout/loadingIndicator";
 import SummaryLayout from "@/components/summary/summaryLayout";
 import getDateInfo from "@/helpers/getDateInfo";
 import { useSession } from "next-auth/react";
@@ -14,7 +14,7 @@ export default function Summary() {
 
   // Create a loading indicator while check on the status of a user's session
   if (status === "loading") {
-    return <Loading />;
+    return <LoadingIndicator />;
   } else if (!session || status === "unauthenticated") {
     router.push("/redirect");
   } else {

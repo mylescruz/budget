@@ -1,7 +1,6 @@
 import AddPaycheckModal from "./addPaycheckModal";
 import { Button, Col, Row } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
-import Loading from "../layout/loading";
 import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import {
   PaychecksContext,
@@ -12,6 +11,7 @@ import {
   MonthIncomeContext,
 } from "@/contexts/MonthIncomeContext";
 import PaychecksTable from "./paychecksTable";
+import LoadingIndicator from "../layout/loadingIndicator";
 
 const InnerIncomeLayout = ({ dateInfo }) => {
   const { paychecks, paychecksLoading } = useContext(PaychecksContext);
@@ -38,7 +38,7 @@ const InnerIncomeLayout = ({ dateInfo }) => {
   };
 
   if (paychecksLoading || monthIncomeLoading) {
-    return <Loading />;
+    return <LoadingIndicator />;
   } else {
     return (
       <>

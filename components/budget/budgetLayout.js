@@ -6,7 +6,6 @@ import {
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
 import CategoryPieChart from "../categories/categoryPieChart";
-import Loading from "../layout/loading";
 import TransactionsLayout from "./transactions/transactionsLayout";
 import {
   TransactionsContext,
@@ -17,6 +16,7 @@ import {
   MonthIncomeProvider,
   MonthIncomeContext,
 } from "@/contexts/MonthIncomeContext";
+import LoadingIndicator from "../layout/loadingIndicator";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);
@@ -24,7 +24,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
   const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
   if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
-    return <Loading />;
+    return <LoadingIndicator />;
   } else if (categories) {
     return (
       <Container className="w-100">

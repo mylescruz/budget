@@ -1,5 +1,5 @@
 import AccountLayout from "@/components/account/accountLayout";
-import Loading from "@/components/layout/loading";
+import LoadingIndicator from "@/components/layout/loadingIndicator";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -9,7 +9,7 @@ export default function Account() {
   const router = useRouter();
 
   if (status === "loading") {
-    return <Loading />;
+    return <LoadingIndicator />;
   } else if (!session || status === "unauthenticated") {
     router.push("/redirect");
   } else {

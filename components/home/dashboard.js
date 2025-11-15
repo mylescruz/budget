@@ -6,7 +6,6 @@ import {
   CategoriesContext,
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
-import Loading from "../layout/loading";
 import { useContext, useEffect, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
 import AddTransactionModal from "../budget/transactions/addTransactionModal";
@@ -20,6 +19,7 @@ import {
 } from "@/contexts/MonthIncomeContext";
 import centsToDollars from "@/helpers/centsToDollars";
 import getDateInfo from "@/helpers/getDateInfo";
+import LoadingIndicator from "../layout/loadingIndicator";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -68,7 +68,7 @@ const InnerDashboard = ({ dateInfo }) => {
   };
 
   if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
-    return <Loading />;
+    return <LoadingIndicator />;
   } else {
     return (
       <Container>

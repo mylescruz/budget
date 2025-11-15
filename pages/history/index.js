@@ -1,5 +1,5 @@
 import HistoryLayout from "@/components/history/historyLayout";
-import Loading from "@/components/layout/loading";
+import LoadingIndicator from "@/components/layout/loadingIndicator";
 import getDateInfo from "@/helpers/getDateInfo";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
@@ -14,7 +14,7 @@ export default function History() {
 
   // Create a loading indicator while check on the status of a user's session
   if (status === "loading") {
-    return <Loading />;
+    return <LoadingIndicator />;
   } else if (!session || status === "unauthenticated") {
     router.push("/redirect");
   } else {

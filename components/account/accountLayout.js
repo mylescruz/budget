@@ -6,7 +6,7 @@ import { useState } from "react";
 import ChangeEmailTab from "./changeEmailTab";
 import DeleteAccountTab from "./deleteAccountTab";
 import useUser from "@/hooks/useUser";
-import Loading from "../layout/loading";
+import LoadingIndicator from "../layout/loadingIndicator";
 
 const AccountLayout = () => {
   const [accountSection, setAccountSection] = useState(true);
@@ -26,8 +26,8 @@ const AccountLayout = () => {
     setDeleteSection: setDeleteSection,
   };
 
-  if (userLoading) {
-    return <Loading />;
+  if (userLoading || !user) {
+    return <LoadingIndicator />;
   } else {
     return (
       <Container>

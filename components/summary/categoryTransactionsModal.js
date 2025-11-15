@@ -1,9 +1,7 @@
-import centsToDollars from "@/helpers/centsToDollars";
-import dateFormatter from "@/helpers/dateFormatter";
 import useYearTransactions from "@/hooks/useYearTransactions";
-import { Col, Modal, Row } from "react-bootstrap";
-import Loading from "../layout/loading";
+import { Modal } from "react-bootstrap";
 import CategoryTransactionsTable from "./categoryTransactionsTable";
+import LoadingIndicator from "../layout/loadingIndicator";
 
 const CategoryTransactionsModal = ({
   year,
@@ -16,8 +14,8 @@ const CategoryTransactionsModal = ({
     category
   );
 
-  if (transactionsLoading) {
-    return <Loading />;
+  if (transactionsLoading || !transactions) {
+    return <LoadingIndicator />;
   } else {
     return (
       <Modal

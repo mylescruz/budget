@@ -1,13 +1,13 @@
 import useUsers from "@/hooks/useUsers";
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { Col, Row, Table } from "react-bootstrap";
 import UsersTableRow from "./usersTableRow";
-import Loading from "@/components/layout/loading";
+import LoadingIndicator from "@/components/layout/loadingIndicator";
 
 const UsersLayout = () => {
   const { users, usersLoading, putUser, deleteUser } = useUsers();
 
-  if (usersLoading) {
-    return <Loading />;
+  if (usersLoading || !users) {
+    return <LoadingIndicator />;
   } else {
     return (
       <>

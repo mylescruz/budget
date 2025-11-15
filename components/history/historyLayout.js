@@ -3,7 +3,7 @@ import HistoryTable from "./historyTable";
 import useHistory from "@/hooks/useHistory";
 import { useEffect, useState } from "react";
 import todayInfo from "@/helpers/todayInfo";
-import Loading from "../layout/loading";
+import LoadingIndicator from "../layout/loadingIndicator";
 
 const HistoryLayout = ({ dateInfo }) => {
   const { history, historyLoading } = useHistory();
@@ -59,8 +59,8 @@ const HistoryLayout = ({ dateInfo }) => {
     setHistoryYears({ ...historyYears, current: historyYears.current - 1 });
   };
 
-  if (historyLoading) {
-    return <Loading />;
+  if (historyLoading || !history) {
+    return <LoadingIndicator />;
   } else {
     return (
       <>

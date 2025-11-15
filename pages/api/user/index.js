@@ -43,9 +43,9 @@ export default async function handler(req, res) {
 }
 
 // Function to get a user's information from MongoDB
-async function getUser(res, { usersCol, username, _id }) {
+async function getUser(res, { usersCol, username }) {
   try {
-    const user = await usersCol.findOne({ _id: new ObjectId(_id) });
+    const user = await usersCol.findOne({ username });
 
     // Return the user without their password
     const { password_hash, ...userInfo } = user;
