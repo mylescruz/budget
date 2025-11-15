@@ -1,17 +1,15 @@
 import { Button, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
-import { useContext, useState } from "react";
-import { PaychecksContext } from "@/contexts/PaychecksContext";
+import { useState } from "react";
 
 const DeletePaycheckModal = ({
   paycheck,
+  deletePaycheck,
   showDelete,
   setShowDelete,
   setShowDetails,
 }) => {
-  const { deletePaycheck } = useContext(PaychecksContext);
-
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 

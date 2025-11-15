@@ -1,25 +1,23 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import todayInfo from "@/helpers/todayInfo";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
-import { PaychecksContext } from "@/contexts/PaychecksContext";
 
 const AddPaycheckModal = ({
-  dateInfo,
+  year,
+  postPaycheck,
   addPaycheckClicked,
   setAddPaycheckClicked,
 }) => {
   const emptyPaycheck = {
-    date: todayInfo.date,
+    date: year === todayInfo.year ? todayInfo.date : `${year}-01-01`,
     company: "",
     description: "",
     gross: 0,
     taxes: 0,
     net: 0,
   };
-
-  const { postPaycheck } = useContext(PaychecksContext);
 
   const [paycheck, setPaycheck] = useState(emptyPaycheck);
   const [addingPaycheck, setAddingPaycheck] = useState(false);
@@ -82,8 +80,8 @@ const AddPaycheckModal = ({
                     id="date"
                     className="h-100"
                     type="date"
-                    min={dateInfo.startOfYear}
-                    max={dateInfo.endOfYear}
+                    min={`${year}-01-01`}
+                    max={`${year}-12-31`}
                     value={paycheck.date}
                     onChange={handleInput}
                     required

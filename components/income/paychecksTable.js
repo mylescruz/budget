@@ -1,16 +1,13 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Table } from "react-bootstrap";
 import PaychecksTableRow from "./paychecksTableRow";
 import PopUp from "../layout/popUp";
 import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
 import styles from "@/styles/income/paychecksTable.module.css";
-import { PaychecksContext } from "@/contexts/PaychecksContext";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const PaychecksTable = ({ dateInfo }) => {
-  const { paychecks } = useContext(PaychecksContext);
-
+const PaychecksTable = ({ paychecks, year, putPaycheck, deletePaycheck }) => {
   const [sortedPaychecks, setSortedPaychecks] = useState(paychecks);
   const [paychecksTotals, setPaychecksTotals] = useState({
     totalGross: 0,
@@ -93,7 +90,9 @@ const PaychecksTable = ({ dateInfo }) => {
               <PaychecksTableRow
                 key={paycheck._id}
                 paycheck={paycheck}
-                dateInfo={dateInfo}
+                putPaycheck={putPaycheck}
+                deletePaycheck={deletePaycheck}
+                year={year}
               />
             ))}
           </tbody>

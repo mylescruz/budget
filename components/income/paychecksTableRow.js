@@ -5,7 +5,7 @@ import EditPaycheckModal from "./editPaycheckModal";
 import DeletePaycheckModal from "./deletePaycheckModal";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const PaychecksTableRow = ({ paycheck, dateInfo }) => {
+const PaychecksTableRow = ({ paycheck, year, putPaycheck, deletePaycheck }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -24,7 +24,8 @@ const PaychecksTableRow = ({ paycheck, dateInfo }) => {
 
   const editPaycheckModalProps = {
     paycheck: paycheck,
-    dateInfo: dateInfo,
+    putPaycheck: putPaycheck,
+    year: year,
     showEdit: showEdit,
     setShowEdit: setShowEdit,
     setShowDetails: setShowDetails,
@@ -32,6 +33,7 @@ const PaychecksTableRow = ({ paycheck, dateInfo }) => {
 
   const deletePaycheckModalProps = {
     paycheck: paycheck,
+    deletePaycheck: deletePaycheck,
     showDelete: showDelete,
     setShowDelete: setShowDelete,
     setShowDetails: setShowDetails,

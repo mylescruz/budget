@@ -1,18 +1,16 @@
-import { useContext, useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Form, Modal } from "react-bootstrap";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
-import { PaychecksContext } from "@/contexts/PaychecksContext";
 
 const EditPaycheckModal = ({
   paycheck,
-  dateInfo,
+  putPaycheck,
+  year,
   showEdit,
   setShowEdit,
   setShowDetails,
 }) => {
-  const { putPaycheck } = useContext(PaychecksContext);
-
   const [edittedPaycheck, setEdittedPaycheck] = useState({
     ...paycheck,
     gross: paycheck.gross / 100,
@@ -81,8 +79,8 @@ const EditPaycheckModal = ({
                   id="date"
                   className="h-100"
                   type="date"
-                  min={dateInfo.startOfYear}
-                  max={dateInfo.endOfYear}
+                  min={`${year}-01-01`}
+                  max={`${year}-12-31`}
                   value={edittedPaycheck.date}
                   onChange={handleInput}
                   required

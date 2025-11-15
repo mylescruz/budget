@@ -11,7 +11,6 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import { PaychecksProvider } from "@/contexts/PaychecksContext";
 import {
   MonthIncomeProvider,
   MonthIncomeContext,
@@ -58,11 +57,9 @@ const BudgetLayout = ({ dateInfo }) => {
   return (
     <CategoriesProvider dateInfo={dateInfo}>
       <TransactionsProvider dateInfo={dateInfo}>
-        <PaychecksProvider dateInfo={dateInfo}>
-          <MonthIncomeProvider dateInfo={dateInfo}>
-            <InnerBudgetLayout dateInfo={dateInfo} />
-          </MonthIncomeProvider>
-        </PaychecksProvider>
+        <MonthIncomeProvider dateInfo={dateInfo}>
+          <InnerBudgetLayout dateInfo={dateInfo} />
+        </MonthIncomeProvider>
       </TransactionsProvider>
     </CategoriesProvider>
   );
