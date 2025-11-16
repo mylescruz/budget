@@ -11,24 +11,13 @@ const InnerHistoryLayout = ({ year }) => {
   if (historyLoading && !history) {
     return <LoadingIndicator />;
   } else if (history) {
-    if (history.length > 0) {
-      return (
-        <Row className="d-flex mt-4">
-          <Col className="col-11 col-md-10 mx-auto">
-            <HistoryTable history={history} />
-          </Col>
-        </Row>
-      );
-    } else {
-      return (
-        <Row className="mt-4 fw-bold text-center">
-          <p>
-            &#9432; There are no previous months yet! Keep filling out your
-            budget every month to see your history!
-          </p>
-        </Row>
-      );
-    }
+    return (
+      <Row className="d-flex mt-4">
+        <Col className="col-11 col-md-10 mx-auto">
+          <HistoryTable history={history} />
+        </Col>
+      </Row>
+    );
   } else {
     <Row className="text-danger fw-bold text-center">
       <p>

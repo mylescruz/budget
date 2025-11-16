@@ -54,6 +54,14 @@ const Header = () => {
           userSignOut={userSignOut}
         />
       );
+    } else if (status === "unauthenticated") {
+      return (
+        <LoginNavbar
+          navbarExpanded={navbarExpanded}
+          toggleNavbar={toggleNavbar}
+          userSignIn={userSignIn}
+        />
+      );
     } else {
       return (
         <UserNavbar

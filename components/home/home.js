@@ -4,6 +4,7 @@ import Link from "next/link";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import styles from "@/styles/home/home.module.css";
 import centsToDollars from "@/helpers/centsToDollars";
+import Image from "next/image";
 
 const Home = () => {
   // A user accesses the login page using the signIn function provided by NextAuth.js
@@ -13,7 +14,6 @@ const Home = () => {
 
   const exampleCategories = [
     {
-      id: 0,
       name: "Mortgage",
       actual: 200000,
       color: "#3058e8",
@@ -23,7 +23,6 @@ const Home = () => {
       },
     },
     {
-      id: 1,
       name: "Insurances",
       actual: 75000,
       color: "#e83030",
@@ -33,7 +32,6 @@ const Home = () => {
       },
     },
     {
-      id: 2,
       name: "Internet",
       actual: 20000,
       color: "#920381",
@@ -43,7 +41,6 @@ const Home = () => {
       },
     },
     {
-      id: 3,
       name: "Subscriptions",
       actual: 5000,
       color: "#137a03",
@@ -60,10 +57,19 @@ const Home = () => {
         <Card.Body>
           <Row>
             <Col className="col-12 col-lg-6 mt-3">
-              <Row>
-                <h1 className="fw-bold">
-                  The budgeting app for your Type-A personality
-                </h1>
+              <Row className="d-flex flex-column mx-4 mx-auto">
+                <Col className="d-flex flex-column flex-lg-row align-items-center">
+                  <Image
+                    width={100}
+                    height={100}
+                    src={"/type-a-logo.png"}
+                    alt={"Type-A Budget Logo"}
+                    className="mb-4 mx-4"
+                  />
+                  <h2 className="fw-bold mb-4">
+                    The budgeting app for your Type-A personality
+                  </h2>
+                </Col>
                 <h5 className="my-3">
                   A budget for people who want to manually track their income
                   and spending down to the cent.
@@ -90,7 +96,7 @@ const Home = () => {
                 </Col>
               </Row>
             </Col>
-            <Col className="col-12 col-lg-6">
+            <Col className="col-12 col-lg-6 my-4">
               <Row className="d-flex align-items-center">
                 <Col className="col-12 col-md-6 col-lg-5 col-xl-6">
                   <CategoryPieChart categories={exampleCategories} />
@@ -112,8 +118,8 @@ const Home = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {exampleCategories.map((category) => (
-                        <tr key={category._id} className="d-flex">
+                      {exampleCategories.map((category, index) => (
+                        <tr key={index} className="d-flex">
                           <td
                             className={`col-6 col-lg-7 col-xl-6 ${styles.grayBackground}`}
                           >

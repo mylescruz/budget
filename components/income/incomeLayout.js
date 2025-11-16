@@ -38,22 +38,16 @@ const InnerIncomeLayout = ({ year }) => {
           </Button>
         </Container>
 
-        {paychecks.length === 0 ? (
-          <Row className="mt-4 fw-bold text-center">
-            <p>&#9432; There are no paychecks yet! Add a new paycheck now!</p>
-          </Row>
-        ) : (
-          <Row className="d-flex my-4">
-            <Col className="col-11 col-md-10 mx-auto">
-              <PaychecksTable
-                paychecks={paychecks}
-                year={year}
-                putPaycheck={putPaycheck}
-                deletePaycheck={deletePaycheck}
-              />
-            </Col>
-          </Row>
-        )}
+        <Row className="d-flex my-4">
+          <Col className="col-11 col-md-10 mx-auto">
+            <PaychecksTable
+              paychecks={paychecks}
+              year={year}
+              putPaycheck={putPaycheck}
+              deletePaycheck={deletePaycheck}
+            />
+          </Col>
+        </Row>
 
         {addPaycheckClicked && <AddPaycheckModal {...AddPaycheckModalProps} />}
       </Container>
