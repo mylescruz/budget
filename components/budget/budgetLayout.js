@@ -5,7 +5,7 @@ import {
   CategoriesContext,
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
-import CategoryPieChart from "../categories/categoryPieChart";
+import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TransactionsLayout from "./transactions/transactionsLayout";
 import {
   TransactionsContext,
@@ -32,13 +32,13 @@ const InnerBudgetLayout = ({ dateInfo }) => {
             {dateInfo.monthName} {dateInfo.year}
           </h1>
           <p className="fs-6">
-            Set your budget for your fixed and variable expenses. Log all your
+            Set your budget for your fixed and changing expenses. Log all your
             transactions made this month. See how much you spent based on the
             category.
           </p>
         </aside>
 
-        <Row>
+        <Row className="d-flex flex-column flex-lg-row align-items-center">
           <Col className="col-12 col-xl-6">
             <CategoryPieChart categories={categories} />
           </Col>

@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
-import CategoryPieChart from "../categories/categoryPieChart";
+import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import {
   CategoriesContext,
   CategoriesProvider,

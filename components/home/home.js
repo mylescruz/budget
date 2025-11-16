@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/react";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import Link from "next/link";
-import CategoryPieChart from "../categories/categoryPieChart";
+import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import styles from "@/styles/home/home.module.css";
 import centsToDollars from "@/helpers/centsToDollars";
 

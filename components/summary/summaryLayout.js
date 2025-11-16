@@ -1,7 +1,7 @@
 import useSummary from "@/hooks/useSummary";
 import SummaryTable from "./summaryTable";
 import { Col, Container, Row } from "react-bootstrap";
-import CategoryPieChart from "../categories/categoryPieChart";
+import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TopStoresChart from "./topStoresChart";
 import MonthsChart from "./monthsChart";
 import LoadingIndicator from "../layout/loadingIndicator";
