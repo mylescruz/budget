@@ -63,7 +63,7 @@ async function addPaycheck(req, res, { client, paychecksCol, username }) {
   try {
     // Define the date identifiers from the paycheck
     const paycheckDate = new Date(`${req.body.date}T00:00:00Z`);
-    const paycheckMonth = paycheckDate.getMonth() + 1;
+    const paycheckMonth = paycheckDate.getUTCMonth() + 1;
     const paycheckYear = paycheckDate.getFullYear();
 
     // Assign the identifiers to the paycheck

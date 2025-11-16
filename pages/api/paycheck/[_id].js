@@ -51,7 +51,7 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
 
     // Define the date identifiers from the paycheck
     const updatedDate = new Date(`${updatedPaycheck.date}T00:00:00Z`);
-    const updatedMonth = updatedDate.getMonth() + 1;
+    const updatedMonth = updatedDate.getUTCMonth() + 1;
     const updatedYear = updatedDate.getFullYear();
 
     await mongoSession.withTransaction(async (session) => {
@@ -75,7 +75,7 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
 
       // Define the date identifiers from the old paycheck
       const oldPaycheckDate = new Date(`${updatedPaycheck.oldDate}T00:00:00Z`);
-      const oldMonth = oldPaycheckDate.getMonth() + 1;
+      const oldMonth = oldPaycheckDate.getUTCMonth() + 1;
       const oldYear = oldPaycheckDate.getFullYear();
 
       // Update the Guilt Free Spending category for the updated paycheck's month
@@ -126,7 +126,7 @@ async function deletePaycheck(req, res, { client, paychecksCol, username }) {
 
       // Define the identifiers from the paycheck
       const paycheckDate = new Date(`${paycheck.date}T00:00:00Z`);
-      const month = paycheckDate.getMonth() + 1;
+      const month = paycheckDate.getUTCMonth() + 1;
       const year = paycheckDate.getFullYear();
 
       // Update the Guilt Free Spending category for the deleted paycheck's month

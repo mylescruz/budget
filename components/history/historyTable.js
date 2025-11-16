@@ -44,68 +44,43 @@ const HistoryTable = ({ history }) => {
         </tr>
       </thead>
       <tbody>
-        {history ? (
-          history.length === 0 ? (
-            <>
-              <tr>
-                <td colSpan={4} className="fw-bold text-center">
-                  Nothing here yet! Keep tracking your budget every month to see
-                  previous history!
-                </td>
-              </tr>
-            </>
-          ) : (
-            <>
-              {historySorter(history).map((month, index) => (
-                <tr key={index} className="d-flex">
-                  <td className="col-4 col-md-3 click">
-                    <Link
-                      href={{
-                        pathname: "/history/[month]",
-                        query: { month: month.month, year: month.year },
-                      }}
-                    >
-                      <>
-                        <span className="d-sm-none">
-                          {monthFormatter(
-                            `${month.month}/01/${month.year}`,
-                            "2-digit"
-                          )}
-                        </span>
-                        <span className="d-none d-sm-block">
-                          {monthFormatter(
-                            `${month.month}/01/${month.year}`,
-                            "long"
-                          )}
-                        </span>
-                      </>
-                    </Link>
-                  </td>
-                  <td className="col-4 col-md-3">
-                    {currencyFormatter.format(month.budget)}
-                  </td>
-                  <td className="col-4 col-md-3">
-                    {currencyFormatter.format(month.actual)}
-                  </td>
-                  <td
-                    className={`d-none d-md-block col-md-3 ${
-                      month.leftover < 0 && "text-danger"
-                    }`}
-                  >
-                    {currencyFormatter.format(month.leftover)}
-                  </td>
-                </tr>
-              ))}
-            </>
-          )
-        ) : (
-          <tr>
-            <td colSpan={4} className="text-danger fw-bold text-center">
-              &#9432; There was an error loading your history. Please try again
-              later!
+        {history.map((month, index) => (
+          <tr key={index} className="d-flex">
+            <td className="col-4 col-md-3 click">
+              <Link
+                href={{
+                  pathname: "/history/[month]",
+                  query: { month: month.month, year: month.year },
+                }}
+              >
+                <>
+                  <span className="d-sm-none">
+                    {monthFormatter(
+                      `${month.month}/01/${month.year}`,
+                      "2-digit"
+                    )}
+                  </span>
+                  <span className="d-none d-sm-block">
+                    {monthFormatter(`${month.month}/01/${month.year}`, "long")}
+                  </span>
+                </>
+              </Link>
+            </td>
+            <td className="col-4 col-md-3">
+              {currencyFormatter.format(month.budget)}
+            </td>
+            <td className="col-4 col-md-3">
+              {currencyFormatter.format(month.actual)}
+            </td>
+            <td
+              className={`d-none d-md-block col-md-3 ${
+                month.leftover < 0 && "text-danger"
+              }`}
+            >
+              {currencyFormatter.format(month.leftover)}
             </td>
           </tr>
-        )}
+        ))}
       </tbody>
       <tfoot>
         <tr className="d-flex table-dark">

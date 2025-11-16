@@ -1,101 +1,59 @@
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import HistoryTable from "./historyTable";
 import useHistory from "@/hooks/useHistory";
-import { useEffect, useState } from "react";
-import todayInfo from "@/helpers/todayInfo";
+import { useState } from "react";
 import LoadingIndicator from "../layout/loadingIndicator";
+import BudgetYearChooser from "../layout/budgetYearChooser";
+
+const InnerHistoryLayout = ({ year }) => {
+  const { history, historyLoading } = useHistory(year);
+
+  if (historyLoading && !history) {
+    return <LoadingIndicator />;
+  } else if (history) {
+    if (history.length > 0) {
+      return (
+        <Row className="d-flex mt-4">
+          <Col className="col-11 col-md-10 mx-auto">
+            <HistoryTable history={history} />
+          </Col>
+        </Row>
+      );
+    } else {
+      return (
+        <Row className="mt-4 fw-bold text-center">
+          <p>
+            &#9432; There are no previous months yet! Keep filling out your
+            budget every month to see your history!
+          </p>
+        </Row>
+      );
+    }
+  } else {
+    <Row className="text-danger fw-bold text-center">
+      <p>
+        &#9432; There was an error loading your history. Please try again later!
+      </p>
+    </Row>;
+  }
+};
 
 const HistoryLayout = ({ dateInfo }) => {
-  const { history, historyLoading } = useHistory();
+  // Define state to change years for user
+  const [year, setYear] = useState(dateInfo.year);
 
-  const [currentYearHistory, setCurrentYearHistory] = useState(history);
-  const [historyYears, setHistoryYears] = useState({
-    years: [],
-    current: dateInfo.year,
-    max: dateInfo.year,
-    min: dateInfo.year,
-  });
+  return (
+    <Container className="w-100">
+      <aside className="info-text text-center mx-auto">
+        <h1>History</h1>
+        <p>View the full budget for previous months</p>
+      </aside>
 
-  // Get all the years in the history, the max, the min and the current year
-  useEffect(() => {
-    if (history) {
-      const years = new Set(history.map((historyMonth) => historyMonth.year));
-      const maxYear = Math.max(...years);
-      const minYear = Math.min(...years);
+      <BudgetYearChooser year={year} setYear={setYear} />
 
-      setHistoryYears({
-        years: years,
-        current: dateInfo.year,
-        max: maxYear,
-        min: minYear,
-      });
-    }
-  }, [history, dateInfo]);
-
-  // Filter the history to the current year
-  useEffect(() => {
-    if (history) {
-      const givenYearHistory = history.filter(
-        (historyMonth) => historyMonth.year === historyYears.current
-      );
-
-      if (historyYears.current === dateInfo.year) {
-        const filteredHistory = givenYearHistory.filter(
-          (historyMonth) => historyMonth.month < todayInfo.month
-        );
-
-        setCurrentYearHistory(filteredHistory);
-      } else {
-        setCurrentYearHistory(givenYearHistory);
-      }
-    }
-  }, [history, historyYears, dateInfo]);
-
-  const nextYear = () => {
-    setHistoryYears({ ...historyYears, current: historyYears.current + 1 });
-  };
-
-  const previousYear = () => {
-    setHistoryYears({ ...historyYears, current: historyYears.current - 1 });
-  };
-
-  if (historyLoading || !history) {
-    return <LoadingIndicator />;
-  } else {
-    return (
-      <>
-        <aside className="info-text text-center mx-auto">
-          <h1>History</h1>
-          <p>Click on a previous month to view its full budget</p>
-        </aside>
-
-        <Row className="d-flex">
-          <Col className="col-11 col-md-10 col-xl-8 mx-auto">
-            <HistoryTable history={currentYearHistory} />
-          </Col>
-        </Row>
-
-        <Row className="d-flex text-center">
-          <Col className="col-6">
-            <Button
-              onClick={previousYear}
-              disabled={historyYears.current === historyYears.min}
-            >
-              {historyYears.current - 1}
-            </Button>
-          </Col>
-          <Col className="col-6">
-            <Button
-              onClick={nextYear}
-              disabled={historyYears.current === historyYears.max}
-            >
-              {historyYears.current + 1}
-            </Button>
-          </Col>
-        </Row>
-      </>
-    );
-  }
+      <InnerHistoryLayout year={year} />
+    </Container>
+  );
 };
 
 export default HistoryLayout;

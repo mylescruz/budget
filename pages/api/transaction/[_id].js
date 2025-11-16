@@ -52,8 +52,8 @@ async function updateTransaction(
     };
 
     // Get the month and date for the given transaction
-    const transactionDate = new Date(transaction.date);
-    const month = transactionDate.getMonth() + 1;
+    const transactionDate = new Date(`${transaction.date}T00:00:00Z`);
+    const month = transactionDate.getUTCMonth() + 1;
     const year = transactionDate.getFullYear();
 
     // Start a transaction to process all MongoDB statements or rollback any failures
@@ -76,26 +76,26 @@ async function updateTransaction(
       );
 
       // Update the old category
-      await updateCategoryActual(
+      await updateCategoryActual({
         session,
         categoriesCol,
         username,
         month,
         year,
-        transaction.oldCategory,
-        -transaction.oldAmount
-      );
+        categoryName: transaction.oldCategory,
+        amount: -transaction.oldAmount,
+      });
 
       // Update the new category
-      await updateCategoryActual(
+      await updateCategoryActual({
         session,
         categoriesCol,
         username,
         month,
         year,
-        transaction.category,
-        transaction.amount
-      );
+        categoryName: transaction.category,
+        amount: transaction.amount,
+      });
     });
 
     const { oldCategory, oldAmount, ...updatedTransaction } = transaction;
@@ -124,8 +124,8 @@ async function deleteTransaction(
     const transaction = req.body;
 
     // Get the month and date for the given transaction
-    const transactionDate = new Date(transaction.date);
-    const month = transactionDate.getMonth() + 1;
+    const transactionDate = new Date(`${transaction.date}T00:00:00Z`);
+    const month = transactionDate.getUTCMonth() + 1;
     const year = transactionDate.getFullYear();
 
     // Start a transaction to process all MongoDB statements or rollback any failures
@@ -137,15 +137,15 @@ async function deleteTransaction(
       );
 
       // Update the correlating category to remove old transaction amount
-      await updateCategoryActual(
+      await updateCategoryActual({
         session,
         categoriesCol,
         username,
         month,
         year,
-        transaction.category,
-        -transaction.amount
-      );
+        categoryName: transaction.category,
+        amount: -transaction.amount,
+      });
     });
 
     // Send a success message back to the client
@@ -165,15 +165,15 @@ async function deleteTransaction(
 }
 
 // Update the given category or subcategory's actual value
-async function updateCategoryActual(
+async function updateCategoryActual({
   session,
   categoriesCol,
   username,
   month,
   year,
   categoryName,
-  amount
-) {
+  amount,
+}) {
   const category = await categoriesCol.findOne(
     {
       username,

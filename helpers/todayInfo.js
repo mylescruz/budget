@@ -2,7 +2,7 @@
 
 const today = new Date();
 const currentDate = new Date(today.toLocaleDateString());
-const currentMonth = currentDate.getMonth() + 1;
+const currentMonth = currentDate.getUTCMonth() + 1;
 const currentYear = currentDate.getFullYear();
 const startOfMonth = new Date(`${currentMonth}/01/${currentYear}`);
 const endOfMonth = new Date(currentYear, currentMonth, 0);

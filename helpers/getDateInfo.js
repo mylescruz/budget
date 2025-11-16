@@ -1,6 +1,6 @@
 const getDateInfo = (date) => {
   const givenDate = new Date(date);
-  const month = givenDate.getMonth() + 1;
+  const month = givenDate.getUTCMonth() + 1;
   const monthName = givenDate.toLocaleDateString("en-US", {
     month: "long",
     timeZone: "UTC",

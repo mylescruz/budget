@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   // Define the current month and year
   const today = new Date();
-  const month = today.getMonth() + 1;
+  const month = today.getUTCMonth() + 1;
   const year = today.getFullYear();
   const monthName = today.toLocaleDateString("en-US", {
     month: "long",

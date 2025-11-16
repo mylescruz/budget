@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 
-const useHistory = () => {
+const useHistory = (year) => {
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
 
-  // GET request that returns the user's history
   useEffect(() => {
     const getHistory = async () => {
       try {
-        const rsp = await fetch("/api/history");
+        const response = await fetch(`/api/history/${year}`);
 
-        if (rsp.ok) {
-          const fetchedHistory = await rsp.json();
+        if (response.ok) {
+          const fetchedHistory = await response.json();
           setHistory(fetchedHistory);
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {
@@ -26,7 +25,7 @@ const useHistory = () => {
     };
 
     getHistory();
-  }, []);
+  }, [year]);
 
   return { history, historyLoading };
 };
