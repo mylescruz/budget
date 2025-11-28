@@ -1,0 +1,9 @@
+.equal_columns {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.fixed_height td,
+.fixed_height th {
+  height: 100px;
+}

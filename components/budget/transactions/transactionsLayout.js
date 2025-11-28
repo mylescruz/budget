@@ -4,23 +4,24 @@ import AddTransactionModal from "./addTransactionModal";
 import { useContext, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import ErrorTransactionsTable from "./errorTransactionsTable";
+import TransactionsCalendar from "./transactionsCalendar";
 
-const VIEW_TEXT = "View Transactions";
-const HIDE_TEXT = "Hide Transactions";
+const CALENDAR_TEXT = "View Calendar";
+const TABLE_TEXT = "View Table";
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
-  const [viewTransactions, setViewTransactions] = useState(true);
-  const [viewText, setViewText] = useState(HIDE_TEXT);
+  const [calendarView, setCalendarView] = useState(true);
+  const [toggleText, setToggleText] = useState(TABLE_TEXT);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
 
   const toggleTransactions = () => {
-    if (viewTransactions) {
-      setViewTransactions(false);
-      setViewText(VIEW_TEXT);
+    if (calendarView) {
+      setCalendarView(false);
+      setToggleText(CALENDAR_TEXT);
     } else {
-      setViewTransactions(true);
-      setViewText(HIDE_TEXT);
+      setCalendarView(true);
+      setToggleText(TABLE_TEXT);
     }
   };
 
@@ -44,7 +45,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             onClick={toggleTransactions}
             disabled={!transactions}
           >
-            {viewText}
+            {toggleText}
           </Button>
         </Col>
         <Col>
@@ -61,13 +62,15 @@ const TransactionsLayout = ({ dateInfo }) => {
 
       {transactions ? (
         <>
-          {viewTransactions && (
-            <Row className="d-flex">
-              <Col className="col-12 col-xl-10 mx-auto">
+          <Row className="d-flex">
+            <Col className="col-12 col-xl-10 mx-auto">
+              {calendarView ? (
+                <TransactionsCalendar dateInfo={dateInfo} />
+              ) : (
                 <TransactionsTable dateInfo={dateInfo} />
-              </Col>
-            </Row>
-          )}
+              )}
+            </Col>
+          </Row>
         </>
       ) : (
         <ErrorTransactionsTable />
