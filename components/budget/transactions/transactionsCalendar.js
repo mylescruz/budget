@@ -1,6 +1,6 @@
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext } from "react";
-import { Col, Row, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 
@@ -9,21 +9,7 @@ const WEEK_LENGTH = 7;
 
 const TransactionsCalendar = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
-  const { categories } = useContext(CategoriesContext);
-
-  // Define all the category and subcategory's correlating colors
-  const categoryColors = {};
-  categories.forEach((category) => {
-    if (!category.fixed) {
-      if (category.subcategories.length === 0) {
-        categoryColors[category.name] = category.color;
-      } else {
-        category.subcategories.forEach((subcategory) => {
-          categoryColors[subcategory.name] = category.color;
-        });
-      }
-    }
-  });
+  const { categoryColors } = useContext(CategoriesContext);
 
   // Create the 2-D array for the given month
   const monthNumber = dateInfo.month - 1;

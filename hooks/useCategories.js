@@ -1,11 +1,15 @@
 import categorySorter from "@/helpers/categorySorter";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import useMonthIncome from "./useMonthIncome";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-  const getCategories = useCallback(async (month, year) => {
+  // Get monthly income to compute category totals
+  const { monthIncome } = useMonthIncome(month, year);
+
+  const getCategories = useCallback(async () => {
     try {
       const response = await fetch(`/api/categories/${year}/${month}`);
 
@@ -22,15 +26,12 @@ const useCategories = (month, year) => {
     } finally {
       setCategoriesLoading(false);
     }
-  }, []);
+  }, [month, year]);
 
-  // GET request that returns all the categories based on the month and year
   useEffect(() => {
     getCategories(month, year);
   }, [month, year, getCategories]);
 
-  // POST request that adds a new category based on the month and year
-  // Then it sets the categories array to the array returned by the response
   const postCategory = useCallback(
     async (newCategory) => {
       try {
@@ -51,7 +52,6 @@ const useCategories = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setCategoriesLoading(false);
@@ -60,7 +60,6 @@ const useCategories = (month, year) => {
     [categories, year, month]
   );
 
-  // Update a category in the database
   const putCategory = useCallback(
     async (updatedCategory) => {
       try {
@@ -95,7 +94,6 @@ const useCategories = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setCategoriesLoading(false);
@@ -104,8 +102,6 @@ const useCategories = (month, year) => {
     [categories]
   );
 
-  // DELETE request that deletes a category based on the username, year and month
-  // Then it sets the categories array to the array returned by the response
   const deleteCategory = useCallback(
     async (category) => {
       try {
@@ -130,7 +126,6 @@ const useCategories = (month, year) => {
           throw new Error(message);
         }
       } catch (error) {
-        // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setCategoriesLoading(false);
@@ -139,6 +134,38 @@ const useCategories = (month, year) => {
     [categories]
   );
 
+  const categoryTotals = useMemo(() => {
+    const categoryActuals = categories.reduce(
+      (sum, current) => sum + current.actual,
+      0
+    );
+
+    return {
+      budget: monthIncome,
+      actual: categoryActuals,
+      remaining: monthIncome - categoryActuals,
+    };
+  }, [categories, monthIncome]);
+
+  // Define all the category and subcategory's correlating colors
+  const categoryColors = useMemo(() => {
+    const colors = {};
+
+    categories.forEach((category) => {
+      if (!category.fixed) {
+        if (category.subcategories.length === 0) {
+          colors[category.name] = category.color;
+        } else {
+          category.subcategories.forEach((subcategory) => {
+            colors[subcategory.name] = category.color;
+          });
+        }
+      }
+    });
+
+    return colors;
+  }, [categories]);
+
   return {
     categories,
     categoriesLoading,
@@ -146,6 +173,8 @@ const useCategories = (month, year) => {
     postCategory,
     putCategory,
     deleteCategory,
+    categoryTotals,
+    categoryColors,
   };
 };
 

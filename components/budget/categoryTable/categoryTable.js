@@ -133,7 +133,7 @@ const CategoryTable = ({ dateInfo }) => {
             )}
         </tbody>
         <tfoot className="table-dark">
-          <CategoryTableFooter dateInfo={dateInfo} />
+          <CategoryTableFooter />
         </tfoot>
       </Table>
 
