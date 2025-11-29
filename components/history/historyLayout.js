@@ -8,7 +8,7 @@ import BudgetYearChooser from "../layout/budgetYearChooser";
 const InnerHistoryLayout = ({ year }) => {
   const { history, historyLoading } = useHistory(year);
 
-  if (historyLoading && !history) {
+  if (historyLoading) {
     return <LoadingIndicator />;
   } else if (history) {
     return (

@@ -27,7 +27,7 @@ const InnerIncomeLayout = ({ year }) => {
     setAddPaycheckClicked: setAddPaycheckClicked,
   };
 
-  if (paychecksLoading && !paychecks) {
+  if (paychecksLoading) {
     return <LoadingIndicator />;
   } else if (paychecks) {
     return (

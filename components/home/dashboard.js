@@ -13,13 +13,10 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import {
-  MonthIncomeProvider,
-  MonthIncomeContext,
-} from "@/contexts/MonthIncomeContext";
 import centsToDollars from "@/helpers/centsToDollars";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../layout/loadingIndicator";
+import useMonthIncome from "@/hooks/useMonthIncome";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -27,7 +24,10 @@ const InnerDashboard = ({ dateInfo }) => {
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { monthIncome, monthIncomeLoading } = useContext(MonthIncomeContext);
+  const { monthIncome, monthIncomeLoading } = useMonthIncome(
+    dateInfo.month,
+    dateInfo.year
+  );
 
   const [topCategories, setTopCategories] = useState([]);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
@@ -196,9 +196,7 @@ const Dashboard = () => {
   return (
     <CategoriesProvider dateInfo={dateInfo}>
       <TransactionsProvider dateInfo={dateInfo}>
-        <MonthIncomeProvider dateInfo={dateInfo}>
-          <InnerDashboard dateInfo={dateInfo} />
-        </MonthIncomeProvider>
+        <InnerDashboard dateInfo={dateInfo} />
       </TransactionsProvider>
     </CategoriesProvider>
   );

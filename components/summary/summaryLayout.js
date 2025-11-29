@@ -11,7 +11,7 @@ import BudgetYearChooser from "../layout/budgetYearChooser";
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
 
-  if (summaryLoading || !summary) {
+  if (summaryLoading) {
     return <LoadingIndicator />;
   } else if (summary) {
     return (

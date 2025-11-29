@@ -11,18 +11,13 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import {
-  MonthIncomeProvider,
-  MonthIncomeContext,
-} from "@/contexts/MonthIncomeContext";
 import LoadingIndicator from "../layout/loadingIndicator";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { monthIncomeLoading } = useContext(MonthIncomeContext);
 
-  if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
+  if (categoriesLoading || transactionsLoading) {
     return <LoadingIndicator />;
   } else if (categories) {
     return (
@@ -57,9 +52,7 @@ const BudgetLayout = ({ dateInfo }) => {
   return (
     <CategoriesProvider dateInfo={dateInfo}>
       <TransactionsProvider dateInfo={dateInfo}>
-        <MonthIncomeProvider dateInfo={dateInfo}>
-          <InnerBudgetLayout dateInfo={dateInfo} />
-        </MonthIncomeProvider>
+        <InnerBudgetLayout dateInfo={dateInfo} />
       </TransactionsProvider>
     </CategoriesProvider>
   );
