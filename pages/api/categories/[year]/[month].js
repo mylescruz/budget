@@ -160,10 +160,17 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
 
     const categoryBody = req.body;
 
+    // Convert the budget value to cents
+    const budget = parseFloat(categoryBody.budget) * 100;
+    let actual = categoryBody.fixed ? budget : 0;
+
     // If category has fixed subcategories, update their actual values to cents
-    let updatedSubcategories = [];
+    let updatedSubcategories = categoryBody.subcategories;
+
     if (categoryBody.hasSubcategory && categoryBody.fixed) {
+      actual = 0;
       updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
+        actual += subcategory.actual * 100;
         return {
           ...subcategory,
           actual: subcategory.actual * 100,
@@ -171,14 +178,23 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       });
     }
 
-    // Assign the identifiers to the new category
+    // A fixed category or subcategories date will pop up as a transaction on the budget's calendar
+    let date = categoryBody.date;
+    if (
+      !categoryBody.fixed ||
+      (categoryBody.hasSubcategory && categoryBody.fixed)
+    ) {
+      date = null;
+    }
+
     const newCategory = {
       ...categoryBody,
       username: username,
       month: month,
       year: year,
-      budget: categoryBody.budget * 100,
-      actual: categoryBody.actual * 100,
+      budget: budget,
+      actual: actual,
+      date: date,
       subcategories: updatedSubcategories,
     };
 

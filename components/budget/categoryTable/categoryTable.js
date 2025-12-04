@@ -4,7 +4,7 @@ import CategoryTableFooter from "./categoryTableFooter";
 import React, { useContext, useState } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import PopUp from "@/components/layout/popUp";
-import AddCategoryModal from "./addCategoryModal";
+import AddCategoryModal from "../addCategoryModal/addCategoryModal";
 
 const CategoryTable = ({ dateInfo }) => {
   const { categories } = useContext(CategoriesContext);
