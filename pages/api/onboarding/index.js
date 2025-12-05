@@ -123,20 +123,42 @@ export default async function handler(req, res) {
       if (newUser.customCategories) {
         // Add the users inputted categories in MongoDB
         categories = newUser.categories.map((category) => {
-          // Set all subcategory values to cents
-          const finalSubcategories = category.subcategories.map(
-            (subcategory) => {
+          let categoryBudget = parseFloat(category.budget) * 100;
+          let categoryActual = 0;
+          let subcategoriesActual = 0;
+
+          let finalSubcategories = category.subcategories;
+
+          if (finalSubcategories.length > 0) {
+            // Set all subcategory values to cents
+            finalSubcategories = category.subcategories.map((subcategory) => {
+              const subcategoryActual = parseFloat(subcategory.actual) * 100;
+
+              if (category.fixed) {
+                subcategoriesActual += subcategoryActual;
+              }
+
               return {
                 ...subcategory,
-                actual: subcategory.actual * 100,
+                actual: subcategoryActual,
               };
+            });
+          }
+
+          if (category.fixed) {
+            if (category.subcategories.length > 0) {
+              categoryBudget = subcategoriesActual;
+              categoryActual = subcategoriesActual;
+            } else {
+              categoryActual = categoryBudget;
             }
-          );
+          }
 
           // Set the budget values to cents
           return {
             ...category,
-            budget: category.budget * 100,
+            budget: categoryBudget,
+            actual: categoryActual,
             subcategories: finalSubcategories,
           };
         });

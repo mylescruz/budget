@@ -1,8 +1,8 @@
-import { Card, Col, Row } from "react-bootstrap";
+import { Card, Col, Container, Row } from "react-bootstrap";
 import { useState } from "react";
 import ErrorModal from "@/components/layout/errorModal";
 import IncomeSection from "./incomeSection";
-import CategoriesSection from "./categoriesSection";
+import CategoriesSection from "./categories/categoriesSection";
 import CompleteSection from "./completeSection";
 import { v4 as uuidv4 } from "uuid";
 import getDateInfo from "@/helpers/getDateInfo";
@@ -93,6 +93,7 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
     customCategory: customCategory,
     moveToIncome: moveToIncome,
     enterCustom: enterCustom,
+    dateInfo: dateInfo,
   };
 
   const incomeSectionProps = {
@@ -106,14 +107,14 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
     <>
       <h2 className="text-center">Welcome to Type-A Budget!</h2>
 
-      <Card className="col-10 col-lg-6 mx-auto my-4 p-2 card-background">
+      <Container className="mx-auto my-4">
         {chooseCategory && <CategoriesSection {...categoriesSectionProps} />}
         {chooseIncome && <IncomeSection {...incomeSectionProps} />}
         {completeOnboarding && (
           <CompleteSection finishOnboarding={finishOnboarding} />
         )}
 
-        <Row className="mx-auto my-2">
+        <Row className="col-6 mx-auto text-center my-2">
           <Col>
             {chooseCategory ? <span>&#9679;</span> : <span>&#9675;</span>}
           </Col>
@@ -124,7 +125,7 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
             {completeOnboarding ? <span>&#9679;</span> : <span>&#9675;</span>}
           </Col>
         </Row>
-      </Card>
+      </Container>
 
       <ErrorModal
         errorOccurred={errorOccurred}
