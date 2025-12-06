@@ -1,14 +1,13 @@
-import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 
-const SubcategoriesPage = ({ newCategory, setNewCategory, dateInfo }) => {
+const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
   const emptySubcategory = {
     id: uuidv4(),
     name: "",
     actual: "",
-    date: "",
+    dayOfMonth: "",
   };
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
@@ -67,14 +66,14 @@ const SubcategoriesPage = ({ newCategory, setNewCategory, dateInfo }) => {
           )}
           {newCategory.fixed && (
             <Col className="col-12">
-              <Form.Group controlId="date" className="my-2">
-                <Form.Label>What day does it get charged?</Form.Label>
+              <Form.Group controlId="dayOfMonth" className="my-2">
+                <Form.Label>What day of the month are you charged?</Form.Label>
                 <Form.Control
                   className="h-100"
-                  type="date"
-                  min={dateInfo.startOfMonth}
-                  max={`${dateInfo.year}-${dateInfo.month}-28`}
-                  value={newSubcategory.date}
+                  type="number"
+                  min={1}
+                  max={28}
+                  value={newSubcategory.dayOfMonth}
                   onChange={handleSubcategoryInput}
                 />
               </Form.Group>
@@ -102,7 +101,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory, dateInfo }) => {
               Name
             </Col>
             {newCategory.fixed && <Col className="col-3">Amount</Col>}
-            {newCategory.fixed && <Col className="col-3">Date</Col>}
+            {newCategory.fixed && <Col className="col-3">Day</Col>}
             <Col className={`${newCategory.fixed ? "col-2" : "col-3"}`}>
               Delete
             </Col>
@@ -117,7 +116,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory, dateInfo }) => {
                   <Col className="col-3">${subcategory.actual}</Col>
                 )}
                 {newCategory.fixed && (
-                  <Col className="col-3">{dateFormatter(subcategory.date)}</Col>
+                  <Col className="col-3">{subcategory.dayOfMonth}</Col>
                 )}
                 <Col className={`${newCategory.fixed ? "col-2" : "col-3"}`}>
                   <i

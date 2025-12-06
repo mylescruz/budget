@@ -179,22 +179,22 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     }
 
     // A fixed category or subcategories date will pop up as a transaction on the budget's calendar
-    let date = categoryBody.date;
+    let dayOfMonth = parseInt(categoryBody.dayOfMonth);
     if (
       !categoryBody.fixed ||
       (categoryBody.hasSubcategory && categoryBody.fixed)
     ) {
-      date = null;
+      dayOfMonth = null;
     }
 
     const newCategory = {
       ...categoryBody,
-      username: username,
-      month: month,
-      year: year,
-      budget: budget,
-      actual: actual,
-      date: date,
+      username,
+      month,
+      year,
+      budget,
+      actual,
+      dayOfMonth,
       subcategories: updatedSubcategories,
     };
 

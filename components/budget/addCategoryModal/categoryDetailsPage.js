@@ -3,7 +3,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 const formGroupStyle = "my-2";
 const inputStyle = "h-100";
 
-const CategoryDetailsPage = ({ dateInfo, newCategory, setNewCategory }) => {
+const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
   const handleInput = (e) => {
     setNewCategory({ ...newCategory, [e.target.id]: e.target.value });
   };
@@ -14,7 +14,7 @@ const CategoryDetailsPage = ({ dateInfo, newCategory, setNewCategory }) => {
         ...prevCategory,
         fixed: true,
         budget: prevCategory.hasSubcategory ? "" : prevCategory.budget,
-        date: prevCategory.hasSubcategory ? "" : prevCategory.date,
+        dayOfMonth: prevCategory.hasSubcategory ? "" : prevCategory.dayOfMonth,
         subcategories: !prevCategory.fixed ? [] : prevCategory.subcategories,
       };
     });
@@ -26,9 +26,9 @@ const CategoryDetailsPage = ({ dateInfo, newCategory, setNewCategory }) => {
         ...prevCategory,
         fixed: false,
         budget: prevCategory.hasSubcategory ? "" : prevCategory.budget,
-        date: prevCategory.hasSubcategory ? "" : prevCategory.date,
+        dayOfMonth: prevCategory.hasSubcategory ? "" : prevCategory.dayOfMonth,
         subcategories: prevCategory.subcategories.map((subcategory) => {
-          return { ...subcategory, actual: "", date: "" };
+          return { ...subcategory, actual: "", dayOfMonth: "" };
         }),
       };
     });
@@ -40,7 +40,7 @@ const CategoryDetailsPage = ({ dateInfo, newCategory, setNewCategory }) => {
         ...prevCategory,
         hasSubcategory: true,
         budget: prevCategory.fixed ? "" : prevCategory.budget,
-        date: prevCategory.fixed ? "" : prevCategory.date,
+        dayOfMonth: prevCategory.fixed ? "" : prevCategory.dayOfMonth,
       };
     });
   };
@@ -51,7 +51,7 @@ const CategoryDetailsPage = ({ dateInfo, newCategory, setNewCategory }) => {
         ...prevCategory,
         hasSubcategory: false,
         budget: prevCategory.fixed ? "" : prevCategory.budget,
-        date: prevCategory.fixed ? "" : prevCategory.date,
+        dayOfMonth: prevCategory.fixed ? "" : prevCategory.dayOfMonth,
         subcategories: [],
       };
     });
@@ -157,15 +157,15 @@ const CategoryDetailsPage = ({ dateInfo, newCategory, setNewCategory }) => {
         </Col>
       )}
       {newCategory.fixed && !newCategory.hasSubcategory && (
-        <Col className="col-md-6">
-          <Form.Group controlId="date" className={formGroupStyle}>
-            <Form.Label>What day do you get charged?</Form.Label>
+        <Col>
+          <Form.Group controlId="dayOfMonth" className={formGroupStyle}>
+            <Form.Label>What day of the month are you charged?</Form.Label>
             <Form.Control
-              className={inputStyle}
-              type="date"
-              min={dateInfo.startOfMonth}
-              max={`${dateInfo.year}-${dateInfo.month}-28`}
-              value={newCategory.date}
+              className={`${inputStyle} w-25`}
+              type="number"
+              min={1}
+              max={31}
+              value={newCategory.dayOfMonth}
               onChange={handleInput}
             />
           </Form.Group>

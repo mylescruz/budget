@@ -7,17 +7,13 @@ import SubcategoriesPage from "./subcategoriesPage";
 import ConfirmationPage from "./confirmationPage";
 import ErrorMessage from "@/components/layout/errorMessage";
 
-const AddCategoryModal = ({
-  dateInfo,
-  addCategoryClicked,
-  setAddCategoryClicked,
-}) => {
+const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
   const emptyCategory = {
     name: "",
     color: "#000000",
     budget: "",
-    actual: 0,
-    date: "",
+    actual: "",
+    dayOfMonth: "",
     fixed: false,
     hasSubcategory: false,
     subcategories: [],
@@ -26,36 +22,29 @@ const AddCategoryModal = ({
   const { postCategory } = useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [status, setStatus] = useState("inputting");
-  const [showCategoryDetails, setShowCategoryDetails] = useState(true);
-  const [showSubcategories, setShowSubcategories] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [modalPage, setModalPage] = useState("details");
 
   const confirmDetails = () => {
-    setShowCategoryDetails(false);
-
     if (newCategory.hasSubcategory) {
-      setShowSubcategories(true);
+      setModalPage("subcategories");
     } else {
       setNewCategory({
         ...newCategory,
         budget: parseFloat(newCategory.budget),
       });
-      setShowConfirmation(true);
+      setModalPage("confirm");
     }
   };
 
   const backToDetails = () => {
-    setShowSubcategories(false);
-    setShowCategoryDetails(true);
+    setModalPage("details");
   };
 
   const backFromConfirm = () => {
-    setShowConfirmation(false);
-
     if (newCategory.hasSubcategory) {
-      setShowSubcategories(true);
+      setModalPage("subcategories");
     } else {
-      setShowCategoryDetails(true);
+      setModalPage("details");
     }
   };
 
@@ -87,24 +76,19 @@ const AddCategoryModal = ({
       });
     }
 
-    setShowSubcategories(false);
-    setShowConfirmation(true);
+    setModalPage("confirm");
   };
 
   const closeModal = () => {
     setNewCategory(emptyCategory);
 
-    setShowSubcategories(false);
-    setShowConfirmation(false);
-    setShowCategoryDetails(true);
-
+    setModalPage("details");
     setStatus("inputting");
-
     setAddCategoryClicked(false);
   };
 
   const addNewCategory = async () => {
-    setStatus("adding");
+    setStatus("posting");
 
     try {
       await postCategory(newCategory);
@@ -114,38 +98,36 @@ const AddCategoryModal = ({
       setStatus("error");
       console.error(error);
       return;
-    } finally {
-      setStatus("inputting");
     }
   };
 
   return (
     <Modal show={addCategoryClicked} onHide={closeModal} centered>
-      {status === "inputting" && (
+      {status !== "posting" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>Enter new category</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
-            {showCategoryDetails && (
+            {modalPage === "details" && (
               <CategoryDetailsPage
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
-                dateInfo={dateInfo}
               />
             )}
-            {showSubcategories && (
+            {modalPage === "subcategories" && (
               <SubcategoriesPage
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
-                dateInfo={dateInfo}
               />
             )}
-            {showConfirmation && <ConfirmationPage newCategory={newCategory} />}
+            {modalPage === "confirm" && (
+              <ConfirmationPage newCategory={newCategory} />
+            )}
           </Modal.Body>
           <Modal.Footer>
-            {showCategoryDetails && (
+            {modalPage === "details" && (
               <div className="w-100 d-flex justify-content-between">
                 <Button variant="secondary" onClick={closeModal}>
                   Cancel
@@ -158,14 +140,15 @@ const AddCategoryModal = ({
                     (!newCategory.fixed && newCategory.budget === "") ||
                     (newCategory.fixed &&
                       !newCategory.hasSubcategory &&
-                      (newCategory.budget === "" || newCategory.date === ""))
+                      (newCategory.budget === "" ||
+                        newCategory.dayOfMonth === ""))
                   }
                 >
                   Next
                 </Button>
               </div>
             )}
-            {showSubcategories && (
+            {modalPage === "subcategories" && (
               <div className="w-100 d-flex justify-content-between">
                 <Button variant="secondary" onClick={backToDetails}>
                   Back
@@ -179,7 +162,7 @@ const AddCategoryModal = ({
                 </Button>
               </div>
             )}
-            {showConfirmation && (
+            {modalPage === "confirm" && (
               <div className="w-100 d-flex justify-content-between">
                 <Button variant="secondary" onClick={backFromConfirm}>
                   Back
@@ -192,7 +175,7 @@ const AddCategoryModal = ({
           </Modal.Footer>
         </>
       )}
-      {status === "adding" && (
+      {status === "posting" && (
         <LoadingMessage message="Adding the new category" />
       )}
       {status === "error" && <ErrorMessage />}

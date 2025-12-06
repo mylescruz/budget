@@ -1,4 +1,3 @@
-import dateFormatter from "@/helpers/dateFormatter";
 import { Button, Col, Row } from "react-bootstrap";
 
 const ConfirmationPage = ({ newCategory }) => {
@@ -18,7 +17,6 @@ const ConfirmationPage = ({ newCategory }) => {
             backgroundColor: newCategory.color,
             border: newCategory.color,
           }}
-          className=""
         ></Button>
       </p>
       <p className="my-1">
@@ -28,7 +26,7 @@ const ConfirmationPage = ({ newCategory }) => {
       {newCategory.fixed && !newCategory.hasSubcategory && (
         <p className="my-1">
           <span className="fw-bold">Day of the month:</span>{" "}
-          {newCategory.date.split("-")[2]}
+          {newCategory.dayOfMonth}
         </p>
       )}
       {newCategory.subcategories.length > 0 && (
@@ -39,7 +37,7 @@ const ConfirmationPage = ({ newCategory }) => {
               Name
             </Col>
             {newCategory.fixed && <Col className="col-3">Amount</Col>}
-            {newCategory.fixed && <Col className="col-3">Date</Col>}
+            {newCategory.fixed && <Col className="col-3">Day</Col>}
           </Row>
           <div>
             {newCategory.subcategories.map((subcategory) => (
@@ -51,7 +49,7 @@ const ConfirmationPage = ({ newCategory }) => {
                   <Col className="col-3">${subcategory.actual}</Col>
                 )}
                 {newCategory.fixed && (
-                  <Col className="col-3">{dateFormatter(subcategory.date)}</Col>
+                  <Col className="col-3">{subcategory.dayOfMonth}</Col>
                 )}
               </Row>
             ))}
