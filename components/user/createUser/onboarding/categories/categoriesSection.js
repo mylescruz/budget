@@ -56,7 +56,6 @@ const CategoriesSection = ({
   customCategory,
   moveToIncome,
   enterCustom,
-  dateInfo,
 }) => {
   return (
     <Container className="col-12 col-lg-8">
@@ -138,7 +137,6 @@ const CategoriesSection = ({
           newUser={newUser}
           setNewUser={setNewUser}
           moveToIncome={moveToIncome}
-          dateInfo={dateInfo}
         />
       )}
     </Container>

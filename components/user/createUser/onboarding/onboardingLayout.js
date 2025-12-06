@@ -13,6 +13,7 @@ const gfsCategory = {
   budget: 500,
   actual: 0,
   fixed: false,
+  dayOfMonth: null,
   hasSubcategory: true,
   subcategories: [
     {
@@ -93,7 +94,6 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
     customCategory: customCategory,
     moveToIncome: moveToIncome,
     enterCustom: enterCustom,
-    dateInfo: dateInfo,
   };
 
   const incomeSectionProps = {

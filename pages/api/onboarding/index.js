@@ -136,12 +136,18 @@ export default async function handler(req, res) {
 
               if (category.fixed) {
                 subcategoriesActual += subcategoryActual;
-              }
 
-              return {
-                ...subcategory,
-                actual: subcategoryActual,
-              };
+                return {
+                  ...subcategory,
+                  actual: subcategoryActual,
+                  dayOfMonth: parseInt(subcategory.dayOfMonth),
+                };
+              } else {
+                return {
+                  ...subcategory,
+                  actual: 0,
+                };
+              }
             });
           }
 
@@ -154,11 +160,17 @@ export default async function handler(req, res) {
             }
           }
 
+          let dayOfMonth = parseInt(category.dayOfMonth);
+          if (!category.fixed || (category.hasSubcategory && category.fixed)) {
+            dayOfMonth = null;
+          }
+
           // Set the budget values to cents
           return {
             ...category,
             budget: categoryBudget,
             actual: categoryActual,
+            dayOfMonth,
             subcategories: finalSubcategories,
           };
         });
@@ -189,6 +201,7 @@ export default async function handler(req, res) {
           budget: category.budget,
           actual: category.actual,
           fixed: category.fixed,
+          dayOfMonth: category.dayOfMonth,
           hasSubcategory: category.hasSubcategory,
           subcategories: category.subcategories,
         };

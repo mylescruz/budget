@@ -6,17 +6,13 @@ import DetailsPage from "./detailsPage";
 import SubcategoriesPage from "./subcategoriesPage";
 import ConfirmationPage from "./confirmationPage";
 
-const CustomCategoriesSection = ({
-  dateInfo,
-  newUser,
-  setNewUser,
-  moveToIncome,
-}) => {
+const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const emptyCategory = {
     name: "",
     color: "#000000",
     budget: "",
-    actual: 0,
+    actual: "",
+    dayOfMonth: "",
     fixed: false,
     hasSubcategory: false,
     subcategories: [],
@@ -70,7 +66,7 @@ const CustomCategoriesSection = ({
   };
 
   const backToDetails = () => {
-    setFormPage("confirm");
+    setFormPage("details");
   };
 
   const backFromConfirm = () => {
@@ -104,14 +100,12 @@ const CustomCategoriesSection = ({
               <DetailsPage
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
-                dateInfo={dateInfo}
               />
             )}
             {formPage === "subcategories" && (
               <SubcategoriesPage
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
-                dateInfo={dateInfo}
               />
             )}
             {formPage === "confirm" && (
@@ -127,7 +121,8 @@ const CustomCategoriesSection = ({
                     (!newCategory.fixed && newCategory.budget === "") ||
                     (newCategory.fixed &&
                       !newCategory.hasSubcategory &&
-                      (newCategory.budget === "" || newCategory.date === ""))
+                      (newCategory.budget === "" ||
+                        newCategory.dayOfMonth === ""))
                   }
                 >
                   Next

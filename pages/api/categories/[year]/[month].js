@@ -174,6 +174,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
         return {
           ...subcategory,
           actual: subcategory.actual * 100,
+          dayOfMonth: parseInt(subcategory.dayOfMonth),
         };
       });
     }
