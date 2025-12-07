@@ -9,7 +9,7 @@ const WEEK_LENGTH = 7;
 
 const TransactionsCalendar = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
-  const { categoryColors } = useContext(CategoriesContext);
+  const { categories, categoryColors } = useContext(CategoriesContext);
 
   // Create the 2-D array for the given month
   const monthNumber = dateInfo.month - 1;
@@ -53,6 +53,49 @@ const TransactionsCalendar = ({ dateInfo }) => {
           color: categoryColors[transaction.category],
         };
       });
+
+    // If dayOfMonth field is present in the fixed category or subcategory, add it to the transactions calendar
+    categories.forEach((category) => {
+      if (category.fixed) {
+        if (category.subcategories.length > 0) {
+          category.subcategories.forEach((subcategory) => {
+            if (subcategory.dayOfMonth) {
+              const subcategoryDate = new Date(
+                year,
+                monthNumber,
+                subcategory.dayOfMonth
+              );
+              const subcategoryDateISO = subcategoryDate
+                .toISOString()
+                .split("T")[0];
+
+              if (subcategoryDateISO === dateISO) {
+                dateTransactions.push({
+                  id: subcategory.id,
+                  color: category.color,
+                });
+              }
+            }
+          });
+        } else {
+          if (category.dayOfMonth) {
+            const categoryDate = new Date(
+              year,
+              monthNumber,
+              category.dayOfMonth
+            );
+            const categoryDateISO = categoryDate.toISOString().split("T")[0];
+
+            if (categoryDateISO === dateISO) {
+              dateTransactions.push({
+                id: category._id,
+                color: category.color,
+              });
+            }
+          }
+        }
+      }
+    });
 
     // Add the dateNumber and date's transactions to the calendar
     month[week].push({

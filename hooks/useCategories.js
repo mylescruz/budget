@@ -185,14 +185,12 @@ const useCategories = (month, year) => {
     const colors = {};
 
     categories.forEach((category) => {
-      if (!category.fixed) {
-        if (category.subcategories.length === 0) {
-          colors[category.name] = category.color;
-        } else {
-          category.subcategories.forEach((subcategory) => {
-            colors[subcategory.name] = category.color;
-          });
-        }
+      if (category.subcategories.length === 0) {
+        colors[category.name] = category.color;
+      } else {
+        category.subcategories.forEach((subcategory) => {
+          colors[subcategory.name] = category.color;
+        });
       }
     });
 
