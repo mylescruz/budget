@@ -15,6 +15,7 @@ const gfsCategory = {
   fixed: false,
   dayOfMonth: null,
   hasSubcategory: true,
+  noDelete: true,
   subcategories: [
     {
       id: uuidv4(),

@@ -3,7 +3,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import SubcategoryRow from "./subcategoryRow";
 import PopUp from "@/components/layout/popUp";
 import centsToDollars from "@/helpers/centsToDollars";
-import EditCategoryModal from "./editCategoryModal";
+import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 
 const CategoryTableRow = ({ category, dateInfo }) => {
   const hasSubcategory = category.hasSubcategory;

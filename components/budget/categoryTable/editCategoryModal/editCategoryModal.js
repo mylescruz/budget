@@ -1,0 +1,327 @@
+import ErrorMessage from "@/components/layout/errorMessage";
+import LoadingMessage from "@/components/layout/loadingMessage";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import centsToDollars from "@/helpers/centsToDollars";
+import { useContext, useState } from "react";
+import {
+  Form,
+  Button,
+  Modal,
+  Col,
+  Row,
+  Container,
+  Table,
+} from "react-bootstrap";
+import AddSubcategoryPage from "./addSubcategoryPage";
+import EditSubcategoryPage from "./editSubcategoryPage";
+
+const EditCategoryModal = ({
+  category,
+  dateInfo,
+  editCategoryClicked,
+  setEditCategoryClicked,
+}) => {
+  const { getCategories, putCategory, deleteCategory } =
+    useContext(CategoriesContext);
+
+  const [editedCategory, setEditedCategory] = useState({
+    ...category,
+    budget:
+      category.hasSubcategory && category.fixed
+        ? category.subcategories.reduce(
+            (sum, current) => sum + current.actual,
+            0
+          ) / 100
+        : category.budget / 100,
+    actual: category.actual / 100,
+  });
+  const [editedSubcategory, setEditedSubcategory] = useState(null);
+
+  const [page, setPage] = useState("details");
+  const [status, setStatus] = useState("editing");
+
+  const handleInput = (e) => {
+    setEditedCategory({ ...editedCategory, [e.target.id]: e.target.value });
+  };
+
+  const openAddSubcategoryPage = () => {
+    setPage("addSubcategory");
+  };
+
+  const openEditSubcategoryPage = (subcategory) => {
+    setEditedSubcategory({ ...subcategory, actual: subcategory.actual / 100 });
+    setPage("editSubcategory");
+  };
+
+  const updateCategory = async () => {
+    setStatus("updating");
+
+    try {
+      await putCategory({
+        ...editedCategory,
+        month: dateInfo.month,
+        year: dateInfo.year,
+      });
+
+      // Fetch the categories to update the state for the categories table
+      await getCategories(dateInfo.month, dateInfo.year);
+
+      closeEditCategoryModal();
+    } catch (error) {
+      setStatus("error");
+      console.error(error);
+      return;
+    }
+  };
+
+  // Delete category from current budget
+  const removeCategory = async () => {
+    setStatus("deleting");
+
+    try {
+      // Removes a category from the categories array by sending a DELETE request to the API
+      await deleteCategory({
+        ...category,
+        month: dateInfo.month,
+        year: dateInfo.year,
+      });
+
+      // Fetch the categories to update the state for the categories table
+      await getCategories(dateInfo.month, dateInfo.year);
+
+      closeEditCategoryModal();
+    } catch (error) {
+      setStatus("error");
+      console.error(error);
+      return;
+    }
+  };
+
+  const backToDetails = () => {
+    setPage("details");
+  };
+
+  const closeEditCategoryModal = () => {
+    setStatus("editing");
+    setEditCategoryClicked(false);
+  };
+
+  return (
+    <Modal show={editCategoryClicked} onHide={closeEditCategoryModal} centered>
+      {status !== "updating" && (
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {page === "details" && <span>Edit {category.name}</span>}
+              {page === "addSubcategory" && <span>Add new subcategory</span>}
+              {page === "editSubcategory" && <span>Edit a subcategory</span>}
+            </Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            {page === "details" && (
+              <div>
+                <Row className="d-flex align-items-center">
+                  <Col className="col-12 col-md-8">
+                    <Form.Group controlId="name" className="mb-2">
+                      <Form.Label>Category Name</Form.Label>
+                      <Form.Control
+                        className="h-100"
+                        type="text"
+                        value={editedCategory.name}
+                        onChange={handleInput}
+                        disabled={editedCategory.noDelete}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col className="col-12 col-md-4">
+                    <Form.Group controlId="color" className="my-2">
+                      <Form.Label>Color</Form.Label>
+                      <Form.Control
+                        type="color"
+                        className="form-control-color"
+                        value={editedCategory.color}
+                        onChange={handleInput}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Row className="d-flex allign-items-center">
+                  <Col className="col-md-8">
+                    <Form.Group controlId="budget" className="mb-2">
+                      <Form.Label>Budget Amount</Form.Label>
+                      <Form.Control
+                        className="h-100"
+                        type="number"
+                        min={editedCategory.noDelete ? "-Infinity" : "0.01"}
+                        step={0.01}
+                        value={editedCategory.budget}
+                        onChange={handleInput}
+                        disabled={
+                          (editedCategory.hasSubcategory &&
+                            editedCategory.fixed) ||
+                          editedCategory.noDelete
+                        }
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col className="col-md-4">
+                    <Form.Group controlId="fixed" className="mb-2">
+                      <Form.Label>Fixed Category</Form.Label>
+                      <Form.Control
+                        className="h-100"
+                        type="text"
+                        value={editedCategory.fixed ? "Yes" : "No"}
+                        disabled={true}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                {editedCategory.fixed &&
+                  editedCategory.subcategories.length === 0 && (
+                    <Form.Group controlId="dayOfMonth" className="mb-2">
+                      <Form.Label>Day of the Month</Form.Label>
+                      <Form.Control
+                        className="h-100 w-25"
+                        type="number"
+                        min={1}
+                        max={31}
+                        value={editedCategory.dayOfMonth}
+                        onChange={handleInput}
+                      />
+                    </Form.Group>
+                  )}
+
+                {((editedCategory.fixed &&
+                  editedCategory.subcategories.length > 0) ||
+                  (!editedCategory.fixed && editedCategory.actual === 0) ||
+                  (!editedCategory.fixed &&
+                    editedCategory.subcategories.length > 0)) && (
+                  <div className="my-2">
+                    <p className="text-center fw-bold my-0">Subcategories</p>
+                    <div className="mt-1 text-center">
+                      <Button size="sm" onClick={openAddSubcategoryPage}>
+                        Add New
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {editedCategory.subcategories.length > 0 && (
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Actual</th>
+                        {editedCategory.fixed && <th>Day</th>}
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {editedCategory.subcategories.map((subcategory) => (
+                        <tr key={subcategory.id}>
+                          <td>{subcategory.name}</td>
+                          <td>{centsToDollars(subcategory.actual)}</td>
+                          {editedCategory.fixed && (
+                            <td>{subcategory.dayOfMonth}</td>
+                          )}
+                          {(category.fixed ||
+                            (!category.fixed && subcategory.actual === 0)) && (
+                            <td
+                              onClick={() => {
+                                openEditSubcategoryPage(subcategory);
+                              }}
+                              className="clicker"
+                            >
+                              &#8286;
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                )}
+                <div className="text-center mt-4">
+                  <Button
+                    className="w-100"
+                    disabled={
+                      editedCategory.name === "" ||
+                      (!editedCategory.fixed && editedCategory.budget === "") ||
+                      (editedCategory.fixed &&
+                        editedCategory.subcategories.length === 0 &&
+                        (editedCategory.budget === "" ||
+                          editedCategory.dayOfMonth === "" ||
+                          editedCategory.dayOfMonth < 1 ||
+                          editedCategory.dayOfMonth > 31))
+                    }
+                    onClick={updateCategory}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {page === "addSubcategory" && (
+              <div>
+                <AddSubcategoryPage
+                  editedCategory={editedCategory}
+                  setEditedCategory={setEditedCategory}
+                  backToDetails={backToDetails}
+                  setPage={setPage}
+                />
+              </div>
+            )}
+
+            {page === "editSubcategory" && (
+              <div>
+                <EditSubcategoryPage
+                  editedCategory={editedCategory}
+                  setEditedCategory={setEditedCategory}
+                  editedSubcategory={editedSubcategory}
+                  setEditedSubcategory={setEditedSubcategory}
+                  backToDetails={backToDetails}
+                  setPage={setPage}
+                />
+              </div>
+            )}
+
+            {status === "error" && <ErrorMessage />}
+          </Modal.Body>
+          {page === "details" && (
+            <Modal.Footer>
+              <div className="w-100 d-flex justify-content-between">
+                <Button variant="secondary" onClick={closeEditCategoryModal}>
+                  Cancel
+                </Button>
+                {!editedCategory.noDelete && (
+                  <Button
+                    variant="danger"
+                    disabled={
+                      (!editedCategory.fixed && editedCategory.actual !== 0) ||
+                      editedCategory.subcategories.length !== 0
+                    }
+                    onClick={removeCategory}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+            </Modal.Footer>
+          )}
+        </>
+      )}
+      {status === "updating" && (
+        <LoadingMessage message="Updating the category's details" />
+      )}
+      {status === "deleting" && (
+        <LoadingMessage message={`Deleting the category ${category.name}`} />
+      )}
+    </Modal>
+  );
+};
+
+export default EditCategoryModal;

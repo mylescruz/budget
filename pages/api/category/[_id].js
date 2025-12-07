@@ -43,6 +43,38 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const categoryId = req.query._id;
     const category = req.body;
 
+    const categoryBudget = category.budget * 100;
+    const dayOfMonth =
+      category.fixed && category.subcategories.length === 0
+        ? parseInt(dayOfMonth)
+        : null;
+
+    let subcategoryTotal = 0;
+    const subcategories = category.subcategories.map((subcategory) => {
+      if (category.fixed) {
+        subcategoryTotal += subcategory.actual;
+
+        return {
+          ...subcategory,
+          dayOfMonth: parseInt(subcategory.dayOfMonth),
+        };
+      } else {
+        return {
+          ...subcategory,
+          actual: 0,
+        };
+      }
+    });
+
+    let categoryActual = 0;
+    if (category.fixed && subcategories.length === 0) {
+      categoryActual = categoryBudget;
+    } else if (category.fixed && subcategories.length === 0) {
+      categoryActual = subcategoryTotal;
+    } else {
+      categoryActual = category.actual * 100;
+    }
+
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
       // Update the new fields for the category in MongoDB
@@ -51,11 +83,11 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         {
           $set: {
             name: category.name,
-            budget: category.budget,
-            actual: category.actual,
-            fixed: category.fixed,
-            hasSubcategory: category.hasSubcategory,
-            subcategories: category.subcategories,
+            budget: categoryBudget,
+            actual: categoryActual,
+            dayOfMonth: dayOfMonth,
+            hasSubcategory: subcategories.length > 0 ? true : false,
+            subcategories: subcategories,
           },
         },
         { session }

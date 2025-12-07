@@ -97,6 +97,8 @@ async function getCategories(req, res, { categoriesCol, username }) {
               fixed: 1,
               hasSubcategory: 1,
               subcategories: 1,
+              noDelete: 1,
+              dayOfMonth: 1,
               _id: 0,
             },
           },
@@ -114,6 +116,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
               ...subcategory,
               id: uuidv4(),
               actual: category.fixed ? subcategory.actual : 0,
+              dayOfMonth: category.fixed ? subcategory.dayOfMonth : null,
             };
           });
         } else {
