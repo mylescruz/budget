@@ -46,7 +46,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const categoryBudget = category.budget * 100;
     const dayOfMonth =
       category.fixed && category.subcategories.length === 0
-        ? parseInt(dayOfMonth)
+        ? parseInt(category.dayOfMonth)
         : null;
 
     let subcategoryTotal = 0;

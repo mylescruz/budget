@@ -114,7 +114,8 @@ const EditSubcategoryPage = ({
             (editedSubcategory.actual === "" ||
               editedSubcategory.dayOfMonth === "" ||
               editedSubcategory.dayOfMonth > 31 ||
-              editedSubcategory.dayOfMonth < 1))
+              editedSubcategory.dayOfMonth < 1 ||
+              !editedSubcategory.dayOfMonth))
         }
         onClick={saveSubcategory}
       >

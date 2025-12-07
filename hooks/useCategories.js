@@ -134,11 +134,44 @@ const useCategories = (month, year) => {
     [categories]
   );
 
+  // Gets the total budget, actual and remaining for categories
+  // Budget: Based on net value from paychecks
+  // Actual:
+  //  - If a category or subcategory's date of charge is greater than today, add that value to the total actual values
+  //  - If no dayOfMonth field, just sum all categories' actual values
   const categoryTotals = useMemo(() => {
-    const categoryActuals = categories.reduce(
-      (sum, current) => sum + current.actual,
-      0
-    );
+    const today = new Date();
+
+    let categoryActuals = 0;
+    categories.forEach((category) => {
+      if (category.fixed && category.subcategories.length > 0) {
+        category.subcategories.forEach((subcategory) => {
+          if (subcategory.dayOfMonth) {
+            const day = subcategory.dayOfMonth;
+            const subcategoryDate = new Date(`${month}/${day}/${year}`);
+
+            if (subcategoryDate <= today) {
+              categoryActuals += subcategory.actual;
+            }
+          } else {
+            categoryActuals += subcategory.actual;
+          }
+        });
+      } else if (category.fixed && category.subcategories.length === 0) {
+        if (category.dayOfMonth) {
+          const day = category.dayOfMonth;
+          const categoryDate = new Date(`${month}/${day}/${year}`);
+
+          if (categoryDate <= today) {
+            categoryActuals += category.actual;
+          }
+        } else {
+          categoryActuals += category.actual;
+        }
+      } else {
+        categoryActuals += category.actual;
+      }
+    });
 
     return {
       budget: monthIncome,

@@ -159,7 +159,7 @@ const EditCategoryModal = ({
                         value={editedCategory.budget}
                         onChange={handleInput}
                         disabled={
-                          (editedCategory.hasSubcategory &&
+                          (editedCategory.subcategories.length > 0 &&
                             editedCategory.fixed) ||
                           editedCategory.noDelete
                         }
@@ -249,6 +249,8 @@ const EditCategoryModal = ({
                     className="w-100"
                     disabled={
                       editedCategory.name === "" ||
+                      (!editedCategory.noDelete &&
+                        editedCategory.budget <= 0) ||
                       (!editedCategory.fixed && editedCategory.budget === "") ||
                       (editedCategory.fixed &&
                         editedCategory.subcategories.length === 0 &&
