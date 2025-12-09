@@ -1,6 +1,7 @@
 // API endpoint to add a new user to the system
 
 import clientPromise from "@/lib/mongodb";
+import { v4 as uuidv4 } from "uuid";
 
 // Configuring bcrypt for password encryption
 const bcrypt = require("bcrypt");
@@ -11,91 +12,63 @@ const USER_ROLE = "User";
 const GUILT_FREE = "Guilt Free Spending";
 
 export default async function handler(req, res) {
-  const method = req?.method;
-
   // Configure MongoDB
-  const db = (await clientPromise).db(process.env.MONGO_DB);
-  const usersCol = db.collection("users");
-  const categoriesCol = db.collection("categories");
-  const paychecksCol = db.collection("paychecks");
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB);
 
-  // Define the current month and year
   const today = new Date();
-  const month = today.getUTCMonth() + 1;
-  const year = today.getFullYear();
-  const monthName = today.toLocaleDateString("en-US", {
-    month: "long",
-    timeZone: "UTC",
-  });
 
-  const createUser = async (newUser) => {
-    // Encrypt the user's entered password by using bcrypt
-    const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
+  const onboardingContext = {
+    client: client,
+    usersCol: db.collection("users"),
+    categoriesCol: db.collection("categories"),
+    paychecksCol: db.collection("paychecks"),
+    month: today.getUTCMonth() + 1,
+    year: today.getFullYear(),
+  };
 
-    // Assign a timestamp for when the user created their profile
-    const createdDate = new Date().toUTCString();
+  switch (req.method) {
+    case "POST":
+      return createAccount(req, res, onboardingContext);
+    default:
+      return res.status(405).send(`Method ${req.method} is not allowed`);
+  }
+}
 
-    // Create an object with a user's information
-    const userInfo = {
-      name: newUser.name,
-      email: newUser.email,
-      username: newUser.username.toLowerCase(),
-      password_hash: hashedPassword,
-      role: USER_ROLE,
-      onboarded: true,
-      created_date: createdDate,
+async function createAccount(
+  req,
+  res,
+  { client, usersCol, categoriesCol, paychecksCol, month, year }
+) {
+  const mongoSession = client.startSession();
+
+  try {
+    const newUser = {
+      ...req.body,
+      username: req.body.username.toLowerCase(),
     };
 
-    // Add the new user to MongoDB
-    const result = await usersCol.insertOne(userInfo);
+    let insertedUser;
 
-    // Remove the password from the user object
-    const { password_hash, ...user } = userInfo;
-
-    // Return the added user
-    return { id: result.insertedId, ...user };
-  };
-
-  // Function to get the default categories from MongoDB
-  const getDefaultCategories = async (username) => {
-    // Get the default categories from MongoDB
-    const defaultDocs = await categoriesCol
-      .find({ defaultCategory: true })
-      .sort({ budget: 1 })
-      .toArray();
-
-    // Add the identifiers to the default categories
-    const categories = defaultDocs.map((category) => {
-      return {
-        username: username,
-        month: month,
-        year: year,
-        name: category.name,
-        color: category.color,
-        budget: category.budget,
-        actual: category.actual,
-        fixed: category.fixed,
-        hasSubcategory: category.hasSubcategory,
-        subcategories: category.subcategories,
-      };
-    });
-
-    return categories;
-  };
-
-  if (method === "POST") {
-    try {
-      const newUser = req?.body;
-
+    await mongoSession.withTransaction(async (session) => {
       // Add the user to MongoDB
-      const insertedUser = await createUser(newUser);
+      insertedUser = await createUser(newUser, session, usersCol);
 
-      // Add the identifiers to the user's paychecks
+      // Add the user's inputted paychecks to MongoDB
+      let monthIncome = 0;
       const paychecks = newUser.paychecks.map((paycheck) => {
+        const paycheckDate = new Date(`${paycheck.date}T00:00:00Z`);
+        const paycheckMonth = paycheckDate.getUTCMonth() + 1;
+        const paycheckYear = paycheckDate.getUTCFullYear();
+
+        if (month === paycheckMonth && year === paycheckYear) {
+          monthIncome += paycheck.net * 100;
+        }
+
         return {
           username: newUser.username,
-          month: month,
-          year: year,
+          month: paycheckMonth,
+          year: paycheckYear,
           date: paycheck.date,
           company: paycheck.company,
           description: paycheck.description,
@@ -105,23 +78,11 @@ export default async function handler(req, res) {
         };
       });
 
-      // Add the user's paychecks in MongoDB
-      await paychecksCol.insertMany(paychecks);
+      await paychecksCol.insertMany(paychecks, { session });
 
-      // Get the user's income for the current month
-      const userPaychecks = await paychecksCol
-        .find({ username: newUser.username, month: month, year: year })
-        .toArray();
-
-      const monthIncome = userPaychecks.reduce(
-        (sum, paycheck) => sum + paycheck.net,
-        0
-      );
-
-      // Add new categories for the user in MongoDB
+      // Define the user's categories
       let categories = [];
       if (newUser.customCategories) {
-        // Add the users inputted categories in MongoDB
         categories = newUser.categories.map((category) => {
           let categoryBudget = parseFloat(category.budget) * 100;
           let categoryActual = 0;
@@ -165,7 +126,6 @@ export default async function handler(req, res) {
             dayOfMonth = null;
           }
 
-          // Set the budget values to cents
           return {
             ...category,
             budget: categoryBudget,
@@ -175,24 +135,30 @@ export default async function handler(req, res) {
           };
         });
       } else {
-        // Add the default categories for the user in MongoDB
-        categories = await getDefaultCategories(newUser.username);
+        categories = await getDefaultCategories(
+          newUser.username,
+          month,
+          year,
+          categoriesCol
+        );
       }
 
-      // Get the budget total for all categories
-      const filteredBudget = categories
-        .filter((category) => category.name !== GUILT_FREE)
-        .reduce((sum, current) => sum + current.budget, 0);
+      // Get the budget sum to update current Guilt Free Spending
+      let budgetTotal = 0;
+      categories.forEach((category) => {
+        if (category.name !== GUILT_FREE) {
+          budgetTotal += category.budget;
+        }
+      });
 
-      // Update the Guilt Free Spending category to adjust for the user's total income for the month minus the total budget
-      const gfsIndex = categories.findIndex(
+      const guiltFreeIndex = categories.findIndex(
         (category) => category.name === GUILT_FREE
       );
 
-      categories[gfsIndex].budget = monthIncome - filteredBudget;
+      categories[guiltFreeIndex].budget = monthIncome - budgetTotal;
 
       const finalCategories = categories.map((category) => {
-        return {
+        const finalCategory = {
           username: newUser.username,
           month: month,
           year: year,
@@ -205,18 +171,93 @@ export default async function handler(req, res) {
           hasSubcategory: category.hasSubcategory,
           subcategories: category.subcategories,
         };
+
+        if (category.name === GUILT_FREE) {
+          finalCategory.noDelete = category.noDelete;
+        }
+
+        return finalCategory;
       });
 
-      // Insert the updated categories in MongoDB
-      await categoriesCol.insertMany(finalCategories);
+      await categoriesCol.insertMany(finalCategories, { session });
+    });
 
-      // Return the new user
-      res.status(200).json(insertedUser);
-    } catch (error) {
-      console.error(`${method} onboarding request failed: ${error}`);
-      res.status(500).send("There was an error onboarding this user");
-    }
-  } else {
-    res.status(405).send(`Method ${method} is not allowed`);
+    // Return the new user
+    res.status(200).json(insertedUser);
+  } catch (error) {
+    console.error(`POST onboarding request failed: ${error}`);
+    res.status(500).send(`Error occured while onboarding this new user`);
   }
+}
+
+async function createUser(newUser, session, usersCol) {
+  // Encrypt the user's entered password by using bcrypt
+  const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
+
+  const createdDate = new Date().toUTCString();
+
+  const userInfo = {
+    name: newUser.name,
+    email: newUser.email,
+    username: newUser.username,
+    password_hash: hashedPassword,
+    role: USER_ROLE,
+    onboarded: true,
+    created_date: createdDate,
+  };
+
+  // Add the new user to MongoDB
+  const insertedUser = await usersCol.insertOne(userInfo, { session });
+
+  // Remove the password from the user object
+  const { password_hash, ...user } = userInfo;
+
+  return { _id: insertedUser.insertedId, ...user };
+}
+
+async function getDefaultCategories(username, month, year, categoriesCol) {
+  const defaultCategories = await categoriesCol
+    .find({ defaultCategory: true })
+    .sort({ budget: 1 })
+    .toArray();
+
+  const usersCategories = defaultCategories.map((category) => {
+    const finalCategory = {
+      username,
+      month,
+      year,
+      name: category.name,
+      color: category.color,
+      budget: category.budget,
+      actual: category.actual,
+      fixed: category.fixed,
+      hasSubcategory: category.hasSubcategory,
+    };
+
+    let finalSubcategories = [];
+    if (category.subcategories.length > 0) {
+      finalSubcategories = category.subcategories.map((subcategory) => {
+        const finalSubcategory = {
+          id: uuidv4(),
+          name: subcategory.name,
+          actual: subcategory.actual,
+        };
+
+        if (category.fixed) {
+          finalSubcategory.dayOfMonth = subcategory.dayOfMonth;
+        }
+
+        return finalSubcategory;
+      });
+    }
+    finalCategory.subcategories = finalSubcategories;
+
+    if (category.fixed) {
+      finalCategory.dayOfMonth = category.dayOfMonth;
+    }
+
+    return finalCategory;
+  });
+
+  return usersCategories;
 }
