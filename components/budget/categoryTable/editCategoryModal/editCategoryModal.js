@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import AddSubcategoryPage from "./addSubcategoryPage";
 import EditSubcategoryPage from "./editSubcategoryPage";
+import { TransactionsContext } from "@/contexts/TransactionsContext";
 
 const EditCategoryModal = ({
   category,
@@ -23,6 +24,7 @@ const EditCategoryModal = ({
 }) => {
   const { getCategories, putCategory, deleteCategory } =
     useContext(CategoriesContext);
+  const { transactions, updateTransactions } = useContext(TransactionsContext);
 
   const [editedCategory, setEditedCategory] = useState({
     ...category,
@@ -36,12 +38,21 @@ const EditCategoryModal = ({
     actual: category.actual / 100,
   });
   const [editedSubcategory, setEditedSubcategory] = useState(null);
-
+  const [nameChange, setNameChange] = useState({
+    category: false,
+    subcategory: false,
+  });
   const [page, setPage] = useState("details");
   const [status, setStatus] = useState("editing");
 
   const handleInput = (e) => {
-    setEditedCategory({ ...editedCategory, [e.target.id]: e.target.value });
+    const id = e.target.id;
+
+    if (id === "name") {
+      setNameChange({ ...nameChange, category: true });
+    }
+
+    setEditedCategory({ ...editedCategory, [id]: e.target.value });
   };
 
   const openAddSubcategoryPage = () => {
@@ -49,7 +60,11 @@ const EditCategoryModal = ({
   };
 
   const openEditSubcategoryPage = (subcategory) => {
-    setEditedSubcategory({ ...subcategory, actual: subcategory.actual / 100 });
+    setEditedSubcategory({
+      ...subcategory,
+      actual: subcategory.actual / 100,
+      oldName: subcategory.name,
+    });
     setPage("editSubcategory");
   };
 
@@ -62,6 +77,42 @@ const EditCategoryModal = ({
         month: dateInfo.month,
         year: dateInfo.year,
       });
+
+      if (
+        nameChange.category &&
+        !editedCategory.fixed &&
+        editedCategory.actual > 0
+      ) {
+        const updatedTransactions = transactions
+          .filter((transaction) => transaction.category === category.name)
+          .map((transaction) => {
+            return { ...transaction, category: editedCategory.name };
+          });
+
+        await updateTransactions(updatedTransactions);
+      }
+
+      if (
+        nameChange.subcategory &&
+        !editedCategory.fixed &&
+        editedCategory.actual > 0
+      ) {
+        const changedSubcategories = editedCategory.subcategories.filter(
+          (subcategory) => subcategory.nameChanged
+        );
+
+        for (const subcategory of changedSubcategories) {
+          const updatedTransactions = transactions
+            .filter(
+              (transaction) => transaction.category === subcategory.oldName
+            )
+            .map((transaction) => {
+              return { ...transaction, category: subcategory.name };
+            });
+
+          await updateTransactions(updatedTransactions);
+        }
+      }
 
       // Fetch the categories to update the state for the categories table
       await getCategories(dateInfo.month, dateInfo.year);
@@ -228,17 +279,14 @@ const EditCategoryModal = ({
                           {editedCategory.fixed && (
                             <td>{subcategory.dayOfMonth}</td>
                           )}
-                          {(category.fixed ||
-                            (!category.fixed && subcategory.actual === 0)) && (
-                            <td
-                              onClick={() => {
-                                openEditSubcategoryPage(subcategory);
-                              }}
-                              className="clicker"
-                            >
-                              &#8286;
-                            </td>
-                          )}
+                          <td
+                            onClick={() => {
+                              openEditSubcategoryPage(subcategory);
+                            }}
+                            className="clicker"
+                          >
+                            &#8286;
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -287,6 +335,8 @@ const EditCategoryModal = ({
                   setEditedSubcategory={setEditedSubcategory}
                   backToDetails={backToDetails}
                   setPage={setPage}
+                  nameChange={nameChange}
+                  setNameChange={setNameChange}
                 />
               </div>
             )}

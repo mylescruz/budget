@@ -7,12 +7,25 @@ const EditSubcategoryPage = ({
   setEditedSubcategory,
   backToDetails,
   setPage,
+  nameChange,
+  setNameChange,
 }) => {
   const handleInput = (e) => {
-    setEditedSubcategory({
-      ...editedSubcategory,
-      [e.target.id]: e.target.value,
-    });
+    const id = e.target.id;
+
+    if (id === "name") {
+      setNameChange({ ...nameChange, subcategory: true });
+      setEditedSubcategory({
+        ...editedSubcategory,
+        [id]: e.target.value,
+        nameChanged: true,
+      });
+    } else {
+      setEditedSubcategory({
+        ...editedSubcategory,
+        [id]: e.target.value,
+      });
+    }
   };
 
   const saveSubcategory = () => {

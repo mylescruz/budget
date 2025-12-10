@@ -40,6 +40,7 @@ const AddTransactionModal = ({
   };
 
   const closeModal = () => {
+    setStatus("inputting");
     setAddTransactionClicked(false);
   };
 

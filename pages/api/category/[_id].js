@@ -55,13 +55,17 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         subcategoryTotal += subcategory.actual;
 
         return {
-          ...subcategory,
+          id: subcategory.id,
+          name: subcategory.name,
+          actual: subcategory.actual,
           dayOfMonth: parseInt(subcategory.dayOfMonth),
         };
       } else {
         return {
-          ...subcategory,
-          actual: 0,
+          id: subcategory.id,
+          name: subcategory.name,
+          actual: subcategory.actual,
+          dayOfMonth: subcategory.dayOfMonth,
         };
       }
     });
