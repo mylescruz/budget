@@ -13,9 +13,7 @@ const AddTransactionModal = ({
   setAddTransactionClicked,
 }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
-  const { getTransactions, postTransaction } = useContext(TransactionsContext);
-  const [addingTransaction, setAddingTransaction] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const { postTransaction } = useContext(TransactionsContext);
 
   // When adding a new transaction, the first category option should be the first one that is not fixed and doesn't have a subcategory
   const firstNotFixed = categories.find((category) => {
@@ -35,23 +33,18 @@ const AddTransactionModal = ({
   };
 
   const [newTransaction, setTransaction] = useState(emptyTransaction);
+  const [status, setStatus] = useState("inputting");
 
   const handleInput = (e) => {
     setTransaction({ ...newTransaction, [e.target.id]: e.target.value });
   };
 
-  const handleNumInput = (e) => {
-    const input = e.target.value;
-
-    if (input === "") {
-      setTransaction({ ...newTransaction, amount: input });
-    } else {
-      setTransaction({ ...newTransaction, amount: parseFloat(input) });
-    }
+  const closeModal = () => {
+    setAddTransactionClicked(false);
   };
 
   const AddNewTransaction = async (e) => {
-    setAddingTransaction(true);
+    setStatus("posting");
 
     try {
       e.preventDefault();
@@ -62,29 +55,18 @@ const AddTransactionModal = ({
       // Fetch the categories to update the state for the categories table
       await getCategories(dateInfo.month, dateInfo.year);
 
-      // Fetch the transactions to update the state for the transactions table
-      await getTransactions(dateInfo.month, dateInfo.year);
-
       setTransaction(emptyTransaction);
-      setAddTransactionClicked(false);
-      setErrorOccurred(false);
+      closeModal();
     } catch (error) {
-      setErrorOccurred(true);
+      setStatus("error");
       console.error(error);
       return;
-    } finally {
-      setAddingTransaction(false);
     }
-  };
-
-  const closeModal = () => {
-    setTransaction(emptyTransaction);
-    setAddTransactionClicked(false);
   };
 
   return (
     <Modal show={addTransactionClicked} onHide={closeModal} centered>
-      {!addingTransaction ? (
+      {status !== "posting" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>Enter transaction information</Modal.Title>
@@ -161,13 +143,13 @@ const AddTransactionModal = ({
                       type="number"
                       step="0.01"
                       value={newTransaction.amount}
-                      onChange={handleNumInput}
+                      onChange={handleInput}
                       required
                     />
                   </Form.Group>
                 </Col>
               </Row>
-              {errorOccurred && <ErrorMessage />}
+              {status === "error" && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer>
               <Form.Group className="my-2">
@@ -187,7 +169,8 @@ const AddTransactionModal = ({
             </Modal.Footer>
           </Form>
         </>
-      ) : (
+      )}
+      {status === "posting" && (
         <LoadingMessage message="Adding the transaction" />
       )}
     </Modal>

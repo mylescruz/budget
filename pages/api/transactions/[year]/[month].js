@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     case "POST":
       return addTransaction(req, res, transactionsContext);
     case "PUT":
-      return updateTransaction(req, res, transactionsContext);
+      return updateTransactions(req, res, transactionsContext);
     default:
       return res.status(405).send(`${req.method} method not allowed`);
   }
@@ -80,10 +80,11 @@ async function addTransaction(
   const mongoSession = client.startSession();
 
   try {
-    // Assign identifiers to the new transaction
     const newTransaction = {
       ...req.body,
-      amount: req.body.amount * 100,
+      store: req.body.store.trim(),
+      items: req.body.items.trim(),
+      amount: parseFloat(req.body.amount) * 100,
       username,
       month,
       year,
@@ -162,7 +163,7 @@ async function addTransaction(
 }
 
 // Update the user's transactions category in MongoDB
-async function updateTransaction(
+async function updateTransactions(
   req,
   res,
   { transactionsCol, username, month, year }

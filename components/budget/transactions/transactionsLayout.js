@@ -6,23 +6,37 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import ErrorTransactionsTable from "./errorTransactionsTable";
 import TransactionsCalendar from "./transactionsCalendar";
 
-const CALENDAR_TEXT = "View Calendar";
-const TABLE_TEXT = "View Table";
+const VIEWS_LABEL = {
+  CALENDAR: "View Calendar",
+  TABLE: "View Table",
+};
+const VIEWS = {
+  CALENDAR: "CALENDAR",
+  TABLE: "TABLE",
+};
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
-  const [calendarView, setCalendarView] = useState(true);
-  const [toggleText, setToggleText] = useState(TABLE_TEXT);
+  const [view, setView] = useState(VIEWS.CALENDAR);
+  const [buttonText, setButtonText] = useState(VIEWS_LABEL.TABLE);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
 
   const toggleTransactions = () => {
-    if (calendarView) {
-      setCalendarView(false);
-      setToggleText(CALENDAR_TEXT);
-    } else {
-      setCalendarView(true);
-      setToggleText(TABLE_TEXT);
-    }
+    setView((prev) => {
+      if (prev === VIEWS.CALENDAR) {
+        return VIEWS.TABLE;
+      } else {
+        return VIEWS.CALENDAR;
+      }
+    });
+
+    setButtonText((prev) => {
+      if (prev === VIEWS_LABEL.CALENDAR) {
+        return VIEWS_LABEL.TABLE;
+      } else {
+        return VIEWS_LABEL.CALENDAR;
+      }
+    });
   };
 
   const addTransaction = () => {
@@ -37,36 +51,33 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   return (
     <>
-      <Row className="option-buttons text-center">
-        <Col>
-          <Button
-            id="view-transactions-btn"
-            variant="secondary"
-            onClick={toggleTransactions}
-            disabled={!transactions}
-          >
-            {toggleText}
-          </Button>
-        </Col>
-        <Col>
-          <Button
-            id="add-transaction-btn"
-            variant="primary"
-            onClick={addTransaction}
-            disabled={!transactions}
-          >
-            Add Transaction
-          </Button>
-        </Col>
-      </Row>
+      <div className="w-75 mx-auto d-flex justify-content-between my-2 text-center">
+        <Button
+          id="view-transactions-btn"
+          variant="secondary"
+          onClick={toggleTransactions}
+          disabled={!transactions}
+        >
+          {buttonText}
+        </Button>
+        <Button
+          id="add-transaction-btn"
+          variant="primary"
+          onClick={addTransaction}
+          disabled={!transactions}
+        >
+          Add Transaction
+        </Button>
+      </div>
 
       {transactions ? (
         <>
           <Row className="d-flex">
             <Col className="col-12 col-xl-10 mx-auto">
-              {calendarView ? (
+              {view === VIEWS.CALENDAR && (
                 <TransactionsCalendar dateInfo={dateInfo} />
-              ) : (
+              )}
+              {view === VIEWS.TABLE && (
                 <TransactionsTable dateInfo={dateInfo} />
               )}
             </Col>
@@ -76,9 +87,7 @@ const TransactionsLayout = ({ dateInfo }) => {
         <ErrorTransactionsTable />
       )}
 
-      {addTransactionClicked && (
-        <AddTransactionModal {...addTransactionModalProps} />
-      )}
+      <AddTransactionModal {...addTransactionModalProps} />
     </>
   );
 };
