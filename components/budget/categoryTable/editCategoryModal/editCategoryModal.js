@@ -14,7 +14,8 @@ const EditCategoryModal = ({
   editCategoryClicked,
   setEditCategoryClicked,
 }) => {
-  const { putCategory, deleteCategory } = useContext(CategoriesContext);
+  const { getCategories, putCategory, deleteCategory } =
+    useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
 
   const [editedCategory, setEditedCategory] = useState({
@@ -106,6 +107,9 @@ const EditCategoryModal = ({
         }
       }
 
+      // Fetch the updated categories to show changes to the Fun Money category's budget
+      await getCategories(dateInfo.month, dateInfo.year);
+
       closeEditCategoryModal();
     } catch (error) {
       setStatus("error");
@@ -125,6 +129,9 @@ const EditCategoryModal = ({
         month: dateInfo.month,
         year: dateInfo.year,
       });
+
+      // Fetch the updated categories to show changes to the Fun Money category's budget
+      await getCategories(dateInfo.month, dateInfo.year);
 
       closeEditCategoryModal();
     } catch (error) {

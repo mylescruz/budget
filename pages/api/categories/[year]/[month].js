@@ -1,7 +1,7 @@
 // API Endpoint for a user's categories data
 
 import clientPromise from "@/lib/mongodb";
-import { updateGuiltFreeSpending } from "@/lib/updateGuiltFreeSpending";
+import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
@@ -222,7 +222,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
         session,
       });
 
-      await updateGuiltFreeSpending({ username, month, year, session });
+      await updateFunMoney({ username, month, year, session });
     });
 
     const { username: u, month: m, year: y, ...addedCategory } = newCategory;

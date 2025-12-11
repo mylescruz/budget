@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
-import { updateGuiltFreeSpending } from "@/lib/updateGuiltFreeSpending";
+import { updateFunMoney } from "@/lib/updateFunMoney";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -88,8 +88,8 @@ async function addPaycheck(req, res, { client, paychecksCol, username }) {
         session,
       });
 
-      // Update the Guilt Free Spending category for the paycheck's month
-      await updateGuiltFreeSpending({
+      // Update the Fun Money category for the paycheck's month
+      await updateFunMoney({
         username,
         month: paycheckMonth,
         year: paycheckYear,

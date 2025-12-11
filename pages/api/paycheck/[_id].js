@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
-import { updateGuiltFreeSpending } from "@/lib/updateGuiltFreeSpending";
+import { updateFunMoney } from "@/lib/updateFunMoney";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -78,8 +78,8 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
       const oldMonth = oldPaycheckDate.getUTCMonth() + 1;
       const oldYear = oldPaycheckDate.getFullYear();
 
-      // Update the Guilt Free Spending category for the updated paycheck's month
-      await updateGuiltFreeSpending({
+      // Update the Fun Money category for the updated paycheck's month
+      await updateFunMoney({
         username,
         month: updatedMonth,
         year: updatedYear,
@@ -87,8 +87,8 @@ async function updatePaycheck(req, res, { client, paychecksCol, username }) {
       });
 
       if (updatedMonth !== oldMonth) {
-        // Update the Guilt Free Spending category for the editted paycheck's month
-        await updateGuiltFreeSpending({
+        // Update the Fun Money category for the editted paycheck's month
+        await updateFunMoney({
           username,
           month: oldMonth,
           year: oldYear,
@@ -129,8 +129,8 @@ async function deletePaycheck(req, res, { client, paychecksCol, username }) {
       const month = paycheckDate.getUTCMonth() + 1;
       const year = paycheckDate.getFullYear();
 
-      // Update the Guilt Free Spending category for the deleted paycheck's month
-      await updateGuiltFreeSpending({ username, month, year, session });
+      // Update the Fun Money category for the deleted paycheck's month
+      await updateFunMoney({ username, month, year, session });
     });
 
     // Send a success message back to the client

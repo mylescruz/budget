@@ -7,8 +7,8 @@ import CompleteSection from "./completeSection";
 import { v4 as uuidv4 } from "uuid";
 import getDateInfo from "@/helpers/getDateInfo";
 
-const gfsCategory = {
-  name: "Guilt Free Spending",
+const funMoneyCategory = {
+  name: "Fun Money",
   color: "#6cc17a",
   budget: 500,
   actual: 0,
@@ -74,7 +74,7 @@ const OnboardingLayout = ({ newUser, setNewUser, finishOnboarding }) => {
     setNewUser({
       ...newUser,
       customCategories: true,
-      categories: [...newUser.categories, gfsCategory],
+      categories: [...newUser.categories, funMoneyCategory],
     });
     setEnterCustom(true);
   };

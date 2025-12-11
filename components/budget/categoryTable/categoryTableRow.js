@@ -36,11 +36,10 @@ const CategoryTableRow = ({ category, dateInfo }) => {
                   >
                     {category.name}
                   </Button>
-                  {/* Show the pop up message for the Guilt Free Spending category */}
                   {category.noDelete && (
                     <PopUp
                       title="The money you can spend on anything after all other expenses have been covered."
-                      id="guilt-free-info"
+                      id="fun-money-info"
                     >
                       <span> &#9432;</span>
                     </PopUp>

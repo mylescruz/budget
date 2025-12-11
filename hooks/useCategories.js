@@ -9,7 +9,7 @@ const useCategories = (month, year) => {
   // Get monthly income to compute category totals
   const { monthIncome } = useMonthIncome(month, year);
 
-  const getCategories = useCallback(async () => {
+  const getCategories = useCallback(async (month, year) => {
     try {
       const response = await fetch(`/api/categories/${year}/${month}`);
 
@@ -26,7 +26,7 @@ const useCategories = (month, year) => {
     } finally {
       setCategoriesLoading(false);
     }
-  }, [month, year]);
+  }, []);
 
   useEffect(() => {
     getCategories(month, year);

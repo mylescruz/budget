@@ -1,7 +1,7 @@
 // API Endpoint for a user's categories data
 
 import clientPromise from "@/lib/mongodb";
-import { updateGuiltFreeSpending } from "@/lib/updateGuiltFreeSpending";
+import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
@@ -106,8 +106,8 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         { session }
       );
 
-      // Update the Guilt Free Spending category for the category's month
-      await updateGuiltFreeSpending({
+      // Update the Fun Money category for the category's month
+      await updateFunMoney({
         username,
         month: category.month,
         year: category.year,
@@ -143,8 +143,8 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
         { session }
       );
 
-      // Update the Guilt Free Spending category for the category's month
-      await updateGuiltFreeSpending({
+      // Update the Fun Money category for the category's month
+      await updateFunMoney({
         username,
         month: category.month,
         year: category.year,

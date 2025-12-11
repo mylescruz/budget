@@ -146,7 +146,11 @@ const EditSubcategoryPage = ({
         <Button variant="secondary" onClick={backToDetails}>
           Back
         </Button>
-        <Button variant="danger" onClick={deleteSubcategory}>
+        <Button
+          variant="danger"
+          disabled={!editedCategory.fixed && editedSubcategory.actual !== 0}
+          onClick={deleteSubcategory}
+        >
           Delete
         </Button>
       </div>

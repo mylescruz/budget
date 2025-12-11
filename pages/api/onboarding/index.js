@@ -9,7 +9,7 @@ const saltRounds = 10;
 
 const USER_ROLE = "User";
 
-const GUILT_FREE = "Guilt Free Spending";
+const funMoney = "Fun Money";
 
 export default async function handler(req, res) {
   // Configure MongoDB
@@ -142,7 +142,7 @@ async function createAccount(
             }
           }
 
-          if (category.name === GUILT_FREE) {
+          if (category.name === funMoney) {
             finalCategory.noDelete = true;
           }
 
@@ -157,19 +157,19 @@ async function createAccount(
         );
       }
 
-      // Get the budget sum to update current Guilt Free Spending
+      // Get the budget sum to update current Fun Money
       let budgetTotal = 0;
       for (const category of categories) {
-        if (category.name !== GUILT_FREE) {
+        if (category.name !== funMoney) {
           budgetTotal += category.budget;
         }
       }
 
-      const guiltFreeIndex = categories.findIndex(
-        (category) => category.name === GUILT_FREE
+      const funMoneyIndex = categories.findIndex(
+        (category) => category.name === funMoney
       );
 
-      categories[guiltFreeIndex].budget = monthIncome - budgetTotal;
+      categories[funMoneyIndex].budget = monthIncome - budgetTotal;
 
       await categoriesCol.insertMany(categories, { session });
     });
@@ -248,7 +248,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
       finalCategory.dayOfMonth = category.dayOfMonth;
     }
 
-    if (category.name === GUILT_FREE) {
+    if (category.name === funMoney) {
       finalCategory.noDelete = true;
     }
 

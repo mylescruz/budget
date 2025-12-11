@@ -179,10 +179,10 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
                 <tr key={index} className="d-flex">
                   <td className="col-8 gray-background">
                     {category.name}
-                    {category.name === "Guilt Free Spending" && (
+                    {category.name === "Fun Money" && (
                       <PopUp
                         title="The money you can spend on whatever you want after all other expenses have been covered. Includes food, entertainment, travel, etc."
-                        id="guilt-free-info"
+                        id="fun-money-info"
                       >
                         <span> &#9432;</span>
                       </PopUp>
