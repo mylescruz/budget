@@ -98,7 +98,9 @@ async function getCategoriesSummary(categoriesCol, username, year) {
       if (category.subcategories.length > 0) {
         // Create a set of subcategory names
         const subcategoryNames = new Set(
-          foundCategory.subcategories.map((subcategory) => subcategory.name)
+          foundCategory.subcategories.map((subcategory) =>
+            subcategory.name.toLowerCase().trim()
+          )
         );
 
         category.subcategories.forEach((subcategory) => {
