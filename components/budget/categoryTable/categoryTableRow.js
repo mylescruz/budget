@@ -6,7 +6,6 @@ import centsToDollars from "@/helpers/centsToDollars";
 import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 
 const CategoryTableRow = ({ category, dateInfo }) => {
-  const hasSubcategory = category.hasSubcategory;
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [editCategoryClicked, setEditCategoryClicked] = useState(false);
 
@@ -28,7 +27,7 @@ const CategoryTableRow = ({ category, dateInfo }) => {
       <tr className="d-flex">
         <th className="col-5 col-md-5" onClick={dropdownSubcategories}>
           <Row className="d-flex">
-            {hasSubcategory ? (
+            {category.subcategories.length > 0 ? (
               <>
                 <Col className="col-9 cell">
                   <Button
@@ -72,10 +71,10 @@ const CategoryTableRow = ({ category, dateInfo }) => {
             category.budget < 0 && "text-danger"
           }`}
         >
-          {!category.fixed && centsToDollars(category.budget)}
+          {centsToDollars(category.budget)}
         </td>
         <td className="col-3 col-md-2 cell">
-          {centsToDollars(category.actual)}
+          {!category.fixed && centsToDollars(category.actual)}
         </td>
         <td
           className={`d-none d-md-block col-md-2 cell ${
@@ -90,7 +89,11 @@ const CategoryTableRow = ({ category, dateInfo }) => {
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
-          <SubcategoryRow key={subcategory.id} subcategory={subcategory} />
+          <SubcategoryRow
+            key={subcategory.id}
+            subcategory={subcategory}
+            category={category}
+          />
         ))}
 
       {editCategoryClicked && (

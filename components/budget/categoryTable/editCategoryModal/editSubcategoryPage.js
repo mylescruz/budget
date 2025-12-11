@@ -69,14 +69,21 @@ const EditSubcategoryPage = ({
       categoryActual -= editedSubcategory.actual * 100;
     }
 
-    setEditedCategory({
+    const updatedCategory = {
       ...editedCategory,
       budget: categoryBudget,
       actual: categoryActual,
       subcategories: editedCategory.subcategories.filter(
         (sub) => sub.id !== editedSubcategory.id
       ),
-    });
+    };
+
+    if (updatedCategory.subcategories.length === 0) {
+      updatedCategory.budget = "";
+      updatedCategory.dayOfMonth = "";
+    }
+
+    setEditedCategory(updatedCategory);
 
     setPage("details");
   };
@@ -125,6 +132,7 @@ const EditSubcategoryPage = ({
           editedSubcategory.name === "" ||
           (editedCategory.fixed &&
             (editedSubcategory.actual === "" ||
+              editedSubcategory.actual <= 0 ||
               editedSubcategory.dayOfMonth === "" ||
               editedSubcategory.dayOfMonth > 31 ||
               editedSubcategory.dayOfMonth < 1 ||

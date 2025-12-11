@@ -86,7 +86,12 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
               onClick={addNewSubcategory}
               disabled={
                 newSubcategory.name === "" ||
-                (newCategory.fixed && newSubcategory.actual === "")
+                (newCategory.fixed &&
+                  (newSubcategory.actual === "" ||
+                    newSubcategory.actual <= 0 ||
+                    newSubcategory.dayOfMonth === "" ||
+                    newSubcategory.dayOfMonth > 31 ||
+                    newSubcategory.dayOfMonth < 1))
               }
             >
               Add

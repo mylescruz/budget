@@ -3,15 +3,7 @@ import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import centsToDollars from "@/helpers/centsToDollars";
 import { useContext, useState } from "react";
-import {
-  Form,
-  Button,
-  Modal,
-  Col,
-  Row,
-  Container,
-  Table,
-} from "react-bootstrap";
+import { Form, Button, Modal, Col, Row, Table } from "react-bootstrap";
 import AddSubcategoryPage from "./addSubcategoryPage";
 import EditSubcategoryPage from "./editSubcategoryPage";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
@@ -28,7 +20,7 @@ const EditCategoryModal = ({
   const [editedCategory, setEditedCategory] = useState({
     ...category,
     budget:
-      category.hasSubcategory && category.fixed
+      category.subcategories.length > 0 && category.fixed
         ? category.subcategories.reduce(
             (sum, current) => sum + current.actual,
             0
@@ -36,6 +28,7 @@ const EditCategoryModal = ({
         : category.budget / 100,
     actual: category.actual / 100,
   });
+
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [nameChange, setNameChange] = useState({
     category: false,
@@ -70,6 +63,7 @@ const EditCategoryModal = ({
   const updateCategory = async () => {
     setStatus("updating");
 
+    console.log(editedCategory);
     try {
       await putCategory({
         ...editedCategory,
@@ -239,8 +233,7 @@ const EditCategoryModal = ({
                     </Form.Group>
                   )}
 
-                {((editedCategory.fixed &&
-                  editedCategory.subcategories.length > 0) ||
+                {(editedCategory.fixed ||
                   (!editedCategory.fixed && editedCategory.actual === 0) ||
                   (!editedCategory.fixed &&
                     editedCategory.subcategories.length > 0)) && (

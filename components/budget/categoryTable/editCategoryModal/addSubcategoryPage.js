@@ -60,13 +60,19 @@ const AddSubcategoryPage = ({
         ? newSubcategory.actual / 100
         : editedCategory.actual;
 
-      setEditedCategory({
+      const updatedCategory = {
         ...editedCategory,
         budget: budgetValue,
         actual: actualValue,
         hasSubcategory: true,
         subcategories: [newSubcategory],
-      });
+      };
+
+      if (editedCategory.fixed) {
+        updatedCategory.dayOfMonth = null;
+      }
+
+      setEditedCategory(updatedCategory);
     }
 
     setPage("details");
@@ -120,6 +126,7 @@ const AddSubcategoryPage = ({
             newSubcategory.name === "" ||
             (editedCategory.fixed &&
               (newSubcategory.actual === "" ||
+                newSubcategory.actual <= 0 ||
                 newSubcategory.dayOfMonth === "" ||
                 newSubcategory.dayOfMonth > 31 ||
                 newSubcategory.dayOfMonth < 1))

@@ -71,7 +71,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     });
 
     if (category.fixed && category.subcategories.length === 0) {
-      category.actual = categoryBudget;
+      category.actual = category.budget;
     } else if (category.fixed && category.subcategories.length === 0) {
       category.actual = subcategoryTotal;
     } else {
