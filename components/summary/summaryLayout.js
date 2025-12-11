@@ -15,34 +15,21 @@ const InnerSummaryLayout = ({ year }) => {
     return <LoadingIndicator />;
   } else if (summary) {
     return (
-      <Container className="w-100">
+      <Container className="w-100 mx-auto">
         <Row className="my-4 d-flex justify-content-center text-center">
           <h3>Highest, Lowest & Average Months</h3>
           <MonthsChart months={summary.months} />
         </Row>
 
-        <Row className="my-4 d-flex align-items-start">
-          <Row className="col-12 col-xl-6">
-            <Col className="col-12 mt-4">
-              <h3 className="text-center">Fixed Categories</h3>
-              <CategoryPieChart categories={summary.categories.fixed} />
-            </Col>
-            <Col className="col-12">
-              <SummaryTable categories={summary.categories.fixed} year={year} />
-            </Col>
-          </Row>
-          <Row className="mb-4 col-12 col-xl-6">
-            <Col className="col-12 mt-4">
-              <h3 className="text-center">Changing Categories</h3>
-              <CategoryPieChart categories={summary.categories.changing} />
-            </Col>
-            <Col className="col-12">
-              <SummaryTable
-                categories={summary.categories.changing}
-                year={year}
-              />
-            </Col>
-          </Row>
+        <Row className="my-4 mx-auto">
+          <CategoryPieChart categories={summary.categories} />
+          <Col className="col-12 col-xl-10 mx-auto">
+            <SummaryTable
+              categories={summary.categories}
+              year={year}
+              monthsLength={summary.monthsLength}
+            />
+          </Col>
         </Row>
 
         {summary.topStores.length > 0 && (

@@ -46,11 +46,14 @@ async function getYearSummary(
 
     const topStores = await getTopStores(transactionsCol, username, year);
 
+    const allMonths = await categoriesCol.distinct("month", { username, year });
+
     // Send the year summary back to the client
     return res.status(200).json({
       categories,
       months,
       topStores,
+      monthsLength: allMonths.length,
     });
   } catch (error) {
     console.error(`GET summary request failed for ${username}: ${error}`);
@@ -112,9 +115,16 @@ async function getCategoriesSummary(categoriesCol, username, year) {
             categoriesSummary[categoryIndex].subcategories[
               foundSubcategoryIndex
             ].actual = subcategory.actual + subcategoryActual;
+
+            categoriesSummary[categoryIndex].subcategories[
+              foundSubcategoryIndex
+            ].totalMonths += 1;
           } else {
             // If the subcategory is not in the categoriesSummary array, add it
-            categoriesSummary[categoryIndex].subcategories.push(subcategory);
+            categoriesSummary[categoryIndex].subcategories.push({
+              ...subcategory,
+              totalMonths: 1,
+            });
           }
         });
       }
@@ -124,26 +134,44 @@ async function getCategoriesSummary(categoriesCol, username, year) {
         foundCategory.budget + category.budget;
       categoriesSummary[categoryIndex].actual =
         foundCategory.actual + category.actual;
+      categoriesSummary[categoryIndex].totalMonths += 1;
 
       categoriesSummary[categoryIndex].subcategories.sort(
         (a, b) => b.actual - a.actual
       );
     } else {
-      categoriesSummary.push(category);
+      const updatedSubcategories = category.subcategories.map((subcategory) => {
+        return {
+          ...subcategory,
+          totalMonths: 1,
+        };
+      });
+      categoriesSummary.push({
+        ...category,
+        totalMonths: 1,
+        subcategories: updatedSubcategories,
+      });
     }
   });
 
-  const fixedCategories = categoriesSummary
-    .filter((category) => category.fixed)
-    .sort((a, b) => b.actual - a.actual);
-  const changingCategories = categoriesSummary
-    .filter((category) => !category.fixed)
+  const finalSummary = categoriesSummary
+    .map((category) => {
+      const updatedSubcategories = category.subcategories.map((subcategory) => {
+        return {
+          ...subcategory,
+          average: subcategory.actual / subcategory.totalMonths,
+        };
+      });
+
+      return {
+        ...category,
+        average: category.actual / category.totalMonths,
+        subcategories: updatedSubcategories,
+      };
+    })
     .sort((a, b) => b.actual - a.actual);
 
-  return {
-    fixed: fixedCategories,
-    changing: changingCategories,
-  };
+  return finalSummary;
 }
 
 // Get the max, min and average amount spent for each month

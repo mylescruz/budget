@@ -30,7 +30,7 @@ const SummaryTableRow = ({ category, year }) => {
   return (
     <>
       <tr className="d-flex">
-        <th className="col-6 col-md-6">
+        <th className="col-4">
           {category.subcategories.length > 0 ? (
             <Row className="d-flex" onClick={dropdownSubcategories}>
               <Col className="col-9 cell">
@@ -68,13 +68,13 @@ const SummaryTableRow = ({ category, year }) => {
           )}
         </th>
         <td
-          className={`col-3 col-md-2 cell fw-bold ${
+          className={`d-none d-md-block col-md-2 cell fw-bold ${
             category.budget < 0 && "text-danger "
           }`}
         >
           {centsToDollars(category.budget)}
         </td>
-        <td className="col-3 col-md-2 cell">
+        <td className="col-4 col-md-2 cell">
           {centsToDollars(category.actual)}
         </td>
         <td
@@ -84,23 +84,29 @@ const SummaryTableRow = ({ category, year }) => {
         >
           {!category.fixed && centsToDollars(category.budget - category.actual)}
         </td>
+        <td className="col-4 col-md-2 cell">
+          {centsToDollars(category.average)}
+        </td>
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
           <tr key={subcategory.id} className="d-flex">
             <th
-              className={`col-6 cell text-end ${!category.fixed && "clicker"}`}
+              className={`col-4 cell text-end ${!category.fixed && "clicker"}`}
               onClick={() => {
                 !category.fixed && openTransactionsModal(subcategory.name);
               }}
             >
               {subcategory.name}
             </th>
-            <td className="col-3 col-md-2"></td>
-            <td className="col-3 col-md-2 text-end">
-              {centsToDollars(subcategory.actual)}
+            <td className="d-none d-md-block col-md-2"></td>
+            <td className="col-4 col-md-2">
+              <span className="mx-2">{centsToDollars(subcategory.actual)}</span>
             </td>
             <td className="d-none d-md-block col-md-2"></td>
+            <td className="col-4 col-md-2">
+              {centsToDollars(subcategory.average)}
+            </td>
           </tr>
         ))}
 
