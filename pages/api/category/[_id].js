@@ -43,14 +43,14 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const categoryId = req.query._id;
     const category = req.body;
 
-    const categoryBudget = category.budget * 100;
-    const dayOfMonth =
+    category.budget = parseFloat(category.budget) * 100;
+    category.dayOfMonth =
       category.fixed && category.subcategories.length === 0
         ? parseInt(category.dayOfMonth)
         : null;
 
     let subcategoryTotal = 0;
-    const subcategories = category.subcategories.map((subcategory) => {
+    category.subcategories = category.subcategories.map((subcategory) => {
       if (category.fixed) {
         subcategoryTotal += subcategory.actual;
 
@@ -70,13 +70,12 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       }
     });
 
-    let categoryActual = 0;
-    if (category.fixed && subcategories.length === 0) {
-      categoryActual = categoryBudget;
-    } else if (category.fixed && subcategories.length === 0) {
-      categoryActual = subcategoryTotal;
+    if (category.fixed && category.subcategories.length === 0) {
+      category.actual = categoryBudget;
+    } else if (category.fixed && category.subcategories.length === 0) {
+      category.actual = subcategoryTotal;
     } else {
-      categoryActual = category.actual * 100;
+      category.actual = category.actual * 100;
     }
 
     // Start a transaction to process all MongoDB statements or rollback any failures
@@ -87,11 +86,11 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         {
           $set: {
             name: category.name,
-            budget: categoryBudget,
-            actual: categoryActual,
-            dayOfMonth: dayOfMonth,
-            hasSubcategory: subcategories.length > 0 ? true : false,
-            subcategories: subcategories,
+            budget: category.budget,
+            actual: category.actual,
+            dayOfMonth: category.dayOfMonth,
+            hasSubcategory: category.subcategories.length > 0 ? true : false,
+            subcategories: category.subcategories,
           },
         },
         { session }

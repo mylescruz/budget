@@ -22,8 +22,7 @@ const EditCategoryModal = ({
   editCategoryClicked,
   setEditCategoryClicked,
 }) => {
-  const { getCategories, putCategory, deleteCategory } =
-    useContext(CategoriesContext);
+  const { putCategory, deleteCategory } = useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
 
   const [editedCategory, setEditedCategory] = useState({
@@ -114,9 +113,6 @@ const EditCategoryModal = ({
         }
       }
 
-      // Fetch the categories to update the state for the categories table
-      await getCategories(dateInfo.month, dateInfo.year);
-
       closeEditCategoryModal();
     } catch (error) {
       setStatus("error");
@@ -137,9 +133,6 @@ const EditCategoryModal = ({
         year: dateInfo.year,
       });
 
-      // Fetch the categories to update the state for the categories table
-      await getCategories(dateInfo.month, dateInfo.year);
-
       closeEditCategoryModal();
     } catch (error) {
       setStatus("error");
@@ -159,7 +152,7 @@ const EditCategoryModal = ({
 
   return (
     <Modal show={editCategoryClicked} onHide={closeEditCategoryModal} centered>
-      {status !== "updating" && (
+      {status !== "updating" && status !== "deleting" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>

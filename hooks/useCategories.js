@@ -85,7 +85,7 @@ const useCategories = (month, year) => {
           updatedCategories[categoryIndex] = updatedCategory;
 
           if (categoryIndex !== -1) {
-            setCategories(updatedCategories);
+            setCategories(categorySorter(updatedCategories));
           } else {
             throw new Error(`Could not find category ${updatedCategory.name}`);
           }
@@ -120,7 +120,7 @@ const useCategories = (month, year) => {
             return category._id !== deletedCategory._id;
           });
 
-          setCategories(updatedCategories);
+          setCategories(categorySorter(updatedCategories));
         } else {
           const message = await response.text();
           throw new Error(message);
