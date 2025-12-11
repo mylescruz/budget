@@ -45,7 +45,7 @@ async function createAccount(
   try {
     const newUser = {
       ...req.body,
-      username: req.body.username.toLowerCase(),
+      username: req.body.username.toLowerCase().trim(),
     };
 
     let insertedUser;
@@ -70,8 +70,8 @@ async function createAccount(
           month: paycheckMonth,
           year: paycheckYear,
           date: paycheck.date,
-          company: paycheck.company,
-          description: paycheck.description,
+          company: paycheck.company.trim(),
+          description: paycheck.description.trim(),
           gross: paycheck.gross * 100,
           taxes: paycheck.taxes * 100,
           net: paycheck.net * 100,
@@ -88,7 +88,7 @@ async function createAccount(
             username: newUser.username,
             month: month,
             year: year,
-            name: category.name,
+            name: category.name.trim(),
             color: category.color,
             fixed: category.fixed,
             subcategories: category.subcategories,
@@ -108,14 +108,14 @@ async function createAccount(
 
                   return {
                     id: subcategory.id,
-                    name: subcategory.name,
+                    name: subcategory.name.trim(),
                     actual: subcategoryActual,
                     dayOfMonth: parseInt(subcategory.dayOfMonth),
                   };
                 } else {
                   return {
                     id: subcategory.id,
-                    name: subcategory.name,
+                    name: subcategory.name.trim(),
                     actual: 0,
                   };
                 }
@@ -189,8 +189,8 @@ async function createUser(newUser, session, usersCol) {
   const createdDate = new Date().toUTCString();
 
   const userInfo = {
-    name: newUser.name,
-    email: newUser.email,
+    name: newUser.name.trim(),
+    email: newUser.email.trim(),
     username: newUser.username,
     password_hash: hashedPassword,
     role: USER_ROLE,

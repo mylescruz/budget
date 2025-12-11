@@ -87,7 +87,8 @@ async function getCategoriesSummary(categoriesCol, username, year) {
   categories.forEach((category) => {
     // Find the category based on the index
     const categoryIndex = categoriesSummary.findIndex(
-      (cat) => cat.name === category.name
+      (cat) =>
+        cat.name.toLowerCase().trim() === category.name.toLowerCase().trim()
     );
 
     if (categoryIndex !== -1) {
@@ -102,7 +103,7 @@ async function getCategoriesSummary(categoriesCol, username, year) {
 
         category.subcategories.forEach((subcategory) => {
           // Check a category's subcategory is already in the categoriesSummary array
-          if (subcategoryNames.has(subcategory.name.trim())) {
+          if (subcategoryNames.has(subcategory.name.toLowerCase().trim())) {
             const foundSubcategoryIndex = foundCategory.subcategories.findIndex(
               (sub) => sub.name === subcategory.name
             );

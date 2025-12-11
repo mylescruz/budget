@@ -66,8 +66,8 @@ async function updateTransaction(
         {
           $set: {
             date: transaction.date,
-            store: transaction.store,
-            items: transaction.items,
+            store: transaction.store.trim(),
+            items: transaction.items.trim(),
             category: transaction.category,
             amount: transaction.amount,
           },

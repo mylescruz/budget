@@ -175,7 +175,8 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
         updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
           categoryActual += subcategory.actual * 100;
           return {
-            ...subcategory,
+            id: subcategory.id,
+            name: subcategory.name.trim(),
             actual: subcategory.actual * 100,
             dayOfMonth: parseInt(subcategory.dayOfMonth),
           };
@@ -184,7 +185,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
         updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
           return {
             id: subcategory.id,
-            name: subcategory.name,
+            name: subcategory.name.trim(),
             actual: 0,
           };
         });
@@ -195,7 +196,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       username,
       month,
       year,
-      name: categoryBody.name,
+      name: categoryBody.name.trim(),
       color: categoryBody.color,
       budget: categoryBudget,
       actual: categoryActual,

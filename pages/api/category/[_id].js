@@ -56,14 +56,14 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
 
         return {
           id: subcategory.id,
-          name: subcategory.name,
+          name: subcategory.name.trim(),
           actual: subcategory.actual,
           dayOfMonth: parseInt(subcategory.dayOfMonth),
         };
       } else {
         return {
           id: subcategory.id,
-          name: subcategory.name,
+          name: subcategory.name.trim(),
           actual: subcategory.actual,
           dayOfMonth: subcategory.dayOfMonth,
         };
@@ -85,7 +85,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         { _id: new ObjectId(categoryId) },
         {
           $set: {
-            name: category.name,
+            name: category.name.trim(),
             budget: category.budget,
             actual: category.actual,
             dayOfMonth: category.dayOfMonth,

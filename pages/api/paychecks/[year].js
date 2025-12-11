@@ -68,7 +68,9 @@ async function addPaycheck(req, res, { client, paychecksCol, username }) {
 
     // Assign the identifiers to the paycheck
     const newPaycheck = {
-      ...req.body,
+      date: req.body.date,
+      company: req.body.company.trim(),
+      description: req.body.description.trim(),
       gross: req.body.gross * 100,
       taxes: req.body.gross * 100 - req.body.net * 100,
       net: req.body.net * 100,
