@@ -89,7 +89,6 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             budget: category.budget,
             actual: category.actual,
             dayOfMonth: category.dayOfMonth,
-            hasSubcategory: category.subcategories.length > 0 ? true : false,
             subcategories: category.subcategories,
           },
         },
@@ -116,7 +115,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       });
     });
 
-    // // Send the updated category back to the client
+    // Send the updated category back to the client
     return res.status(200).json(category);
   } catch (error) {
     console.error(`PUT categories request failed for ${username}: ${error}`);

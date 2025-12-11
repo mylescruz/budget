@@ -95,7 +95,6 @@ async function getCategories(req, res, { categoriesCol, username }) {
               budget: 1,
               actual: { $cond: ["$fixed", "$actual", 0] },
               fixed: 1,
-              hasSubcategory: 1,
               subcategories: 1,
               noDelete: 1,
               dayOfMonth: 1,
@@ -110,7 +109,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
       const newCategories = previousCategories.map((category) => {
         let formattedSubcategories;
 
-        if (category.hasSubcategory) {
+        if (category.subcategories.length > 0) {
           formattedSubcategories = category.subcategories.map((subcategory) => {
             return {
               ...subcategory,
@@ -164,43 +163,54 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     const categoryBody = req.body;
 
     // Convert the budget value to cents
-    const budget = parseFloat(categoryBody.budget) * 100;
-    let actual = categoryBody.fixed ? budget : 0;
+    const categoryBudget = parseFloat(categoryBody.budget) * 100;
+    let categoryActual = categoryBody.fixed ? categoryBudget : 0;
 
     // If category has fixed subcategories, update their actual values to cents
     let updatedSubcategories = categoryBody.subcategories;
 
-    if (categoryBody.hasSubcategory && categoryBody.fixed) {
-      actual = 0;
-      updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
-        actual += subcategory.actual * 100;
-        return {
-          ...subcategory,
-          actual: subcategory.actual * 100,
-          dayOfMonth: parseInt(subcategory.dayOfMonth),
-        };
-      });
-    }
-
-    // A fixed category or subcategories date will pop up as a transaction on the budget's calendar
-    let dayOfMonth = parseInt(categoryBody.dayOfMonth);
-    if (
-      !categoryBody.fixed ||
-      (categoryBody.hasSubcategory && categoryBody.fixed)
-    ) {
-      dayOfMonth = null;
+    if (categoryBody.subcategories.length > 0) {
+      if (categoryBody.fixed) {
+        categoryActual = 0;
+        updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
+          categoryActual += subcategory.actual * 100;
+          return {
+            ...subcategory,
+            actual: subcategory.actual * 100,
+            dayOfMonth: parseInt(subcategory.dayOfMonth),
+          };
+        });
+      } else {
+        updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
+          return {
+            id: subcategory.id,
+            name: subcategory.name,
+            actual: 0,
+          };
+        });
+      }
     }
 
     const newCategory = {
-      ...categoryBody,
       username,
       month,
       year,
-      budget,
-      actual,
-      dayOfMonth,
+      name: categoryBody.name,
+      color: categoryBody.color,
+      budget: categoryBudget,
+      actual: categoryActual,
+      fixed: categoryBody.fixed,
       subcategories: updatedSubcategories,
     };
+
+    // A fixed category or subcategories date will pop up as a transaction on the budget's calendar
+    if (newCategory.fixed) {
+      if (newCategory.subcategories.length === 0) {
+        newCategory.dayOfMonth = parseInt(categoryBody.dayOfMonth);
+      } else {
+        newCategory.dayOfMonth = null;
+      }
+    }
 
     let insertedCategory;
 

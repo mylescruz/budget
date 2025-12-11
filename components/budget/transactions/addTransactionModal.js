@@ -17,7 +17,7 @@ const AddTransactionModal = ({
 
   // When adding a new transaction, the first category option should be the first one that is not fixed and doesn't have a subcategory
   const firstNotFixed = categories.find((category) => {
-    return !category.fixed && !category.hasSubcategory;
+    return !category.fixed && !category.subcategories.length > 0;
   });
 
   // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at current budget or history

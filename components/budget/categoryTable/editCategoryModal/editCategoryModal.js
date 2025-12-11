@@ -63,7 +63,6 @@ const EditCategoryModal = ({
   const updateCategory = async () => {
     setStatus("updating");
 
-    console.log(editedCategory);
     try {
       await putCategory({
         ...editedCategory,

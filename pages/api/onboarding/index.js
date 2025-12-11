@@ -84,55 +84,69 @@ async function createAccount(
       let categories = [];
       if (newUser.customCategories) {
         categories = newUser.categories.map((category) => {
-          let categoryBudget = parseFloat(category.budget) * 100;
-          let categoryActual = 0;
+          const finalCategory = {
+            username: newUser.username,
+            month: month,
+            year: year,
+            name: category.name,
+            color: category.color,
+            fixed: category.fixed,
+            subcategories: category.subcategories,
+          };
+
+          finalCategory.budget = parseFloat(category.budget) * 100;
+
           let subcategoriesActual = 0;
-
-          let finalSubcategories = category.subcategories;
-
-          if (finalSubcategories.length > 0) {
+          if (category.subcategories.length > 0) {
             // Set all subcategory values to cents
-            finalSubcategories = category.subcategories.map((subcategory) => {
-              const subcategoryActual = parseFloat(subcategory.actual) * 100;
+            finalCategory.subcategories = category.subcategories.map(
+              (subcategory) => {
+                const subcategoryActual = parseFloat(subcategory.actual) * 100;
 
-              if (category.fixed) {
-                subcategoriesActual += subcategoryActual;
+                if (category.fixed) {
+                  subcategoriesActual += subcategoryActual;
 
-                return {
-                  ...subcategory,
-                  actual: subcategoryActual,
-                  dayOfMonth: parseInt(subcategory.dayOfMonth),
-                };
-              } else {
-                return {
-                  ...subcategory,
-                  actual: 0,
-                };
+                  return {
+                    id: subcategory.id,
+                    name: subcategory.name,
+                    actual: subcategoryActual,
+                    dayOfMonth: parseInt(subcategory.dayOfMonth),
+                  };
+                } else {
+                  return {
+                    id: subcategory.id,
+                    name: subcategory.name,
+                    actual: 0,
+                  };
+                }
               }
-            });
+            );
           }
 
           if (category.fixed) {
             if (category.subcategories.length > 0) {
-              categoryBudget = subcategoriesActual;
-              categoryActual = subcategoriesActual;
+              finalCategory.budget = subcategoriesActual;
+              finalCategory.actual = subcategoriesActual;
             } else {
-              categoryActual = categoryBudget;
+              finalCategory.actual = finalCategory.budget;
+            }
+          } else {
+            finalCategory.actual = 0;
+          }
+
+          if (category.fixed) {
+            if (category.subcategories.length > 0) {
+              finalCategory.dayOfMonth = null;
+            } else {
+              finalCategory.dayOfMonth = parseInt(category.dayOfMonth);
             }
           }
 
-          let dayOfMonth = parseInt(category.dayOfMonth);
-          if (!category.fixed || (category.hasSubcategory && category.fixed)) {
-            dayOfMonth = null;
+          if (category.name === GUILT_FREE) {
+            finalCategory.noDelete = true;
           }
 
-          return {
-            ...category,
-            budget: categoryBudget,
-            actual: categoryActual,
-            dayOfMonth,
-            subcategories: finalSubcategories,
-          };
+          return finalCategory;
         });
       } else {
         categories = await getDefaultCategories(
@@ -145,11 +159,11 @@ async function createAccount(
 
       // Get the budget sum to update current Guilt Free Spending
       let budgetTotal = 0;
-      categories.forEach((category) => {
+      for (const category of categories) {
         if (category.name !== GUILT_FREE) {
           budgetTotal += category.budget;
         }
-      });
+      }
 
       const guiltFreeIndex = categories.findIndex(
         (category) => category.name === GUILT_FREE
@@ -157,29 +171,7 @@ async function createAccount(
 
       categories[guiltFreeIndex].budget = monthIncome - budgetTotal;
 
-      const finalCategories = categories.map((category) => {
-        const finalCategory = {
-          username: newUser.username,
-          month: month,
-          year: year,
-          name: category.name,
-          color: category.color,
-          budget: category.budget,
-          actual: category.actual,
-          fixed: category.fixed,
-          dayOfMonth: category.dayOfMonth,
-          hasSubcategory: category.hasSubcategory,
-          subcategories: category.subcategories,
-        };
-
-        if (category.name === GUILT_FREE) {
-          finalCategory.noDelete = category.noDelete;
-        }
-
-        return finalCategory;
-      });
-
-      await categoriesCol.insertMany(finalCategories, { session });
+      await categoriesCol.insertMany(categories, { session });
     });
 
     // Return the new user
@@ -231,29 +223,33 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
       budget: category.budget,
       actual: category.actual,
       fixed: category.fixed,
-      hasSubcategory: category.hasSubcategory,
+      subcategories: category.subcategories,
     };
 
-    let finalSubcategories = [];
     if (category.subcategories.length > 0) {
-      finalSubcategories = category.subcategories.map((subcategory) => {
-        const finalSubcategory = {
-          id: uuidv4(),
-          name: subcategory.name,
-          actual: subcategory.actual,
-        };
+      finalCategory.subcategories = category.subcategories.map(
+        (subcategory) => {
+          const finalSubcategory = {
+            id: uuidv4(),
+            name: subcategory.name,
+            actual: subcategory.actual,
+          };
 
-        if (category.fixed) {
-          finalSubcategory.dayOfMonth = subcategory.dayOfMonth;
+          if (category.fixed) {
+            finalSubcategory.dayOfMonth = subcategory.dayOfMonth;
+          }
+
+          return finalSubcategory;
         }
-
-        return finalSubcategory;
-      });
+      );
     }
-    finalCategory.subcategories = finalSubcategories;
 
     if (category.fixed) {
       finalCategory.dayOfMonth = category.dayOfMonth;
+    }
+
+    if (category.name === GUILT_FREE) {
+      finalCategory.noDelete = true;
     }
 
     return finalCategory;

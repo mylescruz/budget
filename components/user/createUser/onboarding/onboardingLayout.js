@@ -13,9 +13,6 @@ const gfsCategory = {
   budget: 500,
   actual: 0,
   fixed: false,
-  dayOfMonth: null,
-  hasSubcategory: true,
-  noDelete: true,
   subcategories: [
     {
       id: uuidv4(),

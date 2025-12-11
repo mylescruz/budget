@@ -29,7 +29,7 @@ const AddSubcategoryPage = ({
       newSubcategory.actual = newSubcategory.actual * 100;
     }
 
-    if (editedCategory.hasSubcategory) {
+    if (editedCategory.subcategories.length > 0) {
       // If the category already has subcategories
 
       // If the category is fixed, add the new subcategory total to the budget value
@@ -64,7 +64,6 @@ const AddSubcategoryPage = ({
         ...editedCategory,
         budget: budgetValue,
         actual: actualValue,
-        hasSubcategory: true,
         subcategories: [newSubcategory],
       };
 
