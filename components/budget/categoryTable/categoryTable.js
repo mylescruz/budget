@@ -1,28 +1,19 @@
 import { Button, Col, Row, Table } from "react-bootstrap";
-import CategoryTableRow from "./categoryTableRow";
 import CategoryTableFooter from "./categoryTableFooter";
 import React, { useContext, useState } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import PopUp from "@/components/layout/popUp";
 import AddCategoryModal from "../addCategoryModal/addCategoryModal";
+import ChangingCategoryRow from "./changingCategoryRow";
+import FixedCategoryRow from "./fixedCategoryRow";
 
 const CategoryTable = ({ dateInfo }) => {
   const { categories } = useContext(CategoriesContext);
 
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
-  const [showFixedExpenses, setShowFixedExpenses] = useState(true);
-  const [showVariableExpenses, setShowVariableExpenses] = useState(true);
 
   const addNewCategory = () => {
     setAddCategoryClicked(true);
-  };
-
-  const displayFixedExpenses = () => {
-    setShowFixedExpenses(!showFixedExpenses);
-  };
-
-  const displayVariableExpenses = () => {
-    setShowVariableExpenses(!showVariableExpenses);
   };
 
   const addCategoryProps = {
@@ -33,103 +24,73 @@ const CategoryTable = ({ dateInfo }) => {
   return (
     <>
       <Table striped>
-        <thead className="table-dark">
-          <tr className="d-flex">
-            <th className="col-5">
-              <Row className="d-flex">
-                <Col className="col-6">Category</Col>
-                <Col className="col-6">
-                  <Button
-                    className="btn-sm"
-                    id="save-all-btn"
-                    onClick={addNewCategory}
-                  >
-                    Add
-                  </Button>
-                </Col>
-              </Row>
+        <thead>
+          <tr className="d-flex table-secondary">
+            <th className="col-6 fs-5">Categories</th>
+            <th className="col-6 d-flex align-items-center justify-content-end">
+              <Button size="sm" onClick={addNewCategory}>
+                Add Category
+              </Button>
             </th>
-            <th className="col-3 col-md-2">Budget</th>
-            <th className="col-3 col-md-2">Spent</th>
-            <th className="d-none d-md-block col-md-2 cell">Remaining</th>
-            <th className="col-1" />
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th
-              className="bg-secondary text-white clicker"
-              colSpan={1}
-              onClick={displayFixedExpenses}
-            >
-              <Row className="d-flex">
-                <Col className="col-10">
-                  Fixed Expenses
-                  <PopUp
-                    title="Your expenses that remain the same each month."
-                    id="fixed-expenses-info"
-                  >
-                    <span> &#9432;</span>
-                  </PopUp>
-                </Col>
-                <Col className="col-2 text-end">
-                  <i
-                    className={`fw-bold bi ${
-                      showFixedExpenses ? "bi-chevron-up" : "bi-chevron-down"
-                    }`}
-                  />
-                </Col>
-              </Row>
+          <tr className="table-dark">
+            <th colSpan={1}>
+              Fixed Expenses
+              <PopUp
+                title="Your expenses that remain the same each month."
+                id="fixed-expenses-info"
+              >
+                <span> &#9432;</span>
+              </PopUp>
             </th>
           </tr>
-          {showFixedExpenses &&
-            categories.map(
-              (category) =>
-                category.fixed && (
-                  <CategoryTableRow
-                    key={category._id}
-                    category={category}
-                    dateInfo={dateInfo}
-                  />
-                )
-            )}
-          <tr>
-            <th
-              className="bg-secondary text-white clicker"
-              colSpan={1}
-              onClick={displayVariableExpenses}
-            >
-              <Row className="d-flex">
-                <Col className="col-10">
-                  Changing Expenses
-                  <PopUp
-                    title="Your expenses that change depending on your spending."
-                    id="variable-expenses-info"
-                  >
-                    <span> &#9432;</span>
-                  </PopUp>
-                </Col>
-                <Col className="col-2 text-end">
-                  <i
-                    className={`fw-bold bi ${
-                      showVariableExpenses ? "bi-chevron-up" : "bi-chevron-down"
-                    }`}
-                  ></i>
-                </Col>
-              </Row>
+          <tr className="d-flex table-light">
+            <th className="col-6 col-md-4 col-lg-3">Category</th>
+            <th className="col-3 col-md-2">Amount</th>
+            <th className="d-none d-lg-block col-lg-2">Day</th>
+            <th className="col-3 col-md-2 col-lg-2">Charged</th>
+            <th className="d-none d-md-block col-md-4 col-lg-3" />
+          </tr>
+          {categories.map(
+            (category) =>
+              category.fixed && (
+                <FixedCategoryRow
+                  key={category._id}
+                  category={category}
+                  dateInfo={dateInfo}
+                />
+              )
+          )}
+          <tr className="table-dark">
+            <th colSpan={1}>
+              Changing Expenses
+              <PopUp
+                title="Your expenses that change depending on your spending."
+                id="variable-expenses-info"
+              >
+                <span> &#9432;</span>
+              </PopUp>
             </th>
           </tr>
-          {showVariableExpenses &&
-            categories.map(
-              (category) =>
-                !category.fixed && (
-                  <CategoryTableRow
-                    key={category._id}
-                    category={category}
-                    dateInfo={dateInfo}
-                  />
-                )
-            )}
+          <tr className="d-flex table-light">
+            <th className="col-6 col-md-4 col-lg-3">Category</th>
+            <th className="d-none d-lg-block col-lg-2">Budget</th>
+            <th className="col-3 col-md-2">Spent</th>
+            <th className="col-3 col-md-2">Left</th>
+            <th className="d-none d-md-block col-md-4 col-lg-3">Progress</th>
+          </tr>
+          {categories.map(
+            (category) =>
+              !category.fixed && (
+                <ChangingCategoryRow
+                  key={category._id}
+                  category={category}
+                  dateInfo={dateInfo}
+                />
+              )
+          )}
         </tbody>
         <tfoot className="table-dark">
           <CategoryTableFooter />

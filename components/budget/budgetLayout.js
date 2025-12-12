@@ -34,10 +34,10 @@ const InnerBudgetLayout = ({ dateInfo }) => {
         </aside>
 
         <Row className="d-flex flex-column flex-lg-row align-items-center">
-          <Col className="col-12 col-xl-6">
+          <Col className="col-12 col-xl-4">
             <CategoryPieChart categories={categories} />
           </Col>
-          <Col className="col-12 col-xl-6">
+          <Col className="col-12 col-xl-8">
             <CategoryTable dateInfo={dateInfo} />
           </Col>
         </Row>

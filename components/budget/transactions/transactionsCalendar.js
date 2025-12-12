@@ -121,7 +121,7 @@ const TransactionsCalendar = ({ dateInfo }) => {
   return (
     <Table striped className={styles.equal_columns}>
       <thead>
-        <tr>
+        <tr className="table-dark">
           {DAYS_OF_WEEK.map((day, index) => (
             <td key={index} className="fw-bold text-center">
               <span className="d-md-none">{day.slice(0, 1)}</span>

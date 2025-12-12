@@ -93,23 +93,6 @@ a {
   }
 }
 
-.plus {
-  &:hover {
-    cursor: pointer;
-    color: blue;
-    transition: color 0.5s;
-  }
-}
-
-.check {
-  &:hover {
-    cursor: pointer;
-    color: green;
-    transition: color 0.5s;
-  }
-}
-
-.cancel,
 .delete {
   &:hover {
     cursor: pointer;
@@ -134,43 +117,10 @@ a {
   width: 90%;
 }
 
-#save-all-btn {
-  text-wrap: nowrap;
-}
-
 .content-margin {
   margin: 1em 0em;
 }
 
-/* Extra-Small Device */
-@media (max-width: 575.99px) {
-  .categories-table,
-  .edit-categories-table {
-    margin: 2em 0em;
-    font-size: 0.8em;
-  }
-
-  #view-transactions-btn,
-  #add-transaction-btn {
-    margin: 0em 0em 2em;
-    font-size: 0.9em;
-  }
-
-  #edit-categories-btn {
-    font-size: 0.75em;
-  }
-
-  #save-all-btn {
-    font-size: 0.75em;
-  }
-
-  .cancel-sub {
-    margin: 0em 0.25em 0em 1.25em;
-    padding: 0;
-  }
-
-  .check-sub {
-    margin: 0em 0.25em 0em 0.5em;
-    padding: 0;
-  }
+.status-bar {
+  height: 30px;
 }

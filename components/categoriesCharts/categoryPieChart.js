@@ -31,7 +31,7 @@ const customLabel = ({
 const CategoryPieChart = ({ categories }) => {
   return (
     <Container className="d-flex flex-column align-items-center">
-      <h4 className="text-center">Spending by Category</h4>
+      <h5 className="text-center">Spending by Category</h5>
       <PieChart
         style={{
           width: "100%",

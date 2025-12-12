@@ -51,24 +51,28 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   return (
     <>
-      <div className="w-75 mx-auto d-flex justify-content-between my-2 text-center">
-        <Button
-          id="view-transactions-btn"
-          variant="secondary"
-          onClick={toggleTransactions}
-          disabled={!transactions}
-        >
-          {buttonText}
-        </Button>
-        <Button
-          id="add-transaction-btn"
-          variant="primary"
-          onClick={addTransaction}
-          disabled={!transactions}
-        >
-          Add Transaction
-        </Button>
-      </div>
+      <Row className="mx-auto d-flex justify-content-between my-4 text-center">
+        <Col className="col-6">
+          <Button
+            variant="secondary"
+            onClick={toggleTransactions}
+            disabled={!transactions}
+            className="text-nowrap"
+          >
+            {buttonText}
+          </Button>
+        </Col>
+        <Col className="col-6">
+          <Button
+            variant="primary"
+            onClick={addTransaction}
+            disabled={!transactions}
+            className="text-nowrap"
+          >
+            Add Transaction
+          </Button>
+        </Col>
+      </Row>
 
       {transactions ? (
         <>
