@@ -28,8 +28,9 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
             `${dateInfo.month}/${subcategory.dayOfMonth}/${dateInfo.year}`
           );
           const isoDate = subcategoryDate.toISOString().split("T")[0];
+
           if (isoDate <= dateInfo.date) {
-            currentActual = subcategory.actual;
+            currentActual += subcategory.actual;
           }
         } else {
           currentActual += subcategory.actual;
@@ -52,7 +53,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
 
   const budgetBarLength = 12 - statusBarLength;
 
-  const percent = ((currentActual / category.budget) * 100).toFixed(0);
+  const percent = Math.round((currentActual / category.budget) * 100);
 
   const categoryColor = {
     backgroundColor: category.color,
@@ -113,9 +114,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
             )}
             {budgetBarLength === 12 && (
               <div
-                className={`bg-dark col-${budgetBarLength} border rounded py-1 px-2 status-bar ${
-                  category.budget < 0 && "text-danger"
-                }`}
+                className={`bg-dark col-${budgetBarLength} border rounded py-1 px-2 status-bar`}
               >
                 {percent}%
               </div>
@@ -123,25 +122,12 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
             {statusBarLength !== 0 && budgetBarLength !== 0 && (
               <>
                 <div
-                  className={`${statusBarLength < 8 && "bg-success"}
-                  ${
-                    statusBarLength >= 8 &&
-                    statusBarLength <= 11 &&
-                    "bg-warning"
-                  }
-                  ${
-                    (statusBarLength === 12 ||
-                      category.actual > category.budget) &&
-                    "bg-danger"
-                  }
-                  col-${statusBarLength} border rounded-start py-1 px-2 status-bar`}
+                  className={`bg-success col-${statusBarLength} border rounded-start py-1 px-2 status-bar`}
                 >
                   {percent}%
                 </div>
                 <div
-                  className={`bg-dark col-${budgetBarLength} border rounded-end status-bar ${
-                    category.budget - category.actual < 0 && "text-danger"
-                  }`}
+                  className={`bg-dark col-${budgetBarLength} border rounded-end status-bar`}
                 />
               </>
             )}

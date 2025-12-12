@@ -27,13 +27,12 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
 
   const budgetBarLength = 12 - statusBarLength;
 
-  let percent = ((category.actual / category.budget) * 100).toFixed(0);
+  let percent = Math.round((category.actual / category.budget) * 100);
 
   if (category.actual > category.budget && category.budget < 0) {
-    percent = (
-      ((category.actual + category.budget * -1) / -category.budget) *
-      100
-    ).toFixed(0);
+    percent = Math.round(
+      ((category.actual + category.budget * -1) / -category.budget) * 100
+    );
   }
 
   const categoryColor = {
@@ -101,32 +100,29 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
           </span>
         </td>
         <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
-          {!category.fixed && (
-            <div className="d-flex flex-row align-items-center text-white text-end">
-              {statusBarLength === 12 && (
+          <div className="d-flex flex-row align-items-center text-white text-end">
+            {statusBarLength === 12 && (
+              <div
+                className={`${
+                  category.actual > category.budget ? "bg-danger" : "bg-warning"
+                } col-${statusBarLength} rounded py-1 px-2 status-bar text-center`}
+              >
+                {percent}%
+              </div>
+            )}
+            {budgetBarLength === 12 && (
+              <div
+                className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
+                  category.budget < 0 && "text-danger"
+                }`}
+              >
+                {percent}%
+              </div>
+            )}
+            {statusBarLength !== 0 && budgetBarLength !== 0 && (
+              <>
                 <div
-                  className={`${
-                    category.actual > category.budget
-                      ? "bg-danger"
-                      : "bg-warning"
-                  } col-${statusBarLength} rounded py-1 px-2 status-bar text-center`}
-                >
-                  {percent}%
-                </div>
-              )}
-              {budgetBarLength === 12 && (
-                <div
-                  className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
-                    category.budget < 0 && "text-danger"
-                  }`}
-                >
-                  {percent}%
-                </div>
-              )}
-              {statusBarLength !== 0 && budgetBarLength !== 0 && (
-                <>
-                  <div
-                    className={`${statusBarLength < 8 && "bg-success"}
+                  className={`${statusBarLength < 8 && "bg-success"}
                   ${
                     statusBarLength >= 8 &&
                     statusBarLength <= 11 &&
@@ -138,16 +134,15 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
                     "bg-danger"
                   }
                   col-${statusBarLength} border rounded-start py-1 px-2 status-bar text-center`}
-                  >
-                    {percent}%
-                  </div>
-                  <div
-                    className={`bg-dark col-${budgetBarLength} border rounded-end status-bar`}
-                  />
-                </>
-              )}
-            </div>
-          )}
+                >
+                  {percent}%
+                </div>
+                <div
+                  className={`bg-dark col-${budgetBarLength} border rounded-end status-bar`}
+                />
+              </>
+            )}
+          </div>
         </td>
       </tr>
       {showSubcategories &&
