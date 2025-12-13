@@ -2,6 +2,7 @@ import { useState } from "react";
 import centsToDollars from "@/helpers/centsToDollars";
 import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
+import todayInfo from "@/helpers/todayInfo";
 
 const FixedCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
@@ -27,9 +28,19 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
           const subcategoryDate = new Date(
             `${dateInfo.month}/${subcategory.dayOfMonth}/${dateInfo.year}`
           );
+
           const isoDate = subcategoryDate.toISOString().split("T")[0];
 
-          if (isoDate <= dateInfo.date) {
+          let comparisonDate = dateInfo.date;
+
+          if (
+            dateInfo.month !== todayInfo.month ||
+            dateInfo.year !== todayInfo.year
+          ) {
+            comparisonDate = dateInfo.endOfMonth;
+          }
+
+          if (isoDate <= comparisonDate) {
             currentActual += subcategory.actual;
           }
         } else {
