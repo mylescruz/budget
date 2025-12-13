@@ -6,15 +6,15 @@ import LoadingIndicator from "../layout/loadingIndicator";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 
 const InnerHistoryLayout = ({ year }) => {
-  const { history, historyLoading } = useHistory(year);
+  const { history, historyLoading, historyTotals } = useHistory(year);
 
   if (historyLoading) {
     return <LoadingIndicator />;
   } else if (history) {
     return (
       <Row className="d-flex mt-4">
-        <Col className="col-11 col-md-10 mx-auto">
-          <HistoryTable history={history} />
+        <Col className="col-12 col-md-10 mx-auto">
+          <HistoryTable history={history} historyTotals={historyTotals} />
         </Col>
       </Row>
     );

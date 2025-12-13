@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const useHistory = (year) => {
   const [history, setHistory] = useState([]);
@@ -27,7 +27,25 @@ const useHistory = (year) => {
     getHistory();
   }, [year]);
 
-  return { history, historyLoading };
+  const historyTotals = useMemo(() => {
+    let actual = 0;
+    let budget = 0;
+    let leftover = 0;
+
+    for (const month of history) {
+      budget += month.budget;
+      actual += month.actual;
+      leftover += month.leftover;
+    }
+
+    return {
+      budget: budget,
+      actual: actual,
+      leftover: leftover,
+    };
+  }, [history]);
+
+  return { history, historyLoading, historyTotals };
 };
 
 export default useHistory;

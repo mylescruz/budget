@@ -1,102 +1,127 @@
 import { Table } from "react-bootstrap";
-import Link from "next/link";
-import monthFormatter from "@/helpers/monthFormatter";
-import historySorter from "@/helpers/historySorter";
-import { useEffect, useState } from "react";
 import currencyFormatter from "@/helpers/currencyFormatter";
+import HistoryTableRow from "./historyTableRow";
 
-const HistoryTable = ({ history }) => {
-  const [historyTotals, setHistoryTotals] = useState({
-    budget: 0,
-    actual: 0,
-    leftover: 0,
-  });
+const HistoryTable = ({ history, historyTotals }) => {
+  let statusBarLength;
+  let budgetBarLength;
+  let percent;
 
-  // Get the totals for the budget, actual value spent and the leftover value for all history months
-  useEffect(() => {
-    if (history) {
-      let totalActual = 0;
-      let totalBudget = 0;
-      let totalLeftover = 0;
+  if (history) {
+    statusBarLength = Math.round(
+      (historyTotals.actual * 12) / historyTotals.budget
+    );
 
-      history.forEach((month) => {
-        totalBudget += month.budget;
-        totalActual += month.actual;
-        totalLeftover += month.leftover;
-      });
-
-      setHistoryTotals({
-        budget: totalBudget,
-        actual: totalActual,
-        leftover: totalLeftover,
-      });
+    if (historyTotals.actual < historyTotals.budget && statusBarLength === 12) {
+      statusBarLength = 11;
     }
-  }, [history]);
+
+    if (statusBarLength > 12) {
+      statusBarLength = 12;
+    }
+
+    if (historyTotals.actual > 0 && statusBarLength <= 0) {
+      statusBarLength = 12;
+    }
+
+    budgetBarLength = 12 - statusBarLength;
+
+    percent = Math.round((historyTotals.actual / historyTotals.budget) * 100);
+
+    if (
+      historyTotals.actual > historyTotals.budget &&
+      historyTotals.budget < 0
+    ) {
+      percent = Math.round(
+        ((historyTotals.actual + historyTotals.budget * -1) /
+          -historyTotals.budget) *
+          100
+      );
+    }
+  }
 
   return (
     <Table striped hover>
       <thead className="table-dark">
         <tr className="d-flex">
-          <th className="col-4 col-md-3">Month</th>
-          <th className="col-4 col-md-3">Budget</th>
-          <th className="col-4 col-md-3">Spent</th>
-          <th className="d-none d-md-block col-md-3">Remaining</th>
+          <th className="col-3 col-md-3">Month</th>
+          <th className="col-3 col-md-2">Budget</th>
+          <th className="col-3 col-md-2">Spent</th>
+          <th className="d-none d-md-block col-md-2">Remaining</th>
+          <th className="col-3 col-md-3">Progress</th>
         </tr>
       </thead>
       <tbody>
         {history.map((month, index) => (
-          <tr key={index} className="d-flex">
-            <td className="col-4 col-md-3 click">
-              <Link
-                href={{
-                  pathname: "/history/[month]",
-                  query: { month: month.month, year: month.year },
-                }}
-              >
-                <>
-                  <span className="d-sm-none">
-                    {monthFormatter(
-                      `${month.month}/01/${month.year}`,
-                      "2-digit"
-                    )}
-                  </span>
-                  <span className="d-none d-sm-block">
-                    {monthFormatter(`${month.month}/01/${month.year}`, "long")}
-                  </span>
-                </>
-              </Link>
-            </td>
-            <td className="col-4 col-md-3">
-              {currencyFormatter.format(month.budget)}
-            </td>
-            <td className="col-4 col-md-3">
-              {currencyFormatter.format(month.actual)}
-            </td>
-            <td
-              className={`d-none d-md-block col-md-3 ${
-                month.leftover < 0 && "text-danger"
-              }`}
-            >
-              {currencyFormatter.format(month.leftover)}
-            </td>
-          </tr>
+          <HistoryTableRow key={index} month={month} />
         ))}
       </tbody>
       <tfoot>
         <tr className="d-flex table-dark">
-          <th className="col-4 col-md-3">Totals</th>
-          <th className="col-4 col-md-3">
+          <th className="col-3 col-md-3 d-flex align-items-center">Totals</th>
+          <th className="col-3 col-md-2 d-flex align-items-center">
             {currencyFormatter.format(historyTotals.budget)}
           </th>
-          <th className="col-4 col-md-3">
+          <th className="col-3 col-md-2 d-flex align-items-center">
             {currencyFormatter.format(historyTotals.actual)}
           </th>
-          <th
-            className={`d-none d-md-block col-md-3 ${
-              historyTotals.leftover > 0 ? "text-white" : "text-danger"
-            }`}
-          >
-            {currencyFormatter.format(historyTotals.leftover)}
+          <th className="d-none col-md-2 d-md-flex align-items-center">
+            <span
+              className={`${
+                historyTotals.leftover > 0 ? "text-white" : "text-danger"
+              }`}
+            >
+              {currencyFormatter.format(historyTotals.leftover)}
+            </span>
+          </th>
+          <th className="col-3 col-md-3">
+            {history.length > 0 && (
+              <div className="d-flex flex-row align-items-center text-white text-end">
+                {statusBarLength === 12 && (
+                  <div
+                    className={`${
+                      historyTotals.actual > historyTotals.budget
+                        ? "bg-danger"
+                        : "bg-warning"
+                    } col-${statusBarLength} rounded py-1 px-2 status-bar text-center`}
+                  >
+                    {percent}%
+                  </div>
+                )}
+                {budgetBarLength === 12 && (
+                  <div
+                    className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
+                      historyTotals.budget < 0 && "text-danger"
+                    }`}
+                  >
+                    {percent}%
+                  </div>
+                )}
+                {statusBarLength !== 0 && budgetBarLength !== 0 && (
+                  <>
+                    <div
+                      className={`${statusBarLength < 8 && "bg-success"}
+                  ${
+                    statusBarLength >= 8 &&
+                    statusBarLength <= 11 &&
+                    "bg-warning"
+                  }
+                  ${
+                    (statusBarLength === 12 ||
+                      historyTotals.actual > historyTotals.budget) &&
+                    "bg-danger"
+                  }
+                  col-${statusBarLength} border rounded-start py-1 px-2 status-bar text-center`}
+                    >
+                      {percent}%
+                    </div>
+                    <div
+                      className={`bg-dark col-${budgetBarLength} border rounded-end status-bar`}
+                    />
+                  </>
+                )}
+              </div>
+            )}
           </th>
         </tr>
       </tfoot>
