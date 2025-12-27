@@ -18,7 +18,7 @@ const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
   return (
     <Modal show={showModal === "details"} onHide={closeDetailsModal} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Income Details</Modal.Title>
+        <Modal.Title>{source.type} Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Row className="m-2">Date: {dateFormatter(source.date)}</Row>
