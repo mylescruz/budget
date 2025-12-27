@@ -55,7 +55,7 @@ async function getHistory(req, res, { categoriesCol, username }) {
         { $sort: { year: 1, month: 1 } },
         {
           $lookup: {
-            from: "paychecks",
+            from: "income",
             let: { year: "$year", month: "$month" },
             pipeline: [
               { $match: { username, year } },
@@ -72,7 +72,7 @@ async function getHistory(req, res, { categoriesCol, username }) {
               {
                 $group: {
                   _id: { month: "$month", year: "$year" },
-                  budget: { $sum: "$net" },
+                  budget: { $sum: "$amount" },
                 },
               },
               { $sort: { year: 1, month: 1 } },

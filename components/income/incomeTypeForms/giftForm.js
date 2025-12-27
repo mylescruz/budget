@@ -37,7 +37,7 @@ const GiftForm = ({ source, handleInput, year }) => {
           min={0.01}
           step={0.01}
           placeholder="Amount"
-          value={source.gross}
+          value={source.amount}
           onChange={handleInput}
           required
         />

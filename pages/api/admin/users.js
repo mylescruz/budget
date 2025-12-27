@@ -107,9 +107,9 @@ export default async function handler(req, res) {
         .collection("transactions")
         .deleteMany({ username: deletedUser.username });
 
-      // Delete the users documents from the paychecks collection
+      // Delete the users documents from the income collection
       await db
-        .collection("paychecks")
+        .collection("income")
         .deleteMany({ username: deletedUser.username });
 
       // Send back the deleted user to the client

@@ -84,7 +84,7 @@ const PaycheckForm = ({ source, handleInput, year }) => {
           </PopUp>
         </Form.Label>
         <Form.Control
-          id="taxes"
+          id="deductions"
           className="h-100"
           type="number"
           min={0.01}

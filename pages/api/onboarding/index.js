@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     client: client,
     usersCol: db.collection("users"),
     categoriesCol: db.collection("categories"),
-    paychecksCol: db.collection("paychecks"),
+    incomeCol: db.collection("income"),
     month: today.getUTCMonth() + 1,
     year: today.getFullYear(),
   };
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
 async function createAccount(
   req,
   res,
-  { client, usersCol, categoriesCol, paychecksCol, month, year }
+  { client, usersCol, categoriesCol, incomeCol, month, year }
 ) {
   const mongoSession = client.startSession();
 
@@ -54,31 +54,41 @@ async function createAccount(
       // Add the user to MongoDB
       insertedUser = await createUser(newUser, session, usersCol);
 
-      // Add the user's inputted paychecks to MongoDB
+      // Add the user's inputted income to MongoDB
       let monthIncome = 0;
-      const paychecks = newUser.paychecks.map((paycheck) => {
-        const paycheckDate = new Date(`${paycheck.date}T00:00:00Z`);
-        const paycheckMonth = paycheckDate.getUTCMonth() + 1;
-        const paycheckYear = paycheckDate.getUTCFullYear();
+      const income = newUser.income.map((source) => {
+        const sourceDate = new Date(`${source.date}T00:00:00Z`);
+        const sourceMonth = sourceDate.getUTCMonth() + 1;
+        const sourceYear = sourceDate.getUTCFullYear();
 
-        if (month === paycheckMonth && year === paycheckYear) {
-          monthIncome += paycheck.net * 100;
+        if (month === sourceMonth && year === sourceYear) {
+          monthIncome += parseFloat(source.amount) * 100;
         }
 
-        return {
+        const formattedSource = {
           username: newUser.username,
-          month: paycheckMonth,
-          year: paycheckYear,
-          date: paycheck.date,
-          company: paycheck.company.trim(),
-          description: paycheck.description.trim(),
-          gross: paycheck.gross * 100,
-          taxes: paycheck.taxes * 100,
-          net: paycheck.net * 100,
+          month: sourceMonth,
+          year: sourceYear,
+          type: source.type,
+          date: source.date,
+          name: source.name.trim(),
+          description: source.description.trim(),
+          amount: parseFloat(source.amount) * 100,
         };
+
+        if (formattedSource.type === "Paycheck") {
+          formattedSource.gross = parseFloat(source.gross) * 100;
+          formattedSource.deductions = parseFloat(source.deductions) * 100;
+        }
+
+        if (formattedSource.type === "Unemployment") {
+          formattedSource.name = "EDD";
+        }
+
+        return formattedSource;
       });
 
-      await paychecksCol.insertMany(paychecks, { session });
+      await incomeCol.insertMany(income, { session });
 
       // Define the user's categories
       let categories = [];

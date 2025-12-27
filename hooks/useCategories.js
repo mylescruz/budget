@@ -135,7 +135,7 @@ const useCategories = (month, year) => {
   );
 
   // Gets the total budget, actual and remaining for categories
-  // Budget: Based on net value from paychecks
+  // Budget: Based on amount value from income
   // Actual:
   //  - If a category or subcategory's date of charge is greater than today, add that value to the total actual values
   //  - If no dayOfMonth field, just sum all categories' actual values

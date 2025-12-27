@@ -16,7 +16,7 @@ const CreateUserLayout = ({ csrfToken }) => {
     confirmPassword: "",
     categories: [],
     customCategories: false,
-    paychecks: [],
+    income: [],
   });
   const [createFormComplete, setCreateFormComplete] = useState(false);
   const [creatingUser, setCreatingUser] = useState(false);

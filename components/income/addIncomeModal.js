@@ -9,7 +9,7 @@ import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 
-const moneyTypes = ["Paycheck", "Sale", "Gift", "Unemployment", "Loan"];
+const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment", "Loan"];
 
 const AddIncomeModal = ({
   year,
@@ -85,7 +85,7 @@ const AddIncomeModal = ({
                   onChange={handleInput}
                   required
                 >
-                  {moneyTypes.map((type, index) => (
+                  {incomeTypes.map((type, index) => (
                     <option key={index} value={type}>
                       {type}
                     </option>

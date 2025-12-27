@@ -154,7 +154,7 @@ const InnerDashboard = ({ dateInfo }) => {
                         </p>
                       )}
                     </h4>
-                    <p>View all your paychecks</p>
+                    <p>View your sources of income</p>
                     <Button as={Link} href="/income" variant="primary">
                       Income
                     </Button>
