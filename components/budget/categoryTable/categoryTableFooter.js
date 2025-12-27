@@ -44,7 +44,7 @@ const CategoryTableFooter = () => {
       <th className="col-6 col-md-4 col-lg-3 cell d-flex align-items-center">
         Total
         <PopUp
-          title="Your total budget is your total net income for the month."
+          title="Your total budget is your total income for the month."
           id="budget-info"
         >
           <span className="mx-1"> &#9432;</span>

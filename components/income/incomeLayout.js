@@ -1,65 +1,67 @@
-import AddPaycheckModal from "./addPaycheckModal";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { useState } from "react";
-import PaychecksTable from "./paychecksTable";
 import LoadingIndicator from "../layout/loadingIndicator";
-import usePaychecks from "@/hooks/usePaychecks";
 import BudgetYearChooser from "../layout/budgetYearChooser";
+import useIncome from "@/hooks/useIncome";
+import AddIncomeModal from "./addIncomeModal";
+import IncomeTable from "./incomeTable/incomeTable";
 
 const InnerIncomeLayout = ({ year }) => {
   const {
-    paychecks,
-    paychecksLoading,
-    postPaycheck,
-    putPaycheck,
-    deletePaycheck,
-  } = usePaychecks(year);
-  const [addPaycheckClicked, setAddPaycheckClicked] = useState(false);
+    income,
+    incomeLoading,
+    postIncome,
+    putIncome,
+    deleteIncome,
+    incomeTotals,
+  } = useIncome(year);
+  const [showAddIncome, setShowAddIncome] = useState(false);
 
-  const addPay = () => {
-    setAddPaycheckClicked(true);
+  const openAddIncomeModal = () => {
+    setShowAddIncome(true);
   };
 
-  const AddPaycheckModalProps = {
+  const AddIncomeModalProps = {
     year: year,
-    postPaycheck: postPaycheck,
-    addPaycheckClicked: addPaycheckClicked,
-    setAddPaycheckClicked: setAddPaycheckClicked,
+    postIncome: postIncome,
+    showAddIncome: showAddIncome,
+    setShowAddIncome: setShowAddIncome,
   };
 
-  if (paychecksLoading) {
+  if (incomeLoading) {
     return <LoadingIndicator />;
-  } else if (paychecks) {
+  } else if (!income) {
+    return (
+      <Row className="text-danger fw-bold text-center">
+        <p>
+          &#9432; There was an error loading your income. Please try again
+          later!
+        </p>
+      </Row>
+    );
+  } else {
     return (
       <Container className="w-100">
         <Container className="text-center mt-4">
-          <Button id="add-paycheck-btn" variant="primary" onClick={addPay}>
-            Add Paycheck
+          <Button variant="primary" onClick={openAddIncomeModal}>
+            Add Income
           </Button>
         </Container>
 
         <Row className="d-flex my-4">
-          <Col className="col-11 col-md-10 mx-auto">
-            <PaychecksTable
-              paychecks={paychecks}
+          <Col className="mx-auto col-12 col-lg-10">
+            <IncomeTable
+              income={income}
               year={year}
-              putPaycheck={putPaycheck}
-              deletePaycheck={deletePaycheck}
+              putIncome={putIncome}
+              deleteIncome={deleteIncome}
+              incomeTotals={incomeTotals}
             />
           </Col>
         </Row>
 
-        {addPaycheckClicked && <AddPaycheckModal {...AddPaycheckModalProps} />}
+        {showAddIncome && <AddIncomeModal {...AddIncomeModalProps} />}
       </Container>
-    );
-  } else {
-    return (
-      <Row className="text-danger fw-bold text-center">
-        <p>
-          &#9432; There was an error loading your paychecks. Please try again
-          later!
-        </p>
-      </Row>
     );
   }
 };
@@ -70,12 +72,9 @@ const IncomeLayout = ({ dateInfo }) => {
 
   return (
     <Container className="w-100">
-      <aside className="info-text text-center mx-auto">
+      <aside className="text-center">
         <h1>Income</h1>
-        <p>
-          View and add your paychecks for the current year. View your gross and
-          net paychecks and see how much taxes have been taken out.
-        </p>
+        <p>View and add all your income for the current year.</p>
       </aside>
 
       <BudgetYearChooser year={year} setYear={setYear} />

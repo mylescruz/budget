@@ -12,7 +12,6 @@ export default function Income() {
   const today = new Date();
   const dateInfo = getDateInfo(today);
 
-  // Create a loading indicator while check on the status of a user's session
   if (status === "loading") {
     return <LoadingIndicator />;
   } else if (!session || status === "unauthenticated") {

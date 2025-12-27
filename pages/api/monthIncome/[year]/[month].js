@@ -17,20 +17,20 @@ export default async function handler(req, res) {
   const year = parseInt(req?.query?.year);
 
   const db = (await clientPromise).db(process.env.MONGO_DB);
-  const paychecksCol = db.collection("paychecks");
+  const incomeCol = db.collection("income");
 
   if (method === "GET") {
-    // Get all the paychecks for the given month
-    const paychecks = await paychecksCol
+    // Get all the sources of income for the given month
+    const income = await incomeCol
       .find({ username: username, month: month, year: year })
       .toArray();
 
-    if (paychecks.length === 0) {
+    if (income.length === 0) {
       return res.status(200).send(0);
     }
-    // Get the total net income for the given month
-    const monthIncome = paychecks.reduce(
-      (sum, current) => sum + current.net,
+    // Get the total income for the given month
+    const monthIncome = income.reduce(
+      (sum, current) => sum + current.amount,
       0
     );
 

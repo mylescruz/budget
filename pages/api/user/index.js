@@ -154,8 +154,8 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
       // Delete the user's documents from the transactions collection
       await db.collection("transactions").deleteMany({ username }, { session });
 
-      // Delete the user's documents from the paychecks collection
-      await db.collection("paychecks").deleteMany({ username }, { session });
+      // Delete the user's documents from the income collection
+      await db.collection("income").deleteMany({ username }, { session });
     });
 
     // Send back a successful status that the user was deleted
