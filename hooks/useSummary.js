@@ -6,6 +6,8 @@ const useSummary = (year) => {
 
   useEffect(() => {
     const getSummary = async () => {
+      setSummaryLoading(true);
+
       try {
         const response = await fetch(`/api/summary/${year}`);
 
