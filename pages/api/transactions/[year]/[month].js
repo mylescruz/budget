@@ -43,8 +43,19 @@ export default async function handler(req, res) {
 // Fetch the user's transactions for the given month and year
 async function fetchTransactions(transactionsCol, username, month, year) {
   return await transactionsCol
-    .find({ username, month, year })
-    .sort({ date: 1 })
+    .aggregate([
+      { $match: { username, month, year } },
+      {
+        $project: {
+          date: 1,
+          store: 1,
+          items: 1,
+          category: 1,
+          amount: { $divide: ["$amount", 100] },
+        },
+      },
+      { $sort: { date: 1 } },
+    ])
     .toArray();
 }
 
@@ -151,7 +162,13 @@ async function addTransaction(
     });
 
     // Send the new transaction back to the client
-    return res.status(200).json({ id: insertedId, ...newTransaction });
+    const insertedTransaction = {
+      ...newTransaction,
+      _id: insertedId,
+      amount: newTransaction.amount / 100,
+    };
+
+    return res.status(200).json(insertedTransaction);
   } catch (error) {
     console.error(`POST transactions request failed for ${username}: ${error}`);
     return res

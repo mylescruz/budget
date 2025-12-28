@@ -47,8 +47,8 @@ async function updateTransaction(
     const transactionId = req.query._id;
     const transaction = {
       ...req.body,
-      amount: req.body.amount * 100,
-      oldAmount: req.body.oldAmount,
+      amount: parseFloat(req.body.amount) * 100,
+      oldAmount: parseFloat(req.body.oldAmount) * 100,
     };
 
     // Get the month and date for the given transaction
@@ -98,9 +98,14 @@ async function updateTransaction(
       });
     });
 
-    const { oldCategory, oldAmount, ...updatedTransaction } = transaction;
+    const { oldCategory, oldAmount, ...transactionDetails } = transaction;
 
     // Send the updated transaction back to the client
+    const updatedTransaction = {
+      ...transactionDetails,
+      amount: transactionDetails.amount / 100,
+    };
+
     return res.status(200).json(updatedTransaction);
   } catch (error) {
     console.error(`PUT transaction request failed for ${username}: ${error}`);
@@ -121,7 +126,10 @@ async function deleteTransaction(
 
   try {
     const transactionId = req.query._id;
-    const transaction = req.body;
+    const transaction = {
+      ...req.body,
+      amount: parseFloat(req.body.amount) * 100,
+    };
 
     // Get the month and date for the given transaction
     const transactionDate = new Date(`${transaction.date}T00:00:00Z`);

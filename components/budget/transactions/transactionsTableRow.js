@@ -3,7 +3,7 @@ import { useState } from "react";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import EditTransactionModal from "./editTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal";
-import centsToDollars from "@/helpers/centsToDollars";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const TransactionsTableRow = ({ transaction, dateInfo }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -103,7 +103,7 @@ const TransactionsTableRow = ({ transaction, dateInfo }) => {
             transaction.amount < 0 && "text-danger"
           }`}
         >
-          {centsToDollars(transaction.amount)}
+          {dollarFormatter(transaction.amount)}
         </td>
       </tr>
 

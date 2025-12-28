@@ -1,5 +1,5 @@
-import centsToDollars from "@/helpers/centsToDollars";
 import dateFormatter from "@/helpers/dateFormatter";
+import dollarFormatter from "@/helpers/dollarFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
 const TransactionDetailsModal = ({
@@ -23,7 +23,7 @@ const TransactionDetailsModal = ({
         <Row className="m-2">Store: {transaction.store}</Row>
         <Row className="m-2">Items Purchased: {transaction.items}</Row>
         <Row className="m-2">Category: {transaction.category}</Row>
-        <Row className="m-2">Amount: {centsToDollars(transaction.amount)}</Row>
+        <Row className="m-2">Amount: {dollarFormatter(transaction.amount)}</Row>
       </Modal.Body>
       <Modal.Footer>
         <Row>
