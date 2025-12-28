@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap";
-import currencyFormatter from "@/helpers/currencyFormatter";
 import HistoryTableRow from "./historyTableRow";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const HistoryTable = ({ history, historyTotals }) => {
   let statusBarLength;
@@ -60,10 +60,10 @@ const HistoryTable = ({ history, historyTotals }) => {
         <tr className="d-flex table-dark">
           <th className="col-3 col-md-3 d-flex align-items-center">Totals</th>
           <th className="col-3 col-md-2 d-flex align-items-center">
-            {currencyFormatter.format(historyTotals.budget)}
+            {dollarFormatter(historyTotals.budget)}
           </th>
           <th className="col-3 col-md-2 d-flex align-items-center">
-            {currencyFormatter.format(historyTotals.actual)}
+            {dollarFormatter(historyTotals.actual)}
           </th>
           <th className="d-none col-md-2 d-md-flex align-items-center">
             <span
@@ -71,7 +71,7 @@ const HistoryTable = ({ history, historyTotals }) => {
                 historyTotals.leftover > 0 ? "text-white" : "text-danger"
               }`}
             >
-              {currencyFormatter.format(historyTotals.leftover)}
+              {dollarFormatter(historyTotals.leftover)}
             </span>
           </th>
           <th className="col-3 col-md-3">

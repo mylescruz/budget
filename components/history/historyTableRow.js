@@ -1,4 +1,4 @@
-import currencyFormatter from "@/helpers/currencyFormatter";
+import dollarFormatter from "@/helpers/dollarFormatter";
 import monthFormatter from "@/helpers/monthFormatter";
 import Link from "next/link";
 
@@ -47,16 +47,12 @@ const HistoryTableRow = ({ month }) => {
         </Link>
       </td>
       <td className="col-3 col-md-2">
-        <span className="fw-bold">
-          {currencyFormatter.format(month.budget)}
-        </span>
+        <span className="fw-bold">{dollarFormatter(month.budget)}</span>
       </td>
-      <td className="col-3 col-md-2">
-        {currencyFormatter.format(month.actual)}
-      </td>
+      <td className="col-3 col-md-2">{dollarFormatter(month.actual)}</td>
       <td className="d-none d-md-block col-md-2">
         <span className={`${month.leftover < 0 && "text-danger fw-bold"}`}>
-          {currencyFormatter.format(month.leftover)}
+          {dollarFormatter(month.leftover)}
         </span>
       </td>
       <td className="col-3 col-md-3">
