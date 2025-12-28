@@ -121,7 +121,18 @@ async function addIncome(req, res, { client, incomeCol, username }) {
       });
     });
 
-    const { username: u, month: m, year: y, ...addedSource } = newSource;
+    const { username: u, month: m, year: y, ...sourceDetails } = newSource;
+
+    const addedSource = {
+      ...sourceDetails,
+      _id: insertedSource.insertedId,
+      amount: sourceDetails.amount / 100,
+    };
+
+    if (addedSource.type === "Paycheck") {
+      addedSource.gross = addedSource.gross / 100;
+      addedSource.deductions = addedSource.deductions / 100;
+    }
 
     // Send the new source back to the client
     return res

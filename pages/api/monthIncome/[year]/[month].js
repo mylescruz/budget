@@ -29,10 +29,8 @@ export default async function handler(req, res) {
       return res.status(200).send(0);
     }
     // Get the total income for the given month
-    const monthIncome = income.reduce(
-      (sum, current) => sum + current.amount,
-      0
-    );
+    const monthIncome =
+      income.reduce((sum, current) => sum + current.amount, 0) / 100;
 
     // Send the income for the month back to the client
     return res.status(200).send(monthIncome);

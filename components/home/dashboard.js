@@ -17,6 +17,7 @@ import centsToDollars from "@/helpers/centsToDollars";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../layout/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -147,7 +148,7 @@ const InnerDashboard = ({ dateInfo }) => {
                     <h4>
                       {dateInfo.monthName} Income:{" "}
                       {monthIncome !== null ? (
-                        <p>{centsToDollars(monthIncome)} </p>
+                        <p>{dollarFormatter(monthIncome)} </p>
                       ) : (
                         <p className="text-danger fw-bold">
                           Income Unavailable

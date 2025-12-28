@@ -1,6 +1,7 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import centsToDollars from "@/helpers/centsToDollars";
+import dollarFormatter from "@/helpers/dollarFormatter";
 import { useContext } from "react";
 
 const CategoryTableFooter = () => {
@@ -51,7 +52,7 @@ const CategoryTableFooter = () => {
         </PopUp>
       </th>
       <td className="d-none col-lg-2 cell d-lg-flex align-items-center">
-        {centsToDollars(categoryTotals.budget)}
+        {dollarFormatter(categoryTotals.budget)}
       </td>
       <td className="col-3 col-md-2 cell d-flex align-items-center">
         {centsToDollars(categoryTotals.actual)}
