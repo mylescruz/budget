@@ -1,9 +1,9 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
-import centsToDollars from "@/helpers/centsToDollars";
 import IncomeDetailsModal from "./incomeDetailsModal";
 import EditIncomeModal from "./editIncomeModal";
 import DeleteIncomeModal from "./deleteIncomeModal";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const IncomeTableRow = ({ source, year, putIncome, deleteIncome }) => {
   const [showModal, setShowModal] = useState("none");
@@ -63,7 +63,7 @@ const IncomeTableRow = ({ source, year, putIncome, deleteIncome }) => {
         </td>
         <td className="d-none d-md-block col-md-3">{source.type}</td>
         <td className="col-3 col-md-2 text-end">
-          {centsToDollars(source.amount)}
+          {dollarFormatter(source.amount)}
         </td>
       </tr>
 

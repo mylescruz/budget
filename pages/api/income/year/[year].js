@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -39,13 +40,25 @@ async function getIncome(req, res, { incomeCol, username }) {
   const year = parseInt(req.query.year);
 
   try {
-    const income = await incomeCol
-      .find(
-        { username, year },
-        { projection: { username: 0, month: 0, year: 0 } }
-      )
-      .sort({ date: 1 })
-      .toArray();
+    const incomeDocs = await incomeCol.find({ username, year }).toArray();
+
+    const income = incomeDocs.map((source) => {
+      const formattedSource = {
+        _id: source._id,
+        date: source.date,
+        type: source.type,
+        name: source.name,
+        description: source.description,
+        amount: source.amount / 100,
+      };
+
+      if (source.type === "Paycheck") {
+        formattedSource.gross = source.gross / 100;
+        formattedSource.deductions = source.deductions / 100;
+      }
+
+      return formattedSource;
+    });
 
     return res.status(200).json(income);
   } catch (error) {
@@ -80,8 +93,10 @@ async function addIncome(req, res, { client, incomeCol, username }) {
 
     if (newSource.type === "Paycheck") {
       newSource.gross = parseFloat(req.body.gross) * 100;
-      newSource.deductions =
-        parseFloat(req.body.gross) * 100 - parseFloat(req.body.amount) * 100;
+      newSource.deductions = subtractDecimalValues(
+        req.body.gross,
+        req.body.amount
+      );
     }
 
     if (newSource.type === "Unemployment") {

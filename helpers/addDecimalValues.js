@@ -1,3 +1,3 @@
 export default function addDecimalValues(value1, value2) {
-  return value1 * 100 + value2 * 100;
+  return parseFloat(value1) * 100 + parseFloat(value2) * 100;
 }

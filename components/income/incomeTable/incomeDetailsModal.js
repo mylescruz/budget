@@ -1,5 +1,5 @@
-import centsToDollars from "@/helpers/centsToDollars";
 import dateFormatter from "@/helpers/dateFormatter";
+import dollarFormatter from "@/helpers/dollarFormatter";
 import { Button, Modal, Row } from "react-bootstrap";
 
 const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
@@ -27,13 +27,13 @@ const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
             <Row className="m-2">Company: {source.name}</Row>
             <Row className="m-2">Description: {source.description}</Row>
             <Row className="m-2">
-              Gross Income: {centsToDollars(source.gross)}
+              Gross Income: {dollarFormatter(source.gross)}
             </Row>
             <Row className="m-2">
-              Deductions: {centsToDollars(source.deductions)}
+              Deductions: {dollarFormatter(source.deductions)}
             </Row>
             <Row className="m-2">
-              Net Income: {centsToDollars(source.amount)}
+              Net Income: {dollarFormatter(source.amount)}
             </Row>
           </>
         )}
@@ -42,7 +42,7 @@ const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
             <Row className="m-2">Item Sold: {source.name}</Row>
             <Row className="m-2">Description: {source.description}</Row>
             <Row className="m-2">
-              Sale Amount: {centsToDollars(source.amount)}
+              Sale Amount: {dollarFormatter(source.amount)}
             </Row>
           </>
         )}
@@ -51,7 +51,7 @@ const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
             <Row className="m-2">Received Gift From: {source.name}</Row>
             <Row className="m-2">Description: {source.description}</Row>
             <Row className="m-2">
-              Gift Amount: {centsToDollars(source.amount)}
+              Gift Amount: {dollarFormatter(source.amount)}
             </Row>
           </>
         )}
@@ -60,7 +60,7 @@ const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
             <Row className="m-2">Received Unemployment from EDD</Row>
             <Row className="m-2">Description: {source.description}</Row>
             <Row className="m-2">
-              Payout Amount: {centsToDollars(source.amount)}
+              Payout Amount: {dollarFormatter(source.amount)}
             </Row>
           </>
         )}
@@ -69,7 +69,7 @@ const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
             <Row className="m-2">Loan Servicer: {source.name}</Row>
             <Row className="m-2">Description: {source.description}</Row>
             <Row className="m-2">
-              Loan Amount: {centsToDollars(source.amount)}
+              Loan Amount: {dollarFormatter(source.amount)}
             </Row>
           </>
         )}

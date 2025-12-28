@@ -6,6 +6,7 @@ import styles from "@/styles/income/incomeTable.module.css";
 import centsToDollars from "@/helpers/centsToDollars";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "@/components/layout/popUp";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const IncomeTable = ({
   income,
@@ -78,7 +79,7 @@ const IncomeTable = ({
           <th className="col-6 col-md-5"></th>
           <th className="d-none d-md-block col-md-3"></th>
           <th className="col-3 col-md-2 text-end">
-            {centsToDollars(incomeTotals.amount)}
+            {dollarFormatter(incomeTotals.amount)}
           </th>
         </tr>
       </tfoot>

@@ -1,3 +1,4 @@
+import addDecimalValues from "@/helpers/addDecimalValues";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useIncome = (year) => {
@@ -134,20 +135,20 @@ const useIncome = (year) => {
 
     for (const source of income) {
       if (source.gross) {
-        totalGross += source.gross;
+        totalGross += source.gross * 100;
       }
 
       if (source.deductions) {
-        totalDeductions += source.deductions;
+        totalDeductions += source.deductions * 100;
       }
 
-      totalAmount += source.amount;
+      totalAmount += source.amount * 100;
     }
 
     return {
-      gross: totalGross,
-      deductions: totalDeductions,
-      amount: totalAmount,
+      gross: totalGross / 100,
+      deductions: totalDeductions / 100,
+      amount: totalAmount / 100,
     };
   }, [income]);
 

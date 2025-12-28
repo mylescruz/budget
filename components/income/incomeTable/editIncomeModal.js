@@ -17,12 +17,12 @@ const EditIncomeModal = ({
 }) => {
   const formattedSource = {
     ...source,
-    amount: source.amount / 100,
+    amount: source.amount,
   };
 
   if (source.type === "Paycheck") {
-    formattedSource.gross = source.gross / 100;
-    formattedSource.deductions = source.deductions / 100;
+    formattedSource.gross = source.gross;
+    formattedSource.deductions = source.deductions;
   }
 
   const [editedSource, setEditedSource] = useState(formattedSource);

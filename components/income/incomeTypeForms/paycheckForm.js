@@ -1,4 +1,5 @@
 import PopUp from "@/components/layout/popUp";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { Form } from "react-bootstrap";
 
 const PaycheckForm = ({ source, handleInput, year }) => {
@@ -90,9 +91,9 @@ const PaycheckForm = ({ source, handleInput, year }) => {
           min={0.01}
           step={0.01}
           placeholder="Deductions Amount"
-          value={(parseFloat(source.gross) - parseFloat(source.amount)).toFixed(
-            2
-          )}
+          value={(
+            subtractDecimalValues(source.gross, source.amount) / 100
+          ).toFixed(2)}
           disabled
           required
         />
