@@ -1,3 +1,4 @@
+import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useIncome = (year) => {
@@ -13,7 +14,7 @@ const useIncome = (year) => {
 
         if (response.ok) {
           const fetchedIncome = await response.json();
-          setIncome(fetchedIncome);
+          setIncome(ascendingDateSorter(fetchedIncome));
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -43,7 +44,7 @@ const useIncome = (year) => {
 
         if (response.ok) {
           const addedSource = await response.json();
-          setIncome([...income, addedSource]);
+          setIncome(ascendingDateSorter([...income, addedSource]));
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -80,7 +81,7 @@ const useIncome = (year) => {
             }
           });
 
-          setIncome(updatedIncome);
+          setIncome(ascendingDateSorter(updatedIncome));
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -113,7 +114,7 @@ const useIncome = (year) => {
             return source._id !== deletedSource._id;
           });
 
-          setIncome(updatedIncome);
+          setIncome(ascendingDateSorter(updatedIncome));
         } else {
           const message = await response.text();
           throw new Error(message);

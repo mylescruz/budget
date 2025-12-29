@@ -10,8 +10,8 @@ import PopUp from "@/components/layout/popUp";
 import { useContext, useEffect, useRef, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsTableRow from "./transactionsTableRow";
-import aToZDateSorter from "@/helpers/aToZDateSorter";
-import zToADateSorter from "@/helpers/ztoADateSorter";
+import ascendingDateSorter from "@/helpers/ascendingDateSorter";
+import descendingDateSorter from "@/helpers/descendingDateSorter";
 import styles from "@/styles/budget/transactions/transactionsTable.module.css";
 
 const TransactionsTable = ({ dateInfo }) => {
@@ -50,9 +50,9 @@ const TransactionsTable = ({ dateInfo }) => {
     sortAscending.current = !sortAscending.current;
 
     if (sortAscending.current) {
-      setSortedTransactions(aToZDateSorter(transactions));
+      setSortedTransactions(ascendingDateSorter(transactions));
     } else {
-      setSortedTransactions(zToADateSorter(transactions));
+      setSortedTransactions(descendingDateSorter(transactions));
     }
 
     setSortDirection(sortAscending.current);

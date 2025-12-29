@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Table } from "react-bootstrap";
-import aToZDateSorter from "@/helpers/aToZDateSorter";
-import zToADateSorter from "@/helpers/ztoADateSorter";
+import ascendingDateSorter from "@/helpers/ascendingDateSorter";
+import descendingDateSorter from "@/helpers/descendingDateSorter";
 import styles from "@/styles/income/incomeTable.module.css";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "@/components/layout/popUp";
@@ -19,19 +19,13 @@ const IncomeTable = ({
 
   const sortAscending = useRef(true);
 
-  useEffect(() => {
-    if (income) {
-      setSortedIncome(aToZDateSorter(income));
-    }
-  }, [income]);
-
   const sortIncome = () => {
     sortAscending.current = !sortAscending.current;
 
     if (sortAscending.current) {
-      setSortedIncome(aToZDateSorter(income));
+      setSortedIncome(ascendingDateSorter(income));
     } else {
-      setSortedIncome(zToADateSorter(income));
+      setSortedIncome(descendingDateSorter(income));
     }
 
     setSortDirection(sortAscending.current);
