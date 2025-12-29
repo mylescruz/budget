@@ -13,7 +13,6 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import centsToDollars from "@/helpers/centsToDollars";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../layout/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
@@ -104,7 +103,7 @@ const InnerDashboard = ({ dateInfo }) => {
                                 <td
                                   className={`col-5 text-end ${styles.grayBackground}`}
                                 >
-                                  {centsToDollars(category.actual)}
+                                  {dollarFormatter(category.actual)}
                                 </td>
                               </tr>
                             ))}
