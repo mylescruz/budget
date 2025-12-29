@@ -3,8 +3,8 @@ import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import Link from "next/link";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import styles from "@/styles/home/home.module.css";
-import centsToDollars from "@/helpers/centsToDollars";
 import Image from "next/image";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const Home = () => {
   // A user accesses the login page using the signIn function provided by NextAuth.js
@@ -15,7 +15,7 @@ const Home = () => {
   const exampleCategories = [
     {
       name: "Mortgage",
-      actual: 200000,
+      actual: 2000,
       color: "#3058e8",
       style: {
         backgroundColor: "#3058e8",
@@ -24,7 +24,7 @@ const Home = () => {
     },
     {
       name: "Insurances",
-      actual: 75000,
+      actual: 750,
       color: "#e83030",
       style: {
         backgroundColor: "#e83030",
@@ -33,7 +33,7 @@ const Home = () => {
     },
     {
       name: "Internet",
-      actual: 20000,
+      actual: 200,
       color: "#920381",
       style: {
         backgroundColor: "#920381",
@@ -42,7 +42,7 @@ const Home = () => {
     },
     {
       name: "Subscriptions",
-      actual: 5000,
+      actual: 50,
       color: "#137a03",
       style: {
         backgroundColor: "#137a03",
@@ -133,7 +133,7 @@ const Home = () => {
                           <td
                             className={`col-6 col-lg-5 col-xl-6 text-end fw-bold ${styles.grayBackground}`}
                           >
-                            {centsToDollars(category.actual)}
+                            {dollarFormatter(category.actual)}
                           </td>
                         </tr>
                       ))}

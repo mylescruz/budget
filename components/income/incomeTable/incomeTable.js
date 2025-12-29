@@ -3,7 +3,6 @@ import { Table } from "react-bootstrap";
 import aToZDateSorter from "@/helpers/aToZDateSorter";
 import zToADateSorter from "@/helpers/ztoADateSorter";
 import styles from "@/styles/income/incomeTable.module.css";
-import centsToDollars from "@/helpers/centsToDollars";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "@/components/layout/popUp";
 import dollarFormatter from "@/helpers/dollarFormatter";
