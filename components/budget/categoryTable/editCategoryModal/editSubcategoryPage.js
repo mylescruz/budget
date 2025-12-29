@@ -1,3 +1,4 @@
+import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { Button, Form } from "react-bootstrap";
 
@@ -35,11 +36,11 @@ const EditSubcategoryPage = ({
     const updatedSubcategories = editedCategory.subcategories.map(
       (subcategory) => {
         if (subcategory.id === editedSubcategory.id) {
-          subcategoriesTotal += editedSubcategory.actual * 100;
+          subcategoriesTotal += dollarsToCents(editedSubcategory.actual);
 
           return { ...editedSubcategory, actual: editedSubcategory.actual };
         } else {
-          subcategoriesTotal += subcategory.actual * 100;
+          subcategoriesTotal += dollarsToCents(subcategory.actual);
           return subcategory;
         }
       }
@@ -69,7 +70,7 @@ const EditSubcategoryPage = ({
         categoryBudget,
         editedSubcategory.actual
       );
-      categoryActual -= editedSubcategory.actual * 100;
+      categoryActual -= dollarsToCents(editedSubcategory.actual);
     }
 
     const updatedCategory = {

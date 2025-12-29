@@ -1,5 +1,6 @@
 // API Endpoint for a user's categories data
 
+import dollarsToCents from "@/helpers/dollarsToCents";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -43,7 +44,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const categoryId = req.query._id;
     const category = req.body;
 
-    category.budget = parseFloat(category.budget) * 100;
+    category.budget = dollarsToCents(category.budget);
     category.dayOfMonth =
       category.fixed && category.subcategories.length === 0
         ? parseInt(category.dayOfMonth)
@@ -52,19 +53,19 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     let subcategoryTotal = 0;
     category.subcategories = category.subcategories.map((subcategory) => {
       if (category.fixed) {
-        subcategoryTotal += parseFloat(subcategory.actual) * 100;
+        subcategoryTotal += dollarsToCents(subcategory.actual);
 
         return {
           id: subcategory.id,
           name: subcategory.name.trim(),
-          actual: parseFloat(subcategory.actual) * 100,
+          actual: dollarsToCents(subcategory.actual),
           dayOfMonth: parseInt(subcategory.dayOfMonth),
         };
       } else {
         return {
           id: subcategory.id,
           name: subcategory.name.trim(),
-          actual: parseFloat(subcategory.actual) * 100,
+          actual: dollarsToCents(subcategory.actual),
           dayOfMonth: subcategory.dayOfMonth,
         };
       }
@@ -75,7 +76,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     } else if (category.fixed && category.subcategories.length !== 0) {
       category.actual = subcategoryTotal;
     } else {
-      category.actual = category.actual * 100;
+      category.actual = dollarsToCents(category.actual);
     }
 
     // Start a transaction to process all MongoDB statements or rollback any failures
@@ -116,7 +117,22 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     });
 
     // Send the updated category back to the client
-    return res.status(200).json(category);
+    const updatedCategory = {
+      ...category,
+      budget: category.budget / 100,
+      actual: category.actual / 100,
+    };
+
+    updatedCategory.subcategories = updatedCategory.subcategories.map(
+      (subcategory) => {
+        return {
+          ...subcategory,
+          actual: subcategory.actual / 100,
+        };
+      }
+    );
+
+    return res.status(200).json(updatedCategory);
   } catch (error) {
     console.error(`PUT categories request failed for ${username}: ${error}`);
     return res

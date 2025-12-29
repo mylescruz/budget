@@ -47,6 +47,7 @@ const useCategories = (month, year) => {
 
         if (response.ok) {
           const addedCategory = await response.json();
+
           setCategories(categorySorter([...categories, addedCategory]));
         } else {
           const message = await response.text();

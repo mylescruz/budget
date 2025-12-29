@@ -1,6 +1,6 @@
 import addDecimalValues from "@/helpers/addDecimalValues";
 import { useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 
 const AddSubcategoryPage = ({
@@ -27,7 +27,7 @@ const AddSubcategoryPage = ({
     if (!editedCategory.fixed) {
       newSubcategory.actual = 0;
     } else {
-      newSubcategory.actual = parseFloat(newSubcategory.actual);
+      newSubcategory.actual = Number(newSubcategory.actual);
     }
 
     if (editedCategory.subcategories.length > 0) {

@@ -1,5 +1,6 @@
 // API Endpoint for a user's categories data
 
+import dollarsToCents from "@/helpers/dollarsToCents";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -186,7 +187,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     const categoryBody = req.body;
 
     // Convert the budget value to cents
-    const categoryBudget = parseFloat(categoryBody.budget) * 100;
+    const categoryBudget = dollarsToCents(categoryBody.budget);
     let categoryActual = categoryBody.fixed ? categoryBudget : 0;
 
     // If category has fixed subcategories, update their actual values to cents
@@ -196,11 +197,11 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       if (categoryBody.fixed) {
         categoryActual = 0;
         updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
-          categoryActual += subcategory.actual * 100;
+          categoryActual += dollarsToCents(subcategory.actual);
           return {
             id: subcategory.id,
             name: subcategory.name.trim(),
-            actual: subcategory.actual * 100,
+            actual: dollarsToCents(subcategory.actual),
             dayOfMonth: parseInt(subcategory.dayOfMonth),
           };
         });
@@ -248,12 +249,26 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       await updateFunMoney({ username, month, year, session });
     });
 
-    const { username: u, month: m, year: y, ...addedCategory } = newCategory;
+    const { username: u, month: m, year: y, ...categoryDetails } = newCategory;
 
     // Send the new category back to the client
-    return res
-      .status(200)
-      .json({ id: insertedCategory.insertedId, ...addedCategory });
+    const addedCategory = {
+      ...categoryDetails,
+      _id: insertedCategory.insertedId,
+      budget: categoryDetails.budget / 100,
+      actual: categoryDetails.actual / 100,
+    };
+
+    addedCategory.subcategories = addedCategory.subcategories.map(
+      (subcategory) => {
+        return {
+          ...subcategory,
+          actual: subcategory.actual / 100,
+        };
+      }
+    );
+
+    return res.status(200).json(addedCategory);
   } catch (error) {
     console.error(`POST categories request failed for ${username}: ${error}`);
     return res
