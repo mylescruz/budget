@@ -1,22 +1,9 @@
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import CategoryTransactionsModal from "./categoryTransactionsModal";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const SummaryTableRow = ({ category, year }) => {
-  const [categoryName, setCategoryName] = useState(category.name);
   const [showSubcategories, setShowSubcategories] = useState(false);
-  const [showCategoryTransactions, setShowCategoryTransactions] =
-    useState(false);
-
-  const openTransactionsModal = (category) => {
-    setCategoryName(category);
-    setShowCategoryTransactions(true);
-  };
-
-  const closeTransactionsModal = () => {
-    setShowCategoryTransactions(false);
-  };
 
   const categoryColor = {
     backgroundColor: category.color,
@@ -50,12 +37,7 @@ const SummaryTableRow = ({ category, year }) => {
               </Col>
             </Row>
           ) : (
-            <Row
-              className={`col-12 cell ${!category.fixed && "clicker"}`}
-              onClick={() => {
-                !category.fixed && openTransactionsModal(category.name);
-              }}
-            >
+            <Row className={`col-12 cell ${!category.fixed && "clicker"}`}>
               <Col>
                 <Button
                   style={categoryColor}
@@ -112,15 +94,6 @@ const SummaryTableRow = ({ category, year }) => {
             </td>
           </tr>
         ))}
-
-      {showCategoryTransactions && (
-        <CategoryTransactionsModal
-          year={year}
-          category={categoryName}
-          showCategoryTransactions={showCategoryTransactions}
-          closeTransactionsModal={closeTransactionsModal}
-        />
-      )}
     </>
   );
 };
