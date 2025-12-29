@@ -1,14 +1,15 @@
 import { Container, Table } from "react-bootstrap";
 import SummaryTableRow from "./summaryTableRow";
 import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 const SummaryTable = ({ categories, year, monthsLength }) => {
   const totalBudget = categories.reduce(
-    (sum, current) => sum + current.budget,
+    (sum, current) => sum + dollarsToCents(current.budget),
     0
   );
   const totalActual = categories.reduce(
-    (sum, current) => sum + current.actual,
+    (sum, current) => sum + dollarsToCents(current.actual),
     0
   );
   const totalRemaining = totalBudget - totalActual;

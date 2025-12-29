@@ -1,3 +1,4 @@
+import dollarFormatter from "@/helpers/dollarFormatter";
 import { BarChart, Bar, Tooltip, XAxis, YAxis } from "recharts";
 
 const TopStoresChart = ({ topStores }) => {
@@ -16,9 +17,9 @@ const TopStoresChart = ({ topStores }) => {
       <YAxis
         width="auto"
         tickLine={true}
-        tickFormatter={(value) => `$${(value / 100).toFixed(0)}`}
+        tickFormatter={(value) => dollarFormatter(value)}
       />
-      <Tooltip formatter={(value) => `$${(value / 100).toFixed(0)}`} />
+      <Tooltip formatter={(value) => dollarFormatter(value)} />
       <Bar dataKey="amount" fill="#d94412ff" />
     </BarChart>
   );

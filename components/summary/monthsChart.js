@@ -1,3 +1,4 @@
+import dollarFormatter from "@/helpers/dollarFormatter";
 import { BarChart, Bar, Tooltip, XAxis, YAxis, LabelList } from "recharts";
 
 const MonthsChart = ({ months }) => {
@@ -7,7 +8,7 @@ const MonthsChart = ({ months }) => {
     { name: "Average", month: "", amount: months.avg },
   ];
 
-  const formatDollars = (cents) => `$${(cents / 100).toLocaleString()}`;
+  const formatDollars = (cents) => dollarFormatter(cents);
 
   return (
     <BarChart

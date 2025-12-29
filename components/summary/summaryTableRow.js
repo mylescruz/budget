@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import centsToDollars from "@/helpers/centsToDollars";
 import CategoryTransactionsModal from "./categoryTransactionsModal";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const SummaryTableRow = ({ category, year }) => {
   const [categoryName, setCategoryName] = useState(category.name);
@@ -72,20 +72,21 @@ const SummaryTableRow = ({ category, year }) => {
             category.budget < 0 && "text-danger "
           }`}
         >
-          {centsToDollars(category.budget)}
+          {dollarFormatter(category.budget)}
         </td>
         <td className="col-4 col-md-2 cell">
-          {centsToDollars(category.actual)}
+          {dollarFormatter(category.actual)}
         </td>
         <td
           className={`d-none d-md-block col-md-2 cell ${
             category.budget - category.actual < 0 && "text-danger fw-bold"
           }`}
         >
-          {!category.fixed && centsToDollars(category.budget - category.actual)}
+          {!category.fixed &&
+            dollarFormatter(category.budget - category.actual)}
         </td>
         <td className="col-4 col-md-2 cell">
-          {centsToDollars(category.average)}
+          {dollarFormatter(category.average)}
         </td>
       </tr>
       {showSubcategories &&
@@ -101,11 +102,13 @@ const SummaryTableRow = ({ category, year }) => {
             </th>
             <td className="d-none d-md-block col-md-2"></td>
             <td className="col-4 col-md-2">
-              <span className="mx-2">{centsToDollars(subcategory.actual)}</span>
+              <span className="mx-2">
+                {dollarFormatter(subcategory.actual)}
+              </span>
             </td>
             <td className="d-none d-md-block col-md-2"></td>
             <td className="col-4 col-md-2">
-              {centsToDollars(subcategory.average)}
+              {dollarFormatter(subcategory.average)}
             </td>
           </tr>
         ))}

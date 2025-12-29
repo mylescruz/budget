@@ -162,13 +162,16 @@ async function getCategoriesSummary(categoriesCol, username, year) {
       const updatedSubcategories = category.subcategories.map((subcategory) => {
         return {
           ...subcategory,
-          average: subcategory.actual / subcategory.totalMonths,
+          actual: subcategory.actual / 100,
+          average: subcategory.actual / subcategory.totalMonths / 100,
         };
       });
 
       return {
         ...category,
-        average: category.actual / category.totalMonths,
+        budget: category.budget / 100,
+        actual: category.actual / 100,
+        average: category.actual / category.totalMonths / 100,
         subcategories: updatedSubcategories,
       };
     })
@@ -191,7 +194,7 @@ async function getMonthsStats(categoriesCol, username, year) {
       {
         $project: {
           month: "$_id",
-          amount: "$totalSpent",
+          amount: { $divide: ["$totalSpent", 100] },
           _id: 0,
         },
       },
@@ -235,7 +238,7 @@ async function getTopStores(transactionsCol, username, year) {
       {
         $project: {
           store: "$_id",
-          amount: "$totalAmount",
+          amount: { $divide: ["$totalAmount", 100] },
           _id: 0,
         },
       },
