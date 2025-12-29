@@ -1,4 +1,4 @@
-import centsToDollars from "@/helpers/centsToDollars";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const ChangingSubcategoryRow = ({ subcategory }) => {
   return (
@@ -8,7 +8,7 @@ const ChangingSubcategoryRow = ({ subcategory }) => {
       </th>
       <td className="d-none d-lg-block col-lg-2"></td>
       <td className="col-6 col-md-8 col-lg-7">
-        <span className="mx-3">{centsToDollars(subcategory.actual)}</span>
+        <span className="mx-3">{dollarFormatter(subcategory.actual)}</span>
       </td>
     </tr>
   );

@@ -52,19 +52,19 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     let subcategoryTotal = 0;
     category.subcategories = category.subcategories.map((subcategory) => {
       if (category.fixed) {
-        subcategoryTotal += subcategory.actual;
+        subcategoryTotal += parseFloat(subcategory.actual) * 100;
 
         return {
           id: subcategory.id,
           name: subcategory.name.trim(),
-          actual: subcategory.actual,
+          actual: parseFloat(subcategory.actual) * 100,
           dayOfMonth: parseInt(subcategory.dayOfMonth),
         };
       } else {
         return {
           id: subcategory.id,
           name: subcategory.name.trim(),
-          actual: subcategory.actual,
+          actual: parseFloat(subcategory.actual) * 100,
           dayOfMonth: subcategory.dayOfMonth,
         };
       }
@@ -72,7 +72,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
 
     if (category.fixed && category.subcategories.length === 0) {
       category.actual = category.budget;
-    } else if (category.fixed && category.subcategories.length === 0) {
+    } else if (category.fixed && category.subcategories.length !== 0) {
       category.actual = subcategoryTotal;
     } else {
       category.actual = category.actual * 100;

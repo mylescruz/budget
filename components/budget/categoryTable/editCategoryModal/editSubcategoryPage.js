@@ -1,3 +1,4 @@
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { Button, Form } from "react-bootstrap";
 
 const EditSubcategoryPage = ({
@@ -34,12 +35,11 @@ const EditSubcategoryPage = ({
     const updatedSubcategories = editedCategory.subcategories.map(
       (subcategory) => {
         if (subcategory.id === editedSubcategory.id) {
-          const subcategoryActual = editedSubcategory.actual * 100;
-          subcategoriesTotal += subcategoryActual;
+          subcategoriesTotal += editedSubcategory.actual * 100;
 
-          return { ...editedSubcategory, actual: subcategoryActual };
+          return { ...editedSubcategory, actual: editedSubcategory.actual };
         } else {
-          subcategoriesTotal += subcategory.actual;
+          subcategoriesTotal += subcategory.actual * 100;
           return subcategory;
         }
       }
@@ -59,13 +59,14 @@ const EditSubcategoryPage = ({
     setPage("details");
   };
 
+  // Fix and distinguish between fixed and non-fixed categories
   const deleteSubcategory = () => {
     let categoryBudget = editedCategory.budget;
     let categoryActual = editedCategory.actual;
 
     if (editedCategory.fixed) {
       categoryBudget =
-        (categoryBudget * 100 - editedSubcategory.actual * 100) / 100;
+        subtractDecimalValues(categoryBudget, editedSubcategory.actual) / 100;
       categoryActual -= editedSubcategory.actual * 100;
     }
 

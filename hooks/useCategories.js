@@ -1,6 +1,7 @@
 import categorySorter from "@/helpers/categorySorter";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useMonthIncome from "./useMonthIncome";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
@@ -151,10 +152,10 @@ const useCategories = (month, year) => {
             const subcategoryDate = new Date(`${month}/${day}/${year}`);
 
             if (subcategoryDate <= today) {
-              categoryActuals += subcategory.actual;
+              categoryActuals += subcategory.actual * 100;
             }
           } else {
-            categoryActuals += subcategory.actual;
+            categoryActuals += subcategory.actual * 100;
           }
         });
       } else if (category.fixed && category.subcategories.length === 0) {
@@ -163,20 +164,23 @@ const useCategories = (month, year) => {
           const categoryDate = new Date(`${month}/${day}/${year}`);
 
           if (categoryDate <= today) {
-            categoryActuals += category.actual;
+            categoryActuals += category.actual * 100;
           }
         } else {
-          categoryActuals += category.actual;
+          categoryActuals += category.actual * 100;
         }
       } else {
-        categoryActuals += category.actual;
+        categoryActuals += category.actual * 100;
       }
     });
 
+    const actualValue = categoryActuals / 100;
+    const remaining = subtractDecimalValues(monthIncome, actualValue) / 100;
+
     return {
       budget: monthIncome,
-      actual: categoryActuals,
-      remaining: monthIncome - categoryActuals,
+      actual: actualValue,
+      remaining: remaining,
     };
   }, [categories, monthIncome]);
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import centsToDollars from "@/helpers/centsToDollars";
 import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 import todayInfo from "@/helpers/todayInfo";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const FixedCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
@@ -108,11 +108,11 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
           </div>
         </th>
         <td className="col-3 col-md-2 cell fw-bold">
-          {centsToDollars(category.budget)}
+          {dollarFormatter(category.budget)}
         </td>
         <td className="d-none d-lg-block col-lg-2">{category.dayOfMonth}</td>
         <td className="col-3 col-md-2 col-lg-2">
-          {centsToDollars(currentActual)}
+          {dollarFormatter(currentActual)}
         </td>
         <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
           <div className="d-flex flex-row align-items-center text-white text-end">

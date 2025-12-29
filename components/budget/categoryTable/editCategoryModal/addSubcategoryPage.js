@@ -1,3 +1,4 @@
+import addDecimalValues from "@/helpers/addDecimalValues";
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
@@ -26,7 +27,7 @@ const AddSubcategoryPage = ({
     if (!editedCategory.fixed) {
       newSubcategory.actual = 0;
     } else {
-      newSubcategory.actual = newSubcategory.actual * 100;
+      newSubcategory.actual = parseFloat(newSubcategory.actual);
     }
 
     if (editedCategory.subcategories.length > 0) {
@@ -34,12 +35,12 @@ const AddSubcategoryPage = ({
 
       // If the category is fixed, add the new subcategory total to the budget value
       const budgetValue = editedCategory.fixed
-        ? (editedCategory.budget * 100 + newSubcategory.actual) / 100
+        ? addDecimalValues(editedCategory.budget, newSubcategory.actual) / 100
         : editedCategory.budget;
 
       // If the category is fixed, the actual is set to the subcategory total
       const actualValue = editedCategory.fixed
-        ? (editedCategory.budget * 100 + newSubcategory.actual) / 100
+        ? addDecimalValues(editedCategory.budget, newSubcategory.actual) / 100
         : editedCategory.actual;
 
       // Update the total budget and add subcategory
@@ -52,12 +53,12 @@ const AddSubcategoryPage = ({
     } else {
       // If the category is fixed, the budget is now dependent on the new subcategory total
       const budgetValue = editedCategory.fixed
-        ? newSubcategory.actual / 100
+        ? newSubcategory.actual
         : editedCategory.budget;
 
       // If the category is fixed, the actual is set to the subcategory total
       const actualValue = editedCategory.fixed
-        ? newSubcategory.actual / 100
+        ? newSubcategory.actual
         : editedCategory.actual;
 
       const updatedCategory = {

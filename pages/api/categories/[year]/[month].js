@@ -42,22 +42,45 @@ async function getCategories(req, res, { categoriesCol, username }) {
     const year = parseInt(req.query.year);
 
     // Get the categories for the current month and year
-    const categories = await categoriesCol
-      .find(
-        { username, month, year },
-        {
-          projection: {
-            username: 0,
-            month: 0,
-            year: 0,
-          },
-        }
-      )
-      .sort({ budget: -1 })
+    const categoriesDocs = await categoriesCol
+      .find({ username, month, year })
       .toArray();
 
     // If the categories already exist, send the categories array back to the client
-    if (categories.length > 0) {
+    if (categoriesDocs.length > 0) {
+      const categories = categoriesDocs.map((category) => {
+        const formattedCategory = {
+          _id: category._id,
+          name: category.name,
+          color: category.color,
+          fixed: category.fixed,
+          budget: category.budget / 100,
+          actual: category.actual / 100,
+        };
+
+        if (formattedCategory.fixed) {
+          formattedCategory.dayOfMonth = category.dayOfMonth;
+        }
+
+        const subcategories = category.subcategories.map((subcategory) => {
+          const formattedSubcategory = {
+            id: subcategory.id,
+            name: subcategory.name,
+            actual: subcategory.actual / 100,
+          };
+
+          if (formattedCategory.fixed) {
+            formattedSubcategory.dayOfMonth = subcategory.dayOfMonth;
+          }
+
+          return formattedSubcategory;
+        });
+
+        formattedCategory.subcategories = subcategories;
+
+        return formattedCategory;
+      });
+
       return res.status(200).json(categories);
     } else {
       // If the categories for the current month and year don't exist, get the categories from the last populated month
@@ -92,7 +115,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
               username: 1,
               name: 1,
               color: 1,
-              budget: 1,
+              budget: { $divide: ["$budget", 100] },
               actual: { $cond: ["$fixed", "$actual", 0] },
               fixed: 1,
               subcategories: 1,

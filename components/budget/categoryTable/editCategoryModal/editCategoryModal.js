@@ -1,12 +1,12 @@
 import ErrorMessage from "@/components/layout/errorMessage";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import centsToDollars from "@/helpers/centsToDollars";
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row, Table } from "react-bootstrap";
 import AddSubcategoryPage from "./addSubcategoryPage";
 import EditSubcategoryPage from "./editSubcategoryPage";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const EditCategoryModal = ({
   category,
@@ -18,17 +18,7 @@ const EditCategoryModal = ({
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
 
-  const [editedCategory, setEditedCategory] = useState({
-    ...category,
-    budget:
-      category.subcategories.length > 0 && category.fixed
-        ? category.subcategories.reduce(
-            (sum, current) => sum + current.actual,
-            0
-          ) / 100
-        : category.budget / 100,
-    actual: category.actual / 100,
-  });
+  const [editedCategory, setEditedCategory] = useState(category);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [nameChange, setNameChange] = useState({
@@ -55,7 +45,7 @@ const EditCategoryModal = ({
   const openEditSubcategoryPage = (subcategory) => {
     setEditedSubcategory({
       ...subcategory,
-      actual: subcategory.actual / 100,
+      actual: subcategory.actual,
       oldName: subcategory.name,
     });
     setPage("editSubcategory");
@@ -267,7 +257,7 @@ const EditCategoryModal = ({
                       {editedCategory.subcategories.map((subcategory) => (
                         <tr key={subcategory.id}>
                           <td>{subcategory.name}</td>
-                          <td>{centsToDollars(subcategory.actual)}</td>
+                          <td>{dollarFormatter(subcategory.actual)}</td>
                           {editedCategory.fixed && (
                             <td>{subcategory.dayOfMonth}</td>
                           )}

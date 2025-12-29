@@ -1,6 +1,5 @@
 import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import centsToDollars from "@/helpers/centsToDollars";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { useContext } from "react";
 
@@ -55,7 +54,7 @@ const CategoryTableFooter = () => {
         {dollarFormatter(categoryTotals.budget)}
       </td>
       <td className="col-3 col-md-2 cell d-flex align-items-center">
-        {centsToDollars(categoryTotals.actual)}
+        {dollarFormatter(categoryTotals.actual)}
       </td>
       <td className="col-3 col-md-2 cell d-flex align-items-center">
         <span
@@ -63,7 +62,7 @@ const CategoryTableFooter = () => {
             categoryTotals.remaining > 0 ? "text-white" : "text-danger fw-bold"
           }`}
         >
-          {centsToDollars(categoryTotals.remaining)}
+          {dollarFormatter(categoryTotals.remaining)}
         </span>
       </td>
       <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">

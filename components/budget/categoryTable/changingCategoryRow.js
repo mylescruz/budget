@@ -3,6 +3,8 @@ import PopUp from "@/components/layout/popUp";
 import centsToDollars from "@/helpers/centsToDollars";
 import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import ChangingSubcategoryRow from "./changingSubcategoryRow";
+import dollarFormatter from "@/helpers/dollarFormatter";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 const ChangingCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
@@ -84,11 +86,11 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
         </th>
         <td className="d-none d-lg-block col-lg-2 cell fw-bold">
           <span className={`${category.budget < 0 && "text-danger"}`}>
-            {centsToDollars(category.budget)}
+            {dollarFormatter(category.budget)}
           </span>
         </td>
         <td className="col-3 col-md-2 cell">
-          {centsToDollars(category.actual)}
+          {dollarFormatter(category.actual)}
         </td>
         <td className="col-3 col-md-2 cell">
           <span
@@ -96,7 +98,9 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
               category.actual > category.budget && "text-danger fw-bold"
             }`}
           >
-            {centsToDollars(category.budget - category.actual)}
+            {dollarFormatter(
+              subtractDecimalValues(category.budget, category.actual) / 100
+            )}
           </span>
         </td>
         <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
