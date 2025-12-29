@@ -1,6 +1,5 @@
 import { useState } from "react";
 import PopUp from "@/components/layout/popUp";
-import centsToDollars from "@/helpers/centsToDollars";
 import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import ChangingSubcategoryRow from "./changingSubcategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
@@ -99,7 +98,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
             }`}
           >
             {dollarFormatter(
-              subtractDecimalValues(category.budget, category.actual) / 100
+              subtractDecimalValues(category.budget, category.actual)
             )}
           </span>
         </td>

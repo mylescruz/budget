@@ -35,12 +35,12 @@ const AddSubcategoryPage = ({
 
       // If the category is fixed, add the new subcategory total to the budget value
       const budgetValue = editedCategory.fixed
-        ? addDecimalValues(editedCategory.budget, newSubcategory.actual) / 100
+        ? addDecimalValues(editedCategory.budget, newSubcategory.actual)
         : editedCategory.budget;
 
       // If the category is fixed, the actual is set to the subcategory total
       const actualValue = editedCategory.fixed
-        ? addDecimalValues(editedCategory.budget, newSubcategory.actual) / 100
+        ? addDecimalValues(editedCategory.budget, newSubcategory.actual)
         : editedCategory.actual;
 
       // Update the total budget and add subcategory

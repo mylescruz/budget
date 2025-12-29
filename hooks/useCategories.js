@@ -175,7 +175,7 @@ const useCategories = (month, year) => {
     });
 
     const actualValue = categoryActuals / 100;
-    const remaining = subtractDecimalValues(monthIncome, actualValue) / 100;
+    const remaining = subtractDecimalValues(monthIncome, actualValue);
 
     return {
       budget: monthIncome,

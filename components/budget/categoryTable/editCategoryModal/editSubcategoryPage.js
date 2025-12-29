@@ -65,8 +65,10 @@ const EditSubcategoryPage = ({
     let categoryActual = editedCategory.actual;
 
     if (editedCategory.fixed) {
-      categoryBudget =
-        subtractDecimalValues(categoryBudget, editedSubcategory.actual) / 100;
+      categoryBudget = subtractDecimalValues(
+        categoryBudget,
+        editedSubcategory.actual
+      );
       categoryActual -= editedSubcategory.actual * 100;
     }
 

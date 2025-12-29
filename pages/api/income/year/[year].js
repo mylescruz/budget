@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
-import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -93,10 +92,8 @@ async function addIncome(req, res, { client, incomeCol, username }) {
 
     if (newSource.type === "Paycheck") {
       newSource.gross = parseFloat(req.body.gross) * 100;
-      newSource.deductions = subtractDecimalValues(
-        req.body.gross,
-        req.body.amount
-      );
+      newSource.deductions =
+        parseFloat(req.body.gross) * 100 - parseFloat(req.body.amount) * 100;
     }
 
     if (newSource.type === "Unemployment") {
