@@ -37,7 +37,7 @@ const SummaryTableRow = ({ category, year }) => {
               </Col>
             </Row>
           ) : (
-            <Row className={`col-12 cell ${!category.fixed && "clicker"}`}>
+            <Row className="col-12 cell">
               <Col>
                 <Button
                   style={categoryColor}

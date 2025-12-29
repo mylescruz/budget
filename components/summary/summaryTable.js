@@ -2,17 +2,19 @@ import { Container, Table } from "react-bootstrap";
 import SummaryTableRow from "./summaryTableRow";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const SummaryTable = ({ categories, year, monthsLength }) => {
-  const totalBudget = categories.reduce(
-    (sum, current) => sum + dollarsToCents(current.budget),
-    0
+  const totalBudget = centsToDollars(
+    categories.reduce((sum, current) => sum + dollarsToCents(current.budget), 0)
   );
-  const totalActual = categories.reduce(
-    (sum, current) => sum + dollarsToCents(current.actual),
-    0
+
+  const totalActual = centsToDollars(
+    categories.reduce((sum, current) => sum + dollarsToCents(current.actual), 0)
   );
-  const totalRemaining = totalBudget - totalActual;
+
+  const totalRemaining = subtractDecimalValues(totalBudget, totalActual);
 
   return (
     <Container className="d-flex flex-column align-items-center">
@@ -39,20 +41,20 @@ const SummaryTable = ({ categories, year, monthsLength }) => {
           <tr className="d-flex">
             <th className="col-4">Totals</th>
             <th className="d-none d-md-block col-md-2 cell">
-              {centsToDollars(totalBudget)}
+              {dollarFormatter(totalBudget)}
             </th>
             <th className="col-4 col-md-2 cell">
-              {centsToDollars(totalActual)}
+              {dollarFormatter(totalActual)}
             </th>
             <th
               className={`d-none d-md-block col-md-2 cell ${
                 totalRemaining >= 0 ? "text-white" : "text-danger"
               }`}
             >
-              {centsToDollars(totalRemaining)}
+              {dollarFormatter(totalRemaining)}
             </th>
             <th className="col-4 col-md-2">
-              {centsToDollars(totalActual / monthsLength)}
+              {dollarFormatter(totalActual / monthsLength)}
             </th>
           </tr>
         </tfoot>

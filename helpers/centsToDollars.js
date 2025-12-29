@@ -1,11 +1,4 @@
-// Helper to convert MongoDB's stored cents values into dollar values
-const centsToDollars = (cents) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(cents / 100);
-};
-
-export default centsToDollars;
+// Helper to convert cents values into dollar values
+export default function centsToDollars(cents) {
+  return Number((cents / 100).toFixed(2));
+}
