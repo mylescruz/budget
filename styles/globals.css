@@ -63,10 +63,6 @@ a {
   background-color: var(--card-background) !important;
 }
 
-.months-card {
-  height: 115px;
-}
-
 .error-layout {
   min-height: 75vh;
   text-align: center;

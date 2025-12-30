@@ -7,7 +7,7 @@ import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 import IncomeSummary from "./incomeSummaryTable";
 import CategorySummaryTable from "./categorySummaryTable";
-import MonthsSummary from "./monthsSummary";
+import TotalsCards from "./totalsCards";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
@@ -17,15 +17,22 @@ const InnerSummaryLayout = ({ year }) => {
   } else if (summary) {
     return (
       <div className="mx-auto">
+        <Row className="my-4 d-flex justify-content-center text-center">
+          <h3>Year Totals</h3>
+          <Col className="col-12 col-lg-10">
+            <TotalsCards totals={summary.totals} />
+          </Col>
+        </Row>
+
         <Row className="my-4 mx-auto">
-          <h3 className="text-center">Income</h3>
+          <h3 className="text-center">Income Breakdown</h3>
           <Col className="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
             <IncomeSummary income={summary.income} />
           </Col>
         </Row>
 
         <Row className="my-4 mx-auto">
-          <h3 className="text-center">Categories</h3>
+          <h3 className="text-center">Categories Breakdown</h3>
           <CategoryPieChart categories={summary.categories} />
           <Col className="col-12 col-xl-10 mx-auto">
             <CategorySummaryTable
@@ -33,13 +40,6 @@ const InnerSummaryLayout = ({ year }) => {
               year={year}
               monthsLength={summary.monthsLength}
             />
-          </Col>
-        </Row>
-
-        <Row className="my-4 d-flex justify-content-center text-center">
-          <h3>Highest, Lowest & Average Months</h3>
-          <Col className="col-12 col-lg-10">
-            <MonthsSummary months={summary.months} />
           </Col>
         </Row>
 

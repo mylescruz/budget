@@ -3,6 +3,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -39,6 +40,13 @@ async function getYearSummary(
   const year = parseInt(req.query.year);
 
   try {
+    const totals = await getYearTotals(
+      categoriesCol,
+      incomeCol,
+      username,
+      year
+    );
+
     const categories = await getCategoriesSummary(
       categoriesCol,
       username,
@@ -47,17 +55,15 @@ async function getYearSummary(
 
     const income = await getIncomeSummary(incomeCol, username, year);
 
-    const months = await getMonthsStats(categoriesCol, username, year);
-
     const topStores = await getTopStores(transactionsCol, username, year);
 
     const allMonths = await categoriesCol.distinct("month", { username, year });
 
     // Send the year summary back to the client
     return res.status(200).json({
+      totals,
       categories,
       income,
-      months,
       topStores,
       monthsLength: allMonths.length,
     });
@@ -67,6 +73,77 @@ async function getYearSummary(
       .status(500)
       .send(`Error occurred while getting the summary for ${username}`);
   }
+}
+
+// Get the year totals
+async function getYearTotals(categoriesCol, incomeCol, username, year) {
+  // Get the total income for the year
+  const income = await incomeCol
+    .aggregate([
+      { $match: { username, year } },
+      { $group: { _id: null, totalAmount: { $sum: "$amount" } } },
+      { $project: { _id: 0, totalAmount: 1 } },
+    ])
+    .toArray();
+
+  const totalIncome = income[0].totalAmount;
+
+  // Get the total spent for the year, highest month, lowest month and average month
+  const months = await categoriesCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $group: {
+          _id: "$month",
+          totalSpent: { $sum: "$actual" },
+        },
+      },
+      {
+        $project: {
+          number: "$_id",
+          amount: "$totalSpent",
+          _id: 0,
+        },
+      },
+    ])
+    .toArray();
+
+  // Get the total spent for the year
+  let totalSpent = 0;
+
+  // Add the month name to each month
+  const allMonths = months
+    .map((month) => {
+      totalSpent += month.amount;
+
+      const monthNumber = month.number;
+      const monthDate = new Date(year, monthNumber - 1);
+      const monthName = monthDate.toLocaleDateString("en-US", {
+        month: "long",
+      });
+
+      return {
+        ...month,
+        amount: centsToDollars(month.amount),
+        name: monthName,
+      };
+    })
+    .sort((a, b) => b.amount - a.amount);
+
+  const maxMonth = allMonths[0];
+  const minMonth = allMonths[allMonths.length - 1];
+  const avgMonth = centsToDollars(totalSpent / allMonths.length);
+
+  const totalRemaining = totalIncome - totalSpent;
+
+  return {
+    income: centsToDollars(totalIncome),
+    spent: centsToDollars(totalSpent),
+    remaining: centsToDollars(totalRemaining),
+    maxMonth,
+    minMonth,
+    avgMonth,
+  };
 }
 
 // Get the total spent for each summary
@@ -246,55 +323,6 @@ async function getIncomeSummary(incomeCol, username, year) {
       amount: centsToDollars(totalIncome.amount),
     },
     types,
-  };
-}
-
-// Get the max, min and average amount spent for each month
-async function getMonthsStats(categoriesCol, username, year) {
-  const months = await categoriesCol
-    .aggregate([
-      { $match: { username, year } },
-      {
-        $group: {
-          _id: "$month",
-          totalSpent: { $sum: "$actual" },
-        },
-      },
-      {
-        $project: {
-          month: "$_id",
-          amount: { $divide: ["$totalSpent", 100] },
-          _id: 0,
-        },
-      },
-    ])
-    .toArray();
-
-  // Get the total spent for the year
-  let totalSpent = 0;
-
-  // Add the month name to each month
-  const formattedMonths = months
-    .map((month) => {
-      totalSpent += month.amount;
-
-      const monthNumber = month.month;
-      const monthDate = new Date(year, monthNumber - 1);
-      const monthName = monthDate.toLocaleDateString("en-US", {
-        month: "long",
-      });
-
-      return {
-        ...month,
-        monthName,
-      };
-    })
-    .sort((a, b) => b.amount - a.amount);
-
-  return {
-    max: formattedMonths[0],
-    min: formattedMonths[formattedMonths.length - 1],
-    avg: totalSpent / formattedMonths.length,
   };
 }
 
