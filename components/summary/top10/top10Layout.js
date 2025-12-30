@@ -4,10 +4,12 @@ import TopSpentStores from "./topSpentStores";
 import TopStoresVisted from "./topStoresVisited";
 import TopTransactions from "./topTransactions";
 import TopSpendingMonths from "./topSpendingMonths";
+import TopSpendingCategories from "./topSpendingCategories";
 
 const Top10Layout = ({ top10 }) => {
   const topItems = [
     "Spending Months",
+    "Spending Categories",
     "Stores Shopped",
     "Stores Visited",
     "Transactions",
@@ -40,6 +42,9 @@ const Top10Layout = ({ top10 }) => {
       <Card className="card-background">
         {topSelected === "Spending Months" && (
           <TopSpendingMonths months={top10.spendingMonths} />
+        )}
+        {topSelected === "Spending Categories" && (
+          <TopSpendingCategories categories={top10.spendingCategories} />
         )}
         {topSelected === "Stores Shopped" && (
           <TopSpentStores stores={top10.storesSpent} />
