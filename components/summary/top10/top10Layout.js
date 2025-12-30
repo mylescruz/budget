@@ -5,11 +5,13 @@ import TopStoresVisted from "./topStoresVisited";
 import TopTransactions from "./topTransactions";
 import TopSpendingMonths from "./topSpendingMonths";
 import TopSpendingCategories from "./topSpendingCategories";
+import TopOverSpendingCategories from "./topOverSpendingCategories";
 
 const Top10Layout = ({ top10 }) => {
   const topItems = [
     "Spending Months",
     "Spending Categories",
+    "Overspending Categories",
     "Stores Shopped",
     "Stores Visited",
     "Transactions",
@@ -45,6 +47,11 @@ const Top10Layout = ({ top10 }) => {
         )}
         {topSelected === "Spending Categories" && (
           <TopSpendingCategories categories={top10.spendingCategories} />
+        )}
+        {topSelected === "Overspending Categories" && (
+          <TopOverSpendingCategories
+            categories={top10.overSpendingCategories}
+          />
         )}
         {topSelected === "Stores Shopped" && (
           <TopSpentStores stores={top10.storesSpent} />

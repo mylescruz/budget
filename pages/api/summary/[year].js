@@ -350,6 +350,11 @@ async function getTop10s(
     username,
     year
   );
+  const overSpendingCategories = await getTopOverSpendingCategories(
+    categoriesCol,
+    username,
+    year
+  );
   const storesSpent = await getTopSpentStores(transactionsCol, username, year);
   const storesVisited = await getTopFrequentedStores(
     transactionsCol,
@@ -365,6 +370,7 @@ async function getTop10s(
   return {
     spendingMonths,
     spendingCategories,
+    overSpendingCategories,
     storesSpent,
     storesVisited,
     transactions,
@@ -442,6 +448,36 @@ async function getTopSpendingCategories(transactionsCol, username, year) {
         },
       },
       { $sort: { amount: -1 } },
+      { $limit: 10 },
+    ])
+    .toArray();
+}
+
+// Get the top 10 categories where the user overspent for the year
+async function getTopOverSpendingCategories(categoriesCol, username, year) {
+  return await categoriesCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $group: {
+          _id: "$name",
+          totalBudget: { $sum: "$budget" },
+          totalActual: { $sum: "$actual" },
+        },
+      },
+      {
+        $project: {
+          name: "$_id",
+          budget: { $divide: ["$totalBudget", 100] },
+          actual: { $divide: ["$totalActual", 100] },
+          remaining: {
+            $divide: [{ $subtract: ["$totalBudget", "$totalActual"] }, 100],
+          },
+          _id: 0,
+        },
+      },
+      { $match: { remaining: { $lt: 0 } } },
+      { $sort: { remaining: 1 } },
       { $limit: 10 },
     ])
     .toArray();
