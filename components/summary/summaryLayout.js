@@ -1,5 +1,4 @@
 import useSummary from "@/hooks/useSummary";
-import SummaryTable from "./summaryTable";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TopStoresChart from "./topStoresChart";
@@ -8,6 +7,7 @@ import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 import IncomeSummary from "./incomeSummaryTable";
+import CategorySummaryTable from "./categorySummaryTable";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
@@ -28,7 +28,7 @@ const InnerSummaryLayout = ({ year }) => {
           <h3 className="text-center">Categories</h3>
           <CategoryPieChart categories={summary.categories} />
           <Col className="col-12 col-xl-10 mx-auto">
-            <SummaryTable
+            <CategorySummaryTable
               categories={summary.categories}
               year={year}
               monthsLength={summary.monthsLength}
