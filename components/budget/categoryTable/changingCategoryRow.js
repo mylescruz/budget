@@ -5,6 +5,12 @@ import ChangingSubcategoryRow from "./changingSubcategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
+const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex justify-content-between";
+const budgetColumn = "d-none d-lg-block col-lg-2 cell fw-bold text-end";
+const spentColumn = "col-3 col-md-2 cell text-end";
+const leftColumn = "col-3 col-md-2 cell text-end";
+const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
+
 const ChangingCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [editCategoryClicked, setEditCategoryClicked] = useState(false);
@@ -12,6 +18,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
     (a, b) => b.actual - a.actual
   );
 
+  // Progess bar that shows how much was spent vs the budget set
   let statusBarLength = Math.round((category.actual * 12) / category.budget);
 
   if (category.actual < category.budget && statusBarLength === 12) {
@@ -52,7 +59,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
   return (
     <>
       <tr className="d-flex">
-        <th className="col-6 col-md-4 col-lg-3 d-flex justify-content-between">
+        <th className={categoryColumn}>
           <div className="d-flex align-items-center cell">
             <span
               style={categoryColor}
@@ -83,15 +90,13 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
             &#8942;
           </p>
         </th>
-        <td className="d-none d-lg-block col-lg-2 cell fw-bold">
+        <td className={budgetColumn}>
           <span className={`${category.budget < 0 && "text-danger"}`}>
             {dollarFormatter(category.budget)}
           </span>
         </td>
-        <td className="col-3 col-md-2 cell">
-          {dollarFormatter(category.actual)}
-        </td>
-        <td className="col-3 col-md-2 cell">
+        <td className={spentColumn}>{dollarFormatter(category.actual)}</td>
+        <td className={leftColumn}>
           <span
             className={`${
               category.actual > category.budget && "text-danger fw-bold"
@@ -102,7 +107,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
             )}
           </span>
         </td>
-        <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
+        <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-end">
             {statusBarLength === 12 && (
               <div

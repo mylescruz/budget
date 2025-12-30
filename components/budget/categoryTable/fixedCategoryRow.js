@@ -4,6 +4,12 @@ import FixedSubcategoryRow from "./fixedSubcategoryRow";
 import todayInfo from "@/helpers/todayInfo";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
+const categoryColumn = "col-6 col-md-4 col-lg-3";
+const amountColumn = "col-3 col-md-2 cell text-end fw-bold";
+const dayColumn = "d-none d-lg-block col-lg-2";
+const chargedColumn = "col-3 col-md-2 col-lg-2 text-end";
+const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
+
 const FixedCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [editCategoryClicked, setEditCategoryClicked] = useState(false);
@@ -13,6 +19,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
 
   let currentActual = 0;
 
+  // Get the current charges for fixed expenses based on the day of the month
   if (category.dayOfMonth) {
     const categoryDate = new Date(
       `${dateInfo.month}/${category.dayOfMonth}/${dateInfo.year}`
@@ -52,6 +59,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
     }
   }
 
+  // Progress bar that shows the charge percentage for the month
   let statusBarLength = Math.round((currentActual * 12) / category.budget);
 
   if (category.actual < category.budget && statusBarLength === 12) {
@@ -82,7 +90,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
   return (
     <>
       <tr className="d-flex">
-        <th className="col-6 col-md-4 col-lg-3">
+        <th className={categoryColumn}>
           <div className=" d-flex justify-content-between">
             <div className="d-flex align-items-center cell">
               <span
@@ -107,14 +115,10 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
             </p>
           </div>
         </th>
-        <td className="col-3 col-md-2 cell fw-bold">
-          {dollarFormatter(category.budget)}
-        </td>
-        <td className="d-none d-lg-block col-lg-2">{category.dayOfMonth}</td>
-        <td className="col-3 col-md-2 col-lg-2">
-          {dollarFormatter(currentActual)}
-        </td>
-        <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
+        <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
+        <td className={dayColumn}>{category.dayOfMonth}</td>
+        <td className={chargedColumn}>{dollarFormatter(currentActual)}</td>
+        <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-end">
             {statusBarLength === 12 && (
               <div

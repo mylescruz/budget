@@ -7,6 +7,15 @@ import AddCategoryModal from "../addCategoryModal/addCategoryModal";
 import ChangingCategoryRow from "./changingCategoryRow";
 import FixedCategoryRow from "./fixedCategoryRow";
 
+const categoryColumn = "col-6 col-md-4 col-lg-3";
+const fixedAmountColumn = "col-3 col-md-2 text-end";
+const budgetColumn = "d-none d-lg-block col-lg-2 text-end";
+const dayColumn = "d-none d-lg-block col-lg-2 text-end";
+const chargedColumn = "col-3 col-md-2 col-lg-2 text-end";
+const spentColumn = "col-3 col-md-2 text-end";
+const leftColumn = "col-3 col-md-2 text-end";
+const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
+
 const CategoryTable = ({ dateInfo }) => {
   const { categories } = useContext(CategoriesContext);
 
@@ -47,11 +56,11 @@ const CategoryTable = ({ dateInfo }) => {
             </th>
           </tr>
           <tr className="d-flex table-light">
-            <th className="col-6 col-md-4 col-lg-3">Category</th>
-            <th className="col-3 col-md-2">Amount</th>
-            <th className="d-none d-lg-block col-lg-2">Day</th>
-            <th className="col-3 col-md-2 col-lg-2">Charged</th>
-            <th className="d-none d-md-block col-md-4 col-lg-3" />
+            <th className={categoryColumn}>Category</th>
+            <th className={fixedAmountColumn}>Amount</th>
+            <th className={dayColumn}>Day</th>
+            <th className={chargedColumn}>Charged</th>
+            <th className={progressColumn} />
           </tr>
           {categories.map(
             (category) =>
@@ -75,11 +84,11 @@ const CategoryTable = ({ dateInfo }) => {
             </th>
           </tr>
           <tr className="d-flex table-light">
-            <th className="col-6 col-md-4 col-lg-3">Category</th>
-            <th className="d-none d-lg-block col-lg-2">Budget</th>
-            <th className="col-3 col-md-2">Spent</th>
-            <th className="col-3 col-md-2">Left</th>
-            <th className="d-none d-md-block col-md-4 col-lg-3">Progress</th>
+            <th className={categoryColumn}>Category</th>
+            <th className={budgetColumn}>Budget</th>
+            <th className={spentColumn}>Spent</th>
+            <th className={leftColumn}>Left</th>
+            <th className={progressColumn}>Progress</th>
           </tr>
           {categories.map(
             (category) =>

@@ -3,9 +3,19 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { useContext } from "react";
 
+const totalColumn = "col-6 col-md-4 col-lg-3 cell d-flex align-items-center";
+const budgetColumn =
+  "d-none col-lg-2 cell d-lg-flex align-items-center justify-content-end";
+const spentColumn =
+  "col-3 col-md-2 cell d-flex align-items-center justify-content-end";
+const leftColumn =
+  "col-3 col-md-2 cell d-flex align-items-center justify-content-end";
+const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
+
 const CategoryTableFooter = () => {
   const { categoryTotals } = useContext(CategoriesContext);
 
+  // Progress bar to show the percentage of total actual spent vs the income for the month
   let statusBarLength = Math.round(
     (categoryTotals.actual * 12) / categoryTotals.budget
   );
@@ -41,22 +51,18 @@ const CategoryTableFooter = () => {
 
   return (
     <tr className="d-flex fw-bold">
-      <th className="col-6 col-md-4 col-lg-3 cell d-flex align-items-center">
+      <th className={totalColumn}>
         Total
         <PopUp
-          title="Your total budget is your total income for the month."
+          title="Your total income, total spent between fixed and changing categories and the remaining balance for the month."
           id="budget-info"
         >
           <span className="mx-1"> &#9432;</span>
         </PopUp>
       </th>
-      <td className="d-none col-lg-2 cell d-lg-flex align-items-center">
-        {dollarFormatter(categoryTotals.budget)}
-      </td>
-      <td className="col-3 col-md-2 cell d-flex align-items-center">
-        {dollarFormatter(categoryTotals.actual)}
-      </td>
-      <td className="col-3 col-md-2 cell d-flex align-items-center">
+      <td className={budgetColumn}>{dollarFormatter(categoryTotals.budget)}</td>
+      <td className={spentColumn}>{dollarFormatter(categoryTotals.actual)}</td>
+      <td className={leftColumn}>
         <span
           className={`${
             categoryTotals.remaining > 0 ? "text-white" : "text-danger fw-bold"
@@ -65,7 +71,7 @@ const CategoryTableFooter = () => {
           {dollarFormatter(categoryTotals.remaining)}
         </span>
       </td>
-      <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
+      <td className={progressColumn}>
         <div className="d-flex flex-row align-items-center text-white text-end">
           {statusBarLength === 12 && (
             <div
