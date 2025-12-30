@@ -2,12 +2,12 @@ import useSummary from "@/hooks/useSummary";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TopStoresChart from "./topStoresChart";
-import MonthsChart from "./monthsChart";
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 import IncomeSummary from "./incomeSummaryTable";
 import CategorySummaryTable from "./categorySummaryTable";
+import MonthsSummary from "./monthsSummary";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
@@ -38,7 +38,9 @@ const InnerSummaryLayout = ({ year }) => {
 
         <Row className="my-4 d-flex justify-content-center text-center">
           <h3>Highest, Lowest & Average Months</h3>
-          <MonthsChart months={summary.months} />
+          <Col className="col-12 col-lg-10">
+            <MonthsSummary months={summary.months} />
+          </Col>
         </Row>
 
         {summary.topStores.length > 0 && (

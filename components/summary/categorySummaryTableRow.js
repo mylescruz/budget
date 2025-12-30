@@ -3,9 +3,9 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-3";
 const fixedColumn = "d-none d-md-block col-md-1";
-const budgetColumn = "d-none d-md-block col-md-2 cell text-end";
+const budgetColumn = "d-none d-md-block col-md-2 text-end";
 const spentColumn = "col-3 col-md-2 text-end";
-const leftColumn = "d-none d-md-block col-md-2 cell text-end";
+const leftColumn = "d-none d-md-block col-md-2 text-end";
 const averageColumn = "col-3 col-md-2 text-end";
 
 const CategorySummaryTableRow = ({ category, year }) => {
