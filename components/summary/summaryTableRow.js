@@ -74,12 +74,7 @@ const SummaryTableRow = ({ category, year }) => {
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
           <tr key={subcategory.id} className="d-flex">
-            <th
-              className={`col-4 cell ${!category.fixed && "clicker"}`}
-              onClick={() => {
-                !category.fixed && openTransactionsModal(subcategory.name);
-              }}
-            >
+            <th className="col-4 cell">
               <span className="mx-2">{subcategory.name}</span>
             </th>
             <td className="d-none d-md-block col-md-2"></td>

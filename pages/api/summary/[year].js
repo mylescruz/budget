@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -18,6 +19,7 @@ export default async function handler(req, res) {
   const summaryContext = {
     categoriesCol: db.collection("categories"),
     transactionsCol: db.collection("transactions"),
+    incomeCol: db.collection("income"),
     username: session.user.username,
   };
 
@@ -32,7 +34,7 @@ export default async function handler(req, res) {
 async function getYearSummary(
   req,
   res,
-  { categoriesCol, transactionsCol, username }
+  { categoriesCol, transactionsCol, incomeCol, username }
 ) {
   const year = parseInt(req.query.year);
 
@@ -43,6 +45,8 @@ async function getYearSummary(
       year
     );
 
+    const income = await getIncomeSummary(incomeCol, username, year);
+
     const months = await getMonthsStats(categoriesCol, username, year);
 
     const topStores = await getTopStores(transactionsCol, username, year);
@@ -52,6 +56,7 @@ async function getYearSummary(
     // Send the year summary back to the client
     return res.status(200).json({
       categories,
+      income,
       months,
       topStores,
       monthsLength: allMonths.length,
@@ -179,6 +184,69 @@ async function getCategoriesSummary(categoriesCol, username, year) {
     .sort((a, b) => b.actual - a.actual);
 
   return finalSummary;
+}
+
+// Get the total sum of each type of income
+async function getIncomeSummary(incomeCol, username, year) {
+  const incomeTypes = await incomeCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $group: {
+          _id: "$type",
+          totalGross: { $sum: "$gross" },
+          totalDeductions: { $sum: "$deductions" },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          name: "$_id",
+          gross: "$totalGross",
+          deductions: "$totalDeductions",
+          amount: "$totalAmount",
+          _id: 0,
+        },
+      },
+      { $sort: { amount: -1 } },
+    ])
+    .toArray();
+
+  const totalIncome = {
+    gross: 0,
+    deductions: 0,
+    amount: 0,
+  };
+
+  const types = incomeTypes.map((type) => {
+    totalIncome.amount += type.amount;
+
+    if (type.name === "Paycheck") {
+      totalIncome.gross = type.gross;
+      totalIncome.deductions = type.deductions;
+
+      return {
+        name: type.name,
+        gross: centsToDollars(type.gross),
+        deductions: centsToDollars(type.deductions),
+        amount: centsToDollars(type.amount),
+      };
+    } else {
+      return {
+        name: type.name,
+        amount: centsToDollars(type.amount),
+      };
+    }
+  });
+
+  return {
+    totalIncome: {
+      gross: centsToDollars(totalIncome.gross),
+      deductions: centsToDollars(totalIncome.deductions),
+      amount: centsToDollars(totalIncome.amount),
+    },
+    types,
+  };
 }
 
 // Get the max, min and average amount spent for each month
