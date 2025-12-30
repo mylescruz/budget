@@ -1,0 +1,22 @@
+import dollarFormatter from "@/helpers/dollarFormatter";
+import { Card, Col, Row } from "react-bootstrap";
+
+const TopSpendingMonths = ({ months }) => {
+  return (
+    <Card.Body>
+      <h4 className="text-center">Spending Months</h4>
+      <Row className="fw-bold">
+        <Col>Month</Col>
+        <Col className="text-end">Total Spent</Col>
+      </Row>
+      {months.map((month) => (
+        <Row className="d-flex my-1">
+          <Col>{month.name}</Col>
+          <Col className="text-end">{dollarFormatter(month.spent)}</Col>
+        </Row>
+      ))}
+    </Card.Body>
+  );
+};
+
+export default TopSpendingMonths;

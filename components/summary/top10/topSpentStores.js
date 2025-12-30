@@ -10,7 +10,7 @@ const TopSpentStores = ({ stores }) => {
         <Col className="text-end">Total Amount</Col>
       </Row>
       {stores.map((store) => (
-        <Row className="d-flex">
+        <Row className="d-flex my-1">
           <Col>{store.store}</Col>
           <Col className="text-end">{dollarFormatter(store.amount)}</Col>
         </Row>

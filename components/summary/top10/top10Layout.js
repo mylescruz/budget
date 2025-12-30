@@ -3,9 +3,15 @@ import { Card, Form } from "react-bootstrap";
 import TopSpentStores from "./topSpentStores";
 import TopStoresVisted from "./topStoresVisited";
 import TopTransactions from "./topTransactions";
+import TopSpendingMonths from "./topSpendingMonths";
 
 const Top10Layout = ({ top10 }) => {
-  const topItems = ["Stores Shopped", "Stores Visited", "Transactions"];
+  const topItems = [
+    "Spending Months",
+    "Stores Shopped",
+    "Stores Visited",
+    "Transactions",
+  ];
 
   const [topSelected, setTopSelected] = useState(topItems[0]);
 
@@ -32,6 +38,9 @@ const Top10Layout = ({ top10 }) => {
         </Form.Select>
       </Form.Group>
       <Card className="card-background">
+        {topSelected === "Spending Months" && (
+          <TopSpendingMonths months={top10.spendingMonths} />
+        )}
         {topSelected === "Stores Shopped" && (
           <TopSpentStores stores={top10.storesSpent} />
         )}

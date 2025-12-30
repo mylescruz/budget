@@ -1,6 +1,7 @@
 import useSummary from "@/hooks/useSummary";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
+
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
