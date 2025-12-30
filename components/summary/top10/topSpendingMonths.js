@@ -9,9 +9,11 @@ const TopSpendingMonths = ({ months }) => {
         <Col>Month</Col>
         <Col className="text-end">Total Spent</Col>
       </Row>
-      {months.map((month) => (
-        <Row className="d-flex my-1">
-          <Col>{month.name}</Col>
+      {months.map((month, index) => (
+        <Row key={index} className="d-flex my-1">
+          <Col>
+            <span className="fw-bold">{index + 1}.</span> {month.name}
+          </Col>
           <Col className="text-end">{dollarFormatter(month.spent)}</Col>
         </Row>
       ))}

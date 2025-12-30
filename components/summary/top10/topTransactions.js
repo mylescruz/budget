@@ -1,34 +1,25 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Card, Col, Row } from "react-bootstrap";
 
+const storeColumn = "col-8 col-md-4";
+const itemsColumn = "d-none d-md-block col-md-6";
+const amountColumn = "col-4 col-md-2 text-end";
+
 const TopTransactions = ({ transactions }) => {
   return (
     <Card.Body>
       <h4 className="text-center">Transactions of the Year</h4>
       <Row className="fw-bold">
-        <Col>Store</Col>
-        <Col className="text-end">Amount</Col>
+        <Col className={storeColumn}>Store</Col>
+        <Col className={itemsColumn}>Items Purchased</Col>
+        <Col className={amountColumn}>Amount</Col>
       </Row>
-      {transactions.map((transaction) => (
-        <Row className="d-flex my-1">
-          <Col className="col-8 col-md-3">
-            <span className="d-lg-none">
-              {transaction.store.length > 15
-                ? transaction.store.slice(0, 15) + "..."
-                : transaction.store}
-            </span>
-            <span className="d-none d-lg-block d-xl-none">
-              {transaction.store.length > 35
-                ? transaction.store.slice(0, 35) + "..."
-                : transaction.store}
-            </span>
-            <span className="d-none d-xl-block">
-              {transaction.store.length > 40
-                ? transaction.store.slice(0, 40) + "..."
-                : transaction.store}
-            </span>
+      {transactions.map((transaction, index) => (
+        <Row key={index} className="d-flex my-1">
+          <Col className={storeColumn}>
+            <span className="fw-bold">{index + 1}.</span> {transaction.store}
           </Col>
-          <Col className="d-none d-md-block col-md-6">
+          <Col className={itemsColumn}>
             <span className="d-none d-md-block d-lg-none">
               {transaction.items.length > 35
                 ? transaction.items.slice(0, 35) + "..."
@@ -45,7 +36,7 @@ const TopTransactions = ({ transactions }) => {
                 : transaction.items}
             </span>
           </Col>
-          <Col className="col-4 col-md-3 text-end">
+          <Col className={amountColumn}>
             {dollarFormatter(transaction.amount)}
           </Col>
         </Row>
