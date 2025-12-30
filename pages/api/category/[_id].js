@@ -1,5 +1,6 @@
 // API Endpoint for a user's categories data
 
+import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -119,15 +120,15 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     // Send the updated category back to the client
     const updatedCategory = {
       ...category,
-      budget: category.budget / 100,
-      actual: category.actual / 100,
+      budget: centsToDollars(category.budget),
+      actual: centsToDollars(category.actual),
     };
 
     updatedCategory.subcategories = updatedCategory.subcategories.map(
       (subcategory) => {
         return {
           ...subcategory,
-          actual: subcategory.actual / 100,
+          actual: centsToDollars(subcategory.actual),
         };
       }
     );

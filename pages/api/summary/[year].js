@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
+import centsToDollars from "@/helpers/centsToDollars";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -162,16 +163,16 @@ async function getCategoriesSummary(categoriesCol, username, year) {
       const updatedSubcategories = category.subcategories.map((subcategory) => {
         return {
           ...subcategory,
-          actual: subcategory.actual / 100,
-          average: subcategory.actual / subcategory.totalMonths / 100,
+          actual: centsToDollars(subcategory.actual),
+          average: centsToDollars(subcategory.actual / subcategory.totalMonths),
         };
       });
 
       return {
         ...category,
-        budget: category.budget / 100,
-        actual: category.actual / 100,
-        average: category.actual / category.totalMonths / 100,
+        budget: centsToDollars(category.budget),
+        actual: centsToDollars(category.actual),
+        average: centsToDollars(category.actual / category.totalMonths),
         subcategories: updatedSubcategories,
       };
     })

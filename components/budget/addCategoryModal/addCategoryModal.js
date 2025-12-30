@@ -6,6 +6,7 @@ import CategoryDetailsPage from "./categoryDetailsPage";
 import SubcategoriesPage from "./subcategoriesPage";
 import ConfirmationPage from "./confirmationPage";
 import ErrorMessage from "@/components/layout/errorMessage";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
   const emptyCategory = {
@@ -64,7 +65,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
 
       setNewCategory({
         ...newCategory,
-        budget: subcategoryTotal / 100,
+        budget: centsToDollars(subcategoryTotal),
         subcategories: subcategories,
       });
     } else {

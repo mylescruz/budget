@@ -1,3 +1,4 @@
+import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { Button, Form } from "react-bootstrap";
@@ -49,10 +50,10 @@ const EditSubcategoryPage = ({
     setEditedCategory({
       ...editedCategory,
       budget: editedCategory.fixed
-        ? subcategoriesTotal / 100
+        ? centsToDollars(subcategoriesTotal)
         : editedCategory.budget,
       actual: editedCategory.fixed
-        ? subcategoriesTotal / 100
+        ? centsToDollars(subcategoriesTotal)
         : editedCategory.actual,
       subcategories: updatedSubcategories,
     });

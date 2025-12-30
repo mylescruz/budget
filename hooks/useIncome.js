@@ -1,4 +1,5 @@
 import ascendingDateSorter from "@/helpers/ascendingDateSorter";
+import centsToDollars from "@/helpers/centsToDollars";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useIncome = (year) => {
@@ -146,9 +147,9 @@ const useIncome = (year) => {
     }
 
     return {
-      gross: totalGross / 100,
-      deductions: totalDeductions / 100,
-      amount: totalAmount / 100,
+      gross: centsToDollars(totalGross),
+      deductions: centsToDollars(totalDeductions),
+      amount: centsToDollars(totalAmount),
     };
   }, [income]);
 

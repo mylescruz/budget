@@ -5,6 +5,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
+import centsToDollars from "@/helpers/centsToDollars";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -120,13 +121,13 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
 
     // Send the updated source back to the client
     if (updatedSource.type === "Paycheck") {
-      updatedSource.gross = updatedSource.gross / 100;
-      updatedSource.deductions = updatedSource.deductions / 100;
+      updatedSource.gross = centsToDollars(updatedSource.gross);
+      updatedSource.deductions = centsToDollars(updatedSource.deductions);
     }
 
     return res
       .status(200)
-      .json({ ...updatedSource, amount: updatedSource.amount / 100 });
+      .json({ ...updatedSource, amount: centsToDollars(updatedSource.amount) });
   } catch (error) {
     console.error(`PUT income request failed for ${username}: ${error}`);
     return res

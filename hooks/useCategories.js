@@ -2,6 +2,7 @@ import categorySorter from "@/helpers/categorySorter";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useMonthIncome from "./useMonthIncome";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
@@ -175,7 +176,7 @@ const useCategories = (month, year) => {
       }
     });
 
-    const actualValue = categoryActuals / 100;
+    const actualValue = centsToDollars(categoryActuals);
     const remaining = subtractDecimalValues(monthIncome, actualValue);
 
     return {

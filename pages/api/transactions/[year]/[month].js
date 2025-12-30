@@ -1,5 +1,6 @@
 // API Endpoint for a user's transactions data
 
+import centsToDollars from "@/helpers/centsToDollars";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
@@ -165,7 +166,7 @@ async function addTransaction(
     const insertedTransaction = {
       ...newTransaction,
       _id: insertedId,
-      amount: newTransaction.amount / 100,
+      amount: centsToDollars(newTransaction.amount),
     };
 
     return res.status(200).json(insertedTransaction);

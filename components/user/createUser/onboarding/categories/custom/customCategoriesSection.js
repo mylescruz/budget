@@ -5,6 +5,7 @@ import DetailsPage from "./detailsPage";
 import SubcategoriesPage from "./subcategoriesPage";
 import ConfirmationPage from "./confirmationPage";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const emptyCategory = {
@@ -50,7 +51,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
 
       setNewCategory({
         ...newCategory,
-        budget: subcategoryTotal / 100,
+        budget: centsToDollars(subcategoryTotal),
         subcategories: subcategories,
       });
     } else {

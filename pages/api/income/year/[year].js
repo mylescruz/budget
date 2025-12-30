@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
+import centsToDollars from "@/helpers/centsToDollars";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -48,12 +49,12 @@ async function getIncome(req, res, { incomeCol, username }) {
         type: source.type,
         name: source.name,
         description: source.description,
-        amount: source.amount / 100,
+        amount: centsToDollars(source.amount),
       };
 
       if (source.type === "Paycheck") {
-        formattedSource.gross = source.gross / 100;
-        formattedSource.deductions = source.deductions / 100;
+        formattedSource.gross = centsToDollars(source.gross);
+        formattedSource.deductions = centsToDollars(source.deductions);
       }
 
       return formattedSource;
@@ -123,12 +124,12 @@ async function addIncome(req, res, { client, incomeCol, username }) {
     const addedSource = {
       ...sourceDetails,
       _id: insertedSource.insertedId,
-      amount: sourceDetails.amount / 100,
+      amount: centsToDollars(sourceDetails.amount),
     };
 
     if (addedSource.type === "Paycheck") {
-      addedSource.gross = addedSource.gross / 100;
-      addedSource.deductions = addedSource.deductions / 100;
+      addedSource.gross = centsToDollars(addedSource.gross);
+      addedSource.deductions = centsToDollars(addedSource.deductions);
     }
 
     // Send the new source back to the client

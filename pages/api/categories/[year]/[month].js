@@ -1,5 +1,6 @@
 // API Endpoint for a user's categories data
 
+import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -55,8 +56,8 @@ async function getCategories(req, res, { categoriesCol, username }) {
           name: category.name,
           color: category.color,
           fixed: category.fixed,
-          budget: category.budget / 100,
-          actual: category.actual / 100,
+          budget: centsToDollars(category.budget),
+          actual: centsToDollars(category.actual),
         };
 
         if (formattedCategory.fixed) {
@@ -67,7 +68,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
           const formattedSubcategory = {
             id: subcategory.id,
             name: subcategory.name,
-            actual: subcategory.actual / 100,
+            actual: centsToDollars(subcategory.actual),
           };
 
           if (formattedCategory.fixed) {
@@ -255,15 +256,15 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     const addedCategory = {
       ...categoryDetails,
       _id: insertedCategory.insertedId,
-      budget: categoryDetails.budget / 100,
-      actual: categoryDetails.actual / 100,
+      budget: centsToDollars(categoryDetails.budget),
+      actual: centsToDollars(categoryDetails.actual),
     };
 
     addedCategory.subcategories = addedCategory.subcategories.map(
       (subcategory) => {
         return {
           ...subcategory,
-          actual: subcategory.actual / 100,
+          actual: centsToDollars(subcategory.actual),
         };
       }
     );
