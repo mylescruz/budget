@@ -55,7 +55,13 @@ async function getYearSummary(
 
     const income = await getIncomeSummary(incomeCol, username, year);
 
-    const topStores = await getTopStores(transactionsCol, username, year);
+    const top10 = await getTop10s(
+      categoriesCol,
+      incomeCol,
+      transactionsCol,
+      username,
+      year
+    );
 
     const allMonths = await categoriesCol.distinct("month", { username, year });
 
@@ -64,7 +70,7 @@ async function getYearSummary(
       totals,
       categories,
       income,
-      topStores,
+      top10,
       monthsLength: allMonths.length,
     });
   } catch (error) {
@@ -326,8 +332,35 @@ async function getIncomeSummary(incomeCol, username, year) {
   };
 }
 
+// Get all the top 10 for the year
+async function getTop10s(
+  categoriesCol,
+  incomeCol,
+  transactionsCol,
+  username,
+  year
+) {
+  const storesSpent = await getTopSpentStores(transactionsCol, username, year);
+  const storesVisited = await getTopFrequentedStores(
+    transactionsCol,
+    username,
+    year
+  );
+  const transactions = await getTopTransactions(
+    transactionsCol,
+    username,
+    year
+  );
+
+  return {
+    storesSpent,
+    storesVisited,
+    transactions,
+  };
+}
+
 // Get the top 10 spending stores for the year
-async function getTopStores(transactionsCol, username, year) {
+async function getTopSpentStores(transactionsCol, username, year) {
   return await transactionsCol
     .aggregate([
       { $match: { username, year } },
@@ -336,6 +369,44 @@ async function getTopStores(transactionsCol, username, year) {
         $project: {
           store: "$_id",
           amount: { $divide: ["$totalAmount", 100] },
+          _id: 0,
+        },
+      },
+      { $sort: { amount: -1 } },
+      { $limit: 10 },
+    ])
+    .toArray();
+}
+
+// Get the top 10 stores frequented for the year
+async function getTopFrequentedStores(transactionsCol, username, year) {
+  return await transactionsCol
+    .aggregate([
+      { $match: { username, year } },
+      { $group: { _id: "$store", visits: { $sum: 1 } } },
+      {
+        $project: {
+          store: "$_id",
+          visits: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { visits: -1 } },
+      { $limit: 10 },
+    ])
+    .toArray();
+}
+
+// Get the top 10 transactions for the year
+async function getTopTransactions(transactionsCol, username, year) {
+  return await transactionsCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $project: {
+          store: 1,
+          items: 1,
+          amount: { $divide: ["$amount", 100] },
           _id: 0,
         },
       },

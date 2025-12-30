@@ -1,13 +1,13 @@
 import useSummary from "@/hooks/useSummary";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
-import TopStoresChart from "./topStoresChart";
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 import IncomeSummary from "./incomeSummaryTable";
 import CategorySummaryTable from "./categorySummaryTable";
 import TotalsCards from "./totalsCards";
+import Top10Layout from "./top10/top10Layout";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
@@ -23,14 +23,12 @@ const InnerSummaryLayout = ({ year }) => {
             <TotalsCards totals={summary.totals} />
           </Col>
         </Row>
-
         <Row className="my-4 mx-auto">
           <h3 className="text-center">Income Breakdown</h3>
           <Col className="col-12 col-md-10 col-lg-8 col-xl-6 mx-auto">
             <IncomeSummary income={summary.income} />
           </Col>
         </Row>
-
         <Row className="my-4 mx-auto">
           <h3 className="text-center">Categories Breakdown</h3>
           <CategoryPieChart categories={summary.categories} />
@@ -43,12 +41,11 @@ const InnerSummaryLayout = ({ year }) => {
           </Col>
         </Row>
 
-        {summary.topStores.length > 0 && (
-          <Row className="d-flex justify-content-center text-center">
-            <h3>Top 10 Stores Shopped At</h3>
-            <TopStoresChart topStores={summary.topStores} />
-          </Row>
-        )}
+        <Row className="d-flex justify-content-center">
+          <Col className="col-12 col-xl-8">
+            <Top10Layout top10={summary.top10} />
+          </Col>
+        </Row>
       </div>
     );
   }
