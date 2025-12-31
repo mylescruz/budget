@@ -5,6 +5,10 @@ const monthColumn = "col-6";
 const spentColumn = "col-6 text-end";
 
 const TopSpendingMonths = ({ months }) => {
+  const spendingMonthsAscending = months
+    .sort((a, b) => b.actual - a.actual)
+    .slice(0, 3);
+
   if (months.length === 0) {
     return (
       <Card.Body>
@@ -20,12 +24,12 @@ const TopSpendingMonths = ({ months }) => {
           <Col className={monthColumn}>Month</Col>
           <Col className={spentColumn}>Total Spent</Col>
         </Row>
-        {months.map((month, index) => (
+        {spendingMonthsAscending.map((month, index) => (
           <Row key={index} className="d-flex my-1">
             <Col className={monthColumn}>
               <span className="fw-bold">{index + 1}.</span> {month.name}
             </Col>
-            <Col className={spentColumn}>{dollarFormatter(month.spent)}</Col>
+            <Col className={spentColumn}>{dollarFormatter(month.actual)}</Col>
           </Row>
         ))}
       </Card.Body>

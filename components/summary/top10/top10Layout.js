@@ -7,7 +7,7 @@ import TopSpendingCategories from "./topSpendingCategories";
 import TopOverSpendingCategories from "./topOverSpendingCategories";
 import TopFixedCategories from "./topFixedCategories";
 
-const Top10Layout = ({ top10 }) => {
+const Top10Layout = ({ top10, months }) => {
   return (
     <Row>
       {top10.map((section, index) => (
@@ -15,8 +15,8 @@ const Top10Layout = ({ top10 }) => {
           <Card className="card-background mb-4 top-10-card">
             <Card.Body>
               <h4 className="text-center">{section.title}</h4>
-              {section.title === "Spending Months" && (
-                <TopSpendingMonths months={section.data.slice(0, 3)} />
+              {section.title === "Top Spending Months" && (
+                <TopSpendingMonths months={months} />
               )}
               {section.title === "Changing Categories" && (
                 <TopSpendingCategories categories={section.data.slice(0, 3)} />

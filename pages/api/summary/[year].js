@@ -262,11 +262,6 @@ async function getTop10s(
   username,
   year
 ) {
-  const spendingMonths = await getTopSpendingMonths(
-    categoriesCol,
-    username,
-    year
-  );
   const spendingCategories = await getTopSpendingCategories(
     transactionsCol,
     username,
@@ -295,7 +290,7 @@ async function getTop10s(
   );
 
   const top10 = [
-    { title: "Spending Months", data: spendingMonths },
+    { title: "Top Spending Months" },
     { title: "Changing Categories", data: spendingCategories },
     { title: "Fixed Categories", data: fixedCategories },
     { title: "Overspending Categories", data: overSpendingCategories },
@@ -430,47 +425,6 @@ async function getTopOverSpendingCategories(categoriesCol, username, year) {
       { $limit: 10 },
     ])
     .toArray();
-}
-
-// Get the top 10 spending months for the year
-async function getTopSpendingMonths(categoriesCol, username, year) {
-  const topMonths = await categoriesCol
-    .aggregate([
-      { $match: { username, year } },
-      {
-        $group: {
-          _id: "$month",
-          totalBudget: { $sum: "$budget" },
-          totalSpent: { $sum: "$actual" },
-        },
-      },
-      {
-        $project: {
-          number: "$_id",
-          budget: { $divide: ["$totalBudget", 100] },
-          spent: { $divide: ["$totalSpent", 100] },
-          _id: 0,
-        },
-      },
-      { $sort: { spent: -1 } },
-      { $limit: 10 },
-    ])
-    .toArray();
-
-  return topMonths
-    .map((month) => {
-      const monthNumber = month.number;
-      const monthDate = new Date(year, monthNumber - 1);
-      const monthName = monthDate.toLocaleDateString("en-US", {
-        month: "long",
-      });
-
-      return {
-        ...month,
-        name: monthName,
-      };
-    })
-    .sort((a, b) => b.spent - a.spent);
 }
 
 // Get total spending for each month
