@@ -488,10 +488,17 @@ async function getTopSpendingMonths(categoriesCol, username, year) {
   const topMonths = await categoriesCol
     .aggregate([
       { $match: { username, year } },
-      { $group: { _id: "$month", totalSpent: { $sum: "$actual" } } },
+      {
+        $group: {
+          _id: "$month",
+          totalBudget: { $sum: "$budget" },
+          totalSpent: { $sum: "$actual" },
+        },
+      },
       {
         $project: {
           number: "$_id",
+          budget: { $divide: ["$totalBudget", 100] },
           spent: { $divide: ["$totalSpent", 100] },
           _id: 0,
         },
