@@ -2,6 +2,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import { useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import IncomeSummaryModal from "./incomeSummaryModal";
+import MonthsSpendingModal from "./monthsSpendingModal";
 
 const TotalsCards = ({ summary }) => {
   const totals = summary.totals;
@@ -21,7 +22,7 @@ const TotalsCards = ({ summary }) => {
     {
       title: "Total Spent",
       amount: totals.spent,
-      modal: "none",
+      modal: "spent",
     },
     {
       title: "Total Left",
@@ -92,13 +93,17 @@ const TotalsCards = ({ summary }) => {
         ))}
       </Row>
 
-      {modal === "income" && (
-        <IncomeSummaryModal
-          income={summary.income}
-          modal={modal}
-          setModal={setModal}
-        />
-      )}
+      <IncomeSummaryModal
+        income={summary.income}
+        modal={modal}
+        setModal={setModal}
+      />
+
+      <MonthsSpendingModal
+        months={summary.monthsSpending}
+        modal={modal}
+        setModal={setModal}
+      />
     </Container>
   );
 };

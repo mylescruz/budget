@@ -63,6 +63,12 @@ async function getYearSummary(
       year
     );
 
+    const monthsSpending = await getMonthsSpending(
+      categoriesCol,
+      username,
+      year
+    );
+
     const allMonths = await categoriesCol.distinct("month", { username, year });
 
     // Send the year summary back to the client
@@ -70,6 +76,7 @@ async function getYearSummary(
       totals,
       categories,
       income,
+      monthsSpending,
       top10,
       monthsLength: allMonths.length,
     });
@@ -549,4 +556,47 @@ async function getTopSpendingMonths(categoriesCol, username, year) {
       };
     })
     .sort((a, b) => b.spent - a.spent);
+}
+
+// Get total spending for each month
+async function getMonthsSpending(categoriesCol, username, year) {
+  const months = await categoriesCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $group: {
+          _id: "$month",
+          totalBudget: { $sum: "$budget" },
+          totalActual: { $sum: "$actual" },
+        },
+      },
+      {
+        $project: {
+          number: "$_id",
+          budget: "$totalBudget",
+          actual: "$totalActual",
+          remaining: { $subtract: ["$totalBudget", "$totalActual"] },
+          _id: 0,
+        },
+      },
+    ])
+    .toArray();
+
+  return months
+    .map((month) => {
+      const monthNumber = month.number;
+      const monthDate = new Date(year, monthNumber - 1);
+      const monthName = monthDate.toLocaleDateString("en-US", {
+        month: "long",
+      });
+
+      return {
+        ...month,
+        name: monthName,
+        budget: centsToDollars(month.budget),
+        actual: centsToDollars(month.actual),
+        remaining: centsToDollars(month.remaining),
+      };
+    })
+    .sort((a, b) => a.number - b.number);
 }
