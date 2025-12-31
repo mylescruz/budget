@@ -4,7 +4,6 @@ import { Card, Col, Row } from "react-bootstrap";
 const TopSpendingCategories = ({ categories }) => {
   return (
     <Card.Body>
-      <h4 className="text-center">Spending Categories</h4>
       <Row className="fw-bold">
         <Col>Category</Col>
         <Col className="text-end">Total Spent</Col>

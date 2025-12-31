@@ -8,7 +8,6 @@ const budgetColumn = "d-none d-md-block col-md-4 text-end";
 const TopSpendingMonths = ({ months }) => {
   return (
     <Card.Body>
-      <h4 className="text-center">Spending Months</h4>
       <Row className="fw-bold">
         <Col className={monthColumn}>Month</Col>
         <Col className={spentColumn}>Total Spent</Col>

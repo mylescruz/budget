@@ -8,7 +8,6 @@ const amountColumn = "col-4 col-md-2 text-end";
 const TopTransactions = ({ transactions }) => {
   return (
     <Card.Body>
-      <h4 className="text-center">Transactions of the Year</h4>
       <Row className="fw-bold">
         <Col className={storeColumn}>Store</Col>
         <Col className={itemsColumn}>Items Purchased</Col>

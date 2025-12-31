@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 const TopStoresVisted = ({ stores }) => {
   return (
     <Card.Body>
-      <h4 className="text-center">Stores Visited</h4>
       <Row className="fw-bold">
         <Col>Store</Col>
         <Col className="text-end">Visits</Col>
