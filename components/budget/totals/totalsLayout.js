@@ -1,0 +1,58 @@
+import { CategoriesContext } from "@/contexts/CategoriesContext";
+import dollarFormatter from "@/helpers/dollarFormatter";
+import { useContext } from "react";
+import { Card, Col, Container, Row } from "react-bootstrap";
+
+const cardColumn = "col-12 col-md-4 mb-2";
+
+const TotalsLayout = () => {
+  const { categoryTotals } = useContext(CategoriesContext);
+
+  const remainingPercentage =
+    (categoryTotals.actual / categoryTotals.budget) * 100;
+
+  return (
+    <Container className="mb-4">
+      <Row className="text-center">
+        <Col className={cardColumn}>
+          <Card className="bg-dark text-white">
+            <Card.Body>
+              <h4 className="fw-bold">Total Budget</h4>
+              <h5>{dollarFormatter(categoryTotals.budget)}</h5>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col className={cardColumn}>
+          <Card className="bg-dark text-white">
+            <Card.Body>
+              <h4 className="fw-bold">Total Spent</h4>
+              <h5>{dollarFormatter(categoryTotals.actual)}</h5>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col className={cardColumn}>
+          <Card className="bg-dark text-white">
+            <Card.Body>
+              <h4 className="fw-bold">Remaining</h4>
+              <h5>
+                <span
+                  className={
+                    remainingPercentage < 75
+                      ? "text-success"
+                      : remainingPercentage >= 75 && remainingPercentage < 100
+                      ? "text-warning"
+                      : "text-danger"
+                  }
+                >
+                  {dollarFormatter(categoryTotals.remaining)}
+                </span>
+              </h5>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default TotalsLayout;

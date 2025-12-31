@@ -1,6 +1,6 @@
 import CategoryTable from "./categoryTable/categoryTable";
 import { useContext } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Container, Row } from "react-bootstrap";
 import {
   CategoriesContext,
   CategoriesProvider,
@@ -12,6 +12,7 @@ import {
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
 import LoadingIndicator from "../layout/loadingIndicator";
+import TotalsLayout from "./totals/totalsLayout";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);
@@ -32,6 +33,12 @@ const InnerBudgetLayout = ({ dateInfo }) => {
             category.
           </p>
         </aside>
+
+        <Row className="d-flex justify-content-center">
+          <Col className="col-12 col-xl-10">
+            <TotalsLayout />
+          </Col>
+        </Row>
 
         <Row className="d-flex flex-column flex-lg-row align-items-center">
           <Col className="col-12 col-xl-4">
