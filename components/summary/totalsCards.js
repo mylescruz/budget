@@ -4,30 +4,58 @@ import { Card, Col, Container, Row } from "react-bootstrap";
 import IncomeSummaryModal from "./incomeSummaryModal";
 import MonthsSpendingModal from "./monthsSpendingModal";
 import RemainingSummaryModal from "./remainingSummaryModal";
+import dollarsToCents from "@/helpers/dollarsToCents";
+import centsToDollars from "@/helpers/centsToDollars";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 const TotalsCards = ({ summary }) => {
-  const totals = summary.totals;
-
   const [modal, setModal] = useState("none");
 
   const showModal = (modalName) => {
     setModal(modalName);
   };
 
+  // Define income summaries
+  const income = summary.income;
+  const totalIncome = income.totalIncome.amount;
+
+  // Define spending summaries
+  const numMonths = summary.months.length;
+  const sortedMonthsBySpending = summary.months.sort(
+    (a, b) => b.actual - a.actual
+  );
+  const highestSpentMonth = sortedMonthsBySpending[0];
+  const lowestSpentMonth = sortedMonthsBySpending[numMonths - 1];
+
+  const sortedMonths = summary.months.sort((a, b) => a.number - b.number);
+
+  const totalSpent = centsToDollars(
+    summary.months.reduce(
+      (sum, current) => sum + dollarsToCents(current.actual),
+      0
+    )
+  );
+  const averageSpentPerMonth = totalSpent / numMonths;
+
+  const totalRemaining = subtractDecimalValues(
+    income.totalIncome.amount,
+    totalSpent
+  );
+
   const totalSummary = [
     {
       title: "Total Income",
-      amount: totals.income,
+      amount: totalIncome,
       modal: "income",
     },
     {
       title: "Total Spent",
-      amount: totals.spent,
+      amount: totalSpent,
       modal: "spent",
     },
     {
       title: "Total Remaining",
-      amount: totals.remaining,
+      amount: totalRemaining,
       modal: "remaining",
     },
   ];
@@ -35,18 +63,18 @@ const TotalsCards = ({ summary }) => {
   const monthsSummary = [
     {
       title: "Highest Spent",
-      name: totals.maxMonth.name,
-      amount: totals.maxMonth.amount,
+      name: highestSpentMonth.name,
+      amount: highestSpentMonth.actual,
     },
     {
       title: "Lowest Spent",
-      name: totals.minMonth.name,
-      amount: totals.minMonth.amount,
+      name: lowestSpentMonth.name,
+      amount: lowestSpentMonth.actual,
     },
     {
       title: "Average",
       name: "Per Month",
-      amount: totals.avgMonth,
+      amount: averageSpentPerMonth,
     },
   ];
 
@@ -101,13 +129,15 @@ const TotalsCards = ({ summary }) => {
       />
 
       <MonthsSpendingModal
-        months={summary.monthsSpending}
+        months={sortedMonths}
+        totalSpent={totalSpent}
         modal={modal}
         setModal={setModal}
       />
 
       <RemainingSummaryModal
-        months={summary.monthsSpending}
+        months={sortedMonths}
+        totalRemaining={totalRemaining}
         modal={modal}
         setModal={setModal}
       />

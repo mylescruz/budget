@@ -1,12 +1,7 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Modal, Table } from "react-bootstrap";
 
-const RemainingSummaryModal = ({ months, modal, setModal }) => {
-  const totalRemaining = months.reduce(
-    (sum, current) => sum + current.remaining,
-    0
-  );
-
+const RemainingSummaryModal = ({ months, totalRemaining, modal, setModal }) => {
   const closeMonthsModal = () => {
     setModal("none");
   };

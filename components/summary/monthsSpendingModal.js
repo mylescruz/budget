@@ -1,12 +1,7 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Modal, Table } from "react-bootstrap";
 
-const MonthsSpendingModal = ({ months, modal, setModal }) => {
-  const spendingTotals = months.reduce(
-    (sum, current) => sum + current.actual,
-    0
-  );
-
+const MonthsSpendingModal = ({ months, totalSpent, modal, setModal }) => {
   const closeMonthsModal = () => {
     setModal("none");
   };
@@ -37,9 +32,7 @@ const MonthsSpendingModal = ({ months, modal, setModal }) => {
           <tfoot className="table-dark">
             <tr className="d-flex">
               <th className="col-6">Total</th>
-              <th className="col-6 text-end">
-                {dollarFormatter(spendingTotals)}
-              </th>
+              <th className="col-6 text-end">{dollarFormatter(totalSpent)}</th>
             </tr>
           </tfoot>
         </Table>
