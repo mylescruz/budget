@@ -1,12 +1,12 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Card, Col, Row } from "react-bootstrap";
 
-const TopSpendingCategories = ({ categories }) => {
+const TopFixedCategories = ({ categories }) => {
   return (
     <Card.Body>
       <Row className="fw-bold">
-        <Col>Changing Category</Col>
-        <Col className="text-end">Total Spent</Col>
+        <Col>Fixed Category</Col>
+        <Col className="text-end">Total Amount</Col>
       </Row>
       {categories.map((category, index) => (
         <Row key={index} className="d-flex my-1">
@@ -20,4 +20,4 @@ const TopSpendingCategories = ({ categories }) => {
   );
 };
 
-export default TopSpendingCategories;
+export default TopFixedCategories;

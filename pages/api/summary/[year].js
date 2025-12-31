@@ -350,6 +350,11 @@ async function getTop10s(
     username,
     year
   );
+  const fixedCategories = await getTopFixedCategories(
+    categoriesCol,
+    username,
+    year
+  );
   const overSpendingCategories = await getTopOverSpendingCategories(
     categoriesCol,
     username,
@@ -370,6 +375,7 @@ async function getTop10s(
   return {
     spendingMonths,
     spendingCategories,
+    fixedCategories,
     overSpendingCategories,
     storesSpent,
     storesVisited,
@@ -440,6 +446,25 @@ async function getTopSpendingCategories(transactionsCol, username, year) {
     .aggregate([
       { $match: { username, year } },
       { $group: { _id: "$category", totalAmount: { $sum: "$amount" } } },
+      {
+        $project: {
+          name: "$_id",
+          amount: { $divide: ["$totalAmount", 100] },
+          _id: 0,
+        },
+      },
+      { $sort: { amount: -1 } },
+      { $limit: 10 },
+    ])
+    .toArray();
+}
+
+// Get the top 10 fixed categories for the year
+async function getTopFixedCategories(categoriesCol, username, year) {
+  return await categoriesCol
+    .aggregate([
+      { $match: { username, year, fixed: true } },
+      { $group: { _id: "$name", totalAmount: { $sum: "$actual" } } },
       {
         $project: {
           name: "$_id",
