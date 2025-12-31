@@ -12,7 +12,7 @@ const Top10Layout = ({ top10 }) => {
     <Row>
       {top10.map((section, index) => (
         <Col key={index} className="col-12 col-md-6 col-lg-4">
-          <Card className="card-background mb-4">
+          <Card className="card-background mb-4 top-10-card">
             <Card.Body>
               <h4 className="text-center">{section.title}</h4>
               {section.title === "Spending Months" && (

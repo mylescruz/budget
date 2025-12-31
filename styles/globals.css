@@ -120,3 +120,7 @@ a {
 .status-bar {
   height: 30px;
 }
+
+.top-10-card {
+  height: 200px;
+}
