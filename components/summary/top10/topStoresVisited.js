@@ -1,18 +1,24 @@
 import { Card, Col, Row } from "react-bootstrap";
 
+const storeColumn = "col-6";
+const visitsColumn = "col-6 text-end";
+
 const TopStoresVisted = ({ stores }) => {
   return (
     <Card.Body>
       <Row className="fw-bold">
-        <Col>Store</Col>
-        <Col className="text-end">Visits</Col>
+        <Col className={storeColumn}>Store</Col>
+        <Col className={visitsColumn}>Visits</Col>
       </Row>
       {stores.map((store, index) => (
         <Row key={index} className="d-flex my-1">
-          <Col>
-            <span className="fw-bold">{index + 1}.</span> {store.store}
+          <Col className={storeColumn}>
+            <span className="fw-bold">{index + 1}.</span>{" "}
+            {store.store.length > 9
+              ? store.store.slice(0, 9) + "..."
+              : store.store}
           </Col>
-          <Col className="text-end">{store.visits}</Col>
+          <Col className={visitsColumn}>{store.visits}</Col>
         </Row>
       ))}
     </Card.Body>

@@ -372,15 +372,17 @@ async function getTop10s(
     year
   );
 
-  return {
-    spendingMonths,
-    spendingCategories,
-    fixedCategories,
-    overSpendingCategories,
-    storesSpent,
-    storesVisited,
-    transactions,
-  };
+  const top10 = [
+    { title: "Spending Months", data: spendingMonths },
+    { title: "Changing Categories", data: spendingCategories },
+    { title: "Fixed Categories", data: fixedCategories },
+    { title: "Overspending Categories", data: overSpendingCategories },
+    { title: "Stores Shopped", data: storesSpent },
+    { title: "Stores Visited", data: storesVisited },
+    { title: "Transactions", data: transactions },
+  ];
+
+  return top10;
 }
 
 // Get the top 10 spending stores for the year

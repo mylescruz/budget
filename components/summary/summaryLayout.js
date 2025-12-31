@@ -1,7 +1,6 @@
 import useSummary from "@/hooks/useSummary";
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
-
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
@@ -43,7 +42,8 @@ const InnerSummaryLayout = ({ year }) => {
         </Row>
 
         <Row className="d-flex justify-content-center">
-          <Col className="col-12 col-xl-8">
+          <h3 className="text-center">Top Summaries</h3>
+          <Col className="col-12 col-xl-10">
             <Top10Layout top10={summary.top10} />
           </Col>
         </Row>
