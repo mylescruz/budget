@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import IncomeSummaryModal from "./incomeSummaryModal";
 import MonthsSpendingModal from "./monthsSpendingModal";
+import RemainingSummaryModal from "./remainingSummaryModal";
 
 const TotalsCards = ({ summary }) => {
   const totals = summary.totals;
@@ -25,9 +26,9 @@ const TotalsCards = ({ summary }) => {
       modal: "spent",
     },
     {
-      title: "Total Left",
+      title: "Total Remaining",
       amount: totals.remaining,
-      modal: "none",
+      modal: "remaining",
     },
   ];
 
@@ -100,6 +101,12 @@ const TotalsCards = ({ summary }) => {
       />
 
       <MonthsSpendingModal
+        months={summary.monthsSpending}
+        modal={modal}
+        setModal={setModal}
+      />
+
+      <RemainingSummaryModal
         months={summary.monthsSpending}
         modal={modal}
         setModal={setModal}
