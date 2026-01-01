@@ -25,7 +25,17 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
       `${dateInfo.month}/${category.dayOfMonth}/${dateInfo.year}`
     );
     const isoDate = categoryDate.toISOString().split("T")[0];
-    if (isoDate <= dateInfo.date) {
+
+    let comparisonDate = dateInfo.date;
+
+    if (
+      dateInfo.month !== todayInfo.month ||
+      dateInfo.year !== todayInfo.year
+    ) {
+      comparisonDate = dateInfo.endOfMonth;
+    }
+
+    if (isoDate <= comparisonDate) {
       currentActual = category.actual;
     }
   } else {
