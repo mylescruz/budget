@@ -13,13 +13,15 @@ const InnerSummaryLayout = ({ year }) => {
 
   if (summaryLoading) {
     return <LoadingIndicator />;
-  } else if (!summary) {
-    <Row className="text-danger fw-bold text-center">
-      <p>
-        &#9432; There was an error loading your summary for the year. Please try
-        again later!
-      </p>
-    </Row>;
+  } else if (summary.categories.length === 0 || !summary) {
+    return (
+      <Row className="text-danger fw-bold text-center">
+        <p>
+          &#9432; There was an error loading your summary for the year. Please
+          try again later!
+        </p>
+      </Row>
+    );
   } else {
     return (
       <div className="mx-auto">
