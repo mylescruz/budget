@@ -1,16 +1,15 @@
 const getDateInfo = (date) => {
   const givenDate = new Date(date);
-  const month = givenDate.getUTCMonth() + 1;
+  const month = givenDate.getMonth() + 1;
   const monthName = givenDate.toLocaleDateString("en-US", {
     month: "long",
-    timeZone: "UTC",
   });
   const year = givenDate.getFullYear();
   const startOfMonth = new Date(`${month}/01/${year}`);
   const endOfMonth = new Date(year, month, 0);
 
   return {
-    date: givenDate.toISOString().split("T")[0],
+    date: givenDate.toLocaleDateString("en-CA"),
     month: month,
     monthName: monthName,
     startOfMonth: startOfMonth.toISOString().split("T")[0],
