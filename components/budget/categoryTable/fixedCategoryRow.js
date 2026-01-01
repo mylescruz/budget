@@ -6,7 +6,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3";
 const amountColumn = "col-3 col-md-2 cell text-end fw-bold";
-const dayColumn = "d-none d-lg-block col-lg-2";
+const dayColumn = "d-none d-lg-block col-lg-2 text-end";
 const chargedColumn = "col-3 col-md-2 col-lg-2 text-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
 

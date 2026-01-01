@@ -221,7 +221,9 @@ const EditCategoryModal = ({
                 {editedCategory.fixed &&
                   editedCategory.subcategories.length === 0 && (
                     <Form.Group controlId="dayOfMonth" className="mb-2">
-                      <Form.Label>Day of the Month</Form.Label>
+                      <Form.Label>
+                        What day of the month are you charged?
+                      </Form.Label>
                       <Form.Control
                         className="h-100 w-25"
                         type="number"
