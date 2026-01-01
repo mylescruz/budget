@@ -13,7 +13,14 @@ const InnerSummaryLayout = ({ year }) => {
 
   if (summaryLoading) {
     return <LoadingIndicator />;
-  } else if (summary) {
+  } else if (!summary) {
+    <Row className="text-danger fw-bold text-center">
+      <p>
+        &#9432; There was an error loading your summary for the year. Please try
+        again later!
+      </p>
+    </Row>;
+  } else {
     return (
       <div className="mx-auto">
         <Row className="my-4 d-flex justify-content-center text-center">

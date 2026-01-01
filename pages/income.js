@@ -9,7 +9,7 @@ export default function Income() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const today = new Date().toLocaleString("en-US");
+  const today = new Date();
   const dateInfo = getDateInfo(today);
 
   if (status === "loading") {

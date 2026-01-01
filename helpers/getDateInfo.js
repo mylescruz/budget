@@ -1,5 +1,5 @@
 const getDateInfo = (date) => {
-  const givenDate = new Date(date.toLocaleString("en-US"));
+  const givenDate = new Date(date);
   const month = givenDate.getMonth() + 1;
   const monthName = givenDate.toLocaleDateString("en-US", {
     month: "long",
