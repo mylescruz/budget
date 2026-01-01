@@ -7,6 +7,7 @@ import TopSpendingCategories from "./topSpendingCategories";
 import TopOverSpendingCategories from "./topOverSpendingCategories";
 import TopFixedCategories from "./topFixedCategories";
 import LowestSpendingMonths from "./lowestSpendingMonths";
+import TopOverspendingMonths from "./topOverspendingMonths";
 
 const Top10Layout = ({ top10, months }) => {
   return (
@@ -21,6 +22,9 @@ const Top10Layout = ({ top10, months }) => {
               )}
               {section.title === "Lowest Spending Months" && (
                 <LowestSpendingMonths months={months} />
+              )}
+              {section.title === "Top Overspending Months" && (
+                <TopOverspendingMonths months={months} />
               )}
               {section.title === "Changing Categories" && (
                 <TopSpendingCategories categories={section.data.slice(0, 3)} />
