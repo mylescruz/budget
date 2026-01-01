@@ -14,34 +14,11 @@ const IncomeTable = ({
   deleteIncome,
   incomeTotals,
 }) => {
-  const [sortedIncome, setSortedIncome] = useState(income);
-  const [sortDirection, setSortDirection] = useState(true);
-
-  const sortAscending = useRef(true);
-
-  const sortIncome = () => {
-    sortAscending.current = !sortAscending.current;
-
-    if (sortAscending.current) {
-      setSortedIncome(ascendingDateSorter(income));
-    } else {
-      setSortedIncome(descendingDateSorter(income));
-    }
-
-    setSortDirection(sortAscending.current);
-  };
-
   return (
     <Table striped hover>
       <thead className="table-dark">
         <tr className="d-flex">
-          <th
-            className={`col-3 col-md-2 ${styles.dateSorter}`}
-            onClick={sortIncome}
-          >
-            Date
-            {sortDirection ? <span> &#8595;</span> : <span> &#8593;</span>}
-          </th>
+          <th className="col-3 col-md-2">Date</th>
           <th className="col-6 col-md-5">
             Source
             <PopUp
@@ -56,7 +33,7 @@ const IncomeTable = ({
         </tr>
       </thead>
       <tbody>
-        {sortedIncome.map((source) => (
+        {income.map((source) => (
           <IncomeTableRow
             key={source._id}
             source={source}
