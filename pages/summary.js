@@ -9,7 +9,7 @@ export default function Summary() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const today = new Date();
+  const today = new Date().toLocaleString("en-US");
   const dateInfo = getDateInfo(today);
 
   // Create a loading indicator while check on the status of a user's session
