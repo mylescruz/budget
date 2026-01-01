@@ -6,6 +6,7 @@ import TopSpendingMonths from "./topSpendingMonths";
 import TopSpendingCategories from "./topSpendingCategories";
 import TopOverSpendingCategories from "./topOverSpendingCategories";
 import TopFixedCategories from "./topFixedCategories";
+import LowestSpendingMonths from "./lowestSpendingMonths";
 
 const Top10Layout = ({ top10, months }) => {
   return (
@@ -17,6 +18,9 @@ const Top10Layout = ({ top10, months }) => {
               <h4 className="text-center">{section.title}</h4>
               {section.title === "Top Spending Months" && (
                 <TopSpendingMonths months={months} />
+              )}
+              {section.title === "Lowest Spending Months" && (
+                <LowestSpendingMonths months={months} />
               )}
               {section.title === "Changing Categories" && (
                 <TopSpendingCategories categories={section.data.slice(0, 3)} />
