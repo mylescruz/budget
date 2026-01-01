@@ -111,7 +111,7 @@ const AddIncomeModal = ({
                 variant="primary"
                 type="submit"
                 disabled={
-                  source.type === "Paycheck" && source.amount >= source.gross
+                  source.type === "Paycheck" && source.amount > source.gross
                 }
               >
                 Add
