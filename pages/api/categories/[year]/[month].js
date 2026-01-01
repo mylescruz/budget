@@ -117,7 +117,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
               username: 1,
               name: 1,
               color: 1,
-              budget: { $divide: ["$budget", 100] },
+              budget: 1,
               actual: { $cond: ["$fixed", "$actual", 0] },
               fixed: 1,
               subcategories: 1,
@@ -136,23 +136,50 @@ async function getCategories(req, res, { categoriesCol, username }) {
 
         if (category.subcategories.length > 0) {
           formattedSubcategories = category.subcategories.map((subcategory) => {
-            return {
-              ...subcategory,
-              id: uuidv4(),
-              actual: category.fixed ? subcategory.actual : 0,
-              dayOfMonth: category.fixed ? subcategory.dayOfMonth : null,
-            };
+            if (category.fixed) {
+              return {
+                ...subcategory,
+                id: uuidv4(),
+                actual: subcategory.actual,
+                dayOfMonth: subcategory.dayOfMonth,
+              };
+            } else {
+              return {
+                ...subcategory,
+                id: uuidv4(),
+                actual: 0,
+              };
+            }
           });
         } else {
           formattedSubcategories = category.subcategories;
         }
 
-        return {
-          ...category,
-          subcategories: formattedSubcategories,
+        const formattedCategory = {
+          username: category.username,
           month,
           year,
+          name: category.name,
+          color: category.color,
+          budget: category.budget,
+          actual: category.actual,
+          fixed: category.fixed,
+          subcategories: formattedSubcategories,
         };
+
+        if (formattedCategory.fixed) {
+          if (formattedCategory.subcategories.length > 0) {
+            formattedCategory.dayOfMonth = null;
+          } else {
+            formattedCategory.dayOfMonth = category.dayOfMonth;
+          }
+        }
+
+        if (formattedCategory.name === "Fun Money") {
+          formattedCategory.noDelete = true;
+        }
+
+        return formattedCategory;
       });
 
       // Insert the newly created categories into MongoDB
@@ -162,6 +189,8 @@ async function getCategories(req, res, { categoriesCol, username }) {
       const insertedCategories = newCategories.map((category, index) => {
         return {
           ...category,
+          budget: centsToDollars(category.budget),
+          actual: centsToDollars(category.actual),
           _id: result.insertedIds[index],
         };
       });
