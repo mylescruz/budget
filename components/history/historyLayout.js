@@ -8,22 +8,39 @@ import BudgetYearChooser from "../layout/budgetYearChooser";
 const InnerHistoryLayout = ({ year }) => {
   const { history, historyLoading, historyTotals } = useHistory(year);
 
+  if (history) {
+    console.log(history);
+  }
   if (historyLoading) {
     return <LoadingIndicator />;
-  } else if (history) {
+  } else if (!history) {
     return (
-      <Row className="d-flex mt-4">
-        <Col className="col-12 col-md-10 mx-auto">
-          <HistoryTable history={history} historyTotals={historyTotals} />
-        </Col>
+      <Row className="mt-4 text-danger fw-bold text-center">
+        <p>
+          &#9432; There was an error loading your history. Please try again
+          later!
+        </p>
       </Row>
     );
   } else {
-    <Row className="text-danger fw-bold text-center">
-      <p>
-        &#9432; There was an error loading your history. Please try again later!
-      </p>
-    </Row>;
+    if (history.length >= 1) {
+      return (
+        <Row className="d-flex mt-4">
+          <Col className="col-12 col-md-10 mx-auto">
+            <HistoryTable history={history} historyTotals={historyTotals} />
+          </Col>
+        </Row>
+      );
+    } else {
+      return (
+        <Row className="mt-4 fw-bold text-center">
+          <p>
+            &#9432; You don't have any history yet this year. Keep updating your
+            budget to view previous months!
+          </p>
+        </Row>
+      );
+    }
   }
 };
 
