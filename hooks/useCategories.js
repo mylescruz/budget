@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import useMonthIncome from "./useMonthIncome";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
@@ -146,43 +147,74 @@ const useCategories = (month, year) => {
     const today = new Date();
 
     let categoryActuals = 0;
+    let fixedBudget = 0;
+    let fixedActual = 0;
+    let changedBudget = 0;
+    let changedActual = 0;
+
     categories.forEach((category) => {
+      const categoryBudget = dollarsToCents(category.budget);
+      const categoryActual = dollarsToCents(category.actual);
+
       if (category.fixed && category.subcategories.length > 0) {
+        fixedBudget += categoryActual;
+
         category.subcategories.forEach((subcategory) => {
+          const subcategoryActual = dollarsToCents(subcategory.actual);
+
           if (subcategory.dayOfMonth) {
             const day = subcategory.dayOfMonth;
             const subcategoryDate = new Date(`${month}/${day}/${year}`);
 
             if (subcategoryDate <= today) {
-              categoryActuals += subcategory.actual * 100;
+              categoryActuals += subcategoryActual;
+              fixedActual += subcategoryActual;
             }
           } else {
-            categoryActuals += subcategory.actual * 100;
+            categoryActuals += subcategoryActual;
           }
         });
       } else if (category.fixed && category.subcategories.length === 0) {
+        fixedBudget += categoryActual;
+
         if (category.dayOfMonth) {
           const day = category.dayOfMonth;
           const categoryDate = new Date(`${month}/${day}/${year}`);
 
           if (categoryDate <= today) {
-            categoryActuals += category.actual * 100;
+            categoryActuals += categoryActual;
+            fixedActual += categoryActual;
           }
         } else {
-          categoryActuals += category.actual * 100;
+          categoryActuals += categoryActual;
+          fixedActual += categoryActual;
         }
       } else {
-        categoryActuals += category.actual * 100;
+        changedBudget += categoryBudget;
+        categoryActuals += categoryActual;
+        changedActual += categoryActual;
       }
     });
 
     const actualValue = centsToDollars(categoryActuals);
     const remaining = subtractDecimalValues(monthIncome, actualValue);
+    const fixedCategoriesBudget = centsToDollars(fixedBudget);
+    const fixedCategoriesActual = centsToDollars(fixedActual);
+    const changedCategoriesBudget = centsToDollars(changedBudget);
+    const changedCategoriesActual = centsToDollars(changedActual);
+    const changedCategoriesRemaining = centsToDollars(
+      changedBudget - changedActual
+    );
 
     return {
       budget: monthIncome,
       actual: actualValue,
       remaining: remaining,
+      fixedBudget: fixedCategoriesBudget,
+      fixedActual: fixedCategoriesActual,
+      nonFixedBudget: changedCategoriesBudget,
+      nonFixedActual: changedCategoriesActual,
+      nonFixedRemaining: changedCategoriesRemaining,
     };
   }, [categories, monthIncome]);
 

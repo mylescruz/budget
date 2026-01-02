@@ -1,11 +1,11 @@
-import { Button, Col, Row, Table } from "react-bootstrap";
-import CategoryTableFooter from "./categoryTableFooter";
+import { Button, Table } from "react-bootstrap";
 import React, { useContext, useState } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import PopUp from "@/components/layout/popUp";
 import AddCategoryModal from "../addCategoryModal/addCategoryModal";
 import ChangingCategoryRow from "./changingCategoryRow";
 import FixedCategoryRow from "./fixedCategoryRow";
+import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3";
 const fixedAmountColumn = "col-3 col-md-2 text-end";
@@ -17,7 +17,7 @@ const leftColumn = "col-3 col-md-2 text-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
 
 const CategoryTable = ({ dateInfo }) => {
-  const { categories } = useContext(CategoriesContext);
+  const { categories, categoryTotals } = useContext(CategoriesContext);
 
   const [addCategoryClicked, setAddCategoryClicked] = useState(false);
 
@@ -72,6 +72,17 @@ const CategoryTable = ({ dateInfo }) => {
                 />
               )
           )}
+          <tr className="d-flex table-secondary">
+            <th className={categoryColumn}>Totals</th>
+            <th className={fixedAmountColumn}>
+              {dollarFormatter(categoryTotals.fixedBudget)}
+            </th>
+            <th className={dayColumn} />
+            <th className={chargedColumn}>
+              {dollarFormatter(categoryTotals.fixedActual)}
+            </th>
+            <th className={progressColumn} />
+          </tr>
           <tr className="table-dark">
             <th colSpan={1}>
               Changing Expenses
@@ -100,10 +111,34 @@ const CategoryTable = ({ dateInfo }) => {
                 />
               )
           )}
+          <tr className="d-flex table-secondary">
+            <th className={categoryColumn}>Totals</th>
+            <th className={budgetColumn}>
+              <span
+                className={
+                  categoryTotals.nonFixedBudget < 0 ? "fw-bold text-danger" : ""
+                }
+              >
+                {dollarFormatter(categoryTotals.nonFixedBudget)}
+              </span>
+            </th>
+            <th className={spentColumn}>
+              {dollarFormatter(categoryTotals.nonFixedActual)}
+            </th>
+            <th className={leftColumn}>
+              <span
+                className={
+                  categoryTotals.nonFixedRemaining < 0
+                    ? "fw-bold text-danger"
+                    : ""
+                }
+              >
+                {dollarFormatter(categoryTotals.nonFixedRemaining)}
+              </span>
+            </th>
+            <th className={progressColumn} />
+          </tr>
         </tbody>
-        <tfoot className="table-dark">
-          <CategoryTableFooter />
-        </tfoot>
       </Table>
 
       <AddCategoryModal {...addCategoryProps} />

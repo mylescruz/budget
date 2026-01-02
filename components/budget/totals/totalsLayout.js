@@ -1,3 +1,4 @@
+import PopUp from "@/components/layout/popUp";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { useContext } from "react";
@@ -17,7 +18,15 @@ const TotalsLayout = () => {
         <Col className={cardColumn}>
           <Card className="bg-dark text-white">
             <Card.Body>
-              <h4 className="fw-bold">Total Budget</h4>
+              <h4 className="fw-bold">
+                Total Budget
+                <PopUp
+                  title="Your total income for the month."
+                  id="budget-info"
+                >
+                  <span className="mx-1 fs-6"> &#9432;</span>
+                </PopUp>
+              </h4>
               <h5>{dollarFormatter(categoryTotals.budget)}</h5>
             </Card.Body>
           </Card>
@@ -25,7 +34,15 @@ const TotalsLayout = () => {
         <Col className={cardColumn}>
           <Card className="bg-dark text-white">
             <Card.Body>
-              <h4 className="fw-bold">Total Spent</h4>
+              <h4 className="fw-bold">
+                Total Spent
+                <PopUp
+                  title="The total amount spent between your fixed and changing expenses for the month."
+                  id="spent-info"
+                >
+                  <span className="mx-1 fs-6"> &#9432;</span>
+                </PopUp>
+              </h4>
               <h5>{dollarFormatter(categoryTotals.actual)}</h5>
             </Card.Body>
           </Card>
@@ -33,7 +50,15 @@ const TotalsLayout = () => {
         <Col className={cardColumn}>
           <Card className="bg-dark text-white">
             <Card.Body>
-              <h4 className="fw-bold">Remaining</h4>
+              <h4 className="fw-bold">
+                Total Left
+                <PopUp
+                  title="The total amount remaining for the month after all your expenses."
+                  id="remaining-info"
+                >
+                  <span className="mx-1 fs-6"> &#9432;</span>
+                </PopUp>
+              </h4>
               <h5>
                 <span
                   className={
