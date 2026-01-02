@@ -1,3 +1,5 @@
+import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 import { useEffect, useMemo, useState } from "react";
 
 const useHistory = (year) => {
@@ -6,6 +8,8 @@ const useHistory = (year) => {
 
   useEffect(() => {
     const getHistory = async () => {
+      setHistoryLoading(true);
+
       try {
         const response = await fetch(`/api/history/${year}`);
 
@@ -28,20 +32,18 @@ const useHistory = (year) => {
   }, [year]);
 
   const historyTotals = useMemo(() => {
-    let actual = 0;
-    let budget = 0;
-    let leftover = 0;
+    let totalBudget = 0;
+    let totalActual = 0;
 
     for (const month of history) {
-      budget += month.budget;
-      actual += month.actual;
-      leftover += month.leftover;
+      totalBudget += dollarsToCents(month.budget);
+      totalActual += dollarsToCents(month.actual);
     }
 
     return {
-      budget: budget,
-      actual: actual,
-      leftover: leftover,
+      budget: centsToDollars(totalBudget),
+      actual: centsToDollars(totalActual),
+      leftover: centsToDollars(totalBudget - totalActual),
     };
   }, [history]);
 

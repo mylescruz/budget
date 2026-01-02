@@ -1,8 +1,10 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import monthFormatter from "@/helpers/monthFormatter";
-import Link from "next/link";
+import { useRouter } from "next/router";
 
 const HistoryTableRow = ({ month }) => {
+  const router = useRouter();
+
   let statusBarLength = Math.round((month.actual * 12) / month.budget);
 
   if (month.actual < month.budget && statusBarLength === 12) {
@@ -28,23 +30,17 @@ const HistoryTableRow = ({ month }) => {
   }
 
   return (
-    <tr className="d-flex">
+    <tr
+      className="d-flex clicker"
+      onClick={() => router.push(`/history/${month.month}?year=${month.year}`)}
+    >
       <td className="col-3 col-md-3 click fw-bold">
-        <Link
-          href={{
-            pathname: "/history/[month]",
-            query: { month: month.month, year: month.year },
-          }}
-        >
-          <>
-            <span className="d-sm-none">
-              {monthFormatter(`${month.month}/01/${month.year}`, "2-digit")}
-            </span>
-            <span className="d-none d-sm-block">
-              {monthFormatter(`${month.month}/01/${month.year}`, "long")}
-            </span>
-          </>
-        </Link>
+        <span className="d-sm-none">
+          {monthFormatter(`${month.month}/01/${month.year}`, "2-digit")}
+        </span>
+        <span className="d-none d-sm-block">
+          {monthFormatter(`${month.month}/01/${month.year}`, "long")}
+        </span>
       </td>
       <td className="col-3 col-md-2">
         <span className="fw-bold">{dollarFormatter(month.budget)}</span>
