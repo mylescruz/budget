@@ -32,12 +32,9 @@ const InnerIncomeLayout = ({ year }) => {
     return <LoadingIndicator />;
   } else if (!income) {
     return (
-      <Row className="text-danger fw-bold text-center">
-        <p>
-          &#9432; There was an error loading your income. Please try again
-          later!
-        </p>
-      </Row>
+      <div className="text-danger fw-bold text-center">
+        &#9432; There was an error loading your income. Please try again later!
+      </div>
     );
   } else {
     return (
@@ -48,19 +45,25 @@ const InnerIncomeLayout = ({ year }) => {
           </Button>
         </Container>
 
-        <Row className="d-flex my-4">
-          <Col className="mx-auto col-12 col-lg-10">
-            <IncomeTable
-              income={income}
-              year={year}
-              putIncome={putIncome}
-              deleteIncome={deleteIncome}
-              incomeTotals={incomeTotals}
-            />
-          </Col>
-        </Row>
+        {income.length === 0 ? (
+          <div className="mt-4 fw-bold text-center">
+            &#9432; You don't have any income yet! Enter a new source above.
+          </div>
+        ) : (
+          <Row className="d-flex my-4">
+            <Col className="mx-auto col-12 col-lg-10">
+              <IncomeTable
+                income={income}
+                year={year}
+                putIncome={putIncome}
+                deleteIncome={deleteIncome}
+                incomeTotals={incomeTotals}
+              />
+            </Col>
+          </Row>
+        )}
 
-        {showAddIncome && <AddIncomeModal {...AddIncomeModalProps} />}
+        <AddIncomeModal {...AddIncomeModalProps} />
       </Container>
     );
   }
