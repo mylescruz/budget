@@ -7,7 +7,7 @@ import {
   Table,
 } from "react-bootstrap";
 import PopUp from "@/components/layout/popUp";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsTableRow from "./transactionsTableRow";
 import ascendingDateSorter from "@/helpers/ascendingDateSorter";
@@ -18,88 +18,116 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 const TransactionsTable = ({ dateInfo }) => {
   const { categories } = useContext(CategoriesContext);
   const { transactions } = useContext(TransactionsContext);
-  const [sortedTransactions, setSortedTransactions] = useState(transactions);
-  const [transactionCategories, setTransactionCategories] = useState([]);
   const [transactionFilter, setTransactionFilter] = useState({ name: "All" });
-  const [sortDirection, setSortDirection] = useState(true);
-  const sortAscending = useRef(true);
+  const [sortDirection, setSortDirection] = useState("asc");
 
-  // Gets all the transaction categories in a set
-  useEffect(() => {
-    if (categories && transactions) {
-      const transactionsWithCategories = new Array(
-        new Set(transactions.map((transaction) => transaction.category))
-      );
+  // Create an array of all non-fixed categories and their subcategories to use as a map
+  const changingCategories = useMemo(() => {
+    const cats = [];
 
-      let filteredCategories = [];
+    cats.push({ name: "All" });
 
-      for (const category of categories) {
-        if (!category.fixed) {
-          if (category.subcategories.length > 0) {
-            const subcategories = category.subcategories.map(
+    categories.forEach((category) => {
+      if (!category.fixed) {
+        if (category.subcategories.length > 0) {
+          cats.push({
+            name: category.name,
+            subcategories: category.subcategories.map(
               (subcategory) => subcategory.name
-            );
+            ),
+          });
 
-            filteredCategories.push({
-              name: category.name,
-              subcategories: subcategories,
+          category.subcategories.forEach((subcategory) => {
+            cats.push({
+              name: subcategory.name,
             });
-
-            for (const subcategory of subcategories) {
-              filteredCategories.push({
-                name: subcategory,
-                isSubcategory: true,
-              });
-            }
-          } else {
-            filteredCategories.push({
-              name: category.name,
-            });
-          }
+          });
+        } else {
+          cats.push({ name: category.name });
         }
       }
+    });
 
-      setTransactionCategories(filteredCategories);
+    return cats;
+  }, [categories]);
+
+  // Get all the used category names from the user's transactions
+  const usedCategories = useMemo(() => {
+    return new Set(transactions.map((transaction) => transaction.category));
+  }, [transactions]);
+
+  // Create a list of all used categories that can be filtered for in the transactions table
+  const transactionCategories = useMemo(() => {
+    const filteredCategories = [];
+
+    categories.forEach((category) => {
+      if (category.fixed) {
+        return;
+      }
+
+      const usedSubcategories = category.subcategories
+        .map((subcategory) => subcategory.name)
+        .filter((name) => usedCategories.has(name));
+
+      const usedParent = usedCategories.has(category.name);
+
+      if (usedParent || usedSubcategories.length > 0) {
+        filteredCategories.push({
+          name: category.name,
+          subcategories: usedSubcategories,
+        });
+
+        usedSubcategories.forEach((subcategory) => {
+          filteredCategories.push({
+            name: subcategory,
+            isSubcategory: true,
+          });
+        });
+      }
+    });
+
+    return filteredCategories;
+  }, [categories, usedCategories]);
+
+  // Filter the transactions based on the chosen category from the dropdown
+  const filteredTransactions = useMemo(() => {
+    if (!transactions) {
+      return [];
     }
-  }, [transactions, categories]);
 
-  // Filters transactions based on category
-  useEffect(() => {
-    if (transactionFilter.name !== "All") {
-      let categoryFilter = [];
+    if (transactionFilter.name === "All") {
+      return transactions;
+    }
 
-      if (transactionFilter.subcategories) {
-        for (const subcategory of transactionFilter.subcategories) {
-          categoryFilter.push(subcategory);
-        }
-      } else {
-        categoryFilter.push(transactionFilter.name);
-      }
+    const selectedCategories = transactionFilter.subcategories ?? [
+      transactionFilter.name,
+    ];
 
-      const filteredTransactions = transactions.filter((transaction) =>
-        categoryFilter.includes(transaction.category)
-      );
+    return transactions.filter((transaction) =>
+      selectedCategories.includes(transaction.category)
+    );
+  }, [transactions, transactionFilter]);
 
-      setSortedTransactions(filteredTransactions);
+  // Sorts the transaction table based on the user's choice on the date column
+  const sortedTransactions = useMemo(() => {
+    if (sortDirection === "asc") {
+      return ascendingDateSorter(filteredTransactions);
     } else {
-      setSortedTransactions(transactions);
+      return descendingDateSorter(filteredTransactions);
     }
-  }, [transactionFilter, transactions]);
+  }, [filteredTransactions, sortDirection]);
 
   const sortTransactionDates = () => {
-    sortAscending.current = !sortAscending.current;
-
-    if (sortAscending.current) {
-      setSortedTransactions(ascendingDateSorter(transactions));
-    } else {
-      setSortedTransactions(descendingDateSorter(transactions));
-    }
-
-    setSortDirection(sortAscending.current);
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
+  // Set the filter to the chosen category based on the changing categories map
   const filterTransaction = (category) => {
-    setTransactionFilter(category);
+    setTransactionFilter(
+      changingCategories.find(
+        (changeCategory) => category.name === changeCategory.name
+      )
+    );
   };
 
   return (
@@ -111,7 +139,11 @@ const TransactionsTable = ({ dateInfo }) => {
             onClick={sortTransactionDates}
           >
             Date
-            {sortDirection ? <span> &#8595;</span> : <span> &#8593;</span>}
+            {sortDirection === "asc" ? (
+              <span> &#8595;</span>
+            ) : (
+              <span> &#8593;</span>
+            )}
           </th>
           <th className="col-6 col-md-5 col-lg-4">
             Store
