@@ -76,10 +76,6 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
     statusBarLength = 11;
   }
 
-  if (category.actual > 0 && statusBarLength === 0) {
-    statusBarLength = 1;
-  }
-
   const budgetBarLength = 12 - statusBarLength;
 
   const percent = Math.round((currentActual / category.budget) * 100);
@@ -129,7 +125,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
         <td className={dayColumn}>{category.dayOfMonth}</td>
         <td className={chargedColumn}>{dollarFormatter(currentActual)}</td>
         <td className={progressColumn}>
-          <div className="d-flex flex-row align-items-center text-white text-end">
+          <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (
               <div
                 className={`bg-success col-${statusBarLength} border rounded py-1 px-2 status-bar`}

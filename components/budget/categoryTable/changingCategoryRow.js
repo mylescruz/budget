@@ -108,19 +108,19 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
           </span>
         </td>
         <td className={progressColumn}>
-          <div className="d-flex flex-row align-items-center text-white text-end">
+          <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (
               <div
                 className={`${
                   category.actual > category.budget ? "bg-danger" : "bg-warning"
-                } col-${statusBarLength} rounded py-1 px-2 status-bar text-center`}
+                } col-${statusBarLength} rounded py-1 px-2 status-bar`}
               >
                 {percent}%
               </div>
             )}
             {budgetBarLength === 12 && (
               <div
-                className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
+                className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar ${
                   category.budget < 0 && "text-danger"
                 }`}
               >
@@ -141,7 +141,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
                       category.actual > category.budget) &&
                     "bg-danger"
                   }
-                  col-${statusBarLength} border rounded-start py-1 px-2 status-bar text-center`}
+                  col-${statusBarLength} border rounded-start py-1 px-2 status-bar`}
                 >
                   {percent}%
                 </div>
