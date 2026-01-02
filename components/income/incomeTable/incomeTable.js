@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
 import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import descendingDateSorter from "@/helpers/descendingDateSorter";
-import styles from "@/styles/income/incomeTable.module.css";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "@/components/layout/popUp";
 import dollarFormatter from "@/helpers/dollarFormatter";
@@ -14,11 +13,32 @@ const IncomeTable = ({
   deleteIncome,
   incomeTotals,
 }) => {
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const sortedIncome = useMemo(() => {
+    if (sortDirection === "asc") {
+      return ascendingDateSorter(income);
+    } else {
+      return descendingDateSorter(income);
+    }
+  }, [income, sortDirection]);
+
+  const sortIncomeDates = () => {
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
   return (
     <Table striped hover>
       <thead className="table-dark">
         <tr className="d-flex">
-          <th className="col-3 col-md-2">Date</th>
+          <th className="col-3 col-md-2 clicker" onClick={sortIncomeDates}>
+            Date
+            {sortDirection === "asc" ? (
+              <span> &#8595;</span>
+            ) : (
+              <span> &#8593;</span>
+            )}
+          </th>
           <th className="col-6 col-md-5">
             Source
             <PopUp
@@ -33,7 +53,7 @@ const IncomeTable = ({
         </tr>
       </thead>
       <tbody>
-        {income.map((source) => (
+        {sortedIncome.map((source) => (
           <IncomeTableRow
             key={source._id}
             source={source}
