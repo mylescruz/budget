@@ -13,31 +13,71 @@ import TransactionsTableRow from "./transactionsTableRow";
 import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import descendingDateSorter from "@/helpers/descendingDateSorter";
 import styles from "@/styles/budget/transactions/transactionsTable.module.css";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const TransactionsTable = ({ dateInfo }) => {
+  const { categories } = useContext(CategoriesContext);
   const { transactions } = useContext(TransactionsContext);
   const [sortedTransactions, setSortedTransactions] = useState(transactions);
   const [transactionCategories, setTransactionCategories] = useState([]);
-  const [transactionFilter, setTransactionFilter] = useState("All");
+  const [transactionFilter, setTransactionFilter] = useState({ name: "All" });
   const [sortDirection, setSortDirection] = useState(true);
   const sortAscending = useRef(true);
 
   // Gets all the transaction categories in a set
   useEffect(() => {
-    if (transactions) {
-      const categories = new Set(
-        transactions.map((transaction) => transaction.category)
+    if (categories && transactions) {
+      const transactionsWithCategories = new Array(
+        new Set(transactions.map((transaction) => transaction.category))
       );
 
-      setTransactionCategories([...categories]);
+      let filteredCategories = [];
+
+      for (const category of categories) {
+        if (!category.fixed) {
+          if (category.subcategories.length > 0) {
+            const subcategories = category.subcategories.map(
+              (subcategory) => subcategory.name
+            );
+
+            filteredCategories.push({
+              name: category.name,
+              subcategories: subcategories,
+            });
+
+            for (const subcategory of subcategories) {
+              filteredCategories.push({
+                name: subcategory,
+                isSubcategory: true,
+              });
+            }
+          } else {
+            filteredCategories.push({
+              name: category.name,
+            });
+          }
+        }
+      }
+
+      setTransactionCategories(filteredCategories);
     }
-  }, [transactions]);
+  }, [transactions, categories]);
 
   // Filters transactions based on category
   useEffect(() => {
-    if (transactionFilter !== "All") {
-      const filteredTransactions = transactions.filter(
-        (transaction) => transaction.category === transactionFilter
+    if (transactionFilter.name !== "All") {
+      let categoryFilter = [];
+
+      if (transactionFilter.subcategories) {
+        for (const subcategory of transactionFilter.subcategories) {
+          categoryFilter.push(subcategory);
+        }
+      } else {
+        categoryFilter.push(transactionFilter.name);
+      }
+
+      const filteredTransactions = transactions.filter((transaction) =>
+        categoryFilter.includes(transaction.category)
       );
 
       setSortedTransactions(filteredTransactions);
@@ -58,8 +98,8 @@ const TransactionsTable = ({ dateInfo }) => {
     setSortDirection(sortAscending.current);
   };
 
-  const filterTransaction = (categoryName) => {
-    setTransactionFilter(categoryName);
+  const filterTransaction = (category) => {
+    setTransactionFilter(category);
   };
 
   return (
@@ -91,20 +131,27 @@ const TransactionsTable = ({ dateInfo }) => {
                   <Dropdown.Toggle variant="dark" className="btn-sm" />
                   <DropdownMenu>
                     <DropdownItem
+                      className="fw-bold"
                       onClick={() => {
-                        filterTransaction("All");
+                        filterTransaction({ name: "All" });
                       }}
                     >
                       All Categories
                     </DropdownItem>
                     {transactionCategories.map((category) => (
                       <DropdownItem
-                        key={category}
+                        key={category.name}
                         onClick={() => {
                           filterTransaction(category);
                         }}
                       >
-                        {category}
+                        <span
+                          className={
+                            category.isSubcategory ? "mx-2" : "fw-bold"
+                          }
+                        >
+                          {category.name}
+                        </span>
                       </DropdownItem>
                     ))}
                   </DropdownMenu>
