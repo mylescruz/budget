@@ -18,6 +18,7 @@ const EditCategoryModal = ({
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
 
+  console.log(category);
   const [editedCategory, setEditedCategory] = useState(category);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
@@ -164,7 +165,7 @@ const EditCategoryModal = ({
                         type="text"
                         value={editedCategory.name}
                         onChange={handleInput}
-                        disabled={editedCategory.name === "Fun Money"}
+                        disabled={editedCategory.noDelete}
                         required
                       />
                     </Form.Group>
@@ -188,18 +189,14 @@ const EditCategoryModal = ({
                       <Form.Control
                         className="h-100"
                         type="number"
-                        min={
-                          editedCategory.name === "Fun Money"
-                            ? "-Infinity"
-                            : "0.01"
-                        }
+                        min={editedCategory.noDelete ? "-Infinity" : "0.01"}
                         step={0.01}
                         value={editedCategory.budget}
                         onChange={handleInput}
                         disabled={
                           (editedCategory.subcategories.length > 0 &&
                             editedCategory.fixed) ||
-                          editedCategory.name === "Fun Money"
+                          editedCategory.noDelete
                         }
                         required
                       />

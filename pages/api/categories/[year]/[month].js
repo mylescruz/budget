@@ -80,6 +80,10 @@ async function getCategories(req, res, { categoriesCol, username }) {
 
         formattedCategory.subcategories = subcategories;
 
+        if (formattedCategory.name === "Fun Money") {
+          formattedCategory.noDelete = true;
+        }
+
         return formattedCategory;
       });
 
