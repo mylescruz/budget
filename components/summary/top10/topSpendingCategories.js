@@ -6,6 +6,7 @@ const spentColumn = "col-6 text-end";
 
 const TopSpendingCategories = ({ categories }) => {
   const spendingCategoriesDescending = categories
+    .filter((category) => !category.fixed)
     .sort((a, b) => b.actual - a.actual)
     .slice(0, 3);
 
