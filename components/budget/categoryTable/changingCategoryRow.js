@@ -19,29 +19,40 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
   );
 
   // Progess bar that shows how much was spent vs the budget set
+  // Calculated by factors of 12 for the grid system
   let statusBarLength = Math.round((category.actual * 12) / category.budget);
+  let percent = Math.round((category.actual / category.budget) * 100);
 
-  if (category.actual < category.budget && statusBarLength === 12) {
+  // Show there's still a gap if the calculated statusBar is full but the actual is less than the budget value
+  if (statusBarLength === 12 && category.actual < category.budget) {
     statusBarLength = 11;
   }
 
+  // If a category was overspent on, just set the statusBar to the max value
   if (statusBarLength > 12) {
     statusBarLength = 12;
   }
 
-  if (category.actual > 0 && statusBarLength <= 0) {
-    statusBarLength = 12;
+  // Show there's some spending if the calculated statusBar is 0
+  if (statusBarLength === 0 && category.actual > 0) {
+    statusBarLength = 1;
+    percent = 1;
+  }
+
+  // If the Fun Money category doesn't have money allocated to it, show the proper statusBar length based on the spending
+  if (category.budget < 0) {
+    if (category.actual > 0) {
+      statusBarLength = 12;
+      percent = Math.round(
+        ((category.actual + category.budget * -1) / -category.budget) * 100
+      );
+    } else {
+      statusBarLength = 0;
+      percent = 0;
+    }
   }
 
   const budgetBarLength = 12 - statusBarLength;
-
-  let percent = Math.round((category.actual / category.budget) * 100);
-
-  if (category.actual > category.budget && category.budget < 0) {
-    percent = Math.round(
-      ((category.actual + category.budget * -1) / -category.budget) * 100
-    );
-  }
 
   const categoryColor = {
     backgroundColor: category.color,
