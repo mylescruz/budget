@@ -3,6 +3,8 @@ import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 import todayInfo from "@/helpers/todayInfo";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3";
 const amountColumn = "col-3 col-md-2 cell text-end fw-bold";
@@ -17,68 +19,68 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
     (a, b) => a.dayOfMonth - b.dayOfMonth
   );
 
+  // Find the actual value currently charged to the user based on the current date and the category's charge date
   let currentActual = 0;
 
-  // Get the current charges for fixed expenses based on the day of the month
-  if (category.dayOfMonth) {
-    const categoryDate = new Date(
-      `${dateInfo.month}/${category.dayOfMonth}/${dateInfo.year}`
-    );
-    const isoDate = categoryDate.toISOString().split("T")[0];
-
-    let comparisonDate = dateInfo.date;
-
-    if (
-      dateInfo.month !== todayInfo.month ||
-      dateInfo.year !== todayInfo.year
-    ) {
-      comparisonDate = dateInfo.endOfMonth;
-    }
-
-    if (isoDate <= comparisonDate) {
-      currentActual = category.actual;
-    }
+  // Automatically assign the total actual if not in the current month's budget
+  if (dateInfo.month !== todayInfo.month || dateInfo.year !== todayInfo.year) {
+    currentActual = dollarsToCents(category.actual);
   } else {
-    if (category.subcategories.length > 0) {
-      for (const subcategory of category.subcategories) {
-        if (subcategory.dayOfMonth) {
-          const subcategoryDate = new Date(
-            `${dateInfo.month}/${subcategory.dayOfMonth}/${dateInfo.year}`
-          );
+    // Get the current charges for fixed expenses based on the day of the month
+    if (category.dayOfMonth) {
+      const categoryDate = new Date(
+        `${dateInfo.month}/${category.dayOfMonth}/${dateInfo.year}`
+      );
 
-          const isoDate = subcategoryDate.toISOString().split("T")[0];
+      const categoryISODate = categoryDate.toISOString().split("T")[0];
 
-          let comparisonDate = dateInfo.date;
-
-          if (
-            dateInfo.month !== todayInfo.month ||
-            dateInfo.year !== todayInfo.year
-          ) {
-            comparisonDate = dateInfo.endOfMonth;
-          }
-
-          if (isoDate <= comparisonDate) {
-            currentActual += subcategory.actual;
-          }
-        } else {
-          currentActual += subcategory.actual;
-        }
+      if (categoryISODate <= todayInfo.date) {
+        currentActual = dollarsToCents(category.actual);
       }
     } else {
-      currentActual = category.actual;
+      if (category.subcategories.length === 0) {
+        // If no dayOfMonth field, automatically charge the category's whole actual value
+        currentActual = dollarsToCents(category.actual);
+      } else {
+        for (const subcategory of category.subcategories) {
+          if (subcategory.dayOfMonth) {
+            const subcategoryDate = new Date(
+              `${dateInfo.month}/${subcategory.dayOfMonth}/${dateInfo.year}`
+            );
+
+            const subcategoryISODate = subcategoryDate
+              .toISOString()
+              .split("T")[0];
+
+            if (subcategoryISODate <= todayInfo.date) {
+              currentActual += dollarsToCents(subcategory.actual);
+            }
+          } else {
+            // If no dayOfMonth field, automatically charge the subcategory's actual value
+            currentActual += dollarsToCents(subcategory.actual);
+          }
+        }
+      }
     }
   }
 
-  // Progress bar that shows the charge percentage for the month
-  let statusBarLength = Math.round((currentActual * 12) / category.budget);
+  const categoryActual = centsToDollars(currentActual);
 
-  if (category.actual < category.budget && statusBarLength === 12) {
+  // Progress bar that shows the charge percentage for the month
+  // Calculated by factors of 12 for the grid system
+  let statusBarLength = Math.round((categoryActual * 12) / category.budget);
+  let percent = Math.round((categoryActual / category.budget) * 100);
+
+  // Show there's still a gap if the calculated statusBar is full but the actual is less than the budget value
+  if (statusBarLength === 12 && categoryActual < category.budget) {
     statusBarLength = 11;
+
+    if (percent === 100) {
+      percent = 99;
+    }
   }
 
   const budgetBarLength = 12 - statusBarLength;
-
-  const percent = Math.round((currentActual / category.budget) * 100);
 
   const categoryColor = {
     backgroundColor: category.color,
@@ -123,7 +125,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
         </th>
         <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
         <td className={dayColumn}>{category.dayOfMonth}</td>
-        <td className={chargedColumn}>{dollarFormatter(currentActual)}</td>
+        <td className={chargedColumn}>{dollarFormatter(categoryActual)}</td>
         <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (
