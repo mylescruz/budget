@@ -32,10 +32,8 @@ const Top10Layout = ({ top10, months, categories }) => {
               {section.title === "Top Fixed Categories" && (
                 <TopFixedCategories categories={categories} />
               )}
-              {section.title === "Overspending Categories" && (
-                <TopOverSpendingCategories
-                  categories={section.data.slice(0, 3)}
-                />
+              {section.title === "Top Categories Overspent" && (
+                <TopOverSpendingCategories categories={categories} />
               )}
               {section.title === "Stores Shopped" && (
                 <TopSpentStores stores={section.data.slice(0, 3)} />
