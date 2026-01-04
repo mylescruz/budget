@@ -5,7 +5,11 @@ const categoryColumn = "col-6";
 const spentColumn = "col-6 text-end";
 
 const TopSpendingCategories = ({ categories }) => {
-  if (categories.length === 0) {
+  const spendingCategoriesDescending = categories
+    .sort((a, b) => b.actual - a.actual)
+    .slice(0, 3);
+
+  if (spendingCategoriesDescending.length === 0) {
     return (
       <Card.Body>
         <Row className="fw-bold text-center">
@@ -20,7 +24,7 @@ const TopSpendingCategories = ({ categories }) => {
           <Col className={categoryColumn}>Category</Col>
           <Col className={spentColumn}>Total Spent</Col>
         </Row>
-        {categories.map((category, index) => (
+        {spendingCategoriesDescending.map((category, index) => (
           <Row key={index} className="d-flex my-1">
             <Col className={categoryColumn}>
               <span className="fw-bold">{index + 1}.</span>{" "}
@@ -29,7 +33,7 @@ const TopSpendingCategories = ({ categories }) => {
                 : category.name}
             </Col>
             <Col className={spentColumn}>
-              {dollarFormatter(category.amount)}
+              {dollarFormatter(category.actual)}
             </Col>
           </Row>
         ))}

@@ -46,7 +46,11 @@ const InnerSummaryLayout = ({ year }) => {
         <Row className="d-flex justify-content-center">
           <h3 className="text-center">Top Spending Insights</h3>
           <Col className="col-12 col-xl-10">
-            <Top10Layout top10={summary.top10} months={summary.months} />
+            <Top10Layout
+              top10={summary.top10}
+              months={summary.months}
+              categories={summary.categories}
+            />
           </Col>
         </Row>
       </div>
