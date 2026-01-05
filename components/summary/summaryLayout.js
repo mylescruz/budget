@@ -5,7 +5,7 @@ import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 import CategorySummaryTable from "./categorySummaryTable";
-import TotalsCards from "./totalsCards";
+import TotalsCards from "./totalsCards/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 
 const InnerSummaryLayout = ({ year }) => {
