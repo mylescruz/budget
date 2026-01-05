@@ -4,9 +4,9 @@ import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
 import BudgetYearChooser from "../layout/budgetYearChooser";
-import CategorySummaryTable from "./categorySummaryTable";
 import TotalsCards from "./totalsCards/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
+import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
