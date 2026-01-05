@@ -48,7 +48,7 @@ async function getYearSummary(
 
     const income = await getIncomeSummary(incomeCol, username, year);
 
-    const transactions = await getTransactionInsights(
+    const transactions = await getAllTransactions(
       transactionsCol,
       username,
       year
@@ -253,84 +253,6 @@ async function getIncomeSummary(incomeCol, username, year) {
   };
 }
 
-// Get the transaction spending insights
-async function getTransactionInsights(transactionsCol, username, year) {
-  const storesSpent = await getTopSpentStores(transactionsCol, username, year);
-  const storesVisited = await getTopFrequentedStores(
-    transactionsCol,
-    username,
-    year
-  );
-  const topTransactions = await getTopTransactions(
-    transactionsCol,
-    username,
-    year
-  );
-
-  return {
-    storesSpent,
-    storesVisited,
-    topTransactions,
-  };
-}
-
-// Get the top 10 spending stores for the year
-async function getTopSpentStores(transactionsCol, username, year) {
-  return await transactionsCol
-    .aggregate([
-      { $match: { username, year } },
-      { $group: { _id: "$store", totalAmount: { $sum: "$amount" } } },
-      {
-        $project: {
-          store: "$_id",
-          amount: { $divide: ["$totalAmount", 100] },
-          _id: 0,
-        },
-      },
-      { $sort: { amount: -1 } },
-      { $limit: 3 },
-    ])
-    .toArray();
-}
-
-// Get the top 10 stores frequented for the year
-async function getTopFrequentedStores(transactionsCol, username, year) {
-  return await transactionsCol
-    .aggregate([
-      { $match: { username, year } },
-      { $group: { _id: "$store", visits: { $sum: 1 } } },
-      {
-        $project: {
-          store: "$_id",
-          amount: "$visits",
-          _id: 0,
-        },
-      },
-      { $sort: { amount: -1 } },
-      { $limit: 3 },
-    ])
-    .toArray();
-}
-
-// Get the top 10 transactions for the year
-async function getTopTransactions(transactionsCol, username, year) {
-  return await transactionsCol
-    .aggregate([
-      { $match: { username, year } },
-      {
-        $project: {
-          store: 1,
-          items: 1,
-          amount: { $divide: ["$amount", 100] },
-          _id: 0,
-        },
-      },
-      { $sort: { amount: -1 } },
-      { $limit: 3 },
-    ])
-    .toArray();
-}
-
 // Get total spending for each month
 async function getMonthsSummaries(categoriesCol, username, year) {
   const months = await categoriesCol
@@ -372,4 +294,23 @@ async function getMonthsSummaries(categoriesCol, username, year) {
       };
     })
     .sort((a, b) => a.number - b.number);
+}
+
+// Get all the user's transactions for a given year
+async function getAllTransactions(transactionsCol, username, year) {
+  return await transactionsCol
+    .aggregate([
+      { $match: { username, year } },
+      {
+        $project: {
+          month: 1,
+          date: 1,
+          store: 1,
+          items: 1,
+          category: 1,
+          amount: { $divide: ["$amount", 100] },
+        },
+      },
+    ])
+    .toArray();
 }

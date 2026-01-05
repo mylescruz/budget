@@ -2,7 +2,7 @@ import { Card, Col, Row } from "react-bootstrap";
 import { useMemo } from "react";
 import TopMonthsCard from "./topMonthsCard";
 import TopCategoriesCard from "./topCategoriesCard";
-import TopTransactionsCard from "./topTransactionsCard";
+import TopTransactionsCards from "./topTransactionsCard";
 
 const SpendingInsightsLayout = ({ months, categories, transactions }) => {
   const insights = useMemo(
@@ -61,48 +61,27 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
           .sort((a, b) => a.remaining - b.remaining)
           .slice(0, 3),
       },
-      {
-        title: "Top Transactions",
-        type: "transactions",
-        value: "dollar",
-        negative: false,
-        transactions: transactions.topTransactions,
-      },
-      {
-        title: "Total Spent at a Store",
-        type: "transactions",
-        value: "dollar",
-        negative: false,
-        transactions: transactions.storesSpent,
-      },
-      {
-        title: "Top Stores Visited",
-        type: "transactions",
-        value: "number",
-        negative: false,
-        transactions: transactions.storesVisited,
-      },
     ],
-    [months, categories, transactions]
+    [months, categories]
   );
 
   return (
-    <Row>
-      <h3 className="text-center">Spending Insights</h3>
-      {insights.map((insight, index) => (
-        <Col key={index} className="col-12 col-md-6 col-lg-4">
-          <Card className="card-background mb-4 top-10-card">
-            {insight.type === "months" && <TopMonthsCard insight={insight} />}
-            {insight.type === "categories" && (
-              <TopCategoriesCard insight={insight} />
-            )}
-            {insight.type === "transactions" && (
-              <TopTransactionsCard insight={insight} />
-            )}
-          </Card>
-        </Col>
-      ))}
-    </Row>
+    <>
+      <Row>
+        <h3 className="text-center">Spending Insights</h3>
+        {insights.map((insight, index) => (
+          <Col key={index} className="col-12 col-md-6 col-lg-4">
+            <Card className="card-background mb-4 top-10-card">
+              {insight.type === "months" && <TopMonthsCard insight={insight} />}
+              {insight.type === "categories" && (
+                <TopCategoriesCard insight={insight} />
+              )}
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <TopTransactionsCards transactions={transactions} />
+    </>
   );
 };
 
