@@ -3,8 +3,8 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import { useMemo } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 
-const storeColumn = "col-6";
-const amountColumn = "col-6 text-end";
+const storeColumn = "col-7";
+const amountColumn = "col-5 text-end";
 
 const TopTransactionsCards = ({ transactions }) => {
   const transactionInsights = useMemo(() => {
@@ -73,11 +73,11 @@ const TopTransactionsCards = ({ transactions }) => {
                 <Col className={amountColumn}>Amount</Col>
               </Row>
               {transactionInsights.topTransactions.map((transaction, index) => (
-                <Row key={transaction._id} className="d-flex my-1">
+                <Row key={transaction.store} className="d-flex my-1">
                   <Col className={storeColumn}>
                     <span className="fw-bold">{index + 1}.</span>{" "}
-                    {transaction.store.length > 15
-                      ? transaction.store.slice(0, 15) + "..."
+                    {transaction.store.length > 12
+                      ? transaction.store.slice(0, 12) + "..."
                       : transaction.store}
                   </Col>
                   <Col className={amountColumn}>
@@ -94,15 +94,15 @@ const TopTransactionsCards = ({ transactions }) => {
               <h4 className="fw-bold text-center">Top Stores Shopped At</h4>
               <Row className="fw-bold">
                 <Col className={storeColumn}>Store</Col>
-                <Col className={amountColumn}>Total Amount</Col>
+                <Col className={amountColumn}>Total Spent</Col>
               </Row>
               {transactionInsights.topStoresShopped.map(
                 (transaction, index) => (
-                  <Row key={transaction._id} className="d-flex my-1">
+                  <Row key={transaction.store} className="d-flex my-1">
                     <Col className={storeColumn}>
                       <span className="fw-bold">{index + 1}.</span>{" "}
-                      {transaction.store.length > 15
-                        ? transaction.store.slice(0, 15) + "..."
+                      {transaction.store.length > 12
+                        ? transaction.store.slice(0, 12) + "..."
                         : transaction.store}
                     </Col>
                     <Col className={amountColumn}>
@@ -124,11 +124,11 @@ const TopTransactionsCards = ({ transactions }) => {
               </Row>
               {transactionInsights.topStoresVisited.map(
                 (transaction, index) => (
-                  <Row key={transaction._id} className="d-flex my-1">
+                  <Row key={transaction.store} className="d-flex my-1">
                     <Col className={storeColumn}>
                       <span className="fw-bold">{index + 1}.</span>{" "}
-                      {transaction.store.length > 15
-                        ? transaction.store.slice(0, 15) + "..."
+                      {transaction.store.length > 12
+                        ? transaction.store.slice(0, 12) + "..."
                         : transaction.store}
                     </Col>
                     <Col className={amountColumn}>{transaction.visits}</Col>
