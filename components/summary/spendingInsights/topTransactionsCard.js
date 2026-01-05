@@ -4,10 +4,11 @@ import { Card, Col, Row } from "react-bootstrap";
 const storeColumn = "col-6";
 const amountColumn = "col-6 text-end";
 
-const TopTransactions = ({ transactions }) => {
-  if (transactions.length === 0) {
+const TopTransactionsCard = ({ insight }) => {
+  if (insight.transactions.length === 0) {
     return (
       <Card.Body>
+        <h4 className="text-center">{insight.title}</h4>
         <Row className="fw-bold text-center">
           You somehow didn't buy anything this year! That's incredible!
         </Row>
@@ -16,20 +17,23 @@ const TopTransactions = ({ transactions }) => {
   } else {
     return (
       <Card.Body>
+        <h4 className="fw-bold text-center">{insight.title}</h4>
         <Row className="fw-bold">
           <Col className={storeColumn}>Store</Col>
           <Col className={amountColumn}>Amount</Col>
         </Row>
-        {transactions.map((transaction, index) => (
+        {insight.transactions.map((transaction, index) => (
           <Row key={index} className="d-flex my-1">
             <Col className={storeColumn}>
               <span className="fw-bold">{index + 1}.</span>{" "}
-              {transaction.store.length > 9
-                ? transaction.store.slice(0, 9) + "..."
+              {transaction.store.length > 15
+                ? transaction.store.slice(0, 15) + "..."
                 : transaction.store}
             </Col>
             <Col className={amountColumn}>
-              {dollarFormatter(transaction.amount)}
+              {insight.value === "number"
+                ? transaction.amount
+                : dollarFormatter(transaction.amount)}
             </Col>
           </Row>
         ))}
@@ -38,4 +42,4 @@ const TopTransactions = ({ transactions }) => {
   }
 };
 
-export default TopTransactions;
+export default TopTransactionsCard;

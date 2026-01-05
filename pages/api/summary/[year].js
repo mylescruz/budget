@@ -48,9 +48,7 @@ async function getYearSummary(
 
     const income = await getIncomeSummary(incomeCol, username, year);
 
-    const top10 = await getTop10s(
-      categoriesCol,
-      incomeCol,
+    const transactions = await getTransactionInsights(
       transactionsCol,
       username,
       year
@@ -63,7 +61,7 @@ async function getYearSummary(
       categories,
       income,
       months,
-      top10,
+      transactions,
       monthsLength: months.length,
     });
   } catch (error) {
@@ -255,39 +253,25 @@ async function getIncomeSummary(incomeCol, username, year) {
   };
 }
 
-// Get all the top 10 for the year
-async function getTop10s(
-  categoriesCol,
-  incomeCol,
-  transactionsCol,
-  username,
-  year
-) {
+// Get the transaction spending insights
+async function getTransactionInsights(transactionsCol, username, year) {
   const storesSpent = await getTopSpentStores(transactionsCol, username, year);
   const storesVisited = await getTopFrequentedStores(
     transactionsCol,
     username,
     year
   );
-  const transactions = await getTopTransactions(
+  const topTransactions = await getTopTransactions(
     transactionsCol,
     username,
     year
   );
 
-  const top10 = [
-    { title: "Top Spending Months" },
-    { title: "Lowest Spending Months" },
-    { title: "Top Overspending Months" },
-    { title: "Top Changing Categories" },
-    { title: "Top Fixed Categories" },
-    { title: "Top Categories Overspent" },
-    { title: "Stores Shopped", data: storesSpent },
-    { title: "Stores Visited", data: storesVisited },
-    { title: "Transactions", data: transactions },
-  ];
-
-  return top10;
+  return {
+    storesSpent,
+    storesVisited,
+    topTransactions,
+  };
 }
 
 // Get the top 10 spending stores for the year
@@ -304,7 +288,7 @@ async function getTopSpentStores(transactionsCol, username, year) {
         },
       },
       { $sort: { amount: -1 } },
-      { $limit: 10 },
+      { $limit: 3 },
     ])
     .toArray();
 }
@@ -318,12 +302,12 @@ async function getTopFrequentedStores(transactionsCol, username, year) {
       {
         $project: {
           store: "$_id",
-          visits: 1,
+          amount: "$visits",
           _id: 0,
         },
       },
-      { $sort: { visits: -1 } },
-      { $limit: 10 },
+      { $sort: { amount: -1 } },
+      { $limit: 3 },
     ])
     .toArray();
 }
@@ -342,7 +326,7 @@ async function getTopTransactions(transactionsCol, username, year) {
         },
       },
       { $sort: { amount: -1 } },
-      { $limit: 10 },
+      { $limit: 3 },
     ])
     .toArray();
 }

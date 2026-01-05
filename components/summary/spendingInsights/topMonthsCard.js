@@ -4,14 +4,11 @@ import { Card, Col, Row } from "react-bootstrap";
 const monthColumn = "col-6";
 const spentColumn = "col-6 text-end";
 
-const LowestSpendingMonths = ({ months }) => {
-  const spendingMonthsDescending = months
-    .sort((a, b) => a.actual - b.actual)
-    .slice(0, 3);
-
-  if (months.length === 0) {
+const TopMonthsCard = ({ insight }) => {
+  if (insight.months.length === 0) {
     return (
       <Card.Body>
+        <h4 className="text-center">{insight.title}</h4>
         <Row className="fw-bold text-center">
           You didn't spend any money this year!
         </Row>
@@ -20,16 +17,23 @@ const LowestSpendingMonths = ({ months }) => {
   } else {
     return (
       <Card.Body>
+        <h4 className="fw-bold text-center">{insight.title}</h4>
         <Row className="fw-bold">
           <Col className={monthColumn}>Month</Col>
-          <Col className={spentColumn}>Total Spent</Col>
+          <Col className={spentColumn}>
+            Total <span>{insight.negative ? "Overspent" : "Spent"}</span>
+          </Col>
         </Row>
-        {spendingMonthsDescending.map((month, index) => (
+        {insight.months.map((month, index) => (
           <Row key={index} className="d-flex my-1">
             <Col className={monthColumn}>
               <span className="fw-bold">{index + 1}.</span> {month.name}
             </Col>
-            <Col className={spentColumn}>{dollarFormatter(month.actual)}</Col>
+            <Col className={spentColumn}>
+              <span className={insight.negative ? "fw-bold text-danger" : ""}>
+                {dollarFormatter(month.actual)}
+              </span>
+            </Col>
           </Row>
         ))}
       </Card.Body>
@@ -37,4 +41,4 @@ const LowestSpendingMonths = ({ months }) => {
   }
 };
 
-export default LowestSpendingMonths;
+export default TopMonthsCard;
