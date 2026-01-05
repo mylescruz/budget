@@ -8,7 +8,7 @@ const spentColumn = "col-3 col-md-2 text-end";
 const leftColumn = "d-none d-md-block col-md-2 text-end";
 const averageColumn = "col-3 col-md-2 text-end";
 
-const CategorySummaryTableRow = ({ category, year }) => {
+const CategorySummaryTableRow = ({ category }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
 
   const categoryColor = {
@@ -42,10 +42,10 @@ const CategorySummaryTableRow = ({ category, year }) => {
           </div>
         </th>
         <td className={fixedColumn}>
-          <span className={category.fixed && "bi bi-check-lg"} />
+          <span className={category.fixed ? "bi bi-check-lg" : ""} />
         </td>
         <td className={budgetColumn}>
-          <span className={category.budget < 0 && "text-danger"}>
+          <span className={category.budget < 0 ? "text-danger" : ""}>
             {dollarFormatter(category.budget)}
           </span>
         </td>
@@ -53,7 +53,7 @@ const CategorySummaryTableRow = ({ category, year }) => {
         <td className={leftColumn}>
           <span
             className={
-              category.budget - category.actual < 0 && "text-danger fw-bold"
+              category.budget - category.actual < 0 ? "text-danger fw-bold" : ""
             }
           >
             {!category.fixed &&
