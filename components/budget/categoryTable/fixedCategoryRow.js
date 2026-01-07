@@ -8,8 +8,8 @@ import dollarsToCents from "@/helpers/dollarsToCents";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3";
 const amountColumn = "col-3 col-md-2 cell text-end fw-bold";
-const dayColumn = "d-none d-lg-block col-lg-2 text-end";
 const chargedColumn = "col-3 col-md-2 col-lg-2 text-end";
+const dayColumn = "d-none d-lg-block col-lg-2 text-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
 
 const FixedCategoryRow = ({ category, dateInfo }) => {
@@ -124,8 +124,8 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
           </div>
         </th>
         <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
-        <td className={dayColumn}>{category.dayOfMonth}</td>
         <td className={chargedColumn}>{dollarFormatter(categoryActual)}</td>
+        <td className={dayColumn}>{category.dayOfMonth}</td>
         <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (

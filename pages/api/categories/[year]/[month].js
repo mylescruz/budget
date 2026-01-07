@@ -50,42 +50,44 @@ async function getCategories(req, res, { categoriesCol, username }) {
 
     // If the categories already exist, send the categories array back to the client
     if (categoriesDocs.length > 0) {
-      const categories = categoriesDocs.map((category) => {
-        const formattedCategory = {
-          _id: category._id,
-          name: category.name,
-          color: category.color,
-          fixed: category.fixed,
-          budget: centsToDollars(category.budget),
-          actual: centsToDollars(category.actual),
-        };
-
-        if (formattedCategory.fixed) {
-          formattedCategory.dayOfMonth = category.dayOfMonth;
-        }
-
-        const subcategories = category.subcategories.map((subcategory) => {
-          const formattedSubcategory = {
-            id: subcategory.id,
-            name: subcategory.name,
-            actual: centsToDollars(subcategory.actual),
+      const categories = categoriesDocs
+        .map((category) => {
+          const formattedCategory = {
+            _id: category._id,
+            name: category.name,
+            color: category.color,
+            fixed: category.fixed,
+            budget: centsToDollars(category.budget),
+            actual: centsToDollars(category.actual),
           };
 
           if (formattedCategory.fixed) {
-            formattedSubcategory.dayOfMonth = subcategory.dayOfMonth;
+            formattedCategory.dayOfMonth = category.dayOfMonth;
           }
 
-          return formattedSubcategory;
-        });
+          const subcategories = category.subcategories.map((subcategory) => {
+            const formattedSubcategory = {
+              id: subcategory.id,
+              name: subcategory.name,
+              actual: centsToDollars(subcategory.actual),
+            };
 
-        formattedCategory.subcategories = subcategories;
+            if (formattedCategory.fixed) {
+              formattedSubcategory.dayOfMonth = subcategory.dayOfMonth;
+            }
 
-        if (formattedCategory.name === "Fun Money") {
-          formattedCategory.noDelete = true;
-        }
+            return formattedSubcategory;
+          });
 
-        return formattedCategory;
-      });
+          formattedCategory.subcategories = subcategories;
+
+          if (formattedCategory.name === "Fun Money") {
+            formattedCategory.noDelete = true;
+          }
+
+          return formattedCategory;
+        })
+        .sort((a, b) => b.budget - a.budget);
 
       return res.status(200).json(categories);
     } else {

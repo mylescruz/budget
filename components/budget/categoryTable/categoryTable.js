@@ -10,8 +10,8 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 const categoryColumn = "col-6 col-md-4 col-lg-3";
 const fixedAmountColumn = "col-3 col-md-2 text-end";
 const budgetColumn = "d-none d-lg-block col-lg-2 text-end";
-const dayColumn = "d-none d-lg-block col-lg-2 text-end";
 const chargedColumn = "col-3 col-md-2 col-lg-2 text-end";
+const dayColumn = "d-none d-lg-block col-lg-2 text-end";
 const spentColumn = "col-3 col-md-2 text-end";
 const leftColumn = "col-3 col-md-2 text-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
@@ -58,9 +58,9 @@ const CategoryTable = ({ dateInfo }) => {
           <tr className="d-flex table-light">
             <th className={categoryColumn}>Category</th>
             <th className={fixedAmountColumn}>Amount</th>
-            <th className={dayColumn}>Day</th>
             <th className={chargedColumn}>Charged</th>
-            <th className={progressColumn} />
+            <th className={dayColumn}>Day</th>
+            <th className={progressColumn}>Progress</th>
           </tr>
           {categories.map(
             (category) =>
@@ -77,10 +77,10 @@ const CategoryTable = ({ dateInfo }) => {
             <th className={fixedAmountColumn}>
               {dollarFormatter(categoryTotals.fixedBudget)}
             </th>
-            <th className={dayColumn} />
             <th className={chargedColumn}>
               {dollarFormatter(categoryTotals.fixedActual)}
             </th>
+            <th className={dayColumn} />
             <th className={progressColumn} />
           </tr>
           <tr className="table-dark">
