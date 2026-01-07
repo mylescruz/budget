@@ -123,20 +123,24 @@ async function getCategoriesSummary(categoriesCol, username, year) {
             const subcategoryActual =
               foundCategory.subcategories[foundSubcategoryIndex].actual;
 
-            // Add the subcategory's actual to the actual value in the categoriesSummary array
-            categoriesSummary[categoryIndex].subcategories[
-              foundSubcategoryIndex
-            ].actual = subcategory.actual + subcategoryActual;
+            if (subcategoryActual !== 0) {
+              // Add the subcategory's actual to the actual value in the categoriesSummary array
+              categoriesSummary[categoryIndex].subcategories[
+                foundSubcategoryIndex
+              ].actual = subcategory.actual + subcategoryActual;
 
-            categoriesSummary[categoryIndex].subcategories[
-              foundSubcategoryIndex
-            ].totalMonths += 1;
+              categoriesSummary[categoryIndex].subcategories[
+                foundSubcategoryIndex
+              ].totalMonths += 1;
+            }
           } else {
-            // If the subcategory is not in the categoriesSummary array, add it
-            categoriesSummary[categoryIndex].subcategories.push({
-              ...subcategory,
-              totalMonths: 1,
-            });
+            if (subcategory.actual !== 0) {
+              // If the subcategory is not in the categoriesSummary array, add it
+              categoriesSummary[categoryIndex].subcategories.push({
+                ...subcategory,
+                totalMonths: 1,
+              });
+            }
           }
         });
       }
@@ -152,12 +156,14 @@ async function getCategoriesSummary(categoriesCol, username, year) {
         (a, b) => b.actual - a.actual
       );
     } else {
-      const updatedSubcategories = category.subcategories.map((subcategory) => {
-        return {
-          ...subcategory,
-          totalMonths: 1,
-        };
-      });
+      const updatedSubcategories = category.subcategories
+        .filter((subcategory) => subcategory.actual !== 0)
+        .map((subcategory) => {
+          return {
+            ...subcategory,
+            totalMonths: 1,
+          };
+        });
       categoriesSummary.push({
         ...category,
         totalMonths: 1,

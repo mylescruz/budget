@@ -6,11 +6,11 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import CategorySummaryTableRow from "./categorySummaryTableRow";
 
 const categoryColumn = "col-6 col-md-3";
-const fixedColumn = "d-none d-md-block col-md-1";
 const budgetColumn = "d-none d-md-block col-md-2 text-end";
 const spentColumn = "col-3 col-md-2 text-end";
 const leftColumn = "d-none d-md-block col-md-2 text-end";
 const averageColumn = "col-3 col-md-2 text-end";
+const monthsColumn = "d-none d-md-block col-md-1 text-end";
 
 const CategorySummaryTable = ({ categories, year, monthsLength }) => {
   const totalBudget = centsToDollars(
@@ -29,11 +29,11 @@ const CategorySummaryTable = ({ categories, year, monthsLength }) => {
         <thead className="table-dark">
           <tr className="d-flex">
             <th className={categoryColumn}>Category</th>
-            <th className={fixedColumn}>Fixed</th>
             <th className={budgetColumn}>Yearly Budget</th>
             <th className={spentColumn}>Yearly Spent</th>
             <th className={leftColumn}>Yearly Left</th>
             <th className={averageColumn}>Avg Month</th>
+            <th className={monthsColumn}>Months</th>
           </tr>
         </thead>
         <tbody>
@@ -48,7 +48,6 @@ const CategorySummaryTable = ({ categories, year, monthsLength }) => {
         <tfoot className="table-dark">
           <tr className="d-flex">
             <th className={categoryColumn}>Totals</th>
-            <th className={fixedColumn} />
             <th className={budgetColumn}>{dollarFormatter(totalBudget)}</th>
             <th className={spentColumn}>{dollarFormatter(totalActual)}</th>
             <th className={leftColumn}>
@@ -59,6 +58,7 @@ const CategorySummaryTable = ({ categories, year, monthsLength }) => {
             <th className={averageColumn}>
               {dollarFormatter(totalActual / monthsLength)}
             </th>
+            <th className={monthsColumn} />
           </tr>
         </tfoot>
       </Table>

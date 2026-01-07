@@ -2,11 +2,11 @@ import { useState } from "react";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-3";
-const fixedColumn = "d-none d-md-block col-md-1";
 const budgetColumn = "d-none d-md-block col-md-2 text-end";
 const spentColumn = "col-3 col-md-2 text-end";
 const leftColumn = "d-none d-md-block col-md-2 text-end";
 const averageColumn = "col-3 col-md-2 text-end";
+const monthsColumn = "d-none d-md-block col-md-1 text-end";
 
 const CategorySummaryTableRow = ({ category }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
@@ -41,9 +41,6 @@ const CategorySummaryTableRow = ({ category }) => {
             )}
           </div>
         </th>
-        <td className={fixedColumn}>
-          <span className={category.fixed ? "bi bi-check-lg" : ""} />
-        </td>
         <td className={budgetColumn}>
           <span className={category.budget < 0 ? "text-danger" : ""}>
             {dollarFormatter(category.budget)}
@@ -61,6 +58,7 @@ const CategorySummaryTableRow = ({ category }) => {
           </span>
         </td>
         <td className={averageColumn}>{dollarFormatter(category.average)}</td>
+        <td className={monthsColumn}>{category.totalMonths}</td>
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
@@ -68,7 +66,6 @@ const CategorySummaryTableRow = ({ category }) => {
             <th className={categoryColumn}>
               <span className="mx-2">{subcategory.name}</span>
             </th>
-            <td className={fixedColumn} />
             <td className={budgetColumn} />
             <td className={spentColumn}>
               {dollarFormatter(subcategory.actual)}
@@ -77,6 +74,7 @@ const CategorySummaryTableRow = ({ category }) => {
             <td className={averageColumn}>
               {dollarFormatter(subcategory.average)}
             </td>
+            <td className={monthsColumn}>{subcategory.totalMonths}</td>
           </tr>
         ))}
     </>
