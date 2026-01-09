@@ -2,6 +2,16 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import monthFormatter from "@/helpers/monthFormatter";
 import { useRouter } from "next/router";
 
+const monthColumn =
+  "col-3 col-md-3 col-lg-2 d-flex align-items-center click fw-bold";
+const budgetColumn =
+  "col-3 col-md-2 d-flex align-items-center justify-content-end";
+const spentColumn =
+  "col-3 col-md-2 d-flex align-items-center justify-content-end";
+const remainingColumn =
+  "d-none col-md-2 d-md-flex align-items-center justify-content-end";
+const progressColumn = "col-3 col-lg-4";
+
 const HistoryTableRow = ({ month }) => {
   const router = useRouter();
 
@@ -34,7 +44,7 @@ const HistoryTableRow = ({ month }) => {
       className="d-flex clicker"
       onClick={() => router.push(`/history/${month.month}?year=${month.year}`)}
     >
-      <td className="col-3 col-md-3 click fw-bold">
+      <td className={monthColumn}>
         <span className="d-sm-none">
           {monthFormatter(`${month.month}/01/${month.year}`, "2-digit")}
         </span>
@@ -42,16 +52,16 @@ const HistoryTableRow = ({ month }) => {
           {monthFormatter(`${month.month}/01/${month.year}`, "long")}
         </span>
       </td>
-      <td className="col-3 col-md-2">
+      <td className={budgetColumn}>
         <span className="fw-bold">{dollarFormatter(month.budget)}</span>
       </td>
-      <td className="col-3 col-md-2">{dollarFormatter(month.actual)}</td>
-      <td className="d-none d-md-block col-md-2">
+      <td className={spentColumn}>{dollarFormatter(month.actual)}</td>
+      <td className={remainingColumn}>
         <span className={`${month.leftover < 0 && "text-danger fw-bold"}`}>
           {dollarFormatter(month.leftover)}
         </span>
       </td>
-      <td className="col-3 col-md-3">
+      <td className={progressColumn}>
         <div className="d-flex flex-row align-items-center text-white text-end">
           {statusBarLength === 12 && (
             <div

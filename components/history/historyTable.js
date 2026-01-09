@@ -2,6 +2,15 @@ import { Table } from "react-bootstrap";
 import HistoryTableRow from "./historyTableRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
+const monthColumn = "col-3 col-md-3 col-lg-2 d-flex align-items-center";
+const budgetColumn =
+  "col-3 col-md-2 d-flex align-items-center justify-content-end";
+const spentColumn =
+  "col-3 col-md-2 d-flex align-items-center justify-content-end";
+const remainingColumn =
+  "d-none col-md-2 d-md-flex align-items-center justify-content-end";
+const progressColumn = "col-3 col-lg-4";
+
 const HistoryTable = ({ history, historyTotals }) => {
   let statusBarLength;
   let budgetBarLength;
@@ -44,11 +53,11 @@ const HistoryTable = ({ history, historyTotals }) => {
     <Table striped hover>
       <thead className="table-dark">
         <tr className="d-flex">
-          <th className="col-3 col-md-3">Month</th>
-          <th className="col-3 col-md-2">Budget</th>
-          <th className="col-3 col-md-2">Spent</th>
-          <th className="d-none d-md-block col-md-2">Remaining</th>
-          <th className="col-3 col-md-3">Progress</th>
+          <th className={monthColumn}>Month</th>
+          <th className={budgetColumn}>Budget</th>
+          <th className={spentColumn}>Spent</th>
+          <th className={remainingColumn}>Remaining</th>
+          <th className={progressColumn}>Progress</th>
         </tr>
       </thead>
       <tbody>
@@ -58,14 +67,14 @@ const HistoryTable = ({ history, historyTotals }) => {
       </tbody>
       <tfoot>
         <tr className="d-flex table-dark">
-          <th className="col-3 col-md-3 d-flex align-items-center">Totals</th>
-          <th className="col-3 col-md-2 d-flex align-items-center">
+          <th className={monthColumn}>Totals</th>
+          <th className={budgetColumn}>
             {dollarFormatter(historyTotals.budget)}
           </th>
-          <th className="col-3 col-md-2 d-flex align-items-center">
+          <th className={spentColumn}>
             {dollarFormatter(historyTotals.actual)}
           </th>
-          <th className="d-none col-md-2 d-md-flex align-items-center">
+          <th className={remainingColumn}>
             <span
               className={`${
                 historyTotals.leftover > 0 ? "text-white" : "text-danger"
@@ -74,7 +83,7 @@ const HistoryTable = ({ history, historyTotals }) => {
               {dollarFormatter(historyTotals.leftover)}
             </span>
           </th>
-          <th className="col-3 col-md-3">
+          <th className={progressColumn}>
             {history.length > 0 && (
               <div className="d-flex flex-row align-items-center text-white text-end">
                 {statusBarLength === 12 && (
