@@ -5,21 +5,14 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeleteTransactionModal = ({
-  transaction,
-  dateInfo,
-  showDelete,
-  setShowDelete,
-  setShowDetails,
-}) => {
+const DeleteTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
   const { getCategories } = useContext(CategoriesContext);
   const { deleteTransaction } = useContext(TransactionsContext);
   const [deletingTransaction, setDeletingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
   const closeDelete = () => {
-    setShowDelete(false);
-    setShowDetails(true);
+    setModal("details");
   };
 
   const confirmDelete = async () => {
@@ -33,6 +26,8 @@ const DeleteTransactionModal = ({
       await getCategories(dateInfo.month, dateInfo.year);
 
       setErrorOccurred(false);
+
+      setModal("none");
     } catch (error) {
       setErrorOccurred(true);
       console.error(error);
@@ -43,7 +38,7 @@ const DeleteTransactionModal = ({
   };
 
   return (
-    <Modal show={showDelete} onHide={closeDelete} centered>
+    <Modal show={modal === "delete"} onHide={closeDelete} centered>
       {!deletingTransaction ? (
         <>
           <Modal.Header closeButton>Delete Transaction</Modal.Header>

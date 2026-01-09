@@ -6,46 +6,30 @@ import TransactionDetailsModal from "./transactionDetailsModal";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const TransactionsTableRow = ({ transaction, dateInfo }) => {
-  const [showDetails, setShowDetails] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+  const [modal, setModal] = useState("none");
 
   const openDetails = () => {
-    setShowDetails(true);
-  };
-
-  const openDelete = () => {
-    setShowDetails(false);
-    setShowDelete(true);
-  };
-
-  const openEdit = () => {
-    setShowDetails(false);
-    setShowEdit(true);
+    setModal("details");
   };
 
   const transactionDetailsModalProps = {
     transaction: transaction,
-    showDetails: showDetails,
-    setShowDetails: setShowDetails,
-    openDelete: openDelete,
-    openEdit: openEdit,
+    modal: modal,
+    setModal: setModal,
   };
 
   const editTransactionModalProps = {
     transaction: transaction,
     dateInfo: dateInfo,
-    showEdit: showEdit,
-    setShowEdit: setShowEdit,
-    setShowDetails: setShowDetails,
+    modal: modal,
+    setModal: setModal,
   };
 
   const deleteTransactionModalProps = {
     transaction: transaction,
     dateInfo: dateInfo,
-    showDelete: showDelete,
-    setShowDelete: setShowDelete,
-    setShowDetails: setShowDetails,
+    modal: modal,
+    setModal: setModal,
   };
 
   return (
@@ -107,13 +91,9 @@ const TransactionsTableRow = ({ transaction, dateInfo }) => {
         </td>
       </tr>
 
-      {showDetails && (
-        <TransactionDetailsModal {...transactionDetailsModalProps} />
-      )}
-      {showEdit && <EditTransactionModal {...editTransactionModalProps} />}
-      {showDelete && (
-        <DeleteTransactionModal {...deleteTransactionModalProps} />
-      )}
+      <TransactionDetailsModal {...transactionDetailsModalProps} />
+      <EditTransactionModal {...editTransactionModalProps} />
+      <DeleteTransactionModal {...deleteTransactionModalProps} />
     </>
   );
 };

@@ -2,19 +2,21 @@ import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
-const TransactionDetailsModal = ({
-  transaction,
-  showDetails,
-  setShowDetails,
-  openDelete,
-  openEdit,
-}) => {
+const TransactionDetailsModal = ({ transaction, modal, setModal }) => {
   const closeDetails = () => {
-    setShowDetails(false);
+    setModal("none");
+  };
+
+  const openDelete = () => {
+    setModal("delete");
+  };
+
+  const openEdit = () => {
+    setModal("edit");
   };
 
   return (
-    <Modal show={showDetails} onHide={closeDetails} centered>
+    <Modal show={modal === "details"} onHide={closeDetails} centered>
       <Modal.Header closeButton>
         <Modal.Title>Transaction Details</Modal.Title>
       </Modal.Header>

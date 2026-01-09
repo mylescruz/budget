@@ -6,13 +6,7 @@ import SelectCategoryOption from "./selectCategoryOption";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorMessage from "@/components/layout/errorMessage";
 
-const EditTransactionModal = ({
-  transaction,
-  dateInfo,
-  showEdit,
-  setShowEdit,
-  setShowDetails,
-}) => {
+const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
   const [edittedTransaction, setEdittedTransaction] = useState(transaction);
@@ -20,8 +14,7 @@ const EditTransactionModal = ({
   const [errorOccurred, setErrorOccurred] = useState(false);
 
   const closeEdit = () => {
-    setShowEdit(false);
-    setShowDetails(true);
+    setModal("details");
   };
 
   const editTheTransaction = async (e) => {
@@ -31,7 +24,7 @@ const EditTransactionModal = ({
       e.preventDefault();
 
       // If the Edit Transaction Modal is showing, update the transaction and then close the modal
-      if (showEdit) {
+      if (modal === "edit") {
         setEdittedTransaction(edittedTransaction);
         await putTransaction({
           ...edittedTransaction,
@@ -42,9 +35,9 @@ const EditTransactionModal = ({
         // Fetch the categories to update the state for the categories table
         await getCategories(dateInfo.month, dateInfo.year);
 
-        setShowEdit(false);
+        setModal("none");
       } else {
-        setShowEdit(true);
+        setModal("edit");
       }
 
       setErrorOccurred(false);
@@ -77,7 +70,7 @@ const EditTransactionModal = ({
   };
 
   return (
-    <Modal show={showEdit} onHide={closeEdit} centered>
+    <Modal show={modal === "edit"} onHide={closeEdit} centered>
       {!updatingTransaction ? (
         <>
           <Modal.Header>
