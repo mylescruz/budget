@@ -17,6 +17,85 @@ const TransactionsCalendar = ({ dateInfo }) => {
     const year = dateInfo.year;
     const daysInMonth = parseInt(dateInfo.endOfMonth.split("-")[2]);
 
+    // Create the transactions map with the category's color
+    const transactionsMap = new Map();
+
+    transactions.forEach((transaction) => {
+      if (!transactionsMap.has(transaction.date)) {
+        transactionsMap.set(transaction.date, []);
+      }
+
+      transactionsMap.get(transaction.date).push({
+        _id: transaction._id,
+        date: transaction.date,
+        store: transaction.store,
+        items: transaction.items,
+        category: transaction.category,
+        amount: transaction.amount,
+        color: categoryColors[transaction.category],
+        icon: "●",
+      });
+    });
+
+    // If dayOfMonth field is present in the fixed category or subcategory, add it to the transactions calendar
+    categories.forEach((category) => {
+      if (category.fixed) {
+        if (category.subcategories.length > 0) {
+          category.subcategories.forEach((subcategory) => {
+            if (subcategory.dayOfMonth) {
+              const subcategoryDate = new Date(
+                year,
+                monthNumber,
+                subcategory.dayOfMonth
+              );
+              const subcategoryDateISO = subcategoryDate
+                .toISOString()
+                .split("T")[0];
+
+              if (!transactionsMap.has(subcategoryDateISO)) {
+                transactionsMap.set(subcategoryDateISO, []);
+              }
+
+              transactionsMap.get(subcategoryDateISO).push({
+                _id: subcategory._id,
+                date: subcategoryDateISO,
+                store: subcategory.name,
+                items: "Fixed Subcategory",
+                category: subcategory.name,
+                amount: subcategory.actual,
+                color: category.color,
+                icon: "■",
+              });
+            }
+          });
+        } else {
+          if (category.dayOfMonth) {
+            const categoryDate = new Date(
+              year,
+              monthNumber,
+              category.dayOfMonth
+            );
+            const categoryDateISO = categoryDate.toISOString().split("T")[0];
+
+            if (!transactionsMap.has(categoryDateISO)) {
+              transactionsMap.set(categoryDateISO, []);
+            }
+
+            transactionsMap.get(categoryDateISO).push({
+              _id: category._id,
+              date: categoryDateISO,
+              store: category.name,
+              items: "Fixed Category",
+              category: category.name,
+              amount: category.actual,
+              color: category.color,
+              icon: "■",
+            });
+          }
+        }
+      }
+    });
+
     let week = 0;
     let month = [[]];
     for (let dayIndex = 0; dayIndex < daysInMonth; dayIndex++) {
@@ -45,66 +124,10 @@ const TransactionsCalendar = ({ dateInfo }) => {
         month.push([]);
       }
 
-      // Get all the transactions that occurred on that date and return the category's color
-      const dateTransactions = transactions
-        .filter((transaction) => transaction.date === dateISO)
-        .map((transaction) => {
-          return {
-            id: transaction._id,
-            color: categoryColors[transaction.category],
-            icon: "●",
-          };
-        });
-
-      // If dayOfMonth field is present in the fixed category or subcategory, add it to the transactions calendar
-      categories.forEach((category) => {
-        if (category.fixed) {
-          if (category.subcategories.length > 0) {
-            category.subcategories.forEach((subcategory) => {
-              if (subcategory.dayOfMonth) {
-                const subcategoryDate = new Date(
-                  year,
-                  monthNumber,
-                  subcategory.dayOfMonth
-                );
-                const subcategoryDateISO = subcategoryDate
-                  .toISOString()
-                  .split("T")[0];
-
-                if (subcategoryDateISO === dateISO) {
-                  dateTransactions.push({
-                    id: subcategory.id,
-                    color: category.color,
-                    icon: "■",
-                  });
-                }
-              }
-            });
-          } else {
-            if (category.dayOfMonth) {
-              const categoryDate = new Date(
-                year,
-                monthNumber,
-                category.dayOfMonth
-              );
-              const categoryDateISO = categoryDate.toISOString().split("T")[0];
-
-              if (categoryDateISO === dateISO) {
-                dateTransactions.push({
-                  id: category._id,
-                  color: category.color,
-                  icon: "■",
-                });
-              }
-            }
-          }
-        }
-      });
-
       // Add the dateNumber and date's transactions to the calendar
       month[week].push({
         dateNumber,
-        transactions: dateTransactions,
+        transactions: transactionsMap.get(dateISO) ?? [],
       });
 
       // At the end of the month, fill up the month array with empty days
