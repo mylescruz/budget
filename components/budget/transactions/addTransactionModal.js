@@ -75,36 +75,30 @@ const AddTransactionModal = ({
 
           <Form onSubmit={AddNewTransaction}>
             <Modal.Body>
-              <Row className="d-flex">
-                <Col className="col-12 col-md-4">
-                  <Form.Group controlId="date" className="my-2">
-                    <Form.Label>Date</Form.Label>
-                    <Form.Control
-                      className="h-100"
-                      type="date"
-                      min={dateInfo.startOfMonth}
-                      max={dateInfo.endOfMonth}
-                      value={newTransaction.date}
-                      onChange={handleInput}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col className="col-12 col-md-8">
-                  <Form.Group controlId="store" className="my-2">
-                    <Form.Label>Store/Restaurant</Form.Label>
-                    <Form.Control
-                      className="h-100"
-                      type="text"
-                      value={newTransaction.store}
-                      onChange={handleInput}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
+              <Form.Group controlId="date" className="my-2">
+                <Form.Label>Date of the transaction</Form.Label>
+                <Form.Control
+                  className="h-100"
+                  type="date"
+                  min={dateInfo.startOfMonth}
+                  max={dateInfo.endOfMonth}
+                  value={newTransaction.date}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="store" className="my-2">
+                <Form.Label>Where did you shop?</Form.Label>
+                <Form.Control
+                  className="h-100"
+                  type="text"
+                  value={newTransaction.store}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
               <Form.Group controlId="items" className="my-2">
-                <Form.Label>What was purchased?</Form.Label>
+                <Form.Label>What did you purchase?</Form.Label>
                 <Form.Control
                   className="h-100"
                   type="text"
@@ -113,60 +107,47 @@ const AddTransactionModal = ({
                   required
                 />
               </Form.Group>
-              <Row className="d-flex">
-                <Col className="col-12 col-md-6">
-                  <Form.Group controlId="category" className="my-2">
-                    <Form.Label>Category</Form.Label>
-                    <Form.Select
-                      className="h-100"
-                      value={newTransaction.category}
-                      onChange={handleInput}
-                      required
-                    >
-                      <option disabled>Choose a Category...</option>
-                      {categories.map(
-                        (category) =>
-                          !category.fixed && (
-                            <SelectCategoryOption
-                              key={category._id}
-                              category={category}
-                            />
-                          )
-                      )}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col className="col-12 col-md-6">
-                  <Form.Group controlId="amount" className="my-2">
-                    <Form.Label>Amount</Form.Label>
-                    <Form.Control
-                      className="h-100"
-                      type="number"
-                      step="0.01"
-                      value={newTransaction.amount}
-                      onChange={handleInput}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
+              <Form.Group controlId="category" className="my-2">
+                <Form.Label>
+                  Which category does this transaction apply to?
+                </Form.Label>
+                <Form.Select
+                  className="h-100"
+                  value={newTransaction.category}
+                  onChange={handleInput}
+                  required
+                >
+                  {categories.map(
+                    (category) =>
+                      !category.fixed && (
+                        <SelectCategoryOption
+                          key={category._id}
+                          category={category}
+                        />
+                      )
+                  )}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group controlId="amount" className="my-2">
+                <Form.Label>How much did it cost?</Form.Label>
+                <Form.Control
+                  className="h-100"
+                  type="number"
+                  step="0.01"
+                  value={newTransaction.amount}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
               {status === "error" && <ErrorMessage />}
             </Modal.Body>
-            <Modal.Footer>
-              <Form.Group className="my-2">
-                <Row>
-                  <Col>
-                    <Button variant="secondary" onClick={closeModal}>
-                      Close
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button variant="primary" type="submit">
-                      Add
-                    </Button>
-                  </Col>
-                </Row>
-              </Form.Group>
+            <Modal.Footer className="d-flex justify-content-between">
+              <Button variant="secondary" onClick={closeModal}>
+                Close
+              </Button>
+              <Button variant="primary" type="submit">
+                Add
+              </Button>
             </Modal.Footer>
           </Form>
         </>
