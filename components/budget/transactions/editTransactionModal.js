@@ -9,118 +9,107 @@ import ErrorMessage from "@/components/layout/errorMessage";
 const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
-  const [edittedTransaction, setEdittedTransaction] = useState(transaction);
-  const [updatingTransaction, setUpdatingTransaction] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [editedTransaction, setEditedTransaction] = useState(transaction);
+  const [status, setStatus] = useState("editing");
 
   const closeEdit = () => {
     setModal("details");
   };
 
-  const editTheTransaction = async (e) => {
-    setUpdatingTransaction(true);
-
-    try {
-      e.preventDefault();
-
-      // If the Edit Transaction Modal is showing, update the transaction and then close the modal
-      if (modal === "edit") {
-        setEdittedTransaction(edittedTransaction);
-        await putTransaction({
-          ...edittedTransaction,
-          oldCategory: transaction.category,
-          oldAmount: transaction.amount,
-        });
-
-        // Fetch the categories to update the state for the categories table
-        await getCategories(dateInfo.month, dateInfo.year);
-
-        setModal("none");
-      } else {
-        setModal("edit");
-      }
-
-      setErrorOccurred(false);
-    } catch (error) {
-      setErrorOccurred(true);
-      console.error(error);
-      return;
-    } finally {
-      setUpdatingTransaction(false);
-    }
-  };
-
   const handleInput = (e) => {
-    setEdittedTransaction({
-      ...edittedTransaction,
+    setEditedTransaction({
+      ...editedTransaction,
       [e.target.id]: e.target.value,
     });
   };
 
-  const handleNumInput = (e) => {
-    const input = e.target.value;
+  const editTheTransaction = async (e) => {
+    setStatus("updating");
 
-    if (input === "")
-      setEdittedTransaction({ ...edittedTransaction, amount: input });
-    else
-      setEdittedTransaction({
-        ...edittedTransaction,
-        amount: parseFloat(input),
+    try {
+      e.preventDefault();
+
+      const formattedAmount = Number(editedTransaction.amount);
+
+      if (isNaN(formattedAmount)) {
+        throw new Error("Invalid amount entered");
+      }
+
+      await putTransaction({
+        ...editedTransaction,
+        amount: formattedAmount,
+        oldCategory: transaction.category,
+        oldAmount: transaction.amount,
       });
+
+      // Fetch the categories to update the state for the categories table
+      await getCategories(dateInfo.month, dateInfo.year);
+
+      setModal("none");
+
+      setStatus("editing");
+    } catch (error) {
+      setStatus("error");
+      console.error(error);
+      return;
+    }
   };
 
   return (
     <Modal show={modal === "edit"} onHide={closeEdit} centered>
-      {!updatingTransaction ? (
+      {status !== "updating" && (
         <>
           <Modal.Header>
-            <Modal.Title>Edit Transaction</Modal.Title>
+            <Modal.Title>Edit Transaction Details</Modal.Title>
           </Modal.Header>
           <Form onSubmit={editTheTransaction}>
             <Modal.Body>
-              <Form.Group className="my-2">
+              <Form.Group className="mb-2">
+                <Form.Label>Date of transaction</Form.Label>
                 <Form.Control
                   id="date"
                   className="h-100"
                   type="date"
                   min={dateInfo.startOfMonth}
                   max={dateInfo.endOfMonth}
-                  value={edittedTransaction.date}
+                  value={editedTransaction.date}
                   onChange={handleInput}
                   required
                 />
               </Form.Group>
               <Form.Group className="my-2">
+                <Form.Label>Stores shopped at</Form.Label>
                 <Form.Control
                   id="store"
                   className="h-100"
                   type="text"
                   placeholder="Store"
-                  value={edittedTransaction.store}
+                  value={editedTransaction.store}
                   onChange={handleInput}
                   required
                 />
               </Form.Group>
               <Form.Group className="my-2">
+                <Form.Label>Items purchased</Form.Label>
                 <Form.Control
                   id="items"
                   className="h-100"
                   type="text"
                   placeholder="What was purchased?"
-                  value={edittedTransaction.items}
+                  value={editedTransaction.items}
                   onChange={handleInput}
                   required
                 />
               </Form.Group>
               <Form.Group className="my-2">
+                <Form.Label>Associated category</Form.Label>
                 <Form.Select
                   id="category"
                   className="h-100"
-                  value={edittedTransaction.category}
+                  value={editedTransaction.category}
                   onChange={handleInput}
                   required
                 >
-                  <option disabled>Choose a Category...</option>
                   {categories.map(
                     (category) =>
                       !category.fixed && (
@@ -133,38 +122,32 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                 </Form.Select>
               </Form.Group>
               <Form.Group className="my-2">
+                <Form.Label>Cost of transaction</Form.Label>
                 <Form.Control
                   id="amount"
                   className="h-100"
                   type="number"
                   step="0.01"
                   placeholder="Amount"
-                  value={edittedTransaction.amount}
-                  onChange={handleNumInput}
+                  value={editedTransaction.amount}
+                  onChange={handleInput}
                   required
                 />
               </Form.Group>
-              {errorOccurred && <ErrorMessage />}
+              {status === "error" && <ErrorMessage />}
             </Modal.Body>
-            <Modal.Footer>
-              <Form.Group className="my-2">
-                <Row>
-                  <Col>
-                    <Button variant="secondary" onClick={closeEdit}>
-                      Cancel
-                    </Button>
-                  </Col>
-                  <Col className="text-nowrap">
-                    <Button variant="primary" type="submit">
-                      Save Changes
-                    </Button>
-                  </Col>
-                </Row>
-              </Form.Group>
+            <Modal.Footer className="d-flex justify-content-between">
+              <Button variant="secondary" onClick={closeEdit}>
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit" className="text-nowrap">
+                Save Changes
+              </Button>
             </Modal.Footer>
           </Form>
         </>
-      ) : (
+      )}
+      {status === "updating" && (
         <LoadingMessage message="Updating this transaction" />
       )}
     </Modal>
