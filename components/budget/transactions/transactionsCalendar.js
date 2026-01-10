@@ -1,8 +1,9 @@
 import { TransactionsContext } from "@/contexts/TransactionsContext";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import TransactionDetailsModal from "./transactionDetailsModal";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const WEEK_LENGTH = 7;
@@ -10,6 +11,15 @@ const WEEK_LENGTH = 7;
 const TransactionsCalendar = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const { categories, categoryColors } = useContext(CategoriesContext);
+
+  const [chosenTransaction, setChosenTransaction] = useState({});
+  const [modal, setModal] = useState("none");
+
+  const openTransaction = (transaction) => {
+    setChosenTransaction(transaction);
+
+    setModal("details");
+  };
 
   const monthCalendar = useMemo(() => {
     // Create the 2-D array for the given month
@@ -34,6 +44,7 @@ const TransactionsCalendar = ({ dateInfo }) => {
         amount: transaction.amount,
         color: categoryColors[transaction.category],
         icon: "●",
+        fromCalendar: true,
       });
     });
 
@@ -57,14 +68,16 @@ const TransactionsCalendar = ({ dateInfo }) => {
               }
 
               transactionsMap.get(subcategoryDateISO).push({
-                _id: subcategory._id,
+                _id: subcategory.id,
                 date: subcategoryDateISO,
                 store: subcategory.name,
                 items: "Fixed Subcategory",
-                category: subcategory.name,
+                category: category.name,
                 amount: subcategory.actual,
                 color: category.color,
                 icon: "■",
+                isCategory: true,
+                fromCalendar: true,
               });
             }
           });
@@ -90,6 +103,8 @@ const TransactionsCalendar = ({ dateInfo }) => {
               amount: category.actual,
               color: category.color,
               icon: "■",
+              isCategory: true,
+              fromCalendar: true,
             });
           }
         }
@@ -149,40 +164,49 @@ const TransactionsCalendar = ({ dateInfo }) => {
   }, [dateInfo, categories, categoryColors, transactions]);
 
   return (
-    <Table striped className={styles.equal_columns}>
-      <thead>
-        <tr className="table-dark">
-          {DAYS_OF_WEEK.map((day, index) => (
-            <td key={index} className="fw-bold text-center">
-              <span className="d-md-none">{day.slice(0, 1)}</span>
-              <span className="d-none d-md-block">{day}</span>
-            </td>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {monthCalendar.map((week, weekIndex) => (
-          <tr key={weekIndex} className={styles.fixed_height}>
-            {week.map((day, index) => (
-              <td key={index}>
-                <p className="fw-bold text-dark">{day.dateNumber}</p>
-                <div className="d-flex flex-wrap justify-content-center">
-                  {day.transactions.map((transaction) => (
-                    <span
-                      key={transaction.id}
-                      style={{ color: transaction.color }}
-                      className="mx-md-1 fs-2"
-                    >
-                      {transaction.icon}
-                    </span>
-                  ))}
-                </div>
+    <>
+      <Table striped className={styles.equal_columns}>
+        <thead>
+          <tr className="table-dark">
+            {DAYS_OF_WEEK.map((day, index) => (
+              <td key={index} className="fw-bold text-center">
+                <span className="d-md-none">{day.slice(0, 1)}</span>
+                <span className="d-none d-md-block">{day}</span>
               </td>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {monthCalendar.map((week, weekIndex) => (
+            <tr key={weekIndex} className={styles.fixed_height}>
+              {week.map((day, index) => (
+                <td key={index}>
+                  <p className="fw-bold text-dark">{day.dateNumber}</p>
+                  <div className="d-flex flex-wrap justify-content-center">
+                    {day.transactions.map((transaction) => (
+                      <span
+                        key={transaction._id}
+                        style={{ color: transaction.color }}
+                        className="mx-md-1 fs-2 clicker"
+                        onClick={() => openTransaction(transaction)}
+                      >
+                        {transaction.icon}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
+      <TransactionDetailsModal
+        transaction={chosenTransaction}
+        modal={modal}
+        setModal={setModal}
+      />
+    </>
   );
 };
 
