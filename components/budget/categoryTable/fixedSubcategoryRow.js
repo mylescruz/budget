@@ -1,3 +1,4 @@
+import dayFormatter from "@/helpers/dayFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 cell";
@@ -14,7 +15,7 @@ const FixedSubcategoryRow = ({ subcategory }) => {
       </th>
       <td className={amountColumn}>{dollarFormatter(subcategory.actual)}</td>
       <td className={chargedColumn} />
-      <td className={dayColumn}>{subcategory.dayOfMonth}</td>
+      <td className={dayColumn}>{dayFormatter(subcategory.dayOfMonth)}</td>
       <td className={progressColumn} />
     </tr>
   );

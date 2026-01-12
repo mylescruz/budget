@@ -252,7 +252,7 @@ const EditCategoryModal = ({
                       <tr>
                         <th>Name</th>
                         <th>Actual</th>
-                        {editedCategory.fixed && <th>Day</th>}
+                        {editedCategory.fixed && <th>Due</th>}
                         <th></th>
                       </tr>
                     </thead>

@@ -5,6 +5,7 @@ import todayInfo from "@/helpers/todayInfo";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import dayFormatter from "@/helpers/dayFormatter";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3";
 const amountColumn = "col-3 col-md-2 cell text-end fw-bold";
@@ -125,7 +126,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
         </th>
         <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
         <td className={chargedColumn}>{dollarFormatter(categoryActual)}</td>
-        <td className={dayColumn}>{category.dayOfMonth}</td>
+        <td className={dayColumn}>{dayFormatter(category.dayOfMonth)}</td>
         <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (

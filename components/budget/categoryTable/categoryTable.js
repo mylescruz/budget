@@ -59,7 +59,7 @@ const CategoryTable = ({ dateInfo }) => {
             <th className={categoryColumn}>Category</th>
             <th className={fixedAmountColumn}>Amount</th>
             <th className={chargedColumn}>Charged</th>
-            <th className={dayColumn}>Day</th>
+            <th className={dayColumn}>Due</th>
             <th className={progressColumn}>Progress</th>
           </tr>
           {categories.map(

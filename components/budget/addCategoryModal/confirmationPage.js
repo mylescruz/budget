@@ -1,3 +1,4 @@
+import dayFormatter from "@/helpers/dayFormatter";
 import { Button, Col, Row } from "react-bootstrap";
 
 const ConfirmationPage = ({ newCategory }) => {
@@ -25,8 +26,8 @@ const ConfirmationPage = ({ newCategory }) => {
       </p>
       {newCategory.fixed && !newCategory.hasSubcategory && (
         <p className="my-1">
-          <span className="fw-bold">Day of the month:</span>{" "}
-          {newCategory.dayOfMonth}
+          <span className="fw-bold">Due on the:</span>{" "}
+          {dayFormatter(newCategory.dayOfMonth)}
         </p>
       )}
       {newCategory.subcategories.length > 0 && (
