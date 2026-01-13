@@ -7,6 +7,7 @@ import AddSubcategoryPage from "./addSubcategoryPage";
 import EditSubcategoryPage from "./editSubcategoryPage";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import dayFormatter from "@/helpers/dayFormatter";
 
 const EditCategoryModal = ({
   category,
@@ -18,7 +19,6 @@ const EditCategoryModal = ({
     useContext(CategoriesContext);
   const { transactions, updateTransactions } = useContext(TransactionsContext);
 
-  console.log(category);
   const [editedCategory, setEditedCategory] = useState(category);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
@@ -262,7 +262,7 @@ const EditCategoryModal = ({
                           <td>{subcategory.name}</td>
                           <td>{dollarFormatter(subcategory.actual)}</td>
                           {editedCategory.fixed && (
-                            <td>{subcategory.dayOfMonth}</td>
+                            <td>{dayFormatter(subcategory.dayOfMonth)}</td>
                           )}
                           <td
                             onClick={() => {
