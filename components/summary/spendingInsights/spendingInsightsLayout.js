@@ -142,15 +142,51 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
       });
 
     return [
-      { title: "Top Spending Month", data: topSpendingMonths },
-      { title: "Lowest Spending Month", data: lowestSpendingMonths },
-      { title: "Top Overspent Month", data: topOverspendingMonths },
-      { title: "Top Spending Categories", data: topSpendingCategories },
-      { title: "Top Fixed Categories", data: topFixedCategories },
-      { title: "Top Overspent Categories", data: topOverspendingCategories },
-      { title: "Top Transactions", data: topTransactions },
-      { title: "Top Stores Shopped At", data: topStoresShopped },
-      { title: "Top Stores Visited", data: topStoresVisited },
+      {
+        title: "Top Spending Month",
+        data: topSpendingMonths,
+        emptyMessage: "You somehow haven't spent any money this year!",
+      },
+      {
+        title: "Lowest Spending Month",
+        data: lowestSpendingMonths,
+        emptyMessage: "You somehow haven't spent any money this year!",
+      },
+      {
+        title: "Top Overspent Month",
+        data: topOverspendingMonths,
+        emptyMessage: "You haven't overspent during any month! Congrats!",
+      },
+      {
+        title: "Top Spending Categories",
+        data: topSpendingCategories,
+        emptyMessage: "You somehow haven't spent any money this year!",
+      },
+      {
+        title: "Top Fixed Categories",
+        data: topFixedCategories,
+        emptyMessage: "You somehow don't have ANY bills! Good for you!",
+      },
+      {
+        title: "Top Overspent Categories",
+        data: topOverspendingCategories,
+        emptyMessage: "You haven't overspent in any category! Congrats!",
+      },
+      {
+        title: "Top Transactions",
+        data: topTransactions,
+        emptyMessage: "You somehow haven't spent any money this year!",
+      },
+      {
+        title: "Top Stores Shopped At",
+        data: topStoresShopped,
+        emptyMessage: "You somehow haven't shopped anywhere this year!",
+      },
+      {
+        title: "Top Stores Visited",
+        data: topStoresVisited,
+        emptyMessage: "You somehow haven't shopped anywhere this year!",
+      },
     ];
   }, [months, categories, transactions]);
 
@@ -159,11 +195,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
       <Row>
         <h3 className="text-center">Spending Insights</h3>
         {insights.map((insight) => (
-          <InsightCard
-            key={insight.title}
-            title={insight.title}
-            data={insight.data}
-          />
+          <InsightCard key={insight.title} insight={insight} />
         ))}
       </Row>
     </>
