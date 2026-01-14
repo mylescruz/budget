@@ -21,18 +21,28 @@ const BudgetYearChooser = ({ year, setYear }) => {
   };
 
   return (
-    <Row className="d-flex align-items-center text-center">
-      <Col className="col-4">
-        <Button onClick={previousYear} disabled={year === budgetYears.min}>
-          {year - 1}
+    <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
+      <Col className="col-3">
+        <Button
+          onClick={previousYear}
+          size="sm"
+          className="btn-dark fw-bold"
+          disabled={year === budgetYears.min || budgetYearsLoading}
+        >
+          &#60;
         </Button>
       </Col>
-      <Col className="col-4">
-        <h2>{year}</h2>
+      <Col className="col-6">
+        <h2 className="p-0 m-0 fw-bold">{year}</h2>
       </Col>
-      <Col className="col-4">
-        <Button onClick={nextYear} disabled={year === budgetYears.max}>
-          {year + 1}
+      <Col className="col-3">
+        <Button
+          onClick={nextYear}
+          size="sm"
+          className="btn-dark fw-bold"
+          disabled={year === budgetYears.max || budgetYearsLoading}
+        >
+          &#62;
         </Button>
       </Col>
     </Row>
