@@ -6,7 +6,9 @@ const HistoryBudgetLayout = ({ dateInfo }) => {
   return (
     <>
       <div className={styles.backContainer}>
-        <Link href="/history">&#8592; Back to History</Link>
+        <Link href={{ pathname: "/history", query: { year: dateInfo.year } }}>
+          &#8592; Back to History
+        </Link>
       </div>
       <BudgetLayout dateInfo={dateInfo} />
     </>

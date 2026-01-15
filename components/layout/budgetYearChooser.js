@@ -1,16 +1,8 @@
 import useBudgetYears from "@/hooks/useBudgetYears";
-import { useEffect } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 
 const BudgetYearChooser = ({ year, setYear }) => {
   const { budgetYears, budgetYearsLoading } = useBudgetYears();
-
-  // Set the current year
-  useEffect(() => {
-    if (!budgetYearsLoading && budgetYears) {
-      setYear(budgetYears.current);
-    }
-  }, [budgetYears, budgetYearsLoading, setYear]);
 
   const nextYear = () => {
     setYear(year + 1);

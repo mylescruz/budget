@@ -7,11 +7,15 @@ const UserNavbar = ({
   toggleNavbar,
   userSignOut,
 }) => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const year = today.getMonth() === 0 ? currentYear - 1 : currentYear;
+
   const pages = [
     { name: "Budget", link: "/budget" },
     { name: "Income", link: "/income" },
     { name: "Summary", link: "/summary" },
-    { name: "History", link: "/history" },
+    { name: "History", link: "/history", year: year },
     { name: "Account", link: "/account" },
   ];
 
@@ -29,7 +33,14 @@ const UserNavbar = ({
               <Nav.Link
                 key={index}
                 as={Link}
-                href={page.link}
+                href={
+                  page.year
+                    ? {
+                        pathname: page.link,
+                        query: { year: page.year },
+                      }
+                    : page.link
+                }
                 onClick={linkClicked}
               >
                 {page.name}

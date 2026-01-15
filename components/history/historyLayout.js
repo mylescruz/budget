@@ -41,9 +41,9 @@ const InnerHistoryLayout = ({ year }) => {
   }
 };
 
-const HistoryLayout = ({ dateInfo }) => {
+const HistoryLayout = ({ historyYear }) => {
   // Define state to change years for user
-  const [year, setYear] = useState(dateInfo.year);
+  const [year, setYear] = useState(historyYear);
 
   return (
     <Container className="w-100">
