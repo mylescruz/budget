@@ -54,7 +54,7 @@ const TotalsCards = ({ summary }) => {
       modal: "spent",
     },
     {
-      title: "Total Remaining",
+      title: "Total Left",
       amount: totalRemaining,
       modal: "remaining",
     },

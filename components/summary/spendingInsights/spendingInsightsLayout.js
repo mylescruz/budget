@@ -143,17 +143,17 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
 
     return [
       {
-        title: "Top Spending Month",
+        title: "Top Spending Months",
         data: topSpendingMonths,
         emptyMessage: "You somehow haven't spent any money this year!",
       },
       {
-        title: "Lowest Spending Month",
+        title: "Lowest Spending Months",
         data: lowestSpendingMonths,
         emptyMessage: "You somehow haven't spent any money this year!",
       },
       {
-        title: "Top Overspent Month",
+        title: "Months Over Budget",
         data: topOverspendingMonths,
         emptyMessage: "You haven't overspent during any month! Congrats!",
       },
@@ -168,7 +168,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
         emptyMessage: "You somehow don't have ANY bills! Good for you!",
       },
       {
-        title: "Top Overspent Categories",
+        title: "Categories Over Budget",
         data: topOverspendingCategories,
         emptyMessage: "You haven't overspent in any category! Congrats!",
       },
