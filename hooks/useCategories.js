@@ -172,6 +172,7 @@ const useCategories = (month, year) => {
             }
           } else {
             categoryActuals += subcategoryActual;
+            fixedActual += subcategoryActual;
           }
         });
       } else if (category.fixed && category.subcategories.length === 0) {
