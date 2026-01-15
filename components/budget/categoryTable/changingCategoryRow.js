@@ -11,6 +11,10 @@ const spentColumn = "col-3 col-md-2 cell text-end";
 const leftColumn = "col-3 col-md-2 cell text-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
 
+const SUCCESS_VALUE = 10;
+const WARNING_VALUE = 11;
+const DANGER_VALUE = 12;
+
 const ChangingCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [editCategoryClicked, setEditCategoryClicked] = useState(false);
@@ -120,7 +124,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
         </td>
         <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-center">
-            {statusBarLength === 12 && (
+            {statusBarLength === DANGER_VALUE && (
               <div
                 className={`${
                   category.actual > category.budget ? "bg-danger" : "bg-warning"
@@ -129,7 +133,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
                 {percent}%
               </div>
             )}
-            {budgetBarLength === 12 && (
+            {budgetBarLength === DANGER_VALUE && (
               <div
                 className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar ${
                   category.budget < 0 && "text-danger"
@@ -141,14 +145,12 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
             {statusBarLength !== 0 && budgetBarLength !== 0 && (
               <>
                 <div
-                  className={`${statusBarLength < 8 && "bg-success"}
-                  ${
-                    statusBarLength >= 8 &&
-                    statusBarLength <= 11 &&
-                    "bg-warning"
+                  className={`${
+                    statusBarLength <= SUCCESS_VALUE && "bg-success"
                   }
+                  ${statusBarLength === WARNING_VALUE && "bg-warning"}
                   ${
-                    (statusBarLength === 12 ||
+                    (statusBarLength === DANGER_VALUE ||
                       category.actual > category.budget) &&
                     "bg-danger"
                   }
