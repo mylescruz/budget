@@ -58,9 +58,9 @@ const InnerSummaryLayout = ({ year }) => {
   }
 };
 
-const SummaryLayout = ({ dateInfo }) => {
+const SummaryLayout = ({ summaryYear }) => {
   // Define state to change years for user
-  const [year, setYear] = useState(dateInfo.year);
+  const [year, setYear] = useState(summaryYear);
 
   return (
     <Container className="w-100">

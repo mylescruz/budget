@@ -14,7 +14,7 @@ const AdminNavbar = ({
   const pages = [
     { name: "Budget", link: "/budget" },
     { name: "Income", link: "/income" },
-    { name: "Summary", link: "/summary" },
+    { name: "Summary", link: "/summary", year: year },
     { name: "History", link: "/history", year: year },
     { name: "Account", link: "/account" },
     { name: "Users", link: "/admin/users" },

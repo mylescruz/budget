@@ -32,6 +32,8 @@ const InnerDashboard = ({ dateInfo }) => {
   const [topCategories, setTopCategories] = useState([]);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
 
+  const summaryYear = dateInfo.month === 1 ? dateInfo.year - 1 : dateInfo.year;
+
   // Get the top 5 categories to display on the dashboard
   useEffect(() => {
     if (categories) {
@@ -164,13 +166,15 @@ const InnerDashboard = ({ dateInfo }) => {
               <Col className="col-12">
                 <Card className="my-2 card-background">
                   <Card.Body>
-                    <h4>{dateInfo.year} Summary</h4>
+                    <h4>{summaryYear} Summary</h4>
                     <p>View your total spending for the year</p>
                     <Button
                       as={Link}
-                      href="/summary"
+                      href={{
+                        pathname: "/summary",
+                        query: { year: summaryYear },
+                      }}
                       variant="primary"
-                      className=""
                     >
                       Summary
                     </Button>

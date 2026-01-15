@@ -9,8 +9,7 @@ export default function Summary() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const today = new Date();
-  const dateInfo = getDateInfo(today);
+  const year = parseInt(router.query.year);
 
   // Create a loading indicator while check on the status of a user's session
   if (status === "loading") {
@@ -26,7 +25,7 @@ export default function Summary() {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <SummaryLayout dateInfo={dateInfo} />
+        <SummaryLayout summaryYear={year} />
       </>
     );
   }
