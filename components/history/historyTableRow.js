@@ -12,6 +12,10 @@ const remainingColumn =
   "d-none col-md-2 d-md-flex align-items-center justify-content-end";
 const progressColumn = "col-3 col-lg-4";
 
+const SUCCESS_VALUE = 10;
+const WARNING_VALUE = 11;
+const DANGER_VALUE = 12;
+
 const HistoryTableRow = ({ month }) => {
   const router = useRouter();
 
@@ -63,19 +67,19 @@ const HistoryTableRow = ({ month }) => {
       </td>
       <td className={progressColumn}>
         <div className="d-flex flex-row align-items-center text-white text-end">
-          {statusBarLength === 12 && (
+          {statusBarLength === DANGER_VALUE && (
             <div
               className={`${
                 month.actual > month.budget ? "bg-danger" : "bg-warning"
-              } col-${statusBarLength} rounded py-1 px-2 status-bar text-center`}
+              } col-${statusBarLength} rounded py-1 px-2 status-bar fw-bold text-center`}
             >
               {percent}%
             </div>
           )}
-          {budgetBarLength === 12 && (
+          {budgetBarLength === DANGER_VALUE && (
             <div
-              className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
-                month.budget < 0 && "text-danger"
+              className={`bg-dark col-${budgetBarLength} fw-bold rounded py-1 px-2 status-bar text-center ${
+                month.budget < 0 && "text-danger fw-bold"
               }`}
             >
               {percent}%
@@ -84,17 +88,14 @@ const HistoryTableRow = ({ month }) => {
           {statusBarLength !== 0 && budgetBarLength !== 0 && (
             <>
               <div
-                className={`${statusBarLength < 8 && "bg-success"}
+                className={`${statusBarLength <= SUCCESS_VALUE && "bg-success"}
+                  ${statusBarLength === WARNING_VALUE && "bg-warning"}
                   ${
-                    statusBarLength >= 8 &&
-                    statusBarLength <= 11 &&
-                    "bg-warning"
-                  }
-                  ${
-                    (statusBarLength === 12 || month.actual > month.budget) &&
+                    (statusBarLength === DANGER_VALUE ||
+                      month.actual > month.budget) &&
                     "bg-danger"
                   }
-                  col-${statusBarLength} border rounded-start py-1 px-2 status-bar text-center`}
+                  col-${statusBarLength} border fw-bold rounded-start py-1 px-2 status-bar text-center`}
               >
                 {percent}%
               </div>

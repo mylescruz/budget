@@ -11,6 +11,10 @@ const remainingColumn =
   "d-none col-md-2 d-md-flex align-items-center justify-content-end";
 const progressColumn = "col-3 col-lg-4";
 
+const SUCCESS_VALUE = 10;
+const WARNING_VALUE = 11;
+const DANGER_VALUE = 12;
+
 const HistoryTable = ({ history, historyTotals }) => {
   let statusBarLength;
   let budgetBarLength;
@@ -86,7 +90,7 @@ const HistoryTable = ({ history, historyTotals }) => {
           <th className={progressColumn}>
             {history.length > 0 && (
               <div className="d-flex flex-row align-items-center text-white text-end">
-                {statusBarLength === 12 && (
+                {statusBarLength === DANGER_VALUE && (
                   <div
                     className={`${
                       historyTotals.actual > historyTotals.budget
@@ -97,7 +101,7 @@ const HistoryTable = ({ history, historyTotals }) => {
                     {percent}%
                   </div>
                 )}
-                {budgetBarLength === 12 && (
+                {budgetBarLength === DANGER_VALUE && (
                   <div
                     className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
                       historyTotals.budget < 0 && "text-danger"
@@ -109,14 +113,12 @@ const HistoryTable = ({ history, historyTotals }) => {
                 {statusBarLength !== 0 && budgetBarLength !== 0 && (
                   <>
                     <div
-                      className={`${statusBarLength < 8 && "bg-success"}
+                      className={`${
+                        statusBarLength <= SUCCESS_VALUE && "bg-success"
+                      }
+                  ${statusBarLength === WARNING_VALUE && "bg-warning"}
                   ${
-                    statusBarLength >= 8 &&
-                    statusBarLength <= 11 &&
-                    "bg-warning"
-                  }
-                  ${
-                    (statusBarLength === 12 ||
+                    (statusBarLength === DANGER_VALUE ||
                       historyTotals.actual > historyTotals.budget) &&
                     "bg-danger"
                   }
