@@ -9,7 +9,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Highest spending months
     const topSpendingMonths = [...months]
       .sort((a, b) => b.actual - a.actual)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((month) => {
         return {
           name: month.name,
@@ -20,7 +20,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Lowest spending months
     const lowestSpendingMonths = [...months]
       .sort((a, b) => a.actual - b.actual)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((month) => {
         return {
           name: month.name,
@@ -32,7 +32,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const topOverspendingMonths = [...months]
       .filter((month) => month.remaining < 0)
       .sort((a, b) => a.remaining - b.remaining)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((month) => {
         return {
           name: month.name,
@@ -48,7 +48,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const topSpendingCategories = [...categories]
       .filter((category) => !category.fixed)
       .sort((a, b) => b.actual - a.actual)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((category) => {
         return {
           name: category.name,
@@ -60,7 +60,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const topFixedCategories = [...categories]
       .filter((category) => category.fixed)
       .sort((a, b) => b.actual - a.actual)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((category) => {
         return {
           name: category.name,
@@ -72,7 +72,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const topOverspendingCategories = [...categories]
       .filter((category) => category.remaining < 0)
       .sort((a, b) => a.remaining - b.remaining)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((category) => {
         return {
           name: category.name,
@@ -87,7 +87,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Top transactions of the year
     const topTransactions = [...transactions]
       .sort((a, b) => b.amount - a.amount)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((transaction) => {
         return {
           name: transaction.store,
@@ -122,7 +122,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Top stores shopped at the year
     const topStoresShopped = [...stores]
       .sort((a, b) => b.amount - a.amount)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((store) => {
         return {
           name: store.store,
@@ -133,7 +133,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Top stores visited
     const topStoresVisited = [...stores]
       .sort((a, b) => b.visits - a.visits)
-      .slice(0, 3)
+      .slice(0, 10)
       .map((store) => {
         return {
           name: store.store,
