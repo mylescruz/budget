@@ -58,7 +58,10 @@ const InnerSummaryLayout = ({ year }) => {
         <Row className="my-4 mx-auto">
           <h3 className="text-center">{year} Transactions</h3>
           <Col className="col-12 col-xl-10 mx-auto">
-            <TransactionsSummaryLayout transactions={summary.transactions} />
+            <TransactionsSummaryLayout
+              transactions={summary.transactions}
+              categories={summary.categories}
+            />
           </Col>
         </Row>
       </div>
