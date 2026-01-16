@@ -1,6 +1,5 @@
-import dateFormatter from "@/helpers/dateFormatter";
-import dollarFormatter from "@/helpers/dollarFormatter";
 import { Table } from "react-bootstrap";
+import TransactionsSummaryTableRow from "./transactionsSummaryTableRow";
 
 const dateColumn = "col-3 col-md-2 col-lg-1";
 const storeColumn = "col-6 col-md-5 col-lg-3";
@@ -11,7 +10,7 @@ const amountColumn = "col-3 col-md-2 text-end";
 const TransactionsSummaryTable = ({ sortedTransactions }) => {
   return (
     <>
-      <Table>
+      <Table striped hover>
         <thead>
           <tr className="table-dark d-flex">
             <th className={dateColumn}>Date</th>
@@ -30,25 +29,10 @@ const TransactionsSummaryTable = ({ sortedTransactions }) => {
             </tr>
           ) : (
             sortedTransactions.map((transaction) => (
-              <tr key={transaction._id} className="d-flex">
-                <td className={dateColumn}>
-                  {dateFormatter(transaction.date)}
-                </td>
-                <td className={storeColumn}>
-                  {transaction.store.length > 25
-                    ? transaction.store.slice(0, 25) + "..."
-                    : transaction.store}
-                </td>
-                <td className={itemsColumn}>
-                  {transaction.items.length > 30
-                    ? transaction.items.slice(0, 30) + "..."
-                    : transaction.items}
-                </td>
-                <td className={categoryColumn}>{transaction.category}</td>
-                <td className={amountColumn}>
-                  {dollarFormatter(transaction.amount)}
-                </td>
-              </tr>
+              <TransactionsSummaryTableRow
+                key={transaction._id}
+                transaction={transaction}
+              />
             ))
           )}
         </tbody>
