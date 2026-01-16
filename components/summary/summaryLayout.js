@@ -7,6 +7,7 @@ import BudgetYearChooser from "../layout/budgetYearChooser";
 import TotalsCards from "./totalsCards/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
+import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
@@ -51,6 +52,13 @@ const InnerSummaryLayout = ({ year }) => {
               year={year}
               monthsLength={summary.monthsLength}
             />
+          </Col>
+        </Row>
+
+        <Row className="my-4 mx-auto">
+          <h3 className="text-center">{year} Transactions</h3>
+          <Col className="col-12 col-xl-10 mx-auto">
+            <TransactionsSummaryLayout transactions={summary.transactions} />
           </Col>
         </Row>
       </div>
