@@ -18,32 +18,53 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
 
     categories.forEach((category) => {
       if (!category.fixed) {
-        filteredCategories.push({
-          id: category._id,
-          name: category.name,
-          subcategories: category.subcategories.map(
-            (subcategory) => subcategory.name
-          ),
-        });
-
-        category.subcategories.forEach((subcategory) => {
+        if (category.subcategories.length !== 0) {
           filteredCategories.push({
-            id: subcategory.id,
-            name: subcategory.name,
-            isSubcategory: true,
+            id: category._id,
+            name: category.name,
+            subcategories: category.subcategories.map(
+              (subcategory) => subcategory.name
+            ),
           });
-        });
+
+          category.subcategories.forEach((subcategory) => {
+            filteredCategories.push({
+              id: subcategory.id,
+              name: subcategory.name,
+              isSubcategory: true,
+            });
+          });
+        } else {
+          filteredCategories.push({
+            id: category._id,
+            name: category.name,
+          });
+        }
       }
     });
 
     return filteredCategories;
   }, [categories]);
 
-  const searchedTransactions = useMemo(() => {
-    if (searchFilter === "") {
+  const filteredTransactions = useMemo(() => {
+    if (categoryFilter.name === "All Categories") {
       return transactions;
     } else {
-      return transactions.filter((transaction) => {
+      const selectedCategories = categoryFilter.subcategories ?? [
+        categoryFilter.name,
+      ];
+
+      return transactions.filter((transaction) =>
+        selectedCategories.includes(transaction.category)
+      );
+    }
+  }, [categoryFilter]);
+
+  const searchedTransactions = useMemo(() => {
+    if (searchFilter === "") {
+      return filteredTransactions;
+    } else {
+      return filteredTransactions.filter((transaction) => {
         if (
           transaction.store.toLowerCase().includes(searchFilter) ||
           transaction.items.toLowerCase().includes(searchFilter)
@@ -52,33 +73,18 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
         }
       });
     }
-  }, [searchFilter]);
-
-  const filteredTransactions = useMemo(() => {
-    if (categoryFilter.name === "All Categories") {
-      return searchedTransactions;
-    } else {
-      const selectedCategories =
-        categoryFilter.subcategories.length !== 0
-          ? categoryFilter.subcategories
-          : [categoryFilter.name];
-
-      return searchedTransactions.filter((transaction) =>
-        selectedCategories.includes(transaction.category)
-      );
-    }
-  }, [searchedTransactions, categoryFilter]);
+  }, [searchFilter, filteredTransactions]);
 
   const sortedTransactions = useMemo(() => {
-    setTotalPages(Math.ceil(filteredTransactions.length / transactionsPerPage));
+    setTotalPages(Math.ceil(searchedTransactions.length / transactionsPerPage));
 
-    return filteredTransactions
+    return searchedTransactions
       .sort((a, b) => new Date(a.date) - new Date(b.date))
       .slice(
         page * transactionsPerPage - transactionsPerPage,
         page * transactionsPerPage
       );
-  }, [filteredTransactions, page]);
+  }, [searchedTransactions, page]);
 
   const handleInput = (e) => {
     setSearchFilter(e.target.value);
