@@ -24,8 +24,6 @@ const sortOptions = [
   "Amount (Desc)",
 ];
 
-const incomeTypes = ["All", "Paycheck", "Sale", "Gift", "Unemployment", "Loan"];
-
 const allTypes = "All";
 
 const InnerIncomeLayout = ({ year }) => {
@@ -45,18 +43,25 @@ const InnerIncomeLayout = ({ year }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const incomeFilters = useMemo(() => {
+    setTypeFilter(allTypes);
+
+    const filteredIncome = ["All"];
+
+    income.forEach((source) => {
+      if (!filteredIncome.includes(source.type)) {
+        filteredIncome.push(source.type);
+      }
+    });
+
+    return filteredIncome;
+  }, [income]);
+
   const filteredIncome = useMemo(() => {
     if (typeFilter === "All") {
       return income;
     } else {
       const final = income.filter((source) => source.type === typeFilter);
-
-      if (final.length === 0) {
-        setPage(0);
-        setTotalPages(0);
-      } else {
-        setPage(1);
-      }
 
       return final;
     }
@@ -184,7 +189,7 @@ const InnerIncomeLayout = ({ year }) => {
                 <Dropdown className="mx-1">
                   <Dropdown.Toggle variant="dark">Filter</Dropdown.Toggle>
                   <Dropdown.Menu>
-                    {incomeTypes.map((type) => (
+                    {incomeFilters.map((type) => (
                       <Dropdown.Item
                         key={type}
                         className={
