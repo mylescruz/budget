@@ -58,19 +58,19 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
         selectedCategories.includes(transaction.category)
       );
     }
-  }, [categoryFilter]);
+  }, [categoryFilter, transactions]);
 
   const searchedTransactions = useMemo(() => {
     if (searchFilter === "") {
       return filteredTransactions;
     } else {
       return filteredTransactions.filter((transaction) => {
-        if (
-          transaction.store.toLowerCase().includes(searchFilter) ||
-          transaction.items.toLowerCase().includes(searchFilter)
-        ) {
-          return transaction;
-        }
+        return (
+          transaction.store
+            .toLowerCase()
+            .includes(searchFilter.toLowerCase()) ||
+          transaction.items.toLowerCase().includes(searchFilter.toLowerCase())
+        );
       });
     }
   }, [searchFilter, filteredTransactions]);
