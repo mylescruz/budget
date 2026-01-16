@@ -64,7 +64,7 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
     if (searchFilter === "") {
       return filteredTransactions;
     } else {
-      return filteredTransactions.filter((transaction) => {
+      const final = filteredTransactions.filter((transaction) => {
         return (
           transaction.store
             .toLowerCase()
@@ -72,6 +72,15 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
           transaction.items.toLowerCase().includes(searchFilter.toLowerCase())
         );
       });
+
+      if (final.length === 0) {
+        setPage(0);
+        setTotalPages(0);
+      } else {
+        setPage(1);
+      }
+
+      return final;
     }
   }, [searchFilter, filteredTransactions]);
 
@@ -140,7 +149,7 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
             onClick={previousPage}
             size="sm"
             className="btn-dark fw-bold"
-            disabled={page === 1}
+            disabled={page === 1 || page === 0}
           >
             &#60;
           </Button>

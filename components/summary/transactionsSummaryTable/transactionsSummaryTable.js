@@ -22,25 +22,35 @@ const TransactionsSummaryTable = ({ sortedTransactions }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedTransactions.map((transaction) => (
-            <tr key={transaction._id} className="d-flex">
-              <td className={dateColumn}>{dateFormatter(transaction.date)}</td>
-              <td className={storeColumn}>
-                {transaction.store.length > 25
-                  ? transaction.store.slice(0, 25) + "..."
-                  : transaction.store}
-              </td>
-              <td className={itemsColumn}>
-                {transaction.items.length > 30
-                  ? transaction.items.slice(0, 30) + "..."
-                  : transaction.items}
-              </td>
-              <td className={categoryColumn}>{transaction.category}</td>
-              <td className={amountColumn}>
-                {dollarFormatter(transaction.amount)}
+          {sortedTransactions.length === 0 ? (
+            <tr>
+              <td colSpan={1} className="text-center fw-bold">
+                There are no transactions that match these filters
               </td>
             </tr>
-          ))}
+          ) : (
+            sortedTransactions.map((transaction) => (
+              <tr key={transaction._id} className="d-flex">
+                <td className={dateColumn}>
+                  {dateFormatter(transaction.date)}
+                </td>
+                <td className={storeColumn}>
+                  {transaction.store.length > 25
+                    ? transaction.store.slice(0, 25) + "..."
+                    : transaction.store}
+                </td>
+                <td className={itemsColumn}>
+                  {transaction.items.length > 30
+                    ? transaction.items.slice(0, 30) + "..."
+                    : transaction.items}
+                </td>
+                <td className={categoryColumn}>{transaction.category}</td>
+                <td className={amountColumn}>
+                  {dollarFormatter(transaction.amount)}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
     </>
