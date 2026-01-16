@@ -173,9 +173,9 @@ const InnerIncomeLayout = ({ year }) => {
             &#9432; You don't have any income yet! Enter a new source above.
           </div>
         ) : (
-          <Row className="d-flex mt-4">
-            <Col className="d-flex justify-content-between align-items-center col-12 col-lg-10 mt-2 mb-4 mx-auto">
-              <div className="w-100">
+          <div className="d-flex flex-column mt-4">
+            <Row className="d-flex align-items-center col-12 col-lg-10 mt-2 mb-4 mx-auto">
+              <Col className="col-6 col-md-8 col-xl-10">
                 <Form.Group controlId="searchFilter">
                   <Form.Control
                     type="text"
@@ -184,9 +184,9 @@ const InnerIncomeLayout = ({ year }) => {
                     onChange={handleInput}
                   />
                 </Form.Group>
-              </div>
-              <div className="text-end">
-                <Dropdown className="mx-1">
+              </Col>
+              <Col className="col-3 col-md-2 col-xl-1 text-start text-md-end">
+                <Dropdown>
                   <Dropdown.Toggle variant="dark">Filter</Dropdown.Toggle>
                   <Dropdown.Menu>
                     {incomeFilters.map((type) => (
@@ -204,8 +204,8 @@ const InnerIncomeLayout = ({ year }) => {
                     ))}
                   </Dropdown.Menu>
                 </Dropdown>
-              </div>
-              <div className="text-end">
+              </Col>
+              <Col className="col-3 col-md-2 col-xl-1 text-end">
                 <Dropdown>
                   <Dropdown.Toggle variant="dark">Sort</Dropdown.Toggle>
                   <Dropdown.Menu className={styles.sortMenu}>
@@ -224,8 +224,8 @@ const InnerIncomeLayout = ({ year }) => {
                     ))}
                   </Dropdown.Menu>
                 </Dropdown>
-              </div>
-            </Col>
+              </Col>
+            </Row>
 
             <Row className="d-flex mb-4">
               <Col className="mx-auto col-12 col-lg-10">
@@ -266,7 +266,7 @@ const InnerIncomeLayout = ({ year }) => {
                 </Button>
               </Col>
             </Row>
-          </Row>
+          </div>
         )}
 
         <AddIncomeModal {...AddIncomeModalProps} />
