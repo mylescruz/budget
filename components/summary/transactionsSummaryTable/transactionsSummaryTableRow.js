@@ -31,7 +31,11 @@ const TransactionsSummaryTableRow = ({ transaction }) => {
             : transaction.items}
         </td>
         <td className={categoryColumn}>{transaction.category}</td>
-        <td className={amountColumn}>{dollarFormatter(transaction.amount)}</td>
+        <td className={amountColumn}>
+          <span className={transaction.amount < 0 ? "text-danger fw-bold" : ""}>
+            {dollarFormatter(transaction.amount)}
+          </span>
+        </td>
       </tr>
 
       <TransactionSummaryModal
