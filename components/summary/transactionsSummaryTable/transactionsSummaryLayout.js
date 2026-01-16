@@ -2,13 +2,29 @@ import { useMemo, useState } from "react";
 import { Button, Col, Dropdown, Form, Row } from "react-bootstrap";
 import TransactionsSummaryTable from "./transactionsSummaryTable";
 import styles from "@/styles/summary/transactionsSummary/transactionsSummaryLayout.module.css";
+import ascendingDateSorter from "@/helpers/ascendingDateSorter";
+import descendingDateSorter from "@/helpers/descendingDateSorter";
+import stringSorter from "@/helpers/stringSorter";
+import dollarSorter from "@/helpers/dollarSorter";
 
 const transactionsPerPage = 25;
 
 const allCategories = { id: "All", name: "All Categories" };
 
+const sortOptions = [
+  "Date (Asc)",
+  "Date (Desc)",
+  "Store (Asc)",
+  "Store (Desc)",
+  "Category (Asc)",
+  "Category (Desc)",
+  "Amount (Asc)",
+  "Amount (Desc)",
+];
+
 const TransactionsSummaryLayout = ({ transactions, categories }) => {
   const [categoryFilter, setCategoryFilter] = useState(allCategories);
+  const [sortOption, setSortOption] = useState("Date (Asc)");
   const [searchFilter, setSearchFilter] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -87,13 +103,61 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
   const sortedTransactions = useMemo(() => {
     setTotalPages(Math.ceil(searchedTransactions.length / transactionsPerPage));
 
-    return searchedTransactions
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(
-        page * transactionsPerPage - transactionsPerPage,
-        page * transactionsPerPage
-      );
-  }, [searchedTransactions, page]);
+    let transactionsSorted;
+    switch (sortOption) {
+      case "Date (Asc)":
+        transactionsSorted = ascendingDateSorter(searchedTransactions);
+        break;
+      case "Date (Desc)":
+        transactionsSorted = descendingDateSorter(searchedTransactions);
+        break;
+      case "Store (Asc)":
+        transactionsSorted = stringSorter(searchedTransactions, "store", "asc");
+        break;
+      case "Store (Desc)":
+        transactionsSorted = stringSorter(
+          searchedTransactions,
+          "store",
+          "desc"
+        );
+        break;
+      case "Category (Asc)":
+        transactionsSorted = stringSorter(
+          searchedTransactions,
+          "category",
+          "asc"
+        );
+        break;
+      case "Category (Desc)":
+        transactionsSorted = stringSorter(
+          searchedTransactions,
+          "category",
+          "desc"
+        );
+        break;
+      case "Amount (Asc)":
+        transactionsSorted = dollarSorter(
+          searchedTransactions,
+          "amount",
+          "asc"
+        );
+        break;
+      case "Amount (Desc)":
+        transactionsSorted = dollarSorter(
+          searchedTransactions,
+          "amount",
+          "desc"
+        );
+        break;
+      default:
+        transactionsSorted = ascendingDateSorter(searchedTransactions);
+    }
+
+    return transactionsSorted.slice(
+      page * transactionsPerPage - transactionsPerPage,
+      page * transactionsPerPage
+    );
+  }, [searchedTransactions, sortOption, page]);
 
   const handleInput = (e) => {
     setSearchFilter(e.target.value);
@@ -121,7 +185,7 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
           </Form.Group>
         </div>
         <div className="text-end">
-          <Dropdown>
+          <Dropdown className="mx-2">
             <Dropdown.Toggle variant="dark">Filter</Dropdown.Toggle>
             <Dropdown.Menu className={styles.filterMenu}>
               {categoriesFilters.map((category) => (
@@ -134,6 +198,23 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
                   <span className={category.isSubcategory ? "mx-2" : "fw-bold"}>
                     {category.name}
                   </span>
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+        <div className="text-end">
+          <Dropdown>
+            <Dropdown.Toggle variant="dark">Sort</Dropdown.Toggle>
+            <Dropdown.Menu className={styles.filterMenu}>
+              {sortOptions.map((option) => (
+                <Dropdown.Item
+                  key={option}
+                  onClick={() => {
+                    setSortOption(option);
+                  }}
+                >
+                  {option}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
