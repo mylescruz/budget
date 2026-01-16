@@ -1,44 +1,13 @@
-import { useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
-import ascendingDateSorter from "@/helpers/ascendingDateSorter";
-import descendingDateSorter from "@/helpers/descendingDateSorter";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "@/components/layout/popUp";
-import dollarFormatter from "@/helpers/dollarFormatter";
 
-const IncomeTable = ({
-  income,
-  year,
-  putIncome,
-  deleteIncome,
-  incomeTotals,
-}) => {
-  const [sortDirection, setSortDirection] = useState("asc");
-
-  const sortedIncome = useMemo(() => {
-    if (sortDirection === "asc") {
-      return ascendingDateSorter(income);
-    } else {
-      return descendingDateSorter(income);
-    }
-  }, [income, sortDirection]);
-
-  const sortIncomeDates = () => {
-    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
-  };
-
+const IncomeTable = ({ sortedIncome, year, putIncome, deleteIncome }) => {
   return (
     <Table striped hover>
       <thead className="table-dark">
         <tr className="d-flex">
-          <th className="col-3 col-md-2 clicker" onClick={sortIncomeDates}>
-            Date
-            {sortDirection === "asc" ? (
-              <span> &#8595;</span>
-            ) : (
-              <span> &#8593;</span>
-            )}
-          </th>
+          <th className="col-3 col-md-2">Date</th>
           <th className="col-6 col-md-5">
             Source
             <PopUp
@@ -53,26 +22,24 @@ const IncomeTable = ({
         </tr>
       </thead>
       <tbody>
-        {sortedIncome.map((source) => (
-          <IncomeTableRow
-            key={source._id}
-            source={source}
-            putIncome={putIncome}
-            deleteIncome={deleteIncome}
-            year={year}
-          />
-        ))}
+        {sortedIncome.length === 0 ? (
+          <tr>
+            <td colSpan={1} className="text-center fw-bold">
+              There is no income that match these filters
+            </td>
+          </tr>
+        ) : (
+          sortedIncome.map((source) => (
+            <IncomeTableRow
+              key={source._id}
+              source={source}
+              putIncome={putIncome}
+              deleteIncome={deleteIncome}
+              year={year}
+            />
+          ))
+        )}
       </tbody>
-      <tfoot>
-        <tr className="d-flex">
-          <th className="col-3 col-md-2">Total</th>
-          <th className="col-6 col-md-5"></th>
-          <th className="d-none d-md-block col-md-3"></th>
-          <th className="col-3 col-md-2 text-end">
-            {dollarFormatter(incomeTotals.amount)}
-          </th>
-        </tr>
-      </tfoot>
     </Table>
   );
 };
