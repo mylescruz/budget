@@ -11,7 +11,7 @@ import stringSorter from "@/helpers/stringSorter";
 import dollarSorter from "@/helpers/dollarSorter";
 import styles from "@/styles/income/incomeLayout.module.css";
 
-const sourcesPerPage = 10;
+const sourcesPerPage = 25;
 
 const sortOptions = [
   "Date (Asc)",
@@ -38,7 +38,7 @@ const InnerIncomeLayout = ({ year }) => {
 
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [typeFilter, setTypeFilter] = useState(allTypes);
-  const [sortOption, setSortOption] = useState("Date (Asc)");
+  const [sortOption, setSortOption] = useState(sortOptions[0]);
   const [searchFilter, setSearchFilter] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -161,7 +161,7 @@ const InnerIncomeLayout = ({ year }) => {
     );
   } else {
     return (
-      <Container className="w-100">
+      <div className="w-100">
         <Container className="text-center mt-4">
           <Button variant="primary" onClick={openAddIncomeModal}>
             Add Income
@@ -180,7 +180,7 @@ const InnerIncomeLayout = ({ year }) => {
                   <Form.Control
                     type="text"
                     value={searchFilter}
-                    placeholder="Search for a transaction"
+                    placeholder="Search for income"
                     onChange={handleInput}
                   />
                 </Form.Group>
@@ -270,7 +270,7 @@ const InnerIncomeLayout = ({ year }) => {
         )}
 
         <AddIncomeModal {...AddIncomeModalProps} />
-      </Container>
+      </div>
     );
   }
 };
