@@ -26,7 +26,7 @@ const InnerDashboard = ({ dateInfo }) => {
   const { transactionsLoading } = useContext(TransactionsContext);
   const { monthIncome, monthIncomeLoading } = useMonthIncome(
     dateInfo.month,
-    dateInfo.year
+    dateInfo.year,
   );
 
   const [topCategories, setTopCategories] = useState([]);
@@ -115,11 +115,16 @@ const InnerDashboard = ({ dateInfo }) => {
                     </>
                   ) : (
                     <p className="text-danger fw-bold text-center">
-                      &#9432; There was an error loading your categories. Please
-                      try again later!
+                      &#9432; There was an error loading your budget. Please try
+                      again later!
                     </p>
                   )}
-                  <Button as={Link} href="/budget" variant="primary">
+                  <Button
+                    as={Link}
+                    href="/budget"
+                    disabled={!categories}
+                    variant="primary"
+                  >
                     View Full Budget
                   </Button>
                 </Row>

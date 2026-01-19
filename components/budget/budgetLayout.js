@@ -20,7 +20,16 @@ const InnerBudgetLayout = ({ dateInfo }) => {
 
   if (categoriesLoading || transactionsLoading) {
     return <LoadingIndicator />;
-  } else if (categories) {
+  } else if (!categories) {
+    return (
+      <Row className="mt-4 text-center">
+        <p className="fw-bold text-danger">
+          &#9432; There was an error loading your budget. Please try again
+          later!
+        </p>
+      </Row>
+    );
+  } else {
     return (
       <Container className="w-100">
         <aside className="info-text mx-auto text-center">

@@ -61,7 +61,7 @@ const useCategories = (month, year) => {
         setCategoriesLoading(false);
       }
     },
-    [categories, year, month]
+    [categories, year, month],
   );
 
   const putCategory = useCallback(
@@ -83,7 +83,7 @@ const useCategories = (month, year) => {
           const updatedCategories = [...categories];
 
           const categoryIndex = updatedCategories.findIndex(
-            (cat) => cat._id === updatedCategory._id
+            (cat) => cat._id === updatedCategory._id,
           );
 
           updatedCategories[categoryIndex] = updatedCategory;
@@ -103,7 +103,7 @@ const useCategories = (month, year) => {
         setCategoriesLoading(false);
       }
     },
-    [categories]
+    [categories],
   );
 
   const deleteCategory = useCallback(
@@ -135,7 +135,7 @@ const useCategories = (month, year) => {
         setCategoriesLoading(false);
       }
     },
-    [categories]
+    [categories],
   );
 
   // Gets the total budget, actual and remaining for categories
@@ -144,6 +144,10 @@ const useCategories = (month, year) => {
   //  - If a category or subcategory's date of charge is greater than today, add that value to the total actual values
   //  - If no dayOfMonth field, just sum all categories' actual values
   const categoryTotals = useMemo(() => {
+    if (!categories) {
+      return null;
+    }
+
     const today = new Date();
 
     let categoryActuals = 0;
@@ -204,7 +208,7 @@ const useCategories = (month, year) => {
     const changedCategoriesBudget = centsToDollars(changedBudget);
     const changedCategoriesActual = centsToDollars(changedActual);
     const changedCategoriesRemaining = centsToDollars(
-      changedBudget - changedActual
+      changedBudget - changedActual,
     );
 
     return {
@@ -221,6 +225,10 @@ const useCategories = (month, year) => {
 
   // Define all the category and subcategory's correlating colors
   const categoryColors = useMemo(() => {
+    if (!categories) {
+      return null;
+    }
+
     const colors = {};
 
     categories.forEach((category) => {

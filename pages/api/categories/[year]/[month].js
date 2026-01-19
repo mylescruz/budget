@@ -101,7 +101,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
               { year: year, month: { $lt: month } },
             ],
           },
-          { projection: { month: 1, year: 1, _id: 0 } }
+          { projection: { month: 1, year: 1, _id: 0 } },
         )
         .sort({ year: -1, month: -1 })
         .limit(1)
@@ -301,7 +301,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
           ...subcategory,
           actual: centsToDollars(subcategory.actual),
         };
-      }
+      },
     );
 
     return res.status(200).json(addedCategory);
