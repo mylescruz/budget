@@ -3,7 +3,7 @@
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 export default async function handler(req, res) {
   // Configure MongoDB
@@ -39,7 +39,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
     // Check if password given matches the stored password
     const passwordsMatch = await checkHashedPassword(
       credentials.password,
-      user.password_hash
+      user.password_hash,
     );
 
     if (!passwordsMatch) {
@@ -56,7 +56,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
         $set: {
           lastLoginDate: lastLogin,
         },
-      }
+      },
     );
 
     const verifiedUser = {
@@ -76,7 +76,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
     return res
       .status(500)
       .send(
-        "An error occurred while authorizing this user's credentials. Please try again later!"
+        "An error occurred while authorizing this user's credentials. Please try again later!",
       );
   }
 }

@@ -6,7 +6,7 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 // Configuring bcrypt for password encryption
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
 export default async function handler(req, res) {
@@ -57,7 +57,7 @@ async function getUser(res, { usersCol, username }) {
     return res
       .status(500)
       .send(
-        "An error occurred while getting your account info. Please try again later!"
+        "An error occurred while getting your account info. Please try again later!",
       );
   }
 }
@@ -75,7 +75,7 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
       // Check if the given password matches the stored password
       const passwordsMatch = await checkHashedPassword(
         updatedUser.currentPassword,
-        storedUser.password_hash
+        storedUser.password_hash,
       );
 
       if (!passwordsMatch) {
@@ -103,7 +103,7 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
             password_hash: userPassword,
           },
         },
-        { session }
+        { session },
       );
     });
 
@@ -117,7 +117,7 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
     return res
       .status(500)
       .send(
-        "An error occurred while updating your account. Please try again later!"
+        "An error occurred while updating your account. Please try again later!",
       );
   } finally {
     await mongoSession.endSession();
@@ -136,7 +136,7 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
       // Check if the given password matches the stored password
       const passwordsMatch = await checkHashedPassword(
         deletedUser.password,
-        storedUser.password_hash
+        storedUser.password_hash,
       );
 
       if (!passwordsMatch) {
@@ -165,7 +165,7 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
     return res
       .status(500)
       .send(
-        "An error occurred while deleting your account. Please try again later!"
+        "An error occurred while deleting your account. Please try again later!",
       );
   } finally {
     await mongoSession.endSession();

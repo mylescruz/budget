@@ -4,7 +4,7 @@ import clientPromise from "@/lib/mongodb";
 import { v4 as uuidv4 } from "uuid";
 
 // Configuring bcrypt for password encryption
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
 const USER_ROLE = "User";
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
 async function createAccount(
   req,
   res,
-  { client, usersCol, categoriesCol, incomeCol, month, year }
+  { client, usersCol, categoriesCol, incomeCol, month, year },
 ) {
   const mongoSession = client.startSession();
 
@@ -129,7 +129,7 @@ async function createAccount(
                     actual: 0,
                   };
                 }
-              }
+              },
             );
           }
 
@@ -163,7 +163,7 @@ async function createAccount(
           newUser.username,
           month,
           year,
-          categoriesCol
+          categoriesCol,
         );
       }
 
@@ -176,7 +176,7 @@ async function createAccount(
       }
 
       const funMoneyIndex = categories.findIndex(
-        (category) => category.name === funMoney
+        (category) => category.name === funMoney,
       );
 
       categories[funMoneyIndex].budget = monthIncome - budgetTotal;
@@ -250,7 +250,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
           }
 
           return finalSubcategory;
-        }
+        },
       );
     }
 
