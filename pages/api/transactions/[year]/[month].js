@@ -63,14 +63,14 @@ async function fetchTransactions(transactionsCol, username, month, year) {
 // Get the user's transactions in MongoDB
 async function getTransactions(
   res,
-  { transactionsCol, username, month, year }
+  { transactionsCol, username, month, year },
 ) {
   try {
     const transactions = await fetchTransactions(
       transactionsCol,
       username,
       month,
-      year
+      year,
     );
 
     // Send the transactions array back to the client
@@ -87,7 +87,7 @@ async function getTransactions(
 async function addTransaction(
   req,
   res,
-  { client, transactionsCol, categoriesCol, username, month, year }
+  { client, transactionsCol, categoriesCol, username, month, year },
 ) {
   const mongoSession = client.startSession();
 
@@ -109,7 +109,7 @@ async function addTransaction(
       // Add the new transaction to the transactions collection in MongoDB
       const insertedTransaction = await transactionsCol.insertOne(
         newTransaction,
-        { session }
+        { session },
       );
 
       insertedId = insertedTransaction.insertedId;
@@ -125,7 +125,7 @@ async function addTransaction(
             { "subcategories.name": newTransaction.category },
           ],
         },
-        { session }
+        { session },
       );
 
       if (category) {
@@ -139,7 +139,7 @@ async function addTransaction(
                 actual: newTransaction.amount,
               },
             },
-            { session }
+            { session },
           );
         } else {
           // Increment the actual value of the category and subcategory
@@ -154,7 +154,7 @@ async function addTransaction(
                 "subcategories.$.actual": newTransaction.amount,
               },
             },
-            { session }
+            { session },
           );
         }
       } else {
@@ -184,7 +184,7 @@ async function addTransaction(
 async function updateTransactions(
   req,
   res,
-  { transactionsCol, username, month, year }
+  { transactionsCol, username, month, year },
 ) {
   try {
     const changedTransactions = req.body;
@@ -204,7 +204,7 @@ async function updateTransactions(
         transactionsCol,
         username,
         month,
-        year
+        year,
       );
 
       return res.status(200).json(transactions);
@@ -216,7 +216,7 @@ async function updateTransactions(
     return res
       .status(500)
       .send(
-        `Error occurred while updating changed transactions for ${username}`
+        `Error occurred while updating changed transactions for ${username}`,
       );
   }
 }
