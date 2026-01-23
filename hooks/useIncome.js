@@ -1,5 +1,6 @@
 import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useIncome = (year) => {
@@ -56,7 +57,7 @@ const useIncome = (year) => {
         setIncomeLoading(false);
       }
     },
-    [income, year]
+    [income, year],
   );
 
   const putIncome = useCallback(
@@ -93,7 +94,7 @@ const useIncome = (year) => {
         setIncomeLoading(false);
       }
     },
-    [income]
+    [income],
   );
 
   const deleteIncome = useCallback(
@@ -126,30 +127,55 @@ const useIncome = (year) => {
         setIncomeLoading(false);
       }
     },
-    [income]
+    [income],
   );
 
   const incomeTotals = useMemo(() => {
+    if (!income) {
+      return null;
+    }
+
+    const types = {
+      Paycheck: 0,
+      Gift: 0,
+      Sale: 0,
+      Unemployment: 0,
+      Loan: 0,
+    };
+
     let totalGross = 0;
     let totalDeductions = 0;
     let totalAmount = 0;
 
     for (const source of income) {
-      if (source.gross) {
-        totalGross += source.gross * 100;
+      const sourceAmount = dollarsToCents(source.amount);
+
+      if (types[source.type] !== undefined) {
+        types[source.type] += sourceAmount;
       }
 
-      if (source.deductions) {
-        totalDeductions += source.deductions * 100;
-      }
+      totalAmount += sourceAmount;
 
-      totalAmount += source.amount * 100;
+      if (source.type === "Paycheck") {
+        totalGross += dollarsToCents(source.gross);
+        totalDeductions += dollarsToCents(source.deductions);
+      }
     }
+
+    const typesTotals = Object.entries(types)
+      .map(([key, value]) => {
+        return {
+          type: key,
+          amount: centsToDollars(value),
+        };
+      })
+      .filter((type) => type.amount > 0);
 
     return {
       gross: centsToDollars(totalGross),
       deductions: centsToDollars(totalDeductions),
       amount: centsToDollars(totalAmount),
+      types: typesTotals,
     };
   }, [income]);
 
