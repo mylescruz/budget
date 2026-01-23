@@ -62,11 +62,11 @@ const TotalsLayout = () => {
               <h5>
                 <span
                   className={
-                    remainingPercentage < 75
+                    remainingPercentage < 85
                       ? "text-success"
-                      : remainingPercentage >= 75 && remainingPercentage < 100
-                      ? "text-warning"
-                      : "text-danger"
+                      : remainingPercentage >= 85 && remainingPercentage < 100
+                        ? "text-warning"
+                        : "text-danger"
                   }
                 >
                   {dollarFormatter(categoryTotals.remaining)}
