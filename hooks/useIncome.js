@@ -164,10 +164,17 @@ const useIncome = (year) => {
 
     const typesTotals = Object.entries(types)
       .map(([key, value]) => {
-        return {
+        const type = {
           type: key,
           amount: centsToDollars(value),
         };
+
+        if (key === "Paycheck") {
+          type.gross = centsToDollars(totalGross);
+          type.deductions = centsToDollars(totalDeductions);
+        }
+
+        return type;
       })
       .filter((type) => type.amount > 0);
 

@@ -10,6 +10,7 @@ import descendingDateSorter from "@/helpers/descendingDateSorter";
 import stringSorter from "@/helpers/stringSorter";
 import dollarSorter from "@/helpers/dollarSorter";
 import styles from "@/styles/income/incomeLayout.module.css";
+import IncomeTotalsLayout from "./incomeTotalsLayout";
 
 const sourcesPerPage = 25;
 
@@ -124,7 +125,7 @@ const InnerIncomeLayout = ({ year }) => {
 
     return incomeSorted.slice(
       page * sourcesPerPage - sourcesPerPage,
-      page * sourcesPerPage
+      page * sourcesPerPage,
     );
   }, [searchedIncome, sortOption, page]);
 
@@ -162,7 +163,9 @@ const InnerIncomeLayout = ({ year }) => {
   } else {
     return (
       <div className="w-100">
-        <Container className="text-center mt-4">
+        <IncomeTotalsLayout incomeTotals={incomeTotals} />
+
+        <Container className="text-center mt-2">
           <Button variant="primary" onClick={openAddIncomeModal}>
             Add Income
           </Button>
