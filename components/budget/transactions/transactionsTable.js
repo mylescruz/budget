@@ -33,7 +33,7 @@ const TransactionsTable = ({ dateInfo }) => {
           cats.push({
             name: category.name,
             subcategories: category.subcategories.map(
-              (subcategory) => subcategory.name
+              (subcategory) => subcategory.name,
             ),
           });
 
@@ -104,7 +104,7 @@ const TransactionsTable = ({ dateInfo }) => {
     ];
 
     return transactions.filter((transaction) =>
-      selectedCategories.includes(transaction.category)
+      selectedCategories.includes(transaction.category),
     );
   }, [transactions, transactionFilter]);
 
@@ -125,8 +125,8 @@ const TransactionsTable = ({ dateInfo }) => {
   const filterTransaction = (category) => {
     setTransactionFilter(
       changingCategories.find(
-        (changeCategory) => category.name === changeCategory.name
-      )
+        (changeCategory) => category.name === changeCategory.name,
+      ),
     );
   };
 
@@ -161,7 +161,7 @@ const TransactionsTable = ({ dateInfo }) => {
               <Col className="col-6">
                 <Dropdown>
                   <Dropdown.Toggle variant="dark" className="btn-sm" />
-                  <DropdownMenu>
+                  <DropdownMenu className={styles.filterMenu}>
                     <DropdownItem
                       className="fw-bold"
                       onClick={() => {
