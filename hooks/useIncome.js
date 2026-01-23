@@ -1,4 +1,3 @@
-import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -16,7 +15,7 @@ const useIncome = (year) => {
 
         if (response.ok) {
           const fetchedIncome = await response.json();
-          setIncome(ascendingDateSorter(fetchedIncome));
+          setIncome(fetchedIncome);
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -46,7 +45,7 @@ const useIncome = (year) => {
 
         if (response.ok) {
           const addedSource = await response.json();
-          setIncome(ascendingDateSorter([...income, addedSource]));
+          setIncome([...income, addedSource]);
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -83,7 +82,7 @@ const useIncome = (year) => {
             }
           });
 
-          setIncome(ascendingDateSorter(updatedIncome));
+          setIncome(updatedIncome);
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -116,7 +115,7 @@ const useIncome = (year) => {
             return source._id !== deletedSource._id;
           });
 
-          setIncome(ascendingDateSorter(updatedIncome));
+          setIncome(updatedIncome);
         } else {
           const message = await response.text();
           throw new Error(message);

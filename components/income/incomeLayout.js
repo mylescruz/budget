@@ -1,5 +1,5 @@
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LoadingIndicator from "../layout/loadingIndicator";
 import BudgetYearChooser from "../layout/budgetYearChooser";
 import useIncome from "@/hooks/useIncome";
@@ -12,11 +12,11 @@ import dollarSorter from "@/helpers/dollarSorter";
 import styles from "@/styles/income/incomeLayout.module.css";
 import IncomeTotalsLayout from "./incomeTotalsLayout";
 
-const sourcesPerPage = 25;
+const sourcesPerPage = 20;
 
 const sortOptions = [
-  "Date (Asc)",
   "Date (Desc)",
+  "Date (Asc)",
   "Source (Asc)",
   "Source (Desc)",
   "Type (Asc)",
@@ -42,7 +42,11 @@ const InnerIncomeLayout = ({ year }) => {
   const [sortOption, setSortOption] = useState(sortOptions[0]);
   const [searchFilter, setSearchFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+
+  // Reset the results if the type or search filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [typeFilter, searchFilter]);
 
   const incomeFilters = useMemo(() => {
     setTypeFilter(allTypes);
@@ -61,39 +65,27 @@ const InnerIncomeLayout = ({ year }) => {
   const filteredIncome = useMemo(() => {
     if (typeFilter === "All") {
       return income;
-    } else {
-      const final = income.filter((source) => source.type === typeFilter);
-
-      return final;
     }
+
+    return income.filter((source) => source.type === typeFilter);
   }, [typeFilter, income]);
 
   const searchedIncome = useMemo(() => {
     if (searchFilter === "") {
       return filteredIncome;
-    } else {
-      const final = filteredIncome.filter((source) => {
-        return (
-          source.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-          source.description.toLowerCase().includes(searchFilter.toLowerCase())
-        );
-      });
-
-      if (final.length === 0) {
-        setPage(0);
-        setTotalPages(0);
-      } else {
-        setPage(1);
-      }
-
-      return final;
     }
+
+    return filteredIncome.filter((source) => {
+      return (
+        source.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        source.description.toLowerCase().includes(searchFilter.toLowerCase())
+      );
+    });
   }, [searchFilter, filteredIncome]);
 
   const sortedIncome = useMemo(() => {
-    setTotalPages(Math.ceil(searchedIncome.length / sourcesPerPage));
-
     let incomeSorted;
+
     switch (sortOption) {
       case "Date (Asc)":
         incomeSorted = ascendingDateSorter(searchedIncome);
@@ -128,6 +120,8 @@ const InnerIncomeLayout = ({ year }) => {
       page * sourcesPerPage,
     );
   }, [searchedIncome, sortOption, page]);
+
+  const totalPages = Math.ceil(searchedIncome.length / sourcesPerPage);
 
   const handleInput = (e) => {
     setSearchFilter(e.target.value);
@@ -242,33 +236,35 @@ const InnerIncomeLayout = ({ year }) => {
               </Col>
             </Row>
 
-            <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
-              <Col className="col-3">
-                <Button
-                  onClick={previousPage}
-                  size="sm"
-                  className="btn-dark fw-bold"
-                  disabled={page === 1 || page === 0}
-                >
-                  &#60;
-                </Button>
-              </Col>
-              <Col className="col-6">
-                <h4 className="p-0 m-0 fw-bold">
-                  {page}/{totalPages}
-                </h4>
-              </Col>
-              <Col className="col-3">
-                <Button
-                  onClick={nextPage}
-                  size="sm"
-                  className="btn-dark fw-bold"
-                  disabled={page === totalPages}
-                >
-                  &#62;
-                </Button>
-              </Col>
-            </Row>
+            {sortedIncome.length !== 0 && (
+              <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
+                <Col className="col-3">
+                  <Button
+                    onClick={previousPage}
+                    size="sm"
+                    className="btn-dark fw-bold"
+                    disabled={page === 1 || page === 0}
+                  >
+                    &#60;
+                  </Button>
+                </Col>
+                <Col className="col-6">
+                  <h4 className="p-0 m-0 fw-bold">
+                    {page}/{totalPages}
+                  </h4>
+                </Col>
+                <Col className="col-3">
+                  <Button
+                    onClick={nextPage}
+                    size="sm"
+                    className="btn-dark fw-bold"
+                    disabled={page === totalPages}
+                  >
+                    &#62;
+                  </Button>
+                </Col>
+              </Row>
+            )}
           </div>
         )}
 
