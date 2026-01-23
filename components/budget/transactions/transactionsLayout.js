@@ -1,9 +1,9 @@
 import { Button, Col, Row } from "react-bootstrap";
-import TransactionsTable from "./transactionsTable";
 import AddTransactionModal from "./addTransactionModal";
 import { useContext, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
+import TransactionsTableLayout from "./transactionsTableLayout";
 
 const VIEWS_LABEL = {
   CALENDAR: "View Calendar",
@@ -86,7 +86,9 @@ const TransactionsLayout = ({ dateInfo }) => {
             {view === VIEWS.CALENDAR && (
               <TransactionsCalendar dateInfo={dateInfo} />
             )}
-            {view === VIEWS.TABLE && <TransactionsTable dateInfo={dateInfo} />}
+            {view === VIEWS.TABLE && (
+              <TransactionsTableLayout dateInfo={dateInfo} />
+            )}
           </Col>
         </Row>
 

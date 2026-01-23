@@ -121,6 +121,7 @@ a {
   height: 30px;
 }
 
-.top-10-card {
-  height: 250px;
+.filter-menu {
+  max-height: 300px;
+  overflow-y: auto;
 }
