@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Col, Dropdown, Form, Row } from "react-bootstrap";
 import TransactionsSummaryTable from "./transactionsSummaryTable";
 import styles from "@/styles/summary/transactionsSummary/transactionsSummaryLayout.module.css";
@@ -27,7 +27,11 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
   const [sortOption, setSortOption] = useState("Date (Asc)");
   const [searchFilter, setSearchFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+
+  // Reset the page if the user changes the category or search filter
+  useEffect(() => {
+    setPage(1);
+  }, [categoryFilter, searchFilter]);
 
   const categoriesFilters = useMemo(() => {
     const filteredCategories = [{ ...allCategories }];
@@ -39,7 +43,7 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
             id: category._id,
             name: category.name,
             subcategories: category.subcategories.map(
-              (subcategory) => subcategory.name
+              (subcategory) => subcategory.name,
             ),
           });
 
@@ -65,45 +69,33 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
   const filteredTransactions = useMemo(() => {
     if (categoryFilter.name === "All Categories") {
       return transactions;
-    } else {
-      const selectedCategories = categoryFilter.subcategories ?? [
-        categoryFilter.name,
-      ];
-
-      return transactions.filter((transaction) =>
-        selectedCategories.includes(transaction.category)
-      );
     }
+
+    const selectedCategories = categoryFilter.subcategories ?? [
+      categoryFilter.name,
+    ];
+
+    return transactions.filter((transaction) =>
+      selectedCategories.includes(transaction.category),
+    );
   }, [categoryFilter, transactions]);
 
   const searchedTransactions = useMemo(() => {
     if (searchFilter === "") {
       return filteredTransactions;
-    } else {
-      const final = filteredTransactions.filter((transaction) => {
-        return (
-          transaction.store
-            .toLowerCase()
-            .includes(searchFilter.toLowerCase()) ||
-          transaction.items.toLowerCase().includes(searchFilter.toLowerCase())
-        );
-      });
-
-      if (final.length === 0) {
-        setPage(0);
-        setTotalPages(0);
-      } else {
-        setPage(1);
-      }
-
-      return final;
     }
+
+    return filteredTransactions.filter((transaction) => {
+      return (
+        transaction.store.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        transaction.items.toLowerCase().includes(searchFilter.toLowerCase())
+      );
+    });
   }, [searchFilter, filteredTransactions]);
 
   const sortedTransactions = useMemo(() => {
-    setTotalPages(Math.ceil(searchedTransactions.length / transactionsPerPage));
-
     let transactionsSorted;
+
     switch (sortOption) {
       case "Date (Asc)":
         transactionsSorted = ascendingDateSorter(searchedTransactions);
@@ -118,35 +110,35 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
         transactionsSorted = stringSorter(
           searchedTransactions,
           "store",
-          "desc"
+          "desc",
         );
         break;
       case "Category (Asc)":
         transactionsSorted = stringSorter(
           searchedTransactions,
           "category",
-          "asc"
+          "asc",
         );
         break;
       case "Category (Desc)":
         transactionsSorted = stringSorter(
           searchedTransactions,
           "category",
-          "desc"
+          "desc",
         );
         break;
       case "Amount (Asc)":
         transactionsSorted = dollarSorter(
           searchedTransactions,
           "amount",
-          "asc"
+          "asc",
         );
         break;
       case "Amount (Desc)":
         transactionsSorted = dollarSorter(
           searchedTransactions,
           "amount",
-          "desc"
+          "desc",
         );
         break;
       default:
@@ -155,9 +147,13 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
 
     return transactionsSorted.slice(
       page * transactionsPerPage - transactionsPerPage,
-      page * transactionsPerPage
+      page * transactionsPerPage,
     );
   }, [searchedTransactions, sortOption, page]);
+
+  const totalPages = Math.ceil(
+    searchedTransactions.length / transactionsPerPage,
+  );
 
   const handleInput = (e) => {
     setSearchFilter(e.target.value);
@@ -224,33 +220,35 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
 
       <TransactionsSummaryTable sortedTransactions={sortedTransactions} />
 
-      <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
-        <Col className="col-3">
-          <Button
-            onClick={previousPage}
-            size="sm"
-            className="btn-dark fw-bold"
-            disabled={page === 1 || page === 0}
-          >
-            &#60;
-          </Button>
-        </Col>
-        <Col className="col-6">
-          <h4 className="p-0 m-0 fw-bold">
-            {page}/{totalPages}
-          </h4>
-        </Col>
-        <Col className="col-3">
-          <Button
-            onClick={nextPage}
-            size="sm"
-            className="btn-dark fw-bold"
-            disabled={page === totalPages}
-          >
-            &#62;
-          </Button>
-        </Col>
-      </Row>
+      {sortedTransactions.length !== 0 && (
+        <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
+          <Col className="col-3">
+            <Button
+              onClick={previousPage}
+              size="sm"
+              className="btn-dark fw-bold"
+              disabled={page === 1 || page === 0}
+            >
+              &#60;
+            </Button>
+          </Col>
+          <Col className="col-6">
+            <h4 className="p-0 m-0 fw-bold">
+              {page}/{totalPages}
+            </h4>
+          </Col>
+          <Col className="col-3">
+            <Button
+              onClick={nextPage}
+              size="sm"
+              className="btn-dark fw-bold"
+              disabled={page === totalPages}
+            >
+              &#62;
+            </Button>
+          </Col>
+        </Row>
+      )}
     </>
   );
 };
