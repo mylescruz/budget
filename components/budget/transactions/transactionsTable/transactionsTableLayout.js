@@ -1,12 +1,13 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { Button, Col, Dropdown, Form, Row } from "react-bootstrap";
+import { Dropdown, Form } from "react-bootstrap";
 import TransactionsTable from "./transactionsTable";
 import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import descendingDateSorter from "@/helpers/descendingDateSorter";
 import stringSorter from "@/helpers/stringSorter";
 import dollarSorter from "@/helpers/dollarSorter";
+import TransactionsTablePageControl from "./transactionsTablePageControl";
 
 const transactionsPerPage = 20;
 
@@ -163,14 +164,6 @@ const TransactionsTableLayout = ({ dateInfo }) => {
     setSearchFilter(e.target.value);
   };
 
-  const previousPage = () => {
-    setPage(page - 1);
-  };
-
-  const nextPage = () => {
-    setPage(page + 1);
-  };
-
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mt-2 mb-4">
@@ -236,33 +229,11 @@ const TransactionsTableLayout = ({ dateInfo }) => {
       />
 
       {sortedTransactions.length !== 0 && (
-        <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
-          <Col className="col-3">
-            <Button
-              onClick={previousPage}
-              size="sm"
-              className="btn-dark fw-bold"
-              disabled={page === 1 || page === 0}
-            >
-              &#60;
-            </Button>
-          </Col>
-          <Col className="col-6">
-            <h4 className="p-0 m-0 fw-bold">
-              {page}/{totalPages}
-            </h4>
-          </Col>
-          <Col className="col-3">
-            <Button
-              onClick={nextPage}
-              size="sm"
-              className="btn-dark fw-bold"
-              disabled={page === totalPages}
-            >
-              &#62;
-            </Button>
-          </Col>
-        </Row>
+        <TransactionsTablePageControl
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+        />
       )}
     </>
   );

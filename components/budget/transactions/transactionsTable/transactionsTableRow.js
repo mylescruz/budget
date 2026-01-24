@@ -1,8 +1,8 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import { useState } from "react";
-import DeleteTransactionModal from "./deleteTransactionModal";
-import EditTransactionModal from "./editTransactionModal";
-import TransactionDetailsModal from "./transactionDetailsModal";
+import DeleteTransactionModal from "../deleteTransactionModal";
+import EditTransactionModal from "../editTransactionModal";
+import TransactionDetailsModal from "../transactionDetailsModal";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const TransactionsTableRow = ({ transaction, dateInfo }) => {

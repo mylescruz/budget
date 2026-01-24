@@ -3,7 +3,7 @@ import AddTransactionModal from "./addTransactionModal";
 import { useContext, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
-import TransactionsTableLayout from "./transactionsTableLayout";
+import TransactionsTableLayout from "./transactionsTable/transactionsTableLayout";
 
 const VIEWS_LABEL = {
   CALENDAR: "View Calendar",
