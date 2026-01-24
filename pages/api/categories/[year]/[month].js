@@ -116,10 +116,54 @@ async function getCategories(req, res, { categoriesCol, username }) {
       // Define the previous month and year
       const { month: previousMonth, year: previousYear } = latestCategories[0];
 
-      // Get the previous categories and format it to a new month
+      // Set the semi-annual month filters
+      const semiAnnualMonth =
+        previousMonth - 6 <= 0 ? previousMonth + 6 : previousMonth - 6;
+      const semiAnnualYear =
+        previousMonth - 6 <= 0 ? previousYear - 1 : previousYear;
+
+      // Set the annual month filters
+      const annualMonth = previousMonth;
+      const annualYear = previousYear - 1;
+
+      // Get the non-fixed categories from last month and the fixed monthly, semi-annual and annual categories
       const previousCategories = await categoriesCol
         .aggregate([
-          { $match: { username, month: previousMonth, year: previousYear } },
+          {
+            $match: {
+              username,
+              $or: [
+                { month: previousMonth, year: previousYear },
+                {
+                  month: semiAnnualMonth,
+                  year: semiAnnualYear,
+                  frequency: "Semi-Annually",
+                },
+                {
+                  month: annualMonth,
+                  year: annualYear,
+                  frequency: "Annually",
+                },
+              ],
+            },
+          },
+          {
+            $match: {
+              $or: [
+                { fixed: false },
+                {
+                  fixed: true,
+                  frequency: { $in: ["Monthly", "Semi-Annually", "Annually"] },
+                },
+                {
+                  fixed: true,
+                  subcategories: {
+                    $elemMatch: { frequency: "Monthly" },
+                  },
+                },
+              ],
+            },
+          },
           {
             $project: {
               username: 1,
@@ -144,23 +188,30 @@ async function getCategories(req, res, { categoriesCol, username }) {
         let formattedSubcategories;
 
         if (category.subcategories.length > 0) {
-          formattedSubcategories = category.subcategories.map((subcategory) => {
-            if (category.fixed) {
-              return {
-                ...subcategory,
-                id: uuidv4(),
-                actual: subcategory.actual,
-                frequency: subcategory.frequency,
-                dayOfMonth: subcategory.dayOfMonth,
-              };
-            } else {
-              return {
-                ...subcategory,
-                id: uuidv4(),
-                actual: 0,
-              };
-            }
-          });
+          formattedSubcategories = category.subcategories
+            .map((subcategory) => {
+              if (category.fixed) {
+                return {
+                  ...subcategory,
+                  id: uuidv4(),
+                  actual: subcategory.actual,
+                  frequency: subcategory.frequency,
+                  dayOfMonth: subcategory.dayOfMonth,
+                };
+              } else {
+                return {
+                  ...subcategory,
+                  id: uuidv4(),
+                  actual: 0,
+                };
+              }
+            })
+            .filter((subcategory) => {
+              return (
+                !category.fixed ||
+                (category.fixed && subcategory.frequency === "Monthly")
+              );
+            });
         } else {
           formattedSubcategories = category.subcategories;
         }
