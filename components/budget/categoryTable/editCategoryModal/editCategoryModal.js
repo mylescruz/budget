@@ -9,6 +9,8 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import dayFormatter from "@/helpers/dayFormatter";
 
+const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
+
 const EditCategoryModal = ({
   category,
   dateInfo,
@@ -82,13 +84,13 @@ const EditCategoryModal = ({
         editedCategory.actual > 0
       ) {
         const changedSubcategories = editedCategory.subcategories.filter(
-          (subcategory) => subcategory.nameChanged
+          (subcategory) => subcategory.nameChanged,
         );
 
         for (const subcategory of changedSubcategories) {
           const updatedTransactions = transactions
             .filter(
-              (transaction) => transaction.category === subcategory.oldName
+              (transaction) => transaction.category === subcategory.oldName,
             )
             .map((transaction) => {
               return { ...transaction, category: subcategory.name };
@@ -217,19 +219,40 @@ const EditCategoryModal = ({
 
                 {editedCategory.fixed &&
                   editedCategory.subcategories.length === 0 && (
-                    <Form.Group controlId="dayOfMonth" className="mb-2">
-                      <Form.Label>
-                        What day of the month are you charged?
-                      </Form.Label>
-                      <Form.Control
-                        className="h-100 w-25"
-                        type="number"
-                        min={1}
-                        max={31}
-                        value={editedCategory.dayOfMonth}
-                        onChange={handleInput}
-                      />
-                    </Form.Group>
+                    <div>
+                      <Col className="col-12 col-md-8">
+                        <Form.Group controlId="frequency" className="mb-2">
+                          <Form.Label>How often does this occur?</Form.Label>
+                          <Form.Select
+                            className="h-100"
+                            value={editedCategory.frequency}
+                            onChange={handleInput}
+                            required
+                          >
+                            {categoryFrequencies.map((frequency) => (
+                              <option key={frequency} value={frequency}>
+                                {frequency}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Form.Group>
+                      </Col>
+                      <Col className="col-12 col-md-8">
+                        <Form.Group controlId="dayOfMonth" className="mb-2">
+                          <Form.Label>
+                            What day of the month are you charged?
+                          </Form.Label>
+                          <Form.Control
+                            className="h-100"
+                            type="number"
+                            min={1}
+                            max={31}
+                            value={editedCategory.dayOfMonth}
+                            onChange={handleInput}
+                          />
+                        </Form.Group>
+                      </Col>
+                    </div>
                   )}
 
                 {(editedCategory.fixed ||

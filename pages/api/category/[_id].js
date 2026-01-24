@@ -46,10 +46,13 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const category = req.body;
 
     category.budget = dollarsToCents(category.budget);
-    category.dayOfMonth =
-      category.fixed && category.subcategories.length === 0
-        ? parseInt(category.dayOfMonth)
-        : null;
+
+    if (category.fixed && category.subcategories.length === 0) {
+      category.dayOfMonth = parseInt(category.dayOfMonth);
+    } else {
+      category.frequency = null;
+      category.dayOfMonth = null;
+    }
 
     let subcategoryTotal = 0;
     category.subcategories = category.subcategories.map((subcategory) => {
@@ -90,11 +93,12 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             name: category.name.trim(),
             budget: category.budget,
             actual: category.actual,
+            frequency: category.frequency,
             dayOfMonth: category.dayOfMonth,
             subcategories: category.subcategories,
           },
         },
-        { session }
+        { session },
       );
 
       // Update the color for all the categories with that name
@@ -105,7 +109,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             color: category.color,
           },
         },
-        { session }
+        { session },
       );
 
       // Update the Fun Money category for the category's month
@@ -130,7 +134,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
           ...subcategory,
           actual: centsToDollars(subcategory.actual),
         };
-      }
+      },
     );
 
     return res.status(200).json(updatedCategory);
@@ -157,7 +161,7 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
       // Delete category from MongoDB
       await categoriesCol.deleteOne(
         { _id: new ObjectId(categoryId) },
-        { session }
+        { session },
       );
 
       // Update the Fun Money category for the category's month
