@@ -63,6 +63,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
           id: subcategory.id,
           name: subcategory.name.trim(),
           actual: dollarsToCents(subcategory.actual),
+          frequency: subcategory.frequency,
           dayOfMonth: parseInt(subcategory.dayOfMonth),
         };
       } else {
