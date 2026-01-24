@@ -25,10 +25,15 @@ const ConfirmationPage = ({ newCategory }) => {
         {newCategory.fixed ? "Yes" : "No"}
       </p>
       {newCategory.fixed && !newCategory.hasSubcategory && (
-        <p className="my-1">
-          <span className="fw-bold">Due on the:</span>{" "}
-          {dayFormatter(newCategory.dayOfMonth)}
-        </p>
+        <div>
+          <p className="my-1">
+            <span className="fw-bold">Frequency:</span> {newCategory.frequency}
+          </p>
+          <p className="my-1">
+            <span className="fw-bold">Due on the:</span>{" "}
+            {dayFormatter(newCategory.dayOfMonth)}
+          </p>
+        </div>
       )}
       {newCategory.subcategories.length > 0 && (
         <div>

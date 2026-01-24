@@ -15,6 +15,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
     budget: "",
     actual: "",
     dayOfMonth: "",
+    frequency: "",
     fixed: false,
     hasSubcategory: false,
     subcategories: [],

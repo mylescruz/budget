@@ -3,6 +3,8 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 const formGroupStyle = "my-2";
 const inputStyle = "h-100";
 
+const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
+
 const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
   const handleInput = (e) => {
     setNewCategory({ ...newCategory, [e.target.id]: e.target.value });
@@ -85,7 +87,7 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
         </Col>
       </Row>
       <Form.Group controlId="fixed" className={formGroupStyle}>
-        <Form.Label>Is it the same amount every month?</Form.Label>
+        <Form.Label>Does it cost the same amount every month?</Form.Label>
         <div>
           <Button
             className={`${
@@ -141,7 +143,7 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
           <Form.Group controlId="budget" className={formGroupStyle}>
             <Form.Label>
               {newCategory.fixed
-                ? "What is the monthly charge?"
+                ? "How much are you charged?"
                 : "What is this category's budget?"}
             </Form.Label>
             <Form.Control
@@ -157,19 +159,38 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
         </Col>
       )}
       {newCategory.fixed && !newCategory.hasSubcategory && (
-        <Col>
-          <Form.Group controlId="dayOfMonth" className={formGroupStyle}>
-            <Form.Label>What day of the month are you charged?</Form.Label>
-            <Form.Control
-              className={`${inputStyle} w-25`}
-              type="number"
-              min={1}
-              max={31}
-              value={newCategory.dayOfMonth}
-              onChange={handleInput}
-            />
-          </Form.Group>
-        </Col>
+        <Row className="d-flex flex-column">
+          <Col className="col-md-6">
+            <Form.Group controlId="frequency" className={formGroupStyle}>
+              <Form.Label>How often does this occur?</Form.Label>
+              <Form.Select
+                className="h-100"
+                value={newCategory.frequency}
+                onChange={handleInput}
+                required
+              >
+                {categoryFrequencies.map((frequency) => (
+                  <option key={frequency} value={frequency}>
+                    {frequency}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col className="col-6">
+            <Form.Group controlId="dayOfMonth" className={formGroupStyle}>
+              <Form.Label>What day of the month are you charged?</Form.Label>
+              <Form.Control
+                className="h-100"
+                type="number"
+                min={1}
+                max={31}
+                value={newCategory.dayOfMonth}
+                onChange={handleInput}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
       )}
     </div>
   );

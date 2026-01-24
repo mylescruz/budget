@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 
+const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
+
 const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
   const emptySubcategory = {
     id: uuidv4(),
     name: "",
     actual: "",
+    frequency: "",
     dayOfMonth: "",
   };
 
@@ -29,7 +32,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
     setNewCategory({
       ...newCategory,
       subcategories: newCategory.subcategories.filter(
-        (subCat) => subCat.id !== subcategory.id
+        (subCat) => subCat.id !== subcategory.id,
       ),
     });
   };
@@ -37,20 +40,37 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
   return (
     <>
       <h5 className="m-0">Enter {newCategory.name}'s subcategories</h5>
-      <Form.Group className="my-2">
-        <Row className="d-flex flex-column flex-md-row align-items-center">
-          <Col className="col-12">
-            <Form.Group controlId="name" className="my-2">
-              <Form.Label>Subcategory Name</Form.Label>
-              <Form.Control
-                className="h-100"
-                type="text"
-                value={newSubcategory.name}
-                onChange={handleSubcategoryInput}
-              />
-            </Form.Group>
-          </Col>
-          {newCategory.fixed && (
+      <Row className="d-flex flex-column flex-md-row align-items-center">
+        <Col className="col-12">
+          <Form.Group controlId="name" className="my-2">
+            <Form.Label>Subcategory Name</Form.Label>
+            <Form.Control
+              className="h-100"
+              type="text"
+              value={newSubcategory.name}
+              onChange={handleSubcategoryInput}
+            />
+          </Form.Group>
+        </Col>
+        {newCategory.fixed && (
+          <div>
+            <Col className="col-12">
+              <Form.Group controlId="frequency" className="my-2">
+                <Form.Label>How often does this occur?</Form.Label>
+                <Form.Select
+                  className="h-100"
+                  value={newSubcategory.frequency}
+                  onChange={handleSubcategoryInput}
+                  required
+                >
+                  {categoryFrequencies.map((frequency) => (
+                    <option key={frequency} value={frequency}>
+                      {frequency}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
             <Col className="col-12">
               <Form.Group controlId="actual" className="my-2">
                 <Form.Label>How much does it cost?</Form.Label>
@@ -63,8 +83,6 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
                 />
               </Form.Group>
             </Col>
-          )}
-          {newCategory.fixed && (
             <Col className="col-12">
               <Form.Group controlId="dayOfMonth" className="my-2">
                 <Form.Label>What day of the month are you charged?</Form.Label>
@@ -78,27 +96,27 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
                 />
               </Form.Group>
             </Col>
-          )}
-          <Col className="col-12">
-            <Button
-              type="primary"
-              className="btn-sm w-100 my-2"
-              onClick={addNewSubcategory}
-              disabled={
-                newSubcategory.name === "" ||
-                (newCategory.fixed &&
-                  (newSubcategory.actual === "" ||
-                    newSubcategory.actual <= 0 ||
-                    newSubcategory.dayOfMonth === "" ||
-                    newSubcategory.dayOfMonth > 31 ||
-                    newSubcategory.dayOfMonth < 1))
-              }
-            >
-              Add
-            </Button>
-          </Col>
-        </Row>
-      </Form.Group>
+          </div>
+        )}
+        <Col className="col-12">
+          <Button
+            type="primary"
+            className="btn-sm w-100 my-2"
+            onClick={addNewSubcategory}
+            disabled={
+              newSubcategory.name === "" ||
+              (newCategory.fixed &&
+                (newSubcategory.actual === "" ||
+                  newSubcategory.actual <= 0 ||
+                  newSubcategory.dayOfMonth === "" ||
+                  newSubcategory.dayOfMonth > 31 ||
+                  newSubcategory.dayOfMonth < 1))
+            }
+          >
+            Add
+          </Button>
+        </Col>
+      </Row>
       {newCategory.subcategories.length > 0 && (
         <div>
           <Row className="fw-bold">

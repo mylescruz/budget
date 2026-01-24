@@ -62,6 +62,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
           };
 
           if (formattedCategory.fixed) {
+            formattedCategory.frequency = category.frequency;
             formattedCategory.dayOfMonth = category.dayOfMonth;
           }
 
@@ -73,6 +74,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
             };
 
             if (formattedCategory.fixed) {
+              formattedSubcategory.frequency = subcategory.frequency;
               formattedSubcategory.dayOfMonth = subcategory.dayOfMonth;
             }
 
@@ -126,6 +128,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
               budget: 1,
               actual: { $cond: ["$fixed", "$actual", 0] },
               fixed: 1,
+              frequency: 1,
               subcategories: 1,
               noDelete: 1,
               dayOfMonth: 1,
@@ -147,6 +150,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
                 ...subcategory,
                 id: uuidv4(),
                 actual: subcategory.actual,
+                frequency: subcategory.frequency,
                 dayOfMonth: subcategory.dayOfMonth,
               };
             } else {
@@ -175,8 +179,10 @@ async function getCategories(req, res, { categoriesCol, username }) {
 
         if (formattedCategory.fixed) {
           if (formattedCategory.subcategories.length > 0) {
+            formattedCategory.frequency = null;
             formattedCategory.dayOfMonth = null;
           } else {
+            formattedCategory.frequency = category.frequency;
             formattedCategory.dayOfMonth = category.dayOfMonth;
           }
         }
@@ -238,6 +244,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
             id: subcategory.id,
             name: subcategory.name.trim(),
             actual: dollarsToCents(subcategory.actual),
+            frequency: subcategory.frequency,
             dayOfMonth: parseInt(subcategory.dayOfMonth),
           };
         });
@@ -267,8 +274,10 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     // A fixed category or subcategories date will pop up as a transaction on the budget's calendar
     if (newCategory.fixed) {
       if (newCategory.subcategories.length === 0) {
+        newCategory.frequency = categoryBody.frequency;
         newCategory.dayOfMonth = parseInt(categoryBody.dayOfMonth);
       } else {
+        newCategory.frequency = null;
         newCategory.dayOfMonth = null;
       }
     }
