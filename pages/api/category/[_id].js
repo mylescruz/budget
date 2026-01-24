@@ -48,10 +48,10 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     category.budget = dollarsToCents(category.budget);
 
     if (category.fixed && category.subcategories.length === 0) {
-      category.dayOfMonth = parseInt(category.dayOfMonth);
+      category.dueDate = parseInt(category.dueDate);
     } else {
       category.frequency = null;
-      category.dayOfMonth = null;
+      category.dueDate = null;
     }
 
     let subcategoryTotal = 0;
@@ -64,14 +64,14 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
           name: subcategory.name.trim(),
           actual: dollarsToCents(subcategory.actual),
           frequency: subcategory.frequency,
-          dayOfMonth: parseInt(subcategory.dayOfMonth),
+          dueDate: parseInt(subcategory.dueDate),
         };
       } else {
         return {
           id: subcategory.id,
           name: subcategory.name.trim(),
           actual: dollarsToCents(subcategory.actual),
-          dayOfMonth: subcategory.dayOfMonth,
+          dueDate: subcategory.dueDate,
         };
       }
     });
@@ -95,7 +95,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             budget: category.budget,
             actual: category.actual,
             frequency: category.frequency,
-            dayOfMonth: category.dayOfMonth,
+            dueDate: category.dueDate,
             subcategories: category.subcategories,
           },
         },

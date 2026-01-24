@@ -31,7 +31,7 @@ const ConfirmationPage = ({ newCategory }) => {
           </p>
           <p className="my-1">
             <span className="fw-bold">Due on the:</span>{" "}
-            {dayFormatter(newCategory.dayOfMonth)}
+            {dayFormatter(newCategory.dueDate)}
           </p>
         </div>
       )}
@@ -55,7 +55,7 @@ const ConfirmationPage = ({ newCategory }) => {
                   <Col className="col-3">${subcategory.actual}</Col>
                 )}
                 {newCategory.fixed && (
-                  <Col className="col-3">{subcategory.dayOfMonth}</Col>
+                  <Col className="col-3">{subcategory.dueDate}</Col>
                 )}
               </Row>
             ))}

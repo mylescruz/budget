@@ -142,7 +142,7 @@ const useCategories = (month, year) => {
   // Budget: Based on amount value from income
   // Actual:
   //  - If a category or subcategory's date of charge is greater than today, add that value to the total actual values
-  //  - If no dayOfMonth field, just sum all categories' actual values
+  //  - If no dueDate field, just sum all categories' actual values
   const categoryTotals = useMemo(() => {
     if (!categories) {
       return null;
@@ -166,8 +166,8 @@ const useCategories = (month, year) => {
         category.subcategories.forEach((subcategory) => {
           const subcategoryActual = dollarsToCents(subcategory.actual);
 
-          if (subcategory.dayOfMonth) {
-            const day = subcategory.dayOfMonth;
+          if (subcategory.dueDate) {
+            const day = subcategory.dueDate;
             const subcategoryDate = new Date(`${month}/${day}/${year}`);
 
             if (subcategoryDate <= today) {
@@ -182,8 +182,8 @@ const useCategories = (month, year) => {
       } else if (category.fixed && category.subcategories.length === 0) {
         fixedBudget += categoryActual;
 
-        if (category.dayOfMonth) {
-          const day = category.dayOfMonth;
+        if (category.dueDate) {
+          const day = category.dueDate;
           const categoryDate = new Date(`${month}/${day}/${year}`);
 
           if (categoryDate <= today) {

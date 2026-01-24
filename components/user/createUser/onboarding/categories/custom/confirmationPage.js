@@ -26,7 +26,7 @@ const ConfirmationPage = ({ newCategory }) => {
       {newCategory.fixed && !newCategory.hasSubcategory && (
         <p className="my-1">
           <span className="fw-bold">Day of the month:</span>{" "}
-          {newCategory.dayOfMonth}
+          {newCategory.dueDate}
         </p>
       )}
       {newCategory.subcategories.length > 0 && (
@@ -49,7 +49,7 @@ const ConfirmationPage = ({ newCategory }) => {
                   <Col className="col-3">${subcategory.actual}</Col>
                 )}
                 {newCategory.fixed && (
-                  <Col className="col-3">{subcategory.dayOfMonth}</Col>
+                  <Col className="col-3">{subcategory.dueDate}</Col>
                 )}
               </Row>
             ))}

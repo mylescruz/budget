@@ -17,7 +17,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [editCategoryClicked, setEditCategoryClicked] = useState(false);
   const subcategories = [...category.subcategories].sort(
-    (a, b) => a.dayOfMonth - b.dayOfMonth
+    (a, b) => a.dueDate - b.dueDate,
   );
 
   // Find the actual value currently charged to the user based on the current date and the category's charge date
@@ -28,9 +28,9 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
     currentActual = dollarsToCents(category.actual);
   } else {
     // Get the current charges for fixed expenses based on the day of the month
-    if (category.dayOfMonth) {
+    if (category.dueDate) {
       const categoryDate = new Date(
-        `${dateInfo.month}/${category.dayOfMonth}/${dateInfo.year}`
+        `${dateInfo.month}/${category.dueDate}/${dateInfo.year}`,
       );
 
       const categoryISODate = categoryDate.toISOString().split("T")[0];
@@ -40,13 +40,13 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
       }
     } else {
       if (category.subcategories.length === 0) {
-        // If no dayOfMonth field, automatically charge the category's whole actual value
+        // If no dueDate field, automatically charge the category's whole actual value
         currentActual = dollarsToCents(category.actual);
       } else {
         for (const subcategory of category.subcategories) {
-          if (subcategory.dayOfMonth) {
+          if (subcategory.dueDate) {
             const subcategoryDate = new Date(
-              `${dateInfo.month}/${subcategory.dayOfMonth}/${dateInfo.year}`
+              `${dateInfo.month}/${subcategory.dueDate}/${dateInfo.year}`,
             );
 
             const subcategoryISODate = subcategoryDate
@@ -57,7 +57,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
               currentActual += dollarsToCents(subcategory.actual);
             }
           } else {
-            // If no dayOfMonth field, automatically charge the subcategory's actual value
+            // If no dueDate field, automatically charge the subcategory's actual value
             currentActual += dollarsToCents(subcategory.actual);
           }
         }
@@ -126,7 +126,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
         </th>
         <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
         <td className={chargedColumn}>{dollarFormatter(categoryActual)}</td>
-        <td className={dayColumn}>{dayFormatter(category.dayOfMonth)}</td>
+        <td className={dayColumn}>{dayFormatter(category.dueDate)}</td>
         <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (

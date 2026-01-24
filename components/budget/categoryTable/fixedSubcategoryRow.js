@@ -15,7 +15,7 @@ const FixedSubcategoryRow = ({ subcategory }) => {
       </th>
       <td className={amountColumn}>{dollarFormatter(subcategory.actual)}</td>
       <td className={chargedColumn} />
-      <td className={dayColumn}>{dayFormatter(subcategory.dayOfMonth)}</td>
+      <td className={dayColumn}>{dayFormatter(subcategory.dueDate)}</td>
       <td className={progressColumn} />
     </tr>
   );

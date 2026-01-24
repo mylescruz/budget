@@ -7,7 +7,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
     id: uuidv4(),
     name: "",
     actual: "",
-    dayOfMonth: "",
+    dueDate: "",
   };
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
@@ -29,7 +29,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
     setNewCategory({
       ...newCategory,
       subcategories: newCategory.subcategories.filter(
-        (subCat) => subCat.id !== subcategory.id
+        (subCat) => subCat.id !== subcategory.id,
       ),
     });
   };
@@ -66,14 +66,14 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
           )}
           {newCategory.fixed && (
             <Col className="col-12">
-              <Form.Group controlId="dayOfMonth" className="my-2">
+              <Form.Group controlId="dueDate" className="my-2">
                 <Form.Label>What day of the month are you charged?</Form.Label>
                 <Form.Control
                   className="h-100"
                   type="number"
                   min={1}
                   max={31}
-                  value={newSubcategory.dayOfMonth}
+                  value={newSubcategory.dueDate}
                   onChange={handleSubcategoryInput}
                 />
               </Form.Group>
@@ -116,7 +116,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
                   <Col className="col-3">${subcategory.actual}</Col>
                 )}
                 {newCategory.fixed && (
-                  <Col className="col-3">{subcategory.dayOfMonth}</Col>
+                  <Col className="col-3">{subcategory.dueDate}</Col>
                 )}
                 <Col className={`${newCategory.fixed ? "col-2" : "col-3"}`}>
                   <i

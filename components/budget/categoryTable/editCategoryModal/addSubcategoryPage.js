@@ -16,7 +16,7 @@ const AddSubcategoryPage = ({
     name: "",
     actual: "",
     frequency: "Monthly",
-    dayOfMonth: "",
+    dueDate: "",
   };
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
@@ -73,7 +73,7 @@ const AddSubcategoryPage = ({
 
       if (editedCategory.fixed) {
         updatedCategory.frequency = null;
-        updatedCategory.dayOfMonth = null;
+        updatedCategory.dueDate = null;
       }
 
       setEditedCategory(updatedCategory);
@@ -127,14 +127,14 @@ const AddSubcategoryPage = ({
             </Form.Group>
           </Col>
           <Col className="col-12 col-md-8">
-            <Form.Group controlId="dayOfMonth" className="my-2">
+            <Form.Group controlId="dueDate" className="my-2">
               <Form.Label>What day of the month are you charged?</Form.Label>
               <Form.Control
                 className="h-100"
                 type="number"
                 min={1}
                 max={31}
-                value={newSubcategory.dayOfMonth}
+                value={newSubcategory.dueDate}
                 onChange={handleInput}
               />
             </Form.Group>
@@ -152,9 +152,9 @@ const AddSubcategoryPage = ({
             (editedCategory.fixed &&
               (newSubcategory.actual === "" ||
                 newSubcategory.actual <= 0 ||
-                newSubcategory.dayOfMonth === "" ||
-                newSubcategory.dayOfMonth > 31 ||
-                newSubcategory.dayOfMonth < 1))
+                newSubcategory.dueDate === "" ||
+                newSubcategory.dueDate > 31 ||
+                newSubcategory.dueDate < 1))
           }
           onClick={addSubcategory}
         >

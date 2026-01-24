@@ -48,16 +48,16 @@ const TransactionsCalendar = ({ dateInfo }) => {
       });
     });
 
-    // If dayOfMonth field is present in the fixed category or subcategory, add it to the transactions calendar
+    // If dueDate field is present in the fixed category or subcategory, add it to the transactions calendar
     categories.forEach((category) => {
       if (category.fixed) {
         if (category.subcategories.length > 0) {
           category.subcategories.forEach((subcategory) => {
-            if (subcategory.dayOfMonth) {
+            if (subcategory.dueDate) {
               const subcategoryDate = new Date(
                 year,
                 monthNumber,
-                subcategory.dayOfMonth
+                subcategory.dueDate,
               );
               const subcategoryDateISO = subcategoryDate
                 .toISOString()
@@ -82,12 +82,8 @@ const TransactionsCalendar = ({ dateInfo }) => {
             }
           });
         } else {
-          if (category.dayOfMonth) {
-            const categoryDate = new Date(
-              year,
-              monthNumber,
-              category.dayOfMonth
-            );
+          if (category.dueDate) {
+            const categoryDate = new Date(year, monthNumber, category.dueDate);
             const categoryDateISO = categoryDate.toISOString().split("T")[0];
 
             if (!transactionsMap.has(categoryDateISO)) {

@@ -13,7 +13,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
     color: "#000000",
     budget: "",
     actual: "",
-    dayOfMonth: "",
+    dueDate: "",
     fixed: false,
     hasSubcategory: false,
     subcategories: [],
@@ -122,8 +122,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
                     (!newCategory.fixed && newCategory.budget === "") ||
                     (newCategory.fixed &&
                       !newCategory.hasSubcategory &&
-                      (newCategory.budget === "" ||
-                        newCategory.dayOfMonth === ""))
+                      (newCategory.budget === "" || newCategory.dueDate === ""))
                   }
                 >
                   Next

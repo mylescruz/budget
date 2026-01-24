@@ -238,7 +238,7 @@ const EditCategoryModal = ({
                         </Form.Group>
                       </Col>
                       <Col className="col-12 col-md-8">
-                        <Form.Group controlId="dayOfMonth" className="mb-2">
+                        <Form.Group controlId="dueDate" className="mb-2">
                           <Form.Label>
                             What day of the month are you charged?
                           </Form.Label>
@@ -247,7 +247,7 @@ const EditCategoryModal = ({
                             type="number"
                             min={1}
                             max={31}
-                            value={editedCategory.dayOfMonth}
+                            value={editedCategory.dueDate}
                             onChange={handleInput}
                           />
                         </Form.Group>
@@ -285,7 +285,7 @@ const EditCategoryModal = ({
                           <td>{subcategory.name}</td>
                           <td>{dollarFormatter(subcategory.actual)}</td>
                           {editedCategory.fixed && (
-                            <td>{dayFormatter(subcategory.dayOfMonth)}</td>
+                            <td>{dayFormatter(subcategory.dueDate)}</td>
                           )}
                           <td
                             onClick={() => {
@@ -311,9 +311,9 @@ const EditCategoryModal = ({
                       (editedCategory.fixed &&
                         editedCategory.subcategories.length === 0 &&
                         (editedCategory.budget === "" ||
-                          editedCategory.dayOfMonth === "" ||
-                          editedCategory.dayOfMonth < 1 ||
-                          editedCategory.dayOfMonth > 31))
+                          editedCategory.dueDate === "" ||
+                          editedCategory.dueDate < 1 ||
+                          editedCategory.dueDate > 31))
                     }
                     onClick={updateCategory}
                   >

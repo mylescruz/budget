@@ -14,7 +14,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
     color: "#000000",
     budget: "",
     actual: "",
-    dayOfMonth: "",
+    dueDate: "",
     frequency: "Monthly",
     fixed: false,
     hasSubcategory: false,
@@ -142,8 +142,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
                     (!newCategory.fixed && newCategory.budget === "") ||
                     (newCategory.fixed &&
                       !newCategory.hasSubcategory &&
-                      (newCategory.budget === "" ||
-                        newCategory.dayOfMonth === ""))
+                      (newCategory.budget === "" || newCategory.dueDate === ""))
                   }
                 >
                   Next

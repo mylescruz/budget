@@ -63,7 +63,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
 
           if (formattedCategory.fixed) {
             formattedCategory.frequency = category.frequency;
-            formattedCategory.dayOfMonth = category.dayOfMonth;
+            formattedCategory.dueDate = category.dueDate;
           }
 
           const subcategories = category.subcategories.map((subcategory) => {
@@ -75,7 +75,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
 
             if (formattedCategory.fixed) {
               formattedSubcategory.frequency = subcategory.frequency;
-              formattedSubcategory.dayOfMonth = subcategory.dayOfMonth;
+              formattedSubcategory.dueDate = subcategory.dueDate;
             }
 
             return formattedSubcategory;
@@ -175,7 +175,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
               frequency: 1,
               subcategories: 1,
               noDelete: 1,
-              dayOfMonth: 1,
+              dueDate: 1,
               _id: 0,
             },
           },
@@ -196,7 +196,7 @@ async function getCategories(req, res, { categoriesCol, username }) {
                   id: uuidv4(),
                   actual: subcategory.actual,
                   frequency: subcategory.frequency,
-                  dayOfMonth: subcategory.dayOfMonth,
+                  dueDate: subcategory.dueDate,
                 };
               } else {
                 return {
@@ -231,10 +231,10 @@ async function getCategories(req, res, { categoriesCol, username }) {
         if (formattedCategory.fixed) {
           if (formattedCategory.subcategories.length > 0) {
             formattedCategory.frequency = null;
-            formattedCategory.dayOfMonth = null;
+            formattedCategory.dueDate = null;
           } else {
             formattedCategory.frequency = category.frequency;
-            formattedCategory.dayOfMonth = category.dayOfMonth;
+            formattedCategory.dueDate = category.dueDate;
           }
         }
 
@@ -296,7 +296,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
             name: subcategory.name.trim(),
             actual: dollarsToCents(subcategory.actual),
             frequency: subcategory.frequency,
-            dayOfMonth: parseInt(subcategory.dayOfMonth),
+            dueDate: parseInt(subcategory.dueDate),
           };
         });
       } else {
@@ -326,10 +326,10 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     if (newCategory.fixed) {
       if (newCategory.subcategories.length === 0) {
         newCategory.frequency = categoryBody.frequency;
-        newCategory.dayOfMonth = parseInt(categoryBody.dayOfMonth);
+        newCategory.dueDate = parseInt(categoryBody.dueDate);
       } else {
         newCategory.frequency = null;
-        newCategory.dayOfMonth = null;
+        newCategory.dueDate = null;
       }
     }
 

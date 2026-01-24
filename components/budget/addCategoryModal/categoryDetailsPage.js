@@ -16,7 +16,7 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
         ...prevCategory,
         fixed: true,
         budget: prevCategory.hasSubcategory ? "" : prevCategory.budget,
-        dayOfMonth: prevCategory.hasSubcategory ? "" : prevCategory.dayOfMonth,
+        dueDate: prevCategory.hasSubcategory ? "" : prevCategory.dueDate,
         subcategories: !prevCategory.fixed ? [] : prevCategory.subcategories,
       };
     });
@@ -28,9 +28,9 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
         ...prevCategory,
         fixed: false,
         budget: prevCategory.hasSubcategory ? "" : prevCategory.budget,
-        dayOfMonth: prevCategory.hasSubcategory ? "" : prevCategory.dayOfMonth,
+        dueDate: prevCategory.hasSubcategory ? "" : prevCategory.dueDate,
         subcategories: prevCategory.subcategories.map((subcategory) => {
-          return { ...subcategory, actual: "", dayOfMonth: "" };
+          return { ...subcategory, actual: "", dueDate: "" };
         }),
       };
     });
@@ -42,7 +42,7 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
         ...prevCategory,
         hasSubcategory: true,
         budget: prevCategory.fixed ? "" : prevCategory.budget,
-        dayOfMonth: prevCategory.fixed ? "" : prevCategory.dayOfMonth,
+        dueDate: prevCategory.fixed ? "" : prevCategory.dueDate,
       };
     });
   };
@@ -53,7 +53,7 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
         ...prevCategory,
         hasSubcategory: false,
         budget: prevCategory.fixed ? "" : prevCategory.budget,
-        dayOfMonth: prevCategory.fixed ? "" : prevCategory.dayOfMonth,
+        dueDate: prevCategory.fixed ? "" : prevCategory.dueDate,
         subcategories: [],
       };
     });
@@ -178,14 +178,14 @@ const CategoryDetailsPage = ({ newCategory, setNewCategory }) => {
             </Form.Group>
           </Col>
           <Col className="col-6">
-            <Form.Group controlId="dayOfMonth" className={formGroupStyle}>
+            <Form.Group controlId="dueDate" className={formGroupStyle}>
               <Form.Label>What day of the month are you charged?</Form.Label>
               <Form.Control
                 className="h-100"
                 type="number"
                 min={1}
                 max={31}
-                value={newCategory.dayOfMonth}
+                value={newCategory.dueDate}
                 onChange={handleInput}
               />
             </Form.Group>

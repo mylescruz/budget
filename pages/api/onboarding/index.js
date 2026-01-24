@@ -120,7 +120,7 @@ async function createAccount(
                     id: subcategory.id,
                     name: subcategory.name.trim(),
                     actual: subcategoryActual,
-                    dayOfMonth: parseInt(subcategory.dayOfMonth),
+                    dueDate: parseInt(subcategory.dueDate),
                   };
                 } else {
                   return {
@@ -146,9 +146,9 @@ async function createAccount(
 
           if (category.fixed) {
             if (category.subcategories.length > 0) {
-              finalCategory.dayOfMonth = null;
+              finalCategory.dueDate = null;
             } else {
-              finalCategory.dayOfMonth = parseInt(category.dayOfMonth);
+              finalCategory.dueDate = parseInt(category.dueDate);
             }
           }
 
@@ -246,7 +246,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
           };
 
           if (category.fixed) {
-            finalSubcategory.dayOfMonth = subcategory.dayOfMonth;
+            finalSubcategory.dueDate = subcategory.dueDate;
           }
 
           return finalSubcategory;
@@ -255,7 +255,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
     }
 
     if (category.fixed) {
-      finalCategory.dayOfMonth = category.dayOfMonth;
+      finalCategory.dueDate = category.dueDate;
     }
 
     if (category.name === funMoney) {
