@@ -71,7 +71,6 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
           id: subcategory.id,
           name: subcategory.name.trim(),
           actual: dollarsToCents(subcategory.actual),
-          dueDate: subcategory.dueDate,
         };
       }
     });
