@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CreateUserForm from "./createUserForm";
 import { useRouter } from "next/router";
-import { Modal, Spinner } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import { signIn } from "next-auth/react";
 
 const CreateUserLayout = ({ csrfToken }) => {
@@ -13,21 +13,26 @@ const CreateUserLayout = ({ csrfToken }) => {
     name: "",
     password: "",
     confirmPassword: "",
-    categories: [],
-    customCategories: false,
-    income: [],
   });
-  const [creatingUser, setCreatingUser] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [modal, setModal] = useState("none");
 
-  // Closes the loading screen modal for creating the user
-  const closeCreatingUser = () => {
-    setCreatingUser(false);
+  const closeLoadingModal = () => {
+    setModal("none");
   };
 
-  // Complete the onboarding by adding all the user's details to MongoDB
-  const finishOnboarding = async () => {
-    setCreatingUser(true);
+  const closeErrorModal = () => {
+    setModal("none");
+  };
+
+  const closeLoginModal = () => {
+    router.push("/auth/signIn");
+
+    setModal("none");
+  };
+
+  // Complete the user creation by adding the user's details to the database
+  const finishAccountCreation = async () => {
+    setModal("loading");
 
     // Add all the users information in the onboarding API endpoint
     try {
@@ -39,15 +44,12 @@ const CreateUserLayout = ({ csrfToken }) => {
         },
         body: JSON.stringify(newUser),
       });
-
-      setErrorOccurred(false);
     } catch (error) {
-      setErrorOccurred(true);
-      closeCreatingUser();
+      setModal("error");
       return;
     }
 
-    // Once onboarded, log the user in with the new credentials
+    // Once the user is created, log the user in with the new credentials
     try {
       const response = await signIn("credentials", {
         username: newUser.username,
@@ -60,40 +62,54 @@ const CreateUserLayout = ({ csrfToken }) => {
       if (response.ok) {
         router.push("/onboarding");
       } else {
-        throw new Error(
-          "There was an issue with directly login. Please sign in using your new credentials.",
-        );
+        throw new Error();
       }
 
-      setErrorOccurred(false);
+      closeLoadingModal();
     } catch (error) {
-      setErrorOccurred(true);
-      console.error(error);
-      router.push("/auth/signIn");
-    } finally {
-      closeCreatingUser();
+      setModal("login");
     }
-  };
-
-  // Props for the underlying components
-  const createUserFormProps = {
-    newUser: newUser,
-    setNewUser: setNewUser,
-    errorOccurred: errorOccurred,
-    setErrorOccurred: setErrorOccurred,
-    finishOnboarding: finishOnboarding,
   };
 
   return (
     <>
-      <CreateUserForm {...createUserFormProps} />
+      <CreateUserForm
+        newUser={newUser}
+        setNewUser={setNewUser}
+        finishAccountCreation={finishAccountCreation}
+      />
 
-      <Modal show={creatingUser} onHide={closeCreatingUser} centered>
-        <Modal.Body>
-          <h3 className="text-center">Creating your new account and budget!</h3>
+      <Modal show={modal === "loading"} onHide={closeLoadingModal} centered>
+        <Modal.Body className="text-center">
+          <h3>Creating your new account!</h3>
           <div className="d-flex justify-content-center align-items-center">
             <Spinner animation="border" variant="primary" />
           </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={modal === "error"} onHide={closeErrorModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="text-danger fw-bold">
+            Error Occurred
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center fw-bold text-danger">
+          <p>An error occurred while creating your account.</p>
+          <p>Please try again later!</p>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={modal === "login"} onHide={closeLoginModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="fw-bold">Login Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center fw-bold">
+          <p>There was an issue with direct login.</p>
+          <p>Please sign in using your new credentials below.</p>
+          <Button variant="primary" onClick={closeLoginModal}>
+            Login
+          </Button>
         </Modal.Body>
       </Modal>
     </>

@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
-import ErrorModal from "@/components/layout/errorModal";
 
-const CreateUserForm = ({
-  newUser,
-  setNewUser,
-  errorOccurred,
-  setErrorOccurred,
-  finishOnboarding,
-}) => {
+const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
   const validated = {
     valid: true,
     error: "",
@@ -98,98 +91,91 @@ const CreateUserForm = ({
       setValidMatch(validated);
     }
 
-    await finishOnboarding();
+    await finishAccountCreation();
   };
 
   return (
-    <>
-      <Container className="d-flex justify-content-center align-items-center">
-        <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
-          <h1 className="text-center">Create account</h1>
-          <Form onSubmit={createUser}>
-            <Form.Group controlId="name" className="h-100 my-2">
-              <Form.Control
-                type="text"
-                value={newUser.name}
-                placeholder="Name"
-                onChange={handleInput}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="email" className="h-100 my-2">
-              <Form.Control
-                type="text"
-                value={newUser.email}
-                placeholder="Email"
-                onChange={handleInput}
-                isInvalid={validEmail.error && !validEmail.valid}
-                required
-              />
-              <Form.Control.Feedback type="invalid">
-                {validEmail.error}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="username" className="h-100 my-2">
-              <Form.Control
-                type="text"
-                value={newUser.username}
-                placeholder="Username"
-                onChange={handleInput}
-                isInvalid={validUsername.error && !validUsername.valid}
-                required
-              />
-              <Form.Control.Feedback type="invalid">
-                {validUsername.error}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="password" className="h-100 my-2">
-              <Form.Control
-                type="password"
-                value={newUser.password}
-                placeholder="Password"
-                onChange={handleInput}
-                isInvalid={validPassword.error && !validPassword.valid}
-                required
-              />
-              <Form.Control.Feedback type="invalid">
-                {validPassword.error}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="confirmPassword" className="h-100 my-2">
-              <Form.Control
-                type="password"
-                value={newUser.confirmPassword}
-                placeholder="Confirm Password"
-                onChange={handleInput}
-                isInvalid={validMatch.error && !validMatch.valid}
-                required
-              />
-              <Form.Control.Feedback type="invalid">
-                {validMatch.error}
-              </Form.Control.Feedback>
-              <Form.Text>
-                Your password must include:
-                <ul>
-                  <li>An uppercase letter</li>
-                  <li>A lowercase letter</li>
-                  <li>A number</li>
-                  <li>A special character: !@#$%&*?</li>
-                  <li>Minimum 8 characters</li>
-                </ul>
-              </Form.Text>
-            </Form.Group>
-            <Button className="w-100" type="submit">
-              Sign Up
-            </Button>
-          </Form>
-        </Card>
-      </Container>
-
-      <ErrorModal
-        errorOccurred={errorOccurred}
-        setErrorOccurred={setErrorOccurred}
-      />
-    </>
+    <Container className="d-flex justify-content-center align-items-center">
+      <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
+        <h1 className="text-center">Create account</h1>
+        <Form onSubmit={createUser}>
+          <Form.Group controlId="name" className="h-100 my-2">
+            <Form.Control
+              type="text"
+              value={newUser.name}
+              placeholder="Name"
+              onChange={handleInput}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="email" className="h-100 my-2">
+            <Form.Control
+              type="text"
+              value={newUser.email}
+              placeholder="Email"
+              onChange={handleInput}
+              isInvalid={validEmail.error && !validEmail.valid}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              {validEmail.error}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group controlId="username" className="h-100 my-2">
+            <Form.Control
+              type="text"
+              value={newUser.username}
+              placeholder="Username"
+              onChange={handleInput}
+              isInvalid={validUsername.error && !validUsername.valid}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              {validUsername.error}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group controlId="password" className="h-100 my-2">
+            <Form.Control
+              type="password"
+              value={newUser.password}
+              placeholder="Password"
+              onChange={handleInput}
+              isInvalid={validPassword.error && !validPassword.valid}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              {validPassword.error}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group controlId="confirmPassword" className="h-100 my-2">
+            <Form.Control
+              type="password"
+              value={newUser.confirmPassword}
+              placeholder="Confirm Password"
+              onChange={handleInput}
+              isInvalid={validMatch.error && !validMatch.valid}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              {validMatch.error}
+            </Form.Control.Feedback>
+            <Form.Text>
+              Your password must include:
+              <ul>
+                <li>An uppercase letter</li>
+                <li>A lowercase letter</li>
+                <li>A number</li>
+                <li>A special character: !@#$%&*?</li>
+                <li>Minimum 8 characters</li>
+              </ul>
+            </Form.Text>
+          </Form.Group>
+          <Button className="w-100" type="submit">
+            Sign Up
+          </Button>
+        </Form>
+      </Card>
+    </Container>
   );
 };
 
