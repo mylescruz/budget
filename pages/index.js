@@ -3,9 +3,18 @@ import Home from "@/components/home/home";
 import LoadingIndicator from "@/components/layout/loadingIndicator";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 export default function Index() {
   const { data: session, status } = useSession();
+
+  const router = useRouter();
+
+  if (status !== "loading" && session) {
+    if (!session.user.onboarded) {
+      router.push("/onboarding");
+    }
+  }
 
   if (status === "loading") {
     return <LoadingIndicator />;
