@@ -4,21 +4,24 @@ import LoadingIndicator from "@/components/layout/loadingIndicator";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Index() {
   const { data: session, status } = useSession();
 
   const router = useRouter();
 
-  if (status !== "loading" && session) {
-    if (!session.user.onboarded) {
-      router.push("/onboarding");
+  useEffect(() => {
+    if (status === "authenticated" && !session.user.onboarded) {
+      router.replace("/onboarding");
     }
-  }
+  }, [status, session, router]);
 
   if (status === "loading") {
     return <LoadingIndicator />;
-  } else if (!session || status === "unauthenticated") {
+  }
+
+  if (!session || status === "unauthenticated") {
     return (
       <>
         <Head>
@@ -30,17 +33,21 @@ export default function Index() {
         <Home />
       </>
     );
-  } else {
-    return (
-      <>
-        <Head>
-          <title>Dashboard</title>
-          <meta name="description" content="User's dashboard" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        <Dashboard />
-      </>
-    );
   }
+
+  if (!session.user.onboarded) {
+    return <LoadingIndicator />;
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Dashboard</title>
+        <meta name="description" content="User's dashboard" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Dashboard />
+    </>
+  );
 }
