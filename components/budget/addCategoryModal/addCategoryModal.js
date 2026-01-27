@@ -2,11 +2,11 @@ import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import SubcategoriesPage from "./subcategoriesPage";
 import ConfirmationPage from "./confirmationPage";
 import ErrorMessage from "@/components/layout/errorMessage";
 import centsToDollars from "@/helpers/centsToDollars";
 import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
+import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 
 const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
   const emptyCategory = {
@@ -119,7 +119,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
               />
             )}
             {modalPage === "subcategories" && (
-              <SubcategoriesPage
+              <AddSubcategoryForm
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
               />
