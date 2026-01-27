@@ -7,6 +7,7 @@ import CompleteSection from "./completeSection";
 import { v4 as uuidv4 } from "uuid";
 import getDateInfo from "@/helpers/getDateInfo";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const funMoneyCategory = {
   name: "Fun Money",
@@ -43,7 +44,7 @@ const funMoneyCategory = {
   ],
 };
 
-const InnerOnboardingLayout = ({ newUser, setNewUser }) => {
+const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
   // State variables to change screens
   const [categoryQuestion, setCategoryQuestion] = useState(true);
   const [chooseCategory, setChooseCategory] = useState(true);
@@ -51,6 +52,8 @@ const InnerOnboardingLayout = ({ newUser, setNewUser }) => {
   const [completeOnboarding, setCompleteOnboarding] = useState(false);
   const [enterCustom, setEnterCustom] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
+
+  const router = useRouter();
 
   const today = new Date();
   const dateInfo = getDateInfo(today);
@@ -87,8 +90,6 @@ const InnerOnboardingLayout = ({ newUser, setNewUser }) => {
 
   // Complete the onboarding by adding all the user's details to MongoDB
   const finishOnboarding = async () => {
-    setCreatingUser(true);
-
     // Add all the users information in the onboarding API endpoint
     try {
       await fetch("/api/onboarding", {
@@ -101,38 +102,14 @@ const InnerOnboardingLayout = ({ newUser, setNewUser }) => {
       });
 
       setErrorOccurred(false);
+
+      await update({ onboarded: true });
+
+      router.push("/");
     } catch (error) {
       setErrorOccurred(true);
       console.error(error);
-      closeCreatingUser();
       return;
-    }
-
-    // Once onboarded, log the user in with the new credentials
-    try {
-      const response = await signIn("credentials", {
-        username: newUser.username,
-        password: newUser.password,
-        redirect: false,
-        csrfToken,
-      });
-
-      // Take user to the home page after signing in
-      if (response.ok) {
-        router.push("/");
-      } else {
-        throw new Error(
-          "There was an issue with directly login. Please sign in using your new credentials.",
-        );
-      }
-
-      setErrorOccurred(false);
-    } catch (error) {
-      setErrorOccurred(true);
-      console.error(error);
-      router.push("/auth/signIn");
-    } finally {
-      closeCreatingUser();
     }
   };
 
@@ -186,18 +163,21 @@ const InnerOnboardingLayout = ({ newUser, setNewUser }) => {
 };
 
 const OnboardingLayout = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [newUser, setNewUser] = useState({
     username: session.user.username,
-    email: session.user.email,
-    name: session.user.name,
-    onboarded: session.user.onboarded,
     categories: [],
     customCategories: false,
     income: [],
   });
 
-  return <InnerOnboardingLayout newUser={newUser} setNewUser={setNewUser} />;
+  return (
+    <InnerOnboardingLayout
+      newUser={newUser}
+      setNewUser={setNewUser}
+      update={update}
+    />
+  );
 };
 
 export default OnboardingLayout;

@@ -3,12 +3,6 @@
 import clientPromise from "@/lib/mongodb";
 import { v4 as uuidv4 } from "uuid";
 
-// Configuring bcrypt for password encryption
-const bcrypt = require("bcryptjs");
-const saltRounds = 10;
-
-const USER_ROLE = "User";
-
 const funMoney = "Fun Money";
 
 export default async function handler(req, res) {
@@ -43,17 +37,11 @@ async function createAccount(
   const mongoSession = client.startSession();
 
   try {
-    const newUser = {
-      ...req.body,
-      username: req.body.username.toLowerCase().trim(),
-    };
+    const newUser = { ...req.body };
 
     let insertedUser;
 
     await mongoSession.withTransaction(async (session) => {
-      // Add the user to MongoDB
-      insertedUser = await createUser(newUser, session, usersCol);
-
       // Add the user's inputted income to MongoDB
       let monthIncome = 0;
       const income = newUser.income.map((source) => {
@@ -78,7 +66,8 @@ async function createAccount(
 
         if (formattedSource.type === "Paycheck") {
           formattedSource.gross = parseFloat(source.gross) * 100;
-          formattedSource.deductions = parseFloat(source.deductions) * 100;
+          formattedSource.deductions =
+            formattedSource.gross - formattedSource.amount;
         }
 
         if (formattedSource.type === "Unemployment") {
@@ -185,39 +174,27 @@ async function createAccount(
       categories[funMoneyIndex].budget = monthIncome - budgetTotal;
 
       await categoriesCol.insertMany(categories, { session });
+
+      // Mark the onboarded flag as true
+      insertedUser = await usersCol.updateOne(
+        { username: newUser.username },
+        {
+          $set: {
+            onboarded: true,
+          },
+        },
+        { session },
+      );
     });
 
-    // Return the new user
+    // Return the newly onboarded user
     res.status(200).json(insertedUser);
   } catch (error) {
     console.error(`POST onboarding request failed: ${error}`);
     res.status(500).send(`Error occured while onboarding this new user`);
+  } finally {
+    await mongoSession.endSession();
   }
-}
-
-async function createUser(newUser, session, usersCol) {
-  // Encrypt the user's entered password by using bcrypt
-  const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
-
-  const createdDate = new Date().toUTCString();
-
-  const userInfo = {
-    name: newUser.name.trim(),
-    email: newUser.email.trim(),
-    username: newUser.username,
-    password_hash: hashedPassword,
-    role: USER_ROLE,
-    onboarded: true,
-    created_date: createdDate,
-  };
-
-  // Add the new user to MongoDB
-  const insertedUser = await usersCol.insertOne(userInfo, { session });
-
-  // Remove the password from the user object
-  const { password_hash, ...user } = userInfo;
-
-  return { _id: insertedUser.insertedId, ...user };
 }
 
 async function getDefaultCategories(username, month, year, categoriesCol) {

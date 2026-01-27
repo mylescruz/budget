@@ -19,7 +19,7 @@ export const authOptions = {
               method: "POST",
               body: JSON.stringify(credentials),
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
           const user = await response.json();
 
@@ -47,7 +47,7 @@ export const authOptions = {
   },
   callbacks: {
     // Update the token to include the user's username
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token._id = user._id;
         token.username = user.username;
@@ -57,6 +57,11 @@ export const authOptions = {
         token.onboarded = user.onboarded;
         token.lastLogin = user.lastLogin;
       }
+
+      if (trigger === "update") {
+        token.onboarded = true;
+      }
+
       return token;
     },
     // Redirect a page to the given URL or to the base URL
