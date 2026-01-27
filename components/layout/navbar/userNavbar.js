@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Container, Nav, Navbar } from "react-bootstrap";
 
 const UserNavbar = ({
+  session,
   navbarExpanded,
   linkClicked,
   toggleNavbar,
@@ -29,23 +30,24 @@ const UserNavbar = ({
         />
         <Navbar.Collapse id="basic-navbar-nav" in={navbarExpanded}>
           <Nav className="me-auto">
-            {pages.map((page, index) => (
-              <Nav.Link
-                key={index}
-                as={Link}
-                href={
-                  page.year
-                    ? {
-                        pathname: page.link,
-                        query: { year: page.year },
-                      }
-                    : page.link
-                }
-                onClick={linkClicked}
-              >
-                {page.name}
-              </Nav.Link>
-            ))}
+            {session.user.onboarded &&
+              pages.map((page, index) => (
+                <Nav.Link
+                  key={index}
+                  as={Link}
+                  href={
+                    page.year
+                      ? {
+                          pathname: page.link,
+                          query: { year: page.year },
+                        }
+                      : page.link
+                  }
+                  onClick={linkClicked}
+                >
+                  {page.name}
+                </Nav.Link>
+              ))}
             <Nav.Link onClick={userSignOut}>Logout</Nav.Link>
           </Nav>
         </Navbar.Collapse>

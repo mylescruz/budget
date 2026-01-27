@@ -65,6 +65,7 @@ const Header = () => {
     } else {
       return (
         <UserNavbar
+          session={session}
           navbarExpanded={navbarExpanded}
           toggleNavbar={toggleNavbar}
           linkClicked={linkClicked}
