@@ -1,11 +1,11 @@
 import PopUp from "@/components/layout/popUp";
 import { useState } from "react";
 import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
-import DetailsPage from "./detailsPage";
 import SubcategoriesPage from "./subcategoriesPage";
 import ConfirmationPage from "./confirmationPage";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import centsToDollars from "@/helpers/centsToDollars";
+import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 
 const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const emptyCategory = {
@@ -99,7 +99,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
         <Card className="card-background px-3 py-3">
           <Form onSubmit={addNewCategory}>
             {formPage === "details" && (
-              <DetailsPage
+              <CategoryDetailsForm
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
               />

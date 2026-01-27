@@ -5,7 +5,7 @@ const inputStyle = "h-100";
 
 const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
-const DetailsPage = ({ newCategory, setNewCategory }) => {
+const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
   const handleInput = (e) => {
     setNewCategory({ ...newCategory, [e.target.id]: e.target.value });
   };
@@ -62,7 +62,7 @@ const DetailsPage = ({ newCategory, setNewCategory }) => {
   return (
     <div>
       <Row className="d-flex">
-        <Col className="col-12 col-md-6">
+        <Col className="col-12 col-md-6 col-lg-8">
           <Form.Group controlId="name" className={formGroupStyle}>
             <Form.Label>Name this category</Form.Label>
             <Form.Control
@@ -74,7 +74,7 @@ const DetailsPage = ({ newCategory, setNewCategory }) => {
             />
           </Form.Group>
         </Col>
-        <Col className="col-12 col-md-6">
+        <Col className="col-12 col-md-6 col-lg-4">
           <Form.Group controlId="color" className={formGroupStyle}>
             <Form.Label>Choose a color</Form.Label>
             <Form.Control
@@ -136,14 +136,12 @@ const DetailsPage = ({ newCategory, setNewCategory }) => {
           </Button>
         </div>
       </Form.Group>
-      {((!newCategory.hasSubcategory && !newCategory.fixed) ||
-        (newCategory.hasSubcategory && !newCategory.fixed) ||
-        (!newCategory.hasSubcategory && newCategory.fixed)) && (
+      {(!newCategory.hasSubcategory || !newCategory.fixed) && (
         <Col className="col-12 col-md-8">
           <Form.Group controlId="budget" className={formGroupStyle}>
             <Form.Label>
               {newCategory.fixed
-                ? "What is the monthly charge?"
+                ? "How much are you charged?"
                 : "What is this category's budget?"}
             </Form.Label>
             <Form.Control
@@ -164,7 +162,7 @@ const DetailsPage = ({ newCategory, setNewCategory }) => {
             <Form.Group controlId="frequency" className={formGroupStyle}>
               <Form.Label>How often does this occur?</Form.Label>
               <Form.Select
-                className="h-100"
+                className={inputStyle}
                 value={newCategory.frequency}
                 onChange={handleInput}
                 required
@@ -196,4 +194,4 @@ const DetailsPage = ({ newCategory, setNewCategory }) => {
   );
 };
 
-export default DetailsPage;
+export default CategoryDetailsForm;
