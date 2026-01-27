@@ -1,6 +1,6 @@
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import PopUp from "@/components/layout/popUp";
-import CustomCategoriesSection from "./custom/customCategoriesSection";
+import CustomCategoriesSection from "./customCategoriesSection";
 
 const defaultExampleCategories = [
   {

@@ -1,43 +1,48 @@
 import dayFormatter from "@/helpers/dayFormatter";
+import dollarFormatter from "@/helpers/dollarFormatter";
 import { Button, Col, Row } from "react-bootstrap";
 
-const ConfirmationPage = ({ newCategory }) => {
+const titleStyle = "fw-bold fs-5";
+
+const CategoryConfirmationPage = ({ newCategory }) => {
   return (
     <div>
-      <h5>Confirm the category information</h5>
+      <h5 className="text-center mb-2">Confirm the category information</h5>
       <p className="my-1">
-        <span className="fw-bold">Name:</span> {newCategory.name}
+        <span className={titleStyle}>Name:</span> {newCategory.name}
       </p>
       <p className="my-1">
-        <span className="fw-bold">Budget:</span> ${newCategory.budget}
+        <span className={titleStyle}>Budget:</span>{" "}
+        {dollarFormatter(newCategory.budget)}
       </p>
       <p className="my-1">
-        <span className="fw-bold">Color:</span>{" "}
+        <span className={titleStyle}>Color:</span>{" "}
         <Button
           style={{
             backgroundColor: newCategory.color,
             border: newCategory.color,
           }}
-        ></Button>
+        />
       </p>
       <p className="my-1">
-        <span className="fw-bold">Fixed:</span>{" "}
+        <span className={titleStyle}>Fixed:</span>{" "}
         {newCategory.fixed ? "Yes" : "No"}
       </p>
       {newCategory.fixed && !newCategory.hasSubcategory && (
         <div>
           <p className="my-1">
-            <span className="fw-bold">Frequency:</span> {newCategory.frequency}
+            <span className={titleStyle}>Frequency:</span>{" "}
+            {newCategory.frequency}
           </p>
           <p className="my-1">
-            <span className="fw-bold">Due on the:</span>{" "}
+            <span className={titleStyle}>Due on the:</span>{" "}
             {dayFormatter(newCategory.dueDate)}
           </p>
         </div>
       )}
       {newCategory.subcategories.length > 0 && (
         <div>
-          <p className="fw-bold my-0">Subcategories:</p>
+          <p className={`${titleStyle} my-0`}>Subcategories</p>
           <Row className="fw-bold">
             <Col className={`${newCategory.fixed ? "col-6" : "col-12"}`}>
               Name
@@ -52,10 +57,14 @@ const ConfirmationPage = ({ newCategory }) => {
                   {subcategory.name}
                 </Col>
                 {newCategory.fixed && (
-                  <Col className="col-3">${subcategory.actual}</Col>
+                  <Col className="col-3">
+                    {dollarFormatter(subcategory.actual)}
+                  </Col>
                 )}
                 {newCategory.fixed && (
-                  <Col className="col-3">{subcategory.dueDate}</Col>
+                  <Col className="col-3">
+                    {dayFormatter(subcategory.dueDate)}
+                  </Col>
                 )}
               </Row>
             ))}
@@ -66,4 +75,4 @@ const ConfirmationPage = ({ newCategory }) => {
   );
 };
 
-export default ConfirmationPage;
+export default CategoryConfirmationPage;

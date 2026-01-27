@@ -2,7 +2,7 @@ import { Button, Table } from "react-bootstrap";
 import React, { useContext, useState } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import PopUp from "@/components/layout/popUp";
-import AddCategoryModal from "../addCategoryModal/addCategoryModal";
+import AddCategoryModal from "./addCategoryModal";
 import ChangingCategoryRow from "./changingCategoryRow";
 import FixedCategoryRow from "./fixedCategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
