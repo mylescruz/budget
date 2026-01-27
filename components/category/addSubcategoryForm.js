@@ -17,14 +17,74 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
     dueDate: "",
   };
 
+  const subcategoryValidation = {
+    name: { valid: true, error: "" },
+    actual: { valid: true, error: "" },
+    dueDate: { valid: true, error: "" },
+  };
+
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
+  const [validation, setValidation] = useState(subcategoryValidation);
 
   const handleInput = (e) => {
     setNewSubcategory({ ...newSubcategory, [e.target.id]: e.target.value });
   };
 
-  const addNewSubcategory = (e) => {
-    e.preventDefault();
+  const addNewSubcategory = () => {
+    const errors = { ...subcategoryValidation };
+
+    let valid = true;
+
+    if (newSubcategory.name === "") {
+      errors.name = {
+        valid: false,
+        error: "Please enter a subcategory name",
+      };
+
+      valid = false;
+    }
+
+    if (newCategory.fixed) {
+      if (newSubcategory.actual === "") {
+        errors.actual = {
+          valid: false,
+          error: "Please enter an amount",
+        };
+
+        valid = false;
+      } else if (newSubcategory.actual <= 0) {
+        errors.actual = {
+          valid: false,
+          error: "The amount must be greater than 0",
+        };
+
+        valid = false;
+      }
+
+      if (newSubcategory.dueDate === "") {
+        errors.dueDate = {
+          valid: false,
+          error: "Please enter a due date",
+        };
+
+        valid = false;
+      } else if (newSubcategory.dueDate < 1 || newSubcategory.dueDate > 31) {
+        errors.dueDate = {
+          valid: false,
+          error: "The date must be within a calendar month: 1-31",
+        };
+
+        valid = false;
+      }
+    }
+
+    if (!valid) {
+      setValidation(errors);
+
+      return;
+    }
+
+    setValidation(subcategoryValidation);
 
     setNewCategory({
       ...newCategory,
@@ -36,7 +96,7 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
 
   return (
     <div>
-      <Form onSubmit={addNewSubcategory}>
+      <div>
         <h5 className="text-center mb-2 mx-0">
           Enter {newCategory.name}'s subcategories
         </h5>
@@ -49,8 +109,11 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
                 type="text"
                 value={newSubcategory.name}
                 onChange={handleInput}
-                required
+                isInvalid={!validation.name.valid}
               />
+              <Form.Control.Feedback type="invalid">
+                {validation.name.error}
+              </Form.Control.Feedback>
             </Form.Group>
           </Col>
           {newCategory.fixed && (
@@ -79,11 +142,13 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
                     className={inputFormStyle}
                     type="number"
                     step={0.01}
-                    min={0.01}
                     value={newSubcategory.actual}
                     onChange={handleInput}
-                    required
+                    isInvalid={!validation.actual.valid}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {validation.actual.error}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col className="col-12">
@@ -94,12 +159,14 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
                   <Form.Control
                     className={inputFormStyle}
                     type="number"
-                    min={1}
-                    max={31}
+                    step={1}
                     value={newSubcategory.dueDate}
                     onChange={handleInput}
-                    required
+                    isInvalid={!validation.dueDate.valid}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {validation.dueDate.error}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </div>
@@ -107,14 +174,14 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
           <Col className="col-12">
             <Button
               variant="primary"
-              type="submit"
               className="btn-sm w-100 my-2"
+              onClick={addNewSubcategory}
             >
               Add
             </Button>
           </Col>
         </Row>
-      </Form>
+      </div>
 
       {newCategory.subcategories.length > 0 && (
         <AddedSubcategories
