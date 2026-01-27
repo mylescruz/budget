@@ -1,6 +1,5 @@
 import { useState } from "react";
 import CreateUserForm from "./createUserForm";
-import OnboardingLayout from "./onboarding/onboardingLayout";
 import { useRouter } from "next/router";
 import { Modal, Spinner } from "react-bootstrap";
 import { signIn } from "next-auth/react";
@@ -18,7 +17,6 @@ const CreateUserLayout = ({ csrfToken }) => {
     customCategories: false,
     income: [],
   });
-  const [createFormComplete, setCreateFormComplete] = useState(false);
   const [creatingUser, setCreatingUser] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
@@ -33,7 +31,7 @@ const CreateUserLayout = ({ csrfToken }) => {
 
     // Add all the users information in the onboarding API endpoint
     try {
-      await fetch("/api/onboarding", {
+      await fetch("/api/createUser", {
         method: "POST",
         headers: {
           Accept: "application.json",
@@ -45,7 +43,6 @@ const CreateUserLayout = ({ csrfToken }) => {
       setErrorOccurred(false);
     } catch (error) {
       setErrorOccurred(true);
-      console.error(error);
       closeCreatingUser();
       return;
     }
@@ -61,10 +58,10 @@ const CreateUserLayout = ({ csrfToken }) => {
 
       // Take user to the home page after signing in
       if (response.ok) {
-        router.push("/");
+        router.push("/onboarding");
       } else {
         throw new Error(
-          "There was an issue with directly login. Please sign in using your new credentials."
+          "There was an issue with directly login. Please sign in using your new credentials.",
         );
       }
 
@@ -82,24 +79,14 @@ const CreateUserLayout = ({ csrfToken }) => {
   const createUserFormProps = {
     newUser: newUser,
     setNewUser: setNewUser,
-    setCreateFormComplete: setCreateFormComplete,
     errorOccurred: errorOccurred,
     setErrorOccurred: setErrorOccurred,
-  };
-
-  const onboardingLayoutProps = {
-    newUser: newUser,
-    setNewUser: setNewUser,
     finishOnboarding: finishOnboarding,
   };
 
   return (
     <>
-      {!createFormComplete ? (
-        <CreateUserForm {...createUserFormProps} />
-      ) : (
-        <OnboardingLayout {...onboardingLayoutProps} />
-      )}
+      <CreateUserForm {...createUserFormProps} />
 
       <Modal show={creatingUser} onHide={closeCreatingUser} centered>
         <Modal.Body>

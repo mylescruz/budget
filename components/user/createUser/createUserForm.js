@@ -5,9 +5,9 @@ import ErrorModal from "@/components/layout/errorModal";
 const CreateUserForm = ({
   newUser,
   setNewUser,
-  setCreateFormComplete,
   errorOccurred,
   setErrorOccurred,
+  finishOnboarding,
 }) => {
   const validated = {
     valid: true,
@@ -98,7 +98,7 @@ const CreateUserForm = ({
       setValidMatch(validated);
     }
 
-    setCreateFormComplete(true);
+    await finishOnboarding();
   };
 
   return (
