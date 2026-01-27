@@ -9,7 +9,7 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
     id: uuidv4(),
     name: "",
     actual: "",
-    frequency: "",
+    frequency: "Monthly",
     dueDate: "",
   };
 

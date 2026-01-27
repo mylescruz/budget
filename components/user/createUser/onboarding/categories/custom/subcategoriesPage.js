@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 
+const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
+
 const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
   const emptySubcategory = {
     id: uuidv4(),
     name: "",
     actual: "",
+    frequency: "Monthly",
     dueDate: "",
   };
 
@@ -51,33 +54,52 @@ const SubcategoriesPage = ({ newCategory, setNewCategory }) => {
             </Form.Group>
           </Col>
           {newCategory.fixed && (
-            <Col className="col-12">
-              <Form.Group controlId="actual" className="my-2">
-                <Form.Label>How much does it cost?</Form.Label>
-                <Form.Control
-                  className="h-100"
-                  type="number"
-                  step={0.01}
-                  value={newSubcategory.actual}
-                  onChange={handleSubcategoryInput}
-                />
-              </Form.Group>
-            </Col>
-          )}
-          {newCategory.fixed && (
-            <Col className="col-12">
-              <Form.Group controlId="dueDate" className="my-2">
-                <Form.Label>What day of the month are you charged?</Form.Label>
-                <Form.Control
-                  className="h-100"
-                  type="number"
-                  min={1}
-                  max={31}
-                  value={newSubcategory.dueDate}
-                  onChange={handleSubcategoryInput}
-                />
-              </Form.Group>
-            </Col>
+            <div>
+              <Col className="col-12">
+                <Form.Group controlId="frequency" className="my-2">
+                  <Form.Label>How often does this occur?</Form.Label>
+                  <Form.Select
+                    className="h-100"
+                    value={newSubcategory.frequency}
+                    onChange={handleSubcategoryInput}
+                    required
+                  >
+                    {categoryFrequencies.map((frequency) => (
+                      <option key={frequency} value={frequency}>
+                        {frequency}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col className="col-12">
+                <Form.Group controlId="actual" className="my-2">
+                  <Form.Label>How much does it cost?</Form.Label>
+                  <Form.Control
+                    className="h-100"
+                    type="number"
+                    step={0.01}
+                    value={newSubcategory.actual}
+                    onChange={handleSubcategoryInput}
+                  />
+                </Form.Group>
+              </Col>
+              <Col className="col-12">
+                <Form.Group controlId="dueDate" className="my-2">
+                  <Form.Label>
+                    What day of the month are you charged?
+                  </Form.Label>
+                  <Form.Control
+                    className="h-100"
+                    type="number"
+                    min={1}
+                    max={31}
+                    value={newSubcategory.dueDate}
+                    onChange={handleSubcategoryInput}
+                  />
+                </Form.Group>
+              </Col>
+            </div>
           )}
           <Col className="col-12">
             <Button

@@ -120,6 +120,7 @@ async function createAccount(
                     id: subcategory.id,
                     name: subcategory.name.trim(),
                     actual: subcategoryActual,
+                    frequency: subcategory.frequency,
                     dueDate: parseInt(subcategory.dueDate),
                   };
                 } else {
@@ -146,8 +147,10 @@ async function createAccount(
 
           if (category.fixed) {
             if (category.subcategories.length > 0) {
+              finalCategory.frequency = null;
               finalCategory.dueDate = null;
             } else {
+              finalCategory.frequency = category.frequency;
               finalCategory.dueDate = parseInt(category.dueDate);
             }
           }
@@ -233,6 +236,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
       budget: category.budget,
       actual: category.actual,
       fixed: category.fixed,
+      frequency: category.frequency,
       subcategories: category.subcategories,
     };
 
@@ -246,6 +250,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
           };
 
           if (category.fixed) {
+            finalSubcategory.frequency = subcategory.frequency;
             finalSubcategory.dueDate = subcategory.dueDate;
           }
 
@@ -255,6 +260,7 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
     }
 
     if (category.fixed) {
+      finalCategory.frequency = category.frequency;
       finalCategory.dueDate = category.dueDate;
     }
 

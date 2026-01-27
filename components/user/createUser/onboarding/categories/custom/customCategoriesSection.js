@@ -14,6 +14,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
     budget: "",
     actual: "",
     dueDate: "",
+    frequency: "Monthly",
     fixed: false,
     hasSubcategory: false,
     subcategories: [],
