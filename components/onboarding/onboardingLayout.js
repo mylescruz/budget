@@ -1,4 +1,4 @@
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Modal, Row, Spinner } from "react-bootstrap";
 import { useState } from "react";
 import ErrorModal from "@/components/layout/errorModal";
 import IncomeSection from "./incomeSection";
@@ -52,6 +52,7 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
   const [completeOnboarding, setCompleteOnboarding] = useState(false);
   const [enterCustom, setEnterCustom] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [modal, setModal] = useState("none");
 
   const router = useRouter();
 
@@ -88,8 +89,14 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
     openIncome();
   };
 
+  const closeLoadingModal = () => {
+    setModal("none");
+  };
+
   // Complete the onboarding by adding all the user's details to MongoDB
   const finishOnboarding = async () => {
+    setModal("loading");
+
     // Add all the users information in the onboarding API endpoint
     try {
       await fetch("/api/onboarding", {
@@ -110,6 +117,8 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
       setErrorOccurred(true);
       console.error(error);
       return;
+    } finally {
+      setModal("none");
     }
   };
 
@@ -153,6 +162,15 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
           </Col>
         </Row>
       </Container>
+
+      <Modal show={modal === "loading"} onHide={closeLoadingModal} centered>
+        <Modal.Body className="text-center">
+          <h3>Loading your new budget!</h3>
+          <div className="d-flex justify-content-center align-items-center">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        </Modal.Body>
+      </Modal>
 
       <ErrorModal
         errorOccurred={errorOccurred}

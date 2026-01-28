@@ -10,7 +10,7 @@ const CompleteSection = ({ finishOnboarding }) => {
           </h5>
 
           <Button variant="primary" onClick={finishOnboarding}>
-            Create Account!
+            Get Started
           </Button>
         </Container>
       </Card>
