@@ -1,19 +1,14 @@
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 
+const inputValidation = {
+  username: { valid: true, error: "" },
+  email: { valid: true, error: "" },
+  password: { valid: true, error: "" },
+  passwordMatch: { valid: true, error: "" },
+};
+
 const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
-  const validated = {
-    valid: true,
-    error: "",
-  };
-
-  const inputValidation = {
-    username: { valid: true, error: "" },
-    email: { valid: true, error: "" },
-    password: { valid: true, error: "" },
-    passwordMatch: { valid: true, error: "" },
-  };
-
   const [validInput, setValidInput] = useState(inputValidation);
 
   const handleInput = (e) => {
