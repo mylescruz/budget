@@ -4,50 +4,12 @@ import ErrorModal from "@/components/layout/errorModal";
 import IncomeSection from "./incomeSection";
 import CategoriesSection from "./categories/categoriesSection";
 import CompleteSection from "./completeSection";
-import { v4 as uuidv4 } from "uuid";
 import getDateInfo from "@/helpers/getDateInfo";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-const funMoneyCategory = {
-  name: "Fun Money",
-  color: "#6cc17a",
-  budget: 500,
-  actual: 0,
-  fixed: false,
-  subcategories: [
-    {
-      id: uuidv4(),
-      name: "Food",
-      actual: 0,
-    },
-    {
-      id: uuidv4(),
-      name: "Entertainment",
-      actual: 0,
-    },
-    {
-      id: uuidv4(),
-      name: "Miscellaneous",
-      actual: 0,
-    },
-    {
-      id: uuidv4(),
-      name: "Family & Friends",
-      actual: 0,
-    },
-    {
-      id: uuidv4(),
-      name: "Travel",
-      actual: 0,
-    },
-  ],
-};
-
 const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
   const [screen, setScreen] = useState("categories");
-  const [categoryQuestion, setCategoryQuestion] = useState(true);
-  const [enterCustom, setEnterCustom] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [modal, setModal] = useState("none");
 
@@ -65,22 +27,7 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
     setScreen("complete");
   };
 
-  const defaultCategory = () => {
-    openIncome();
-  };
-
-  const customCategory = () => {
-    setCategoryQuestion(false);
-    setNewUser({
-      ...newUser,
-      customCategories: true,
-      categories: [...newUser.categories, funMoneyCategory],
-    });
-    setEnterCustom(true);
-  };
-
   const moveToIncome = () => {
-    setEnterCustom(false);
     openIncome();
   };
 
@@ -120,11 +67,7 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
   const categoriesSectionProps = {
     newUser: newUser,
     setNewUser: setNewUser,
-    categoryQuestion: categoryQuestion,
-    defaultCategory: defaultCategory,
-    customCategory: customCategory,
     moveToIncome: moveToIncome,
-    enterCustom: enterCustom,
   };
 
   const incomeSectionProps = {
