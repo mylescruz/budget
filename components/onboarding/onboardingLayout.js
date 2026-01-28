@@ -45,11 +45,8 @@ const funMoneyCategory = {
 };
 
 const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
-  // State variables to change screens
+  const [screen, setScreen] = useState("categories");
   const [categoryQuestion, setCategoryQuestion] = useState(true);
-  const [chooseCategory, setChooseCategory] = useState(true);
-  const [chooseIncome, setChooseIncome] = useState(false);
-  const [completeOnboarding, setCompleteOnboarding] = useState(false);
   const [enterCustom, setEnterCustom] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [modal, setModal] = useState("none");
@@ -61,13 +58,11 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
 
   // Functions to change screens in boarding
   const openIncome = () => {
-    setChooseCategory(false);
-    setChooseIncome(true);
+    setScreen("income");
   };
 
   const openComplete = () => {
-    setCompleteOnboarding(true);
-    setChooseIncome(false);
+    setScreen("complete");
   };
 
   const defaultCategory = () => {
@@ -144,21 +139,31 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
       <h2 className="text-center">Welcome to Type-A Budget!</h2>
 
       <Container className="mx-auto my-4">
-        {chooseCategory && <CategoriesSection {...categoriesSectionProps} />}
-        {chooseIncome && <IncomeSection {...incomeSectionProps} />}
-        {completeOnboarding && (
+        {screen === "categories" && (
+          <CategoriesSection {...categoriesSectionProps} />
+        )}
+        {screen === "income" && <IncomeSection {...incomeSectionProps} />}
+        {screen === "complete" && (
           <CompleteSection finishOnboarding={finishOnboarding} />
         )}
 
         <Row className="col-6 mx-auto text-center my-2">
           <Col>
-            {chooseCategory ? <span>&#9679;</span> : <span>&#9675;</span>}
+            {screen === "categories" ? (
+              <span>&#9679;</span>
+            ) : (
+              <span>&#9675;</span>
+            )}
           </Col>
           <Col>
-            {chooseIncome ? <span>&#9679;</span> : <span>&#9675;</span>}
+            {screen === "income" ? <span>&#9679;</span> : <span>&#9675;</span>}
           </Col>
           <Col>
-            {completeOnboarding ? <span>&#9679;</span> : <span>&#9675;</span>}
+            {screen === "complete" ? (
+              <span>&#9679;</span>
+            ) : (
+              <span>&#9675;</span>
+            )}
           </Col>
         </Row>
       </Container>
