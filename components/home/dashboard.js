@@ -31,8 +31,6 @@ const InnerDashboard = ({ dateInfo }) => {
 
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
 
-  const summaryYear = dateInfo.month === 1 ? dateInfo.year - 1 : dateInfo.year;
-
   // Get the top 5 categories to display on the dashboard
   const topCategories = useMemo(() => {
     if (!categories) {
@@ -170,13 +168,13 @@ const InnerDashboard = ({ dateInfo }) => {
               <Col className="col-12">
                 <Card className="my-2 card-background">
                   <Card.Body>
-                    <h4>{summaryYear} Summary</h4>
+                    <h4>{dateInfo.year} Summary</h4>
                     <p>View your total spending for the year</p>
                     <Button
                       as={Link}
                       href={{
                         pathname: "/summary",
-                        query: { year: summaryYear },
+                        query: { year: dateInfo.year },
                       }}
                       variant="primary"
                     >
