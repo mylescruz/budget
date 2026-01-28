@@ -9,36 +9,34 @@ import useUser from "@/hooks/useUser";
 import LoadingIndicator from "../layout/loadingIndicator";
 
 const AccountLayout = () => {
-  const [accountSection, setAccountSection] = useState(true);
-  const [passwordSection, setPasswordSection] = useState(false);
-  const [emailSection, setEmailSection] = useState(false);
-  const [deleteSection, setDeleteSection] = useState(false);
+  const [section, setSection] = useState("account");
+
   const { user, userLoading, putUser, deleteUser } = useUser();
 
-  const optionsTabProps = {
-    accountSection: accountSection,
-    setAccountSection: setAccountSection,
-    passwordSection: passwordSection,
-    setPasswordSection: setPasswordSection,
-    emailSection: emailSection,
-    setEmailSection: setEmailSection,
-    deleteSection: deleteSection,
-    setDeleteSection: setDeleteSection,
-  };
-
-  if (userLoading || !user) {
+  if (userLoading) {
     return <LoadingIndicator />;
+  } else if (!user) {
+    return (
+      <Row className="mt-4 text-center">
+        <p className="fw-bold text-danger">
+          &#9432; There was an error loading your information. Please try again
+          later!
+        </p>
+      </Row>
+    );
   } else {
     return (
       <Container>
         <Row>
-          <OptionsTab {...optionsTabProps} />
-          {accountSection && <AccountInfoTab user={user} />}
-          {passwordSection && (
+          <OptionsTab section={section} setSection={setSection} />
+          {section === "account" && <AccountInfoTab user={user} />}
+          {section === "password" && (
             <ChangePasswordTab user={user} putUser={putUser} />
           )}
-          {emailSection && <ChangeEmailTab user={user} putUser={putUser} />}
-          {deleteSection && (
+          {section === "email" && (
+            <ChangeEmailTab user={user} putUser={putUser} />
+          )}
+          {section === "delete" && (
             <DeleteAccountTab user={user} deleteUser={deleteUser} />
           )}
         </Row>

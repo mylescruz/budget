@@ -1,67 +1,46 @@
 import { Col, Row } from "react-bootstrap";
 import styles from "@/styles/account/optionsTab.module.css";
 
-const OptionsTab = ({
-  accountSection,
-  setAccountSection,
-  passwordSection,
-  setPasswordSection,
-  emailSection,
-  setEmailSection,
-  deleteSection,
-  setDeleteSection,
-}) => {
+const OptionsTab = ({ section, setSection }) => {
   const openAccount = () => {
-    setAccountSection(true);
-    setPasswordSection(false);
-    setEmailSection(false);
-    setDeleteSection(false);
+    setSection("account");
   };
 
   const openPassword = () => {
-    setPasswordSection(true);
-    setAccountSection(false);
-    setEmailSection(false);
-    setDeleteSection(false);
+    setSection("password");
   };
 
   const openEmail = () => {
-    setEmailSection(true);
-    setAccountSection(false);
-    setPasswordSection(false);
-    setDeleteSection(false);
+    setSection("email");
   };
 
   const openDelete = () => {
-    setDeleteSection(true);
-    setAccountSection(false);
-    setPasswordSection(false);
-    setEmailSection(false);
+    setSection("delete");
   };
 
   return (
     <Col className="col-12 col-md-4 col-lg-3">
       <Row
         onClick={openAccount}
-        className={`clicker ${styles.options} ${accountSection && styles.active}`}
+        className={`clicker ${styles.options} ${section === "account" && styles.active}`}
       >
         Account Info
       </Row>
       <Row
         onClick={openPassword}
-        className={`clicker ${styles.options} ${passwordSection && styles.active}`}
+        className={`clicker ${styles.options} ${section === "password" && styles.active}`}
       >
         Change password
       </Row>
       <Row
         onClick={openEmail}
-        className={`clicker ${styles.options} ${emailSection && styles.active}`}
+        className={`clicker ${styles.options} ${section === "email" && styles.active}`}
       >
         Change email
       </Row>
       <Row
         onClick={openDelete}
-        className={`clicker ${styles.options} ${deleteSection && styles.active}`}
+        className={`clicker ${styles.options} ${section === "delete" && styles.active}`}
       >
         Delete account
       </Row>
