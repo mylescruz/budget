@@ -6,7 +6,7 @@ import {
   CategoriesContext,
   CategoriesProvider,
 } from "@/contexts/CategoriesContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
 import AddTransactionModal from "../budget/transactions/addTransactionModal";
 import {
@@ -29,34 +29,33 @@ const InnerDashboard = ({ dateInfo }) => {
     dateInfo.year,
   );
 
-  const [topCategories, setTopCategories] = useState([]);
   const [addTransactionClicked, setAddTransactionClicked] = useState(false);
 
   const summaryYear = dateInfo.month === 1 ? dateInfo.year - 1 : dateInfo.year;
 
   // Get the top 5 categories to display on the dashboard
-  useEffect(() => {
-    if (categories) {
-      const topFiveCategories = categories
-        .filter((category) => {
-          return category.actual > 0;
-        })
-        .map((category) => {
-          return {
-            ...category,
-            style: {
-              backgroundColor: category.color,
-              border: category.color,
-            },
-          };
-        })
-        .sort((categoryA, categoryB) => {
-          return categoryB.actual - categoryA.actual;
-        })
-        .slice(0, 5);
-
-      setTopCategories(topFiveCategories);
+  const topCategories = useMemo(() => {
+    if (!categories) {
+      return [];
     }
+
+    return categories
+      .filter((category) => {
+        return category.actual > 0;
+      })
+      .map((category) => {
+        return {
+          ...category,
+          style: {
+            backgroundColor: category.color,
+            border: category.color,
+          },
+        };
+      })
+      .sort((categoryA, categoryB) => {
+        return categoryB.actual - categoryA.actual;
+      })
+      .slice(0, 5);
   }, [categories]);
 
   const openAddTransaction = () => {
