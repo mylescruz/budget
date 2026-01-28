@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 
-const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
+const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
   const validated = {
     valid: true,
     error: "",
   };
 
-  const [validUsername, setValidUsername] = useState(validated);
-  const [validEmail, setValidEmail] = useState(validated);
-  const [validPassword, setValidPassword] = useState(validated);
-  const [validMatch, setValidMatch] = useState(validated);
+  const inputValidation = {
+    username: { valid: true, error: "" },
+    email: { valid: true, error: "" },
+    password: { valid: true, error: "" },
+    passwordMatch: { valid: true, error: "" },
+  };
+
+  const [validInput, setValidInput] = useState(inputValidation);
 
   const handleInput = (e) => {
     setNewUser({ ...newUser, [e.target.id]: e.target.value });
@@ -39,66 +43,73 @@ const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
     return regex.test(password);
   };
 
-  const createUser = async (e) => {
+  const verifyInput = async (e) => {
     e.preventDefault();
+
+    setModal("loading");
+
+    let validUser = true;
+    const errors = { ...inputValidation };
 
     // Check if entered email is valid
     if (!checkEmail(newUser.email)) {
-      setValidEmail({ valid: false, error: "Not a valid email address" });
-      return;
-    } else {
-      setValidEmail(validated);
+      errors.email = { valid: false, error: "Not a valid email address" };
+
+      validUser = false;
     }
 
     // Check if the username is a valid length
     const validLength = checkUsernameLength(newUser.username);
     if (!validLength) {
-      setValidUsername({
+      errors.username = {
         valid: false,
         error: "A username must have a minimum four alphanumeric characters",
-      });
-      return;
-    } else {
-      setValidUsername(validated);
+      };
+
+      validUser = false;
     }
 
     // Check if the username is already taken
     const userExists = await checkUsername(newUser.username);
     if (userExists) {
-      setValidUsername({ valid: false, error: "Username is already taken" });
-      return;
-    } else {
-      setValidUsername(validated);
+      errors.username = { valid: false, error: "Username is already taken" };
+
+      validUser = false;
     }
 
     // Check if entered password is valid
     if (!checkPassword(newUser.password)) {
-      setValidPassword({
+      errors.password = {
         valid: false,
-        error:
-          "A password must have a minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character",
-      });
-      return;
-    } else {
-      setValidPassword(validated);
+        error: "This password doesn't fit the requirements",
+      };
+
+      validUser = false;
     }
 
     // Check if entered password and password confirmation match
     if (newUser.password !== newUser.confirmPassword) {
-      setValidMatch({ valid: false, error: "Passwords do not match" });
-      return;
-    } else {
-      setValidMatch(validated);
+      errors.passwordMatch = { valid: false, error: "Passwords do not match" };
+
+      validUser = false;
     }
 
-    await finishAccountCreation();
+    if (!validUser) {
+      setModal("none");
+
+      setValidInput(errors);
+
+      return;
+    }
+
+    await createUser();
   };
 
   return (
     <Container className="d-flex justify-content-center align-items-center">
       <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
         <h1 className="text-center">Create account</h1>
-        <Form onSubmit={createUser}>
+        <Form onSubmit={verifyInput}>
           <Form.Group controlId="name" className="h-100 my-2">
             <Form.Control
               type="text"
@@ -114,11 +125,11 @@ const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
               value={newUser.email}
               placeholder="Email"
               onChange={handleInput}
-              isInvalid={validEmail.error && !validEmail.valid}
+              isInvalid={!validInput.email.valid}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validEmail.error}
+              {validInput.email.error}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="username" className="h-100 my-2">
@@ -127,11 +138,11 @@ const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
               value={newUser.username}
               placeholder="Username"
               onChange={handleInput}
-              isInvalid={validUsername.error && !validUsername.valid}
+              isInvalid={!validInput.username.valid}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validUsername.error}
+              {validInput.username.error}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="password" className="h-100 my-2">
@@ -140,11 +151,11 @@ const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
               value={newUser.password}
               placeholder="Password"
               onChange={handleInput}
-              isInvalid={validPassword.error && !validPassword.valid}
+              isInvalid={!validInput.password.valid}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validPassword.error}
+              {validInput.password.error}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="confirmPassword" className="h-100 my-2">
@@ -153,11 +164,11 @@ const CreateUserForm = ({ newUser, setNewUser, finishAccountCreation }) => {
               value={newUser.confirmPassword}
               placeholder="Confirm Password"
               onChange={handleInput}
-              isInvalid={validMatch.error && !validMatch.valid}
+              isInvalid={!validInput.passwordMatch.valid}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validMatch.error}
+              {validInput.passwordMatch.error}
             </Form.Control.Feedback>
             <Form.Text>
               Your password must include:

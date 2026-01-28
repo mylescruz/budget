@@ -31,9 +31,7 @@ const CreateUserLayout = ({ csrfToken }) => {
   };
 
   // Complete the user creation by adding the user's details to the database
-  const finishAccountCreation = async () => {
-    setModal("loading");
-
+  const createUser = async () => {
     // Add all the users information in the onboarding API endpoint
     try {
       await fetch("/api/createUser", {
@@ -76,7 +74,8 @@ const CreateUserLayout = ({ csrfToken }) => {
       <CreateUserForm
         newUser={newUser}
         setNewUser={setNewUser}
-        finishAccountCreation={finishAccountCreation}
+        setModal={setModal}
+        createUser={createUser}
       />
 
       <Modal show={modal === "loading"} onHide={closeLoadingModal} centered>
