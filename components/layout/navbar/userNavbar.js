@@ -10,13 +10,12 @@ const UserNavbar = ({
 }) => {
   const today = new Date();
   const currentYear = today.getFullYear();
-  const year = today.getMonth() === 0 ? currentYear - 1 : currentYear;
 
   const pages = [
     { name: "Budget", link: "/budget" },
     { name: "Income", link: "/income" },
-    { name: "Summary", link: "/summary", year: year },
-    { name: "History", link: "/history", year: year },
+    { name: "Summary", link: "/summary", year: currentYear },
+    { name: "History", link: "/history", year: currentYear },
     { name: "Account", link: "/account" },
   ];
 
