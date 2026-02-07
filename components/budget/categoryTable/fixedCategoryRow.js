@@ -124,8 +124,8 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
             </p>
           </div>
         </th>
-        <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
         <td className={chargedColumn}>{dollarFormatter(categoryActual)}</td>
+        <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
         <td className={dayColumn}>{dayFormatter(category.dueDate)}</td>
         <td className={progressColumn}>
           <div className="d-flex flex-row align-items-center text-white text-center">

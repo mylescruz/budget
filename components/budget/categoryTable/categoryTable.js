@@ -99,8 +99,8 @@ const CategoryTable = ({ dateInfo }) => {
           </tr>
           <tr className="d-flex table-light">
             <th className={categoryColumn}>Category</th>
-            <th className={fixedAmountColumn}>Amount</th>
             <th className={chargedColumn}>Charged</th>
+            <th className={fixedAmountColumn}>Amount</th>
             <th className={dayColumn}>Due</th>
             <th className={progressColumn}>Progress</th>
           </tr>
@@ -117,10 +117,10 @@ const CategoryTable = ({ dateInfo }) => {
           <tr className="d-flex table-secondary">
             <th className={categoryColumn}>Totals</th>
             <th className={fixedAmountColumn}>
-              {dollarFormatter(categoryTotals.fixedBudget)}
+              {dollarFormatter(categoryTotals.fixedActual)}
             </th>
             <th className={chargedColumn}>
-              {dollarFormatter(categoryTotals.fixedActual)}
+              {dollarFormatter(categoryTotals.fixedBudget)}
             </th>
             <th className={dayColumn} />
             <th className={progressColumn} />

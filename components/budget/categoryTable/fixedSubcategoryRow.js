@@ -2,9 +2,9 @@ import dayFormatter from "@/helpers/dayFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 cell";
-const amountColumn = "col-3 col-md-2 fw-bold text-end";
+const amountColumn = "col-3 col-md-2 text-end";
 const dayColumn = "d-none d-lg-block col-lg-2 text-end";
-const chargedColumn = "col-3 col-md-2 col-lg-2";
+const chargedColumn = "col-3 col-md-2 col-lg-2 text-end fw-bold";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
 
 const FixedSubcategoryRow = ({ subcategory }) => {
@@ -13,8 +13,8 @@ const FixedSubcategoryRow = ({ subcategory }) => {
       <th className={categoryColumn}>
         <span className="mx-2">{subcategory.name}</span>
       </th>
-      <td className={amountColumn}>{dollarFormatter(subcategory.actual)}</td>
-      <td className={chargedColumn} />
+      <td className={amountColumn} />
+      <td className={chargedColumn}>{dollarFormatter(subcategory.actual)}</td>
       <td className={dayColumn}>{dayFormatter(subcategory.dueDate)}</td>
       <td className={progressColumn} />
     </tr>
