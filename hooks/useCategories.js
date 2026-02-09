@@ -1,4 +1,3 @@
-import categorySorter from "@/helpers/categorySorter";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useMonthIncome from "./useMonthIncome";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
@@ -50,7 +49,7 @@ const useCategories = (month, year) => {
         if (response.ok) {
           const addedCategory = await response.json();
 
-          setCategories(categorySorter([...categories, addedCategory]));
+          setCategories([...categories, addedCategory]);
         } else {
           const message = await response.text();
           throw new Error(message);
@@ -89,7 +88,7 @@ const useCategories = (month, year) => {
           updatedCategories[categoryIndex] = updatedCategory;
 
           if (categoryIndex !== -1) {
-            setCategories(categorySorter(updatedCategories));
+            setCategories(updatedCategories);
           } else {
             throw new Error(`Could not find category ${updatedCategory.name}`);
           }
@@ -122,7 +121,7 @@ const useCategories = (month, year) => {
             return category._id !== categoryId;
           });
 
-          setCategories(categorySorter(updatedCategories));
+          setCategories(updatedCategories);
         } else {
           const message = await response.text();
           throw new Error(message);
