@@ -8,7 +8,11 @@ import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
 
-const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
+const AddCategoryModal = ({
+  dateInfo,
+  addCategoryClicked,
+  setAddCategoryClicked,
+}) => {
   const emptyCategory = {
     name: "",
     color: "#000000",
@@ -21,7 +25,7 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
     subcategories: [],
   };
 
-  const { postCategory } = useContext(CategoriesContext);
+  const { postCategory, getCategories } = useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [status, setStatus] = useState("inputting");
   const [modalPage, setModalPage] = useState("details");
@@ -94,6 +98,9 @@ const AddCategoryModal = ({ addCategoryClicked, setAddCategoryClicked }) => {
 
     try {
       await postCategory(newCategory);
+
+      // Fetch the updated categories to show changes to the Fun Money category's budget
+      await getCategories(dateInfo.month, dateInfo.year);
 
       closeModal();
     } catch (error) {

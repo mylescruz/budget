@@ -33,6 +33,7 @@ const CategoryTable = ({ dateInfo }) => {
   };
 
   const addCategoryProps = {
+    dateInfo: dateInfo,
     addCategoryClicked: addCategoryClicked,
     setAddCategoryClicked: setAddCategoryClicked,
   };
