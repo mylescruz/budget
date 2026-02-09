@@ -157,7 +157,7 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      const category = await categoriesCol.find(
+      const category = await categoriesCol.findOne(
         {
           _id: new ObjectId(categoryId),
         },
