@@ -117,11 +117,7 @@ const EditCategoryModal = ({
 
     try {
       // Removes a category from the categories array by sending a DELETE request to the API
-      await deleteCategory({
-        ...category,
-        month: dateInfo.month,
-        year: dateInfo.year,
-      });
+      await deleteCategory(category._id);
 
       // Fetch the updated categories to show changes to the Fun Money category's budget
       await getCategories(dateInfo.month, dateInfo.year);

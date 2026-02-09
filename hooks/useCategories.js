@@ -107,9 +107,9 @@ const useCategories = (month, year) => {
   );
 
   const deleteCategory = useCallback(
-    async (category) => {
+    async (categoryId) => {
       try {
-        const response = await fetch(`/api/category/${category._id}`, {
+        const response = await fetch(`/api/category/${categoryId}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
@@ -118,10 +118,8 @@ const useCategories = (month, year) => {
         });
 
         if (response.ok) {
-          const deletedCategory = await response.json();
-
           const updatedCategories = categories.filter((category) => {
-            return category._id !== deletedCategory._id;
+            return category._id !== categoryId;
           });
 
           setCategories(categorySorter(updatedCategories));
