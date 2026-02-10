@@ -7,12 +7,6 @@ import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import dayFormatter from "@/helpers/dayFormatter";
 
-const categoryColumn = "col-6 col-md-4 col-lg-3";
-const amountColumn = "col-3 col-md-2 cell text-end fw-bold";
-const chargedColumn = "col-3 col-md-2 col-lg-2 text-end";
-const dayColumn = "d-none d-lg-block col-lg-2 text-end";
-const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
-
 const FixedCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [editCategoryClicked, setEditCategoryClicked] = useState(false);
@@ -99,7 +93,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
   return (
     <>
       <tr className="d-flex">
-        <th className={categoryColumn}>
+        <th className="col-6 col-md-4 col-lg-3">
           <div className=" d-flex justify-content-between">
             <div className="d-flex align-items-center cell">
               <span
@@ -124,10 +118,19 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
             </p>
           </div>
         </th>
-        <td className={chargedColumn}>{dollarFormatter(categoryActual)}</td>
-        <td className={amountColumn}>{dollarFormatter(category.budget)}</td>
-        <td className={dayColumn}>{dayFormatter(category.dueDate)}</td>
-        <td className={progressColumn}>
+        <td className="col-3 col-md-2 d-lg-none text-end">
+          {dollarFormatter(categoryActual)}
+        </td>
+        <td className="col-3 col-md-2 cell text-end fw-bold">
+          {dollarFormatter(category.budget)}
+        </td>
+        <td className="d-none d-lg-block col-lg-2 text-end">
+          {dollarFormatter(categoryActual)}
+        </td>
+        <td className="d-none d-lg-block col-lg-2 text-end">
+          {dayFormatter(category.dueDate)}
+        </td>
+        <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
           <div className="d-flex flex-row align-items-center text-white text-center">
             {statusBarLength === 12 && (
               <div

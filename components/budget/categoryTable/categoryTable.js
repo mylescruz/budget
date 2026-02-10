@@ -8,12 +8,8 @@ import FixedCategoryRow from "./fixedCategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex align-items-center";
-const fixedAmountColumn = "col-3 col-md-2 text-end";
 const budgetColumn =
   "d-none d-lg-flex col-lg-2 align-items-center justify-content-end";
-const chargedColumn =
-  "col-3 col-md-2 col-lg-2 d-flex align-items-center justify-content-end";
-const dayColumn = "d-none d-lg-block col-lg-2 text-end";
 const spentColumn = "col-3 col-md-2 text-end";
 const leftColumn =
   "col-3 col-md-2 text-end d-flex align-items-center justify-content-end";
@@ -99,11 +95,14 @@ const CategoryTable = ({ dateInfo }) => {
             </th>
           </tr>
           <tr className="d-flex table-light">
-            <th className={categoryColumn}>Category</th>
-            <th className={chargedColumn}>Charged</th>
-            <th className={fixedAmountColumn}>Amount</th>
-            <th className={dayColumn}>Due</th>
-            <th className={progressColumn}>Progress</th>
+            <th className="col-6 col-md-4 col-lg-3">Category</th>
+            <th className="col-3 col-md-2 d-lg-none text-end fw-bold">
+              Charged
+            </th>
+            <th className="col-3 col-md-2 text-end">Amount</th>
+            <th className="d-none d-lg-block col-lg-2 text-end">Charged</th>
+            <th className="d-none d-lg-block col-lg-2 text-end">Due</th>
+            <th className="d-none d-md-block col-md-4 col-lg-3">Progress</th>
           </tr>
           {categories.map(
             (category) =>
@@ -116,15 +115,18 @@ const CategoryTable = ({ dateInfo }) => {
               ),
           )}
           <tr className="d-flex table-secondary">
-            <th className={categoryColumn}>Totals</th>
-            <th className={fixedAmountColumn}>
+            <th className="col-6 col-md-4 col-lg-3">Totals</th>
+            <th className="col-3 col-md-2 d-lg-none text-end fw-bold">
               {dollarFormatter(categoryTotals.fixedActual)}
             </th>
-            <th className={chargedColumn}>
+            <th className="col-3 col-md-2 text-end">
               {dollarFormatter(categoryTotals.fixedBudget)}
             </th>
-            <th className={dayColumn} />
-            <th className={progressColumn} />
+            <th className="d-none d-lg-block col-lg-2 text-end">
+              {dollarFormatter(categoryTotals.fixedActual)}
+            </th>
+            <th className="d-none d-lg-block col-lg-2 text-end" />
+            <th className="d-none d-md-block col-md-4 col-lg-3" />
           </tr>
           <tr className="table-dark">
             <th colSpan={1}>
@@ -184,14 +186,19 @@ const CategoryTable = ({ dateInfo }) => {
         </tbody>
         <tfoot>
           <tr className="d-flex table-dark">
-            <th className={categoryColumn}>Month Totals</th>
-            <th className={budgetColumn}>
-              {dollarFormatter(categoryTotals.budget)}
+            <th className="col-6 col-md-4 col-lg-3 d-flex align-items-center">
+              Month Totals
             </th>
-            <th className={chargedColumn}>
+            <th className="col-3 col-md-2 d-lg-none d-flex align-items-center justify-content-end">
               {dollarFormatter(categoryTotals.actual)}
             </th>
-            <th className={leftColumn}>
+            <th className="d-none d-lg-flex col-lg-2 align-items-center justify-content-end">
+              {dollarFormatter(categoryTotals.budget)}
+            </th>
+            <th className="d-none d-lg-flex col-lg-2 align-items-center justify-content-end">
+              {dollarFormatter(categoryTotals.actual)}
+            </th>
+            <th className="col-3 col-md-2 text-end d-flex align-items-center justify-content-end">
               <span
                 className={
                   percent < 85
@@ -204,7 +211,7 @@ const CategoryTable = ({ dateInfo }) => {
                 {dollarFormatter(categoryTotals.remaining)}
               </span>
             </th>
-            <th className={progressColumn}>
+            <th className="d-none d-md-block col-md-4 col-lg-3">
               <div className="d-flex flex-row align-items-center text-white text-end">
                 {statusBarLength === DANGER_VALUE && (
                   <div
