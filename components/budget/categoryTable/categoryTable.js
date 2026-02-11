@@ -6,6 +6,7 @@ import AddCategoryModal from "./addCategoryModal";
 import ChangingCategoryRow from "./changingCategoryRow";
 import FixedCategoryRow from "./fixedCategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import ProgressBar from "@/components/layout/progressBar";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex align-items-center";
 const budgetColumn =
@@ -14,10 +15,6 @@ const spentColumn = "col-3 col-md-2 text-end";
 const leftColumn =
   "col-3 col-md-2 text-end d-flex align-items-center justify-content-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
-
-const SUCCESS_VALUE = 10;
-const WARNING_VALUE = 11;
-const DANGER_VALUE = 12;
 
 const CategoryTable = ({ dateInfo }) => {
   const { categories, categoryTotals } = useContext(CategoriesContext);
@@ -34,33 +31,13 @@ const CategoryTable = ({ dateInfo }) => {
     setAddCategoryClicked: setAddCategoryClicked,
   };
 
-  let statusBarLength;
-  let budgetBarLength;
-  let percent;
-
-  statusBarLength = Math.round(
-    (categoryTotals.actual * 12) / categoryTotals.budget,
+  let percent = Math.round(
+    (categoryTotals.actual / categoryTotals.budget) * 100,
   );
 
-  if (categoryTotals.actual < categoryTotals.budget && statusBarLength === 12) {
-    statusBarLength = 11;
-  }
-
-  if (statusBarLength > 12) {
-    statusBarLength = 12;
-  }
-
-  if (categoryTotals.actual > 0 && statusBarLength <= 0) {
-    statusBarLength = 12;
-  }
-
-  budgetBarLength = 12 - statusBarLength;
-
-  percent = Math.round((categoryTotals.actual / categoryTotals.budget) * 100);
-
   if (
-    categoryTotals.actual > categoryTotals.budget &&
-    categoryTotals.budget < 0
+    categoryTotals.budget < 0 &&
+    categoryTotals.actual > categoryTotals.budget
   ) {
     percent = Math.round(
       ((categoryTotals.actual + categoryTotals.budget * -1) /
@@ -212,53 +189,11 @@ const CategoryTable = ({ dateInfo }) => {
               </span>
             </th>
             <th className="d-none d-md-block col-md-4 col-lg-3">
-              <div className="d-flex flex-row align-items-center text-white text-end">
-                {statusBarLength === DANGER_VALUE && (
-                  <div
-                    className={`${
-                      categoryTotals.actual > categoryTotals.budget
-                        ? "bg-danger"
-                        : "bg-warning"
-                    } col-${statusBarLength} rounded py-1 px-2 status-bar text-center`}
-                  >
-                    {percent === Infinity ? (
-                      "NO BUDGET"
-                    ) : (
-                      <span>{percent}%</span>
-                    )}
-                  </div>
-                )}
-                {budgetBarLength === DANGER_VALUE && (
-                  <div
-                    className={`bg-dark col-${budgetBarLength} rounded py-1 px-2 status-bar text-center ${
-                      categoryTotals.budget < 0 && "text-danger"
-                    }`}
-                  >
-                    {percent}%
-                  </div>
-                )}
-                {statusBarLength !== 0 && budgetBarLength !== 0 && (
-                  <>
-                    <div
-                      className={`${
-                        statusBarLength <= SUCCESS_VALUE && "bg-success"
-                      }
-                  ${statusBarLength === WARNING_VALUE && "bg-warning"}
-                  ${
-                    (statusBarLength === DANGER_VALUE ||
-                      categoryTotals.actual > categoryTotals.budget) &&
-                    "bg-danger"
-                  }
-                  col-${statusBarLength} border rounded-start py-1 px-2 status-bar text-center`}
-                    >
-                      {percent}%
-                    </div>
-                    <div
-                      className={`bg-dark col-${budgetBarLength} border rounded-end status-bar`}
-                    />
-                  </>
-                )}
-              </div>
+              <ProgressBar
+                actualValue={categoryTotals.actual}
+                budgetValue={categoryTotals.budget}
+                fixedCategory={false}
+              />
             </th>
           </tr>
         </tfoot>
