@@ -8,6 +8,9 @@ import FixedCategoryRow from "./fixedCategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import ProgressBar from "@/components/layout/progressBar";
 
+const SAFE_LIMIT = Math.round((10 / 12) * 100);
+const MAX_VALUE = 100;
+
 const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex align-items-center";
 const budgetColumn =
   "d-none d-lg-flex col-lg-2 align-items-center justify-content-end";
@@ -44,6 +47,16 @@ const CategoryTable = ({ dateInfo }) => {
         -categoryTotals.budget) *
         100,
     );
+  }
+
+  let remainingTextColor;
+
+  if (percent <= SAFE_LIMIT) {
+    remainingTextColor = "text-success";
+  } else if (percent > SAFE_LIMIT && percent <= MAX_VALUE) {
+    remainingTextColor = "text-warning";
+  } else {
+    remainingTextColor = "text-danger";
   }
 
   return (
@@ -176,15 +189,7 @@ const CategoryTable = ({ dateInfo }) => {
               {dollarFormatter(categoryTotals.actual)}
             </th>
             <th className="col-3 col-md-2 text-end d-flex align-items-center justify-content-end">
-              <span
-                className={
-                  percent < 85
-                    ? "text-success"
-                    : percent >= 85 && percent < 100
-                      ? "text-warning"
-                      : "text-danger"
-                }
-              >
+              <span className={remainingTextColor}>
                 {dollarFormatter(categoryTotals.remaining)}
               </span>
             </th>
