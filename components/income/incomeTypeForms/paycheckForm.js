@@ -5,7 +5,7 @@ import { Form } from "react-bootstrap";
 const PaycheckForm = ({ source, handleInput, year }) => {
   return (
     <>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>What day did you get paid?</Form.Label>
         <Form.Control
           id="date"
@@ -18,19 +18,18 @@ const PaycheckForm = ({ source, handleInput, year }) => {
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>Who paid you?</Form.Label>
         <Form.Control
           id="name"
           className="h-100"
           type="text"
           value={source.name}
-          placeholder="Company Name"
           onChange={handleInput}
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>
           What was your gross income?
           <PopUp
@@ -46,13 +45,12 @@ const PaycheckForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          placeholder="Gross Amount"
           value={source.gross}
           onChange={handleInput}
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>
           What was your net income?
           <PopUp
@@ -68,13 +66,12 @@ const PaycheckForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          placeholder="Net Amount"
           value={source.amount}
           onChange={handleInput}
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>
           Calculated Deductions
           <PopUp
@@ -90,13 +87,12 @@ const PaycheckForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          placeholder="Deductions Amount"
           value={subtractDecimalValues(source.gross, source.amount)}
           disabled
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="mt-3">
         <Form.Label>Description</Form.Label>
         <Form.Control
           id="description"

@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 const SaleForm = ({ source, handleInput, year }) => {
   return (
     <>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>What day did you make this sale?</Form.Label>
         <Form.Control
           id="date"
@@ -16,19 +16,18 @@ const SaleForm = ({ source, handleInput, year }) => {
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>What did you sell?</Form.Label>
         <Form.Control
           id="name"
           className="h-100"
           type="text"
           value={source.name}
-          placeholder="Item Name"
           onChange={handleInput}
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>How much did you make?</Form.Label>
         <Form.Control
           id="amount"
@@ -36,13 +35,12 @@ const SaleForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          placeholder="Amount"
           value={source.amount}
           onChange={handleInput}
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="mt-3">
         <Form.Label>Description</Form.Label>
         <Form.Control
           id="description"

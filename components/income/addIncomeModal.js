@@ -76,7 +76,7 @@ const AddIncomeModal = ({
 
           <Form onSubmit={addNewMoneyIn}>
             <Modal.Body>
-              <Form.Group className="my-2">
+              <Form.Group className="mb-3">
                 <Form.Label>What type of income is this?</Form.Label>
                 <Form.Select
                   id="type"
@@ -103,7 +103,7 @@ const AddIncomeModal = ({
               {source.type === "Loan" && <LoanForm {...incomeFormProps} />}
               {status === "error" && <ErrorMessage />}
             </Modal.Body>
-            <Modal.Footer className="my-2 d-flex justify-content-between">
+            <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeAddModal}>
                 Close
               </Button>

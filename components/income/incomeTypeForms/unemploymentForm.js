@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 const UnemploymentForm = ({ source, handleInput, year }) => {
   return (
     <>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>
           What day you receive your unemployment benefits?
         </Form.Label>
@@ -18,7 +18,7 @@ const UnemploymentForm = ({ source, handleInput, year }) => {
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="my-3">
         <Form.Label>How much did you receive?</Form.Label>
         <Form.Control
           id="amount"
@@ -26,13 +26,12 @@ const UnemploymentForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          placeholder="Amount"
           value={source.amount}
           onChange={handleInput}
           required
         />
       </Form.Group>
-      <Form.Group className="my-2">
+      <Form.Group className="mt-3">
         <Form.Label>Description</Form.Label>
         <Form.Control
           id="description"
