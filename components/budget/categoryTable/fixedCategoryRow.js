@@ -6,6 +6,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import dayFormatter from "@/helpers/dayFormatter";
+import ProgressBar from "@/components/layout/progressBar";
 
 const FixedCategoryRow = ({ category, dateInfo }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
@@ -61,22 +62,6 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
 
   const categoryActual = centsToDollars(currentActual);
 
-  // Progress bar that shows the charge percentage for the month
-  // Calculated by factors of 12 for the grid system
-  let statusBarLength = Math.round((categoryActual * 12) / category.budget);
-  let percent = Math.round((categoryActual / category.budget) * 100);
-
-  // Show there's still a gap if the calculated statusBar is full but the actual is less than the budget value
-  if (statusBarLength === 12 && categoryActual < category.budget) {
-    statusBarLength = 11;
-
-    if (percent === 100) {
-      percent = 99;
-    }
-  }
-
-  const budgetBarLength = 12 - statusBarLength;
-
   const categoryColor = {
     backgroundColor: category.color,
     border: category.color,
@@ -131,34 +116,11 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
           {dayFormatter(category.dueDate)}
         </td>
         <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
-          <div className="d-flex flex-row align-items-center text-white text-center">
-            {statusBarLength === 12 && (
-              <div
-                className={`bg-success col-${statusBarLength} border rounded py-1 px-2 status-bar`}
-              >
-                {percent}%
-              </div>
-            )}
-            {budgetBarLength === 12 && (
-              <div
-                className={`bg-dark col-${budgetBarLength} border rounded py-1 px-2 status-bar`}
-              >
-                {percent}%
-              </div>
-            )}
-            {statusBarLength !== 0 && budgetBarLength !== 0 && (
-              <>
-                <div
-                  className={`bg-success col-${statusBarLength} border rounded-start py-1 px-2 status-bar`}
-                >
-                  {percent}%
-                </div>
-                <div
-                  className={`bg-dark col-${budgetBarLength} border rounded-end status-bar`}
-                />
-              </>
-            )}
-          </div>
+          <ProgressBar
+            actualValue={categoryActual}
+            budgetValue={category.budget}
+            fixedCategory={category.fixed}
+          />
         </td>
       </tr>
       {showSubcategories &&
