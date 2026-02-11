@@ -21,6 +21,10 @@ const ProgressBar = ({ actualValue, budgetValue, fixedCategory }) => {
   // Don't mark the bar as full if there is still a remaining balance in the budget
   if (actualBarLength === 12 && actualValue < budgetValue) {
     actualBarLength = 11;
+
+    if (percentSpent === 100) {
+      percentSpent = 99;
+    }
   }
 
   // Keep any overspending set to the full amount
@@ -41,14 +45,14 @@ const ProgressBar = ({ actualValue, budgetValue, fixedCategory }) => {
     actualBarColor = "bg-dark";
   } else if (actualBarLength <= SAFE_LIMIT) {
     actualBarColor = "bg-success";
-  } else if (actualBarLength === WARNING_LIMIT) {
+  } else if (actualBarLength === WARNING_LIMIT || actualValue === budgetValue) {
     actualBarColor = "bg-warning";
   } else {
     actualBarColor = "bg-danger";
   }
 
   // Always show a successful color with fixed categories
-  if (fixedCategory) {
+  if (fixedCategory && actualBarLength !== MIN_VALUE) {
     actualBarColor = "bg-success";
   }
 
@@ -61,20 +65,12 @@ const ProgressBar = ({ actualValue, budgetValue, fixedCategory }) => {
   if (actualValue === MIN_VALUE && budgetValue === MIN_VALUE) {
     return (
       <div
-        className={`col-12 rounded py-1 px-2 status-bar ${actualBarColor} text-white text-center`}
+        className={`col-12 rounded py-1 px-2 status-bar bg-dark text-white text-center`}
       >
         NO BUDGET
       </div>
     );
-  } else if (actualBarLength === MAX_VALUE) {
-    return (
-      <div
-        className={`col-12 rounded py-1 px-2 status-bar ${actualBarColor} text-white text-center`}
-      >
-        {formattedPercent}
-      </div>
-    );
-  } else if (actualBarLength === MIN_VALUE) {
+  } else if (actualBarLength === MIN_VALUE || actualBarLength === MAX_VALUE) {
     return (
       <div
         className={`col-12 rounded py-1 px-2 status-bar ${actualBarColor} text-white text-center`}
