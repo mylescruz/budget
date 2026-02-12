@@ -1,3 +1,4 @@
+import centsToDollars from "@/helpers/centsToDollars";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
@@ -56,7 +57,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
         const formattedCategory = {
           name: category.name,
           color: category.color,
-          budget: category.budget,
+          budget: centsToDollars(category.budget),
           actual: 0,
           fixed: category.fixed,
         };
@@ -75,7 +76,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
             };
 
             if (category.fixed) {
-              formattedSubcategory.actual = subcategory.actual;
+              formattedSubcategory.actual = centsToDollars(subcategory.actual);
               formattedSubcategory.frequency = subcategory.frequency;
               formattedSubcategory.dueDate = subcategory.dueDate ?? 1;
             }
@@ -97,7 +98,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
             };
 
             if (category.fixed) {
-              formattedSubcategory.actual = subcategory.actual;
+              formattedSubcategory.actual = centsToDollars(subcategory.actual);
               formattedSubcategory.frequency = subcategory.frequency;
               formattedSubcategory.dueDate = subcategory.dueDate ?? 1;
             }
