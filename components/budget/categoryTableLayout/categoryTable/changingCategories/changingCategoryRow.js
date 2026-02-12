@@ -1,9 +1,9 @@
 import { useState } from "react";
 import PopUp from "@/components/layout/popUp";
-import ChangingSubcategoryRow from "./changingSubcategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import ProgressBar from "@/components/layout/progressBar";
+import ChangingSubcategoryRow from "./changingSubcategoryRow";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex justify-content-between";
 const budgetColumn = "d-none d-lg-block col-lg-2 cell fw-bold text-end";

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import FixedSubcategoryRow from "./fixedSubcategoryRow";
 import todayInfo from "@/helpers/todayInfo";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import dayFormatter from "@/helpers/dayFormatter";
 import ProgressBar from "@/components/layout/progressBar";
+import FixedSubcategoryRow from "./fixedSubcategoryRow";
 
 const FixedCategoryRow = ({
   category,

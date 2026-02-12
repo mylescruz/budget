@@ -1,6 +1,5 @@
-import CategoryTable from "./categoryTable/categoryTable";
 import { useContext } from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import {
   CategoriesContext,
   CategoriesProvider,
@@ -13,6 +12,7 @@ import {
 } from "@/contexts/TransactionsContext";
 import LoadingIndicator from "../layout/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
+import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);
@@ -54,7 +54,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
             <CategoryPieChart categories={categories} />
           </Col>
           <Col className="col-12 col-xl-8">
-            <CategoryTable dateInfo={dateInfo} />
+            <CategoryTableLayout dateInfo={dateInfo} />
           </Col>
         </Row>
 
