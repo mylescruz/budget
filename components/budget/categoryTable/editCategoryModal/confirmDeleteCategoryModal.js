@@ -5,32 +5,29 @@ import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 const ConfirmDeleteCategoryModal = ({
-  category,
+  editedCategory,
   dateInfo,
-  deleteCategoryClicked,
-  setDeleteCategoryClicked,
-  setEditCategoryClicked,
+  modal,
+  setModal,
 }) => {
   const { getCategories, deleteCategory } = useContext(CategoriesContext);
 
   const [status, setStatus] = useState("confirming");
 
   const closeDelete = () => {
-    setDeleteCategoryClicked(false);
-
-    setEditCategoryClicked(false);
+    setModal("edit");
   };
 
   const removeCategory = async () => {
     setStatus("deleting");
 
     try {
-      await deleteCategory(category._id);
+      await deleteCategory(editedCategory._id);
 
       // Fetch the updated categories to show changes to the Fun Money category's budget
       await getCategories(dateInfo.month, dateInfo.year);
 
-      closeDelete();
+      setModal("none");
     } catch (error) {
       setStatus("error");
       return;
@@ -38,11 +35,11 @@ const ConfirmDeleteCategoryModal = ({
   };
 
   return (
-    <Modal show={deleteCategoryClicked} onHide={closeDelete} centered>
+    <Modal show={modal === "delete"} onHide={closeDelete} centered>
       {status === "confirming" && (
         <>
           <Modal.Header closeButton>
-            <Modal.Title>Delete {category.name}</Modal.Title>
+            <Modal.Title>Delete {editedCategory.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>
@@ -61,7 +58,9 @@ const ConfirmDeleteCategoryModal = ({
         </>
       )}
       {status === "deleting" && (
-        <LoadingMessage message={`Deleting the category ${category.name}`} />
+        <LoadingMessage
+          message={`Deleting the category ${editedCategory.name}`}
+        />
       )}
       {status === "error" && <ErrorMessage />}
     </Modal>

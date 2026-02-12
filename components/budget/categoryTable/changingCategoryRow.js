@@ -1,6 +1,5 @@
 import { useState } from "react";
 import PopUp from "@/components/layout/popUp";
-import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import ChangingSubcategoryRow from "./changingSubcategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
@@ -12,9 +11,8 @@ const spentColumn = "col-3 col-md-2 cell text-end";
 const leftColumn = "col-3 col-md-2 cell text-end";
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3 fw-bold";
 
-const ChangingCategoryRow = ({ category, dateInfo }) => {
+const ChangingCategoryRow = ({ category, setEditedCategory, setModal }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
-  const [editCategoryClicked, setEditCategoryClicked] = useState(false);
   const subcategories = [...category.subcategories].sort(
     (a, b) => b.actual - a.actual,
   );
@@ -28,8 +26,10 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
     setShowSubcategories(!showSubcategories);
   };
 
-  const editCategory = () => {
-    setEditCategoryClicked(true);
+  const openEditModal = () => {
+    setEditedCategory(category);
+
+    setModal("edit");
   };
 
   return (
@@ -62,7 +62,7 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
               />
             )}
           </div>
-          <p className="mx-2 my-0 clicker" onClick={editCategory}>
+          <p className="mx-2 my-0 clicker" onClick={openEditModal}>
             &#8942;
           </p>
         </th>
@@ -98,15 +98,6 @@ const ChangingCategoryRow = ({ category, dateInfo }) => {
             subcategory={subcategory}
           />
         ))}
-
-      {editCategoryClicked && (
-        <EditCategoryModal
-          category={category}
-          dateInfo={dateInfo}
-          editCategoryClicked={editCategoryClicked}
-          setEditCategoryClicked={setEditCategoryClicked}
-        />
-      )}
     </>
   );
 };

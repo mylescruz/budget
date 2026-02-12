@@ -8,11 +8,7 @@ import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
 
-const AddCategoryModal = ({
-  dateInfo,
-  addCategoryClicked,
-  setAddCategoryClicked,
-}) => {
+const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const emptyCategory = {
     name: "",
     color: "#000000",
@@ -90,7 +86,7 @@ const AddCategoryModal = ({
 
     setModalPage("details");
     setStatus("inputting");
-    setAddCategoryClicked(false);
+    setModal("none");
   };
 
   const addNewCategory = async () => {
@@ -111,7 +107,7 @@ const AddCategoryModal = ({
   };
 
   return (
-    <Modal show={addCategoryClicked} onHide={closeModal} centered>
+    <Modal show={modal === "add"} onHide={closeModal} centered>
       {status !== "posting" && (
         <>
           <Modal.Header closeButton>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 import todayInfo from "@/helpers/todayInfo";
 import dollarFormatter from "@/helpers/dollarFormatter";
@@ -8,9 +7,13 @@ import dollarsToCents from "@/helpers/dollarsToCents";
 import dayFormatter from "@/helpers/dayFormatter";
 import ProgressBar from "@/components/layout/progressBar";
 
-const FixedCategoryRow = ({ category, dateInfo }) => {
+const FixedCategoryRow = ({
+  category,
+  dateInfo,
+  setEditedCategory,
+  setModal,
+}) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
-  const [editCategoryClicked, setEditCategoryClicked] = useState(false);
   const subcategories = [...category.subcategories].sort(
     (a, b) => a.dueDate - b.dueDate,
   );
@@ -71,8 +74,10 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
     setShowSubcategories(!showSubcategories);
   };
 
-  const editCategory = () => {
-    setEditCategoryClicked(true);
+  const openEditModal = () => {
+    setEditedCategory(category);
+
+    setModal("edit");
   };
 
   return (
@@ -98,7 +103,7 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
                 />
               )}
             </div>
-            <p className="mx-2 my-0 clicker" onClick={editCategory}>
+            <p className="mx-2 my-0 clicker" onClick={openEditModal}>
               &#8942;
             </p>
           </div>
@@ -127,15 +132,6 @@ const FixedCategoryRow = ({ category, dateInfo }) => {
         subcategories.map((subcategory) => (
           <FixedSubcategoryRow key={subcategory.id} subcategory={subcategory} />
         ))}
-
-      {editCategoryClicked && (
-        <EditCategoryModal
-          category={category}
-          dateInfo={dateInfo}
-          editCategoryClicked={editCategoryClicked}
-          setEditCategoryClicked={setEditCategoryClicked}
-        />
-      )}
     </>
   );
 };

@@ -7,6 +7,8 @@ import ChangingCategoryRow from "./changingCategoryRow";
 import FixedCategoryRow from "./fixedCategoryRow";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import ProgressBar from "@/components/layout/progressBar";
+import EditCategoryModal from "./editCategoryModal/editCategoryModal";
+import ConfirmDeleteCategoryModal from "./editCategoryModal/confirmDeleteCategoryModal";
 
 const SAFE_LIMIT = Math.round((10 / 12) * 100);
 const MAX_VALUE = 100;
@@ -22,16 +24,11 @@ const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
 const CategoryTable = ({ dateInfo }) => {
   const { categories, categoryTotals } = useContext(CategoriesContext);
 
-  const [addCategoryClicked, setAddCategoryClicked] = useState(false);
+  const [modal, setModal] = useState("none");
+  const [editedCategory, setEditedCategory] = useState({});
 
-  const addNewCategory = () => {
-    setAddCategoryClicked(true);
-  };
-
-  const addCategoryProps = {
-    dateInfo: dateInfo,
-    addCategoryClicked: addCategoryClicked,
-    setAddCategoryClicked: setAddCategoryClicked,
+  const openAddModal = () => {
+    setModal("add");
   };
 
   let percent = Math.round(
@@ -66,7 +63,7 @@ const CategoryTable = ({ dateInfo }) => {
           <tr className="d-flex table-secondary">
             <th className="col-6 fs-5">Categories</th>
             <th className="col-6 d-flex align-items-center justify-content-end">
-              <Button size="sm" onClick={addNewCategory}>
+              <Button size="sm" onClick={openAddModal}>
                 Add Category
               </Button>
             </th>
@@ -101,6 +98,8 @@ const CategoryTable = ({ dateInfo }) => {
                   key={category._id}
                   category={category}
                   dateInfo={dateInfo}
+                  setEditedCategory={setEditedCategory}
+                  setModal={setModal}
                 />
               ),
           )}
@@ -142,7 +141,8 @@ const CategoryTable = ({ dateInfo }) => {
                 <ChangingCategoryRow
                   key={category._id}
                   category={category}
-                  dateInfo={dateInfo}
+                  setEditedCategory={setEditedCategory}
+                  setModal={setModal}
                 />
               ),
           )}
@@ -204,7 +204,32 @@ const CategoryTable = ({ dateInfo }) => {
         </tfoot>
       </Table>
 
-      <AddCategoryModal {...addCategoryProps} />
+      {modal === "add" && (
+        <AddCategoryModal
+          dateInfo={dateInfo}
+          modal={modal}
+          setModal={setModal}
+        />
+      )}
+
+      {modal === "edit" && (
+        <EditCategoryModal
+          editedCategory={editedCategory}
+          setEditedCategory={setEditedCategory}
+          dateInfo={dateInfo}
+          modal={modal}
+          setModal={setModal}
+        />
+      )}
+
+      {modal === "delete" && (
+        <ConfirmDeleteCategoryModal
+          editedCategory={editedCategory}
+          dateInfo={dateInfo}
+          modal={modal}
+          setModal={setModal}
+        />
+      )}
     </>
   );
 };
