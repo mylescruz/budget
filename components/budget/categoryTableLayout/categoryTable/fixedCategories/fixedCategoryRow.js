@@ -75,7 +75,7 @@ const FixedCategoryRow = ({
   };
 
   const openEditModal = () => {
-    setEditedCategory(category);
+    setEditedCategory({ ...category, currentName: category.name });
 
     setModal("edit");
   };

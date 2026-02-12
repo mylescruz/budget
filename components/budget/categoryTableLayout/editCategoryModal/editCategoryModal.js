@@ -128,7 +128,9 @@ const EditCategoryModal = ({
         <>
           <Modal.Header closeButton>
             <Modal.Title>
-              {page === "details" && <span>Edit {editedCategory.name}</span>}
+              {page === "details" && (
+                <span>Edit {editedCategory.currentName}</span>
+              )}
               {page === "addSubcategory" && <span>Add new subcategory</span>}
               {page === "editSubcategory" && <span>Edit a subcategory</span>}
             </Modal.Title>

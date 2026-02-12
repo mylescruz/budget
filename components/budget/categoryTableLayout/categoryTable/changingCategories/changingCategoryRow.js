@@ -27,7 +27,7 @@ const ChangingCategoryRow = ({ category, setEditedCategory, setModal }) => {
   };
 
   const openEditModal = () => {
-    setEditedCategory(category);
+    setEditedCategory({ ...category, currentName: category.name });
 
     setModal("edit");
   };
