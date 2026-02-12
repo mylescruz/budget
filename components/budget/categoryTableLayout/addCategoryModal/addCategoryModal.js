@@ -1,12 +1,13 @@
 import LoadingMessage from "@/components/layout/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Col, Modal, Row } from "react-bootstrap";
 import ErrorMessage from "@/components/layout/errorMessage";
 import centsToDollars from "@/helpers/centsToDollars";
 import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
+import PreviousCategoryForm from "./previousCategoryForm";
 
 const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const emptyCategory = {
@@ -24,7 +25,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const { postCategory, getCategories } = useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [status, setStatus] = useState("inputting");
-  const [modalPage, setModalPage] = useState("details");
+  const [modalPage, setModalPage] = useState("question");
 
   const confirmDetails = () => {
     if (newCategory.hasSubcategory) {
@@ -36,6 +37,14 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
       });
       setModalPage("confirm");
     }
+  };
+
+  const goToDetails = () => {
+    setModalPage("details");
+  };
+
+  const goToPrevious = () => {
+    setModalPage("previous");
   };
 
   const backToDetails = () => {
@@ -108,13 +117,43 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
 
   return (
     <Modal show={modal === "add"} onHide={closeModal} centered>
-      {status !== "posting" && (
+      {status === "inputting" && (
         <>
           <Modal.Header closeButton>
-            <Modal.Title>Enter new category</Modal.Title>
+            <Modal.Title>Add a category</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
+            {modalPage === "question" && (
+              <Row className="text-center">
+                <h6>
+                  Do you want to add a new or a previously created category?
+                </h6>
+                <Row className="d-flex flex-col text-center mx-auto">
+                  <Button
+                    variant="primary"
+                    className="my-2"
+                    onClick={goToDetails}
+                  >
+                    New
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="my-2"
+                    onClick={goToPrevious}
+                  >
+                    Previous
+                  </Button>
+                </Row>
+              </Row>
+            )}
+            {modalPage === "previous" && (
+              <PreviousCategoryForm
+                dateInfo={dateInfo}
+                setNewCategory={setNewCategory}
+                setModalPage={setModalPage}
+              />
+            )}
             {modalPage === "details" && (
               <CategoryDetailsForm
                 newCategory={newCategory}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CategoryTable from "./categoryTable/categoryTable";
-import AddCategoryModal from "./addCategoryModal";
+import AddCategoryModal from "./addCategoryModal/addCategoryModal";
 import EditCategoryModal from "./editCategoryModal/editCategoryModal";
 import ConfirmDeleteCategoryModal from "./editCategoryModal/confirmDeleteCategoryModal";
 
