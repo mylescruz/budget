@@ -1,5 +1,5 @@
 import usePreviousCategories from "@/hooks/usePreviousCategories";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 
 const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
@@ -7,6 +7,12 @@ const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
     usePreviousCategories(dateInfo.month, dateInfo.year);
 
   const [chosenCategory, setChosenCategory] = useState("");
+
+  useEffect(() => {
+    if (!previousCategoriesLoading && previousCategories) {
+      setChosenCategory(previousCategories[0].name);
+    }
+  }, [previousCategories, previousCategoriesLoading]);
 
   const handleInput = (e) => {
     setChosenCategory(e.target.value);
@@ -25,11 +31,24 @@ const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
       (category) => category.name === chosenCategory,
     );
 
-    setNewCategory((prev) => ({
-      ...prev,
+    const formattedCategory = {
       name: foundCategory.name,
       color: foundCategory.color,
-    }));
+      budget: foundCategory.budget,
+      actual: foundCategory.actual,
+      fixed: foundCategory.fixed,
+      dueDate: "",
+      frequency: "Monthly",
+      hasSubcategory: foundCategory.subcategories.length > 0,
+      subcategories: foundCategory.subcategories,
+    };
+
+    if (foundCategory.fixed) {
+      formattedCategory.dueDate = foundCategory.dueDate;
+      formattedCategory.frequency = foundCategory.dueDate;
+    }
+
+    setNewCategory(formattedCategory);
 
     setModalPage("details");
   };
