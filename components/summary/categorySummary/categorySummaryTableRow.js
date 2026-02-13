@@ -1,5 +1,6 @@
 import { useState } from "react";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import CategoryBadge from "@/components/category/categoryBadge";
 
 const categoryColumn = "col-6 col-md-3";
 const budgetColumn = "d-none d-md-block col-md-2 text-end";
@@ -11,11 +12,6 @@ const monthsColumn = "d-none d-md-block col-md-1 text-end";
 const CategorySummaryTableRow = ({ category }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
 
-  const categoryColor = {
-    backgroundColor: category.color,
-    border: category.color,
-  };
-
   const dropdownSubcategories = () => {
     setShowSubcategories(!showSubcategories);
   };
@@ -25,12 +21,7 @@ const CategorySummaryTableRow = ({ category }) => {
       <tr className="d-flex">
         <th className={categoryColumn}>
           <div className="d-flex align-items-center cell">
-            <span
-              style={categoryColor}
-              className="badge fw-bold fs-6 text-white"
-            >
-              {category.name}
-            </span>
+            <CategoryBadge name={category.name} color={category.color} />
             {category.subcategories.length > 0 && (
               <i
                 className={`clicker mx-2 bi ${
