@@ -6,6 +6,7 @@ import dollarsToCents from "@/helpers/dollarsToCents";
 import dayFormatter from "@/helpers/dayFormatter";
 import ProgressBar from "@/components/layout/progressBar";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
+import CategoryBadge from "@/components/category/categoryBadge";
 
 const FixedCategoryRow = ({
   category,
@@ -65,11 +66,6 @@ const FixedCategoryRow = ({
 
   const categoryActual = centsToDollars(currentActual);
 
-  const categoryColor = {
-    backgroundColor: category.color,
-    border: category.color,
-  };
-
   const dropdownSubcategories = () => {
     setShowSubcategories(!showSubcategories);
   };
@@ -86,14 +82,7 @@ const FixedCategoryRow = ({
         <th className="col-6 col-md-4 col-lg-3">
           <div className=" d-flex justify-content-between">
             <div className="d-flex align-items-center cell">
-              <span
-                style={categoryColor}
-                className="badge fw-bold fs-6 text-white"
-              >
-                {category.name.length > 15
-                  ? category.name.slice(0, 15) + "..."
-                  : category.name}
-              </span>
+              <CategoryBadge name={category.name} color={category.color} />
               {category.subcategories.length > 0 && (
                 <i
                   className={`clicker mx-2 bi ${

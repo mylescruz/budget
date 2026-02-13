@@ -1,9 +1,9 @@
 import { useState } from "react";
-import PopUp from "@/components/layout/popUp";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import ProgressBar from "@/components/layout/progressBar";
 import ChangingSubcategoryRow from "./changingSubcategoryRow";
+import CategoryBadge from "@/components/category/categoryBadge";
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex justify-content-between";
 const budgetColumn = "d-none d-lg-block col-lg-2 cell fw-bold text-end";
@@ -16,11 +16,6 @@ const ChangingCategoryRow = ({ category, setEditedCategory, setModal }) => {
   const subcategories = [...category.subcategories].sort(
     (a, b) => b.actual - a.actual,
   );
-
-  const categoryColor = {
-    backgroundColor: category.color,
-    border: category.color,
-  };
 
   const dropdownSubcategories = () => {
     setShowSubcategories(!showSubcategories);
@@ -37,22 +32,7 @@ const ChangingCategoryRow = ({ category, setEditedCategory, setModal }) => {
       <tr className="d-flex">
         <th className={categoryColumn}>
           <div className="d-flex align-items-center cell">
-            <span
-              style={categoryColor}
-              className="badge fw-bold fs-6 text-white"
-            >
-              {category.name.length > 14
-                ? category.name.slice(0, 14) + "..."
-                : category.name}
-              {category.noDelete && (
-                <PopUp
-                  title="The money you can spend on anything after all other expenses have been covered."
-                  id="fun-money-info"
-                >
-                  <span> &#9432;</span>
-                </PopUp>
-              )}
-            </span>
+            <CategoryBadge name={category.name} color={category.color} />
             {category.subcategories.length > 0 && (
               <i
                 className={`clicker mx-2 bi ${
