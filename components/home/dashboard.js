@@ -17,6 +17,7 @@ import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../layout/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import CategoryBadge from "../category/categoryBadge";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -92,12 +93,10 @@ const InnerDashboard = ({ dateInfo }) => {
                                 <td
                                   className={`col-7 ${styles.grayBackground}`}
                                 >
-                                  <Button
-                                    style={category.style}
-                                    className="btn-sm fw-bold"
-                                  >
-                                    {category.name}
-                                  </Button>
+                                  <CategoryBadge
+                                    name={category.name}
+                                    color={category.color}
+                                  />
                                 </td>
                                 <td
                                   className={`col-5 text-end ${styles.grayBackground}`}
