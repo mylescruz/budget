@@ -2,6 +2,7 @@ import centsToDollars from "@/helpers/centsToDollars";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
+import { v4 as uuidv4 } from "uuid";
 
 export default async function handler(req, res) {
   // Use NextAuth to authenticate a user's session
@@ -65,12 +66,19 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
         if (formattedCategory.fixed) {
           formattedCategory.actual = category.actual;
           formattedCategory.frequency = category.frequency;
-          formattedCategory.dueDate = category.dueDate;
+
+          // If a fixed category's dueDate field is not populated correctly, make the due date the 1st
+          if (category.dueDate === null || category.dueDate === undefined) {
+            formattedCategory.dueDate = 1;
+          } else {
+            formattedCategory.dueDate = category.dueDate;
+          }
         }
 
         formattedCategory.subcategories = category.subcategories.map(
           (subcategory) => {
             const formattedSubcategory = {
+              id: uuidv4(),
               name: subcategory.name,
               actual: 0,
             };
@@ -78,7 +86,16 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
             if (category.fixed) {
               formattedSubcategory.actual = centsToDollars(subcategory.actual);
               formattedSubcategory.frequency = subcategory.frequency;
-              formattedSubcategory.dueDate = subcategory.dueDate ?? 1;
+
+              // If a fixed subcategory's dueDate field is not populated correctly, make the due date the 1st
+              if (
+                subcategory.dueDate === null ||
+                subcategory.dueDate === undefined
+              ) {
+                formattedSubcategory.dueDate = 1;
+              } else {
+                formattedSubcategory.dueDate = subcategory.dueDate;
+              }
             }
 
             return formattedSubcategory;
@@ -93,6 +110,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
             !exists.subcategories.find((sub) => sub.name === subcategory.name)
           ) {
             const formattedSubcategory = {
+              id: uuidv4(),
               name: subcategory.name,
               actual: 0,
             };
@@ -100,7 +118,16 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
             if (category.fixed) {
               formattedSubcategory.actual = centsToDollars(subcategory.actual);
               formattedSubcategory.frequency = subcategory.frequency;
-              formattedSubcategory.dueDate = subcategory.dueDate ?? 1;
+
+              // If a fixed subcategory's dueDate field is not populated correctly, make the due date the 1st
+              if (
+                subcategory.dueDate === null ||
+                subcategory.dueDate === undefined
+              ) {
+                formattedSubcategory.dueDate = 1;
+              } else {
+                formattedSubcategory.dueDate = subcategory.dueDate;
+              }
             }
 
             exists.subcategories.push(formattedSubcategory);
