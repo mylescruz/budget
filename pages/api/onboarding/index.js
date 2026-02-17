@@ -165,22 +165,8 @@ async function createAccount(
 
       categories[funMoneyIndex].budget = monthIncome - budgetTotal;
 
-      // Create the user's categories for the whole year
-      const categoriesForYear = [];
-
-      for (let i = month; i <= 12; i++) {
-        categories.forEach((category) => {
-          categoriesForYear.push({
-            ...category,
-            username: newUser.username,
-            month: i,
-            year: year,
-          });
-        });
-      }
-
       // Insert the user's categories for the year
-      await categoriesCol.insertMany(categoriesForYear, { session });
+      await categoriesCol.insertMany(categories, { session });
 
       // Mark the onboarded flag as true
       insertedUser = await usersCol.updateOne(
