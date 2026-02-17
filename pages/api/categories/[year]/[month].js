@@ -38,17 +38,24 @@ export default async function handler(req, res) {
 }
 
 // Get the user's categories from MongoDB
-async function getCategories(req, res, { categoriesCol, username }) {
+async function getCategories(req, res, { client, categoriesCol, username }) {
+  const mongoSession = await client.startSession();
+
   try {
     const month = parseInt(req.query.month);
     const year = parseInt(req.query.year);
 
-    const categories = await getCurrentCategories(
-      username,
-      month,
-      year,
-      categoriesCol,
-    );
+    let categories = [];
+
+    await mongoSession.withTransaction(async (session) => {
+      categories = await getCurrentCategories(
+        username,
+        month,
+        year,
+        categoriesCol,
+        session,
+      );
+    });
 
     return res.status(200).json(categories);
   } catch (error) {
@@ -56,6 +63,8 @@ async function getCategories(req, res, { categoriesCol, username }) {
     return res
       .status(500)
       .send(`Error occurred while getting categories for ${username}`);
+  } finally {
+    await mongoSession.endSession();
   }
 }
 
@@ -165,10 +174,16 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
   }
 }
 
-async function getCurrentCategories(username, month, year, categoriesCol) {
+async function getCurrentCategories(
+  username,
+  month,
+  year,
+  categoriesCol,
+  session,
+) {
   // Get the categories for the current month and year
   const categoriesDocs = await categoriesCol
-    .find({ username, month, year })
+    .find({ username, month, year }, { session })
     .toArray();
 
   // If the categories already exist, send the categories array back to the client
@@ -216,12 +231,24 @@ async function getCurrentCategories(username, month, year, categoriesCol) {
 
     return categories;
   } else {
-    return await getPreviousCategories(username, month, year, categoriesCol);
+    return await getPreviousCategories(
+      username,
+      month,
+      year,
+      categoriesCol,
+      session,
+    );
   }
 }
 
 // If the categories for the current month and year don't exist, get the categories from the last populated month
-async function getPreviousCategories(username, month, year, categoriesCol) {
+async function getPreviousCategories(
+  username,
+  month,
+  year,
+  categoriesCol,
+  session,
+) {
   const latestCategories = await categoriesCol
     .find(
       {
@@ -229,6 +256,7 @@ async function getPreviousCategories(username, month, year, categoriesCol) {
         $or: [{ year: { $lt: year } }, { year: year, month: { $lt: month } }],
       },
       { projection: { month: 1, year: 1, _id: 0 } },
+      { session },
     )
     .sort({ year: -1, month: -1 })
     .limit(1)
@@ -305,6 +333,7 @@ async function getPreviousCategories(username, month, year, categoriesCol) {
         },
       },
       { $sort: { budget: -1 } },
+      { session },
     ])
     .toArray();
 
@@ -371,7 +400,13 @@ async function getPreviousCategories(username, month, year, categoriesCol) {
   });
 
   // Insert the newly created categories into MongoDB
-  await categoriesCol.insertMany(newCategories);
+  await categoriesCol.insertMany(newCategories, { session });
 
-  return await getCurrentCategories(username, month, year, categoriesCol);
+  return await getCurrentCategories(
+    username,
+    month,
+    year,
+    categoriesCol,
+    session,
+  );
 }
