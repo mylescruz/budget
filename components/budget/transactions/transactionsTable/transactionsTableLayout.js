@@ -14,8 +14,8 @@ const transactionsPerPage = 20;
 const allCategories = { id: "All", name: "All Categories" };
 
 const sortOptions = [
-  "Date (Desc)",
   "Date (Asc)",
+  "Date (Desc)",
   "Store (Asc)",
   "Store (Desc)",
   "Category (Asc)",
@@ -29,7 +29,7 @@ const TransactionsTableLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
 
   const [categoryFilter, setCategoryFilter] = useState(allCategories);
-  const [sortOption, setSortOption] = useState("Date (Desc)");
+  const [sortOption, setSortOption] = useState("Date (Asc)");
   const [searchFilter, setSearchFilter] = useState("");
   const [page, setPage] = useState(1);
 
