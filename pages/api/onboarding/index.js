@@ -84,9 +84,6 @@ async function createAccount(
       if (newUser.customCategories) {
         categories = newUser.categories.map((category) => {
           const finalCategory = {
-            username: newUser.username,
-            month: month,
-            year: year,
             name: category.name.trim(),
             color: category.color,
             fixed: category.fixed,
@@ -151,12 +148,7 @@ async function createAccount(
           return finalCategory;
         });
       } else {
-        categories = await getDefaultCategories(
-          newUser.username,
-          month,
-          year,
-          categoriesCol,
-        );
+        categories = await getDefaultCategories(categoriesCol);
       }
 
       // Get the budget sum to update current Fun Money
@@ -173,7 +165,22 @@ async function createAccount(
 
       categories[funMoneyIndex].budget = monthIncome - budgetTotal;
 
-      await categoriesCol.insertMany(categories, { session });
+      // Create the user's categories for the whole year
+      const categoriesForYear = [];
+
+      for (let i = month; i <= 12; i++) {
+        categories.forEach((category) => {
+          categoriesForYear.push({
+            ...category,
+            username: newUser.username,
+            month: i,
+            year: year,
+          });
+        });
+      }
+
+      // Insert the user's categories for the year
+      await categoriesCol.insertMany(categoriesForYear, { session });
 
       // Mark the onboarded flag as true
       insertedUser = await usersCol.updateOne(
@@ -197,7 +204,7 @@ async function createAccount(
   }
 }
 
-async function getDefaultCategories(username, month, year, categoriesCol) {
+async function getDefaultCategories(categoriesCol) {
   const defaultCategories = await categoriesCol
     .find({ defaultCategory: true })
     .sort({ budget: 1 })
@@ -205,15 +212,11 @@ async function getDefaultCategories(username, month, year, categoriesCol) {
 
   const usersCategories = defaultCategories.map((category) => {
     const finalCategory = {
-      username,
-      month,
-      year,
       name: category.name,
       color: category.color,
       budget: category.budget,
       actual: category.actual,
       fixed: category.fixed,
-      frequency: category.frequency,
       subcategories: category.subcategories,
     };
 
