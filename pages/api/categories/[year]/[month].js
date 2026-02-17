@@ -269,144 +269,16 @@ async function getPreviousCategories(
   // Define the previous month and year
   const { month: previousMonth, year: previousYear } = latestCategories[0];
 
-  // Set the semi-annual month filters
-  const semiAnnualMonth =
-    previousMonth - 6 <= 0 ? previousMonth + 6 : previousMonth - 6;
-  const semiAnnualYear =
-    previousMonth - 6 <= 0 ? previousYear - 1 : previousYear;
-
-  // Set the annual month filters
-  const annualMonth = previousMonth;
-  const annualYear = previousYear - 1;
-
-  // Get the non-fixed categories from last month and the fixed monthly, semi-annual and annual categories
-  const previousCategories = await categoriesCol
-    .aggregate(
-      [
-        {
-          $match: {
-            username,
-            $or: [
-              { month: previousMonth, year: previousYear },
-              {
-                month: semiAnnualMonth,
-                year: semiAnnualYear,
-                frequency: "Semi-Annually",
-              },
-              {
-                month: annualMonth,
-                year: annualYear,
-                frequency: "Annually",
-              },
-            ],
-          },
-        },
-        {
-          $match: {
-            $or: [
-              { fixed: false },
-              {
-                fixed: true,
-                frequency: { $in: ["Monthly", "Semi-Annually", "Annually"] },
-              },
-              {
-                fixed: true,
-                subcategories: {
-                  $elemMatch: { frequency: "Monthly" },
-                },
-              },
-            ],
-          },
-        },
-        {
-          $project: {
-            username: 1,
-            name: 1,
-            color: 1,
-            budget: 1,
-            actual: { $cond: ["$fixed", "$actual", 0] },
-            fixed: 1,
-            frequency: 1,
-            subcategories: 1,
-            noDelete: 1,
-            dueDate: 1,
-            _id: 0,
-          },
-        },
-        { $sort: { budget: -1 } },
-      ],
-      { session },
-    )
-    .toArray();
-
-  // Reset the non-fixed subcategories
-  const newCategories = previousCategories.map((category) => {
-    let formattedSubcategories;
-
-    if (category.subcategories.length > 0) {
-      formattedSubcategories = category.subcategories
-        .map((subcategory) => {
-          if (category.fixed) {
-            return {
-              ...subcategory,
-              id: uuidv4(),
-              actual: subcategory.actual,
-              frequency: subcategory.frequency,
-              dueDate: subcategory.dueDate,
-            };
-          } else {
-            return {
-              ...subcategory,
-              id: uuidv4(),
-              actual: 0,
-            };
-          }
-        })
-        .filter((subcategory) => {
-          return (
-            !category.fixed ||
-            (category.fixed && subcategory.frequency === "Monthly")
-          );
-        });
-    } else {
-      formattedSubcategories = category.subcategories;
-    }
-
-    const formattedCategory = {
-      username: category.username,
-      month,
-      year,
-      name: category.name,
-      color: category.color,
-      budget: category.budget,
-      actual: category.actual,
-      fixed: category.fixed,
-      subcategories: formattedSubcategories,
-    };
-
-    if (formattedCategory.fixed) {
-      if (formattedCategory.subcategories.length > 0) {
-        formattedCategory.frequency = null;
-        formattedCategory.dueDate = null;
-      } else {
-        formattedCategory.frequency = category.frequency;
-        formattedCategory.dueDate = category.dueDate;
-      }
-    }
-
-    if (formattedCategory.name === "Fun Money") {
-      formattedCategory.noDelete = true;
-    }
-
-    return formattedCategory;
+  // Create the missing category months
+  await generateMissingMonths({
+    username,
+    previous: { month: previousMonth, year: previousYear },
+    current: { month: month, year: year },
+    categoriesCol,
+    session,
   });
 
-  // Insert the newly created categories into MongoDB
-  await categoriesCol.insertMany(newCategories, { session });
-
-  // Update user's Fun Money category for the new month
-  await updateFunMoney({ username, month, year, session });
-
+  // Refetch the newly created categories
   return await getCurrentCategories(
     username,
     month,
@@ -414,4 +286,185 @@ async function getPreviousCategories(
     categoriesCol,
     session,
   );
+}
+
+// Creates the missing category months from the latest month to the current month
+async function generateMissingMonths({
+  username,
+  previous,
+  current,
+  categoriesCol,
+  session,
+}) {
+  let monthIndex = previous.month + 1;
+  let yearIndex = previous.year;
+
+  if (monthIndex > 12) {
+    monthIndex = 1;
+    yearIndex += 1;
+  }
+
+  let currentMonth = current.month;
+  let currentYear = current.year;
+
+  // Runs from the previous month until the current month
+  while (
+    yearIndex < currentYear ||
+    (yearIndex === currentYear && monthIndex <= currentMonth)
+  ) {
+    // Set last month's filters
+    const previousMonth = monthIndex - 1 === 0 ? 12 : monthIndex - 1;
+    const previousYear = monthIndex - 1 === 0 ? yearIndex - 1 : yearIndex;
+
+    // Set the semi-annual month filters
+    const semiAnnualMonth =
+      monthIndex - 6 <= 0 ? monthIndex + 6 : monthIndex - 6;
+    const semiAnnualYear = monthIndex - 6 <= 0 ? yearIndex - 1 : yearIndex;
+
+    // Set the annual month filters
+    const annualMonth = monthIndex;
+    const annualYear = yearIndex - 1;
+
+    // Get the non-fixed categories from last month and the fixed monthly, semi-annual and annual categories
+    const previousCategories = await categoriesCol
+      .aggregate(
+        [
+          {
+            $match: {
+              username,
+              $or: [
+                { month: previousMonth, year: previousYear },
+                {
+                  month: semiAnnualMonth,
+                  year: semiAnnualYear,
+                  frequency: "Semi-Annually",
+                },
+                {
+                  month: annualMonth,
+                  year: annualYear,
+                  frequency: "Annually",
+                },
+              ],
+            },
+          },
+          {
+            $match: {
+              $or: [
+                { fixed: false },
+                {
+                  fixed: true,
+                  frequency: {
+                    $in: ["Monthly", "Semi-Annually", "Annually"],
+                  },
+                },
+                {
+                  fixed: true,
+                  subcategories: {
+                    $elemMatch: { frequency: "Monthly" },
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $project: {
+              username: 1,
+              name: 1,
+              color: 1,
+              budget: 1,
+              actual: { $cond: ["$fixed", "$actual", 0] },
+              fixed: 1,
+              frequency: 1,
+              subcategories: 1,
+              noDelete: 1,
+              dueDate: 1,
+              _id: 0,
+            },
+          },
+          { $sort: { budget: -1 } },
+        ],
+        { session },
+      )
+      .toArray();
+
+    // Reset the subcategories' values
+    const newCategories = previousCategories.map((category) => {
+      let formattedSubcategories;
+
+      if (category.subcategories.length > 0) {
+        formattedSubcategories = category.subcategories
+          .map((subcategory) => {
+            if (category.fixed) {
+              return {
+                ...subcategory,
+                id: uuidv4(),
+                actual: subcategory.actual,
+                frequency: subcategory.frequency,
+                dueDate: subcategory.dueDate,
+              };
+            } else {
+              return {
+                ...subcategory,
+                id: uuidv4(),
+                actual: 0,
+              };
+            }
+          })
+          .filter((subcategory) => {
+            return (
+              !category.fixed ||
+              (category.fixed && subcategory.frequency === "Monthly")
+            );
+          });
+      } else {
+        formattedSubcategories = category.subcategories;
+      }
+
+      const formattedCategory = {
+        username: category.username,
+        month: monthIndex,
+        year: yearIndex,
+        name: category.name,
+        color: category.color,
+        budget: category.budget,
+        actual: category.actual,
+        fixed: category.fixed,
+        subcategories: formattedSubcategories,
+      };
+
+      if (formattedCategory.fixed) {
+        if (formattedCategory.subcategories.length > 0) {
+          formattedCategory.frequency = null;
+          formattedCategory.dueDate = null;
+        } else {
+          formattedCategory.frequency = category.frequency;
+          formattedCategory.dueDate = category.dueDate;
+        }
+      }
+
+      if (formattedCategory.name === "Fun Money") {
+        formattedCategory.noDelete = true;
+      }
+
+      return formattedCategory;
+    });
+
+    // Insert the month's missing categories for the user into MongoDB
+    await categoriesCol.insertMany(newCategories, { session });
+
+    // Update user's Fun Money category for the missing month
+    await updateFunMoney({
+      username,
+      month: monthIndex,
+      year: yearIndex,
+      session,
+    });
+
+    monthIndex += 1;
+
+    if (monthIndex > 12) {
+      monthIndex = 1;
+      yearIndex += 1;
+    }
+  }
 }
