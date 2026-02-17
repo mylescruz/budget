@@ -281,60 +281,62 @@ async function getPreviousCategories(
 
   // Get the non-fixed categories from last month and the fixed monthly, semi-annual and annual categories
   const previousCategories = await categoriesCol
-    .aggregate([
-      {
-        $match: {
-          username,
-          $or: [
-            { month: previousMonth, year: previousYear },
-            {
-              month: semiAnnualMonth,
-              year: semiAnnualYear,
-              frequency: "Semi-Annually",
-            },
-            {
-              month: annualMonth,
-              year: annualYear,
-              frequency: "Annually",
-            },
-          ],
-        },
-      },
-      {
-        $match: {
-          $or: [
-            { fixed: false },
-            {
-              fixed: true,
-              frequency: { $in: ["Monthly", "Semi-Annually", "Annually"] },
-            },
-            {
-              fixed: true,
-              subcategories: {
-                $elemMatch: { frequency: "Monthly" },
+    .aggregate(
+      [
+        {
+          $match: {
+            username,
+            $or: [
+              { month: previousMonth, year: previousYear },
+              {
+                month: semiAnnualMonth,
+                year: semiAnnualYear,
+                frequency: "Semi-Annually",
               },
-            },
-          ],
+              {
+                month: annualMonth,
+                year: annualYear,
+                frequency: "Annually",
+              },
+            ],
+          },
         },
-      },
-      {
-        $project: {
-          username: 1,
-          name: 1,
-          color: 1,
-          budget: 1,
-          actual: { $cond: ["$fixed", "$actual", 0] },
-          fixed: 1,
-          frequency: 1,
-          subcategories: 1,
-          noDelete: 1,
-          dueDate: 1,
-          _id: 0,
+        {
+          $match: {
+            $or: [
+              { fixed: false },
+              {
+                fixed: true,
+                frequency: { $in: ["Monthly", "Semi-Annually", "Annually"] },
+              },
+              {
+                fixed: true,
+                subcategories: {
+                  $elemMatch: { frequency: "Monthly" },
+                },
+              },
+            ],
+          },
         },
-      },
-      { $sort: { budget: -1 } },
+        {
+          $project: {
+            username: 1,
+            name: 1,
+            color: 1,
+            budget: 1,
+            actual: { $cond: ["$fixed", "$actual", 0] },
+            fixed: 1,
+            frequency: 1,
+            subcategories: 1,
+            noDelete: 1,
+            dueDate: 1,
+            _id: 0,
+          },
+        },
+        { $sort: { budget: -1 } },
+      ],
       { session },
-    ])
+    )
     .toArray();
 
   // Reset the non-fixed subcategories
