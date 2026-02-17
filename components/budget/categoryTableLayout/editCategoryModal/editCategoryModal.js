@@ -126,7 +126,7 @@ const EditCategoryModal = ({
     <Modal show={modal === "edit"} onHide={closeEditCategoryModal} centered>
       {status !== "updating" && status !== "deleting" && (
         <>
-          <Modal.Header closeButton>
+          <Modal.Header className="d-flex justify-content-between">
             <Modal.Title>
               {page === "details" && (
                 <span>Edit {editedCategory.currentName}</span>
@@ -134,6 +134,15 @@ const EditCategoryModal = ({
               {page === "addSubcategory" && <span>Add new subcategory</span>}
               {page === "editSubcategory" && <span>Edit a subcategory</span>}
             </Modal.Title>
+            {!editedCategory.noDelete && (
+              <Button
+                variant="danger"
+                disabled={!editedCategory.fixed && editedCategory.actual !== 0}
+                onClick={openDeleteModal}
+              >
+                Delete
+              </Button>
+            )}
           </Modal.Header>
 
           <Modal.Body>
@@ -241,8 +250,8 @@ const EditCategoryModal = ({
                   (!editedCategory.fixed &&
                     editedCategory.subcategories.length > 0)) && (
                   <div className="my-2">
-                    <p className="text-center fw-bold my-0">Subcategories</p>
-                    <div className="mt-1 text-center">
+                    <p className="fw-bold my-0">Subcategories</p>
+                    <div className="mt-1">
                       <Button size="sm" onClick={openAddSubcategoryPage}>
                         Add New
                       </Button>
@@ -281,26 +290,7 @@ const EditCategoryModal = ({
                     </tbody>
                   </Table>
                 )}
-                <div className="text-center mt-4">
-                  <Button
-                    className="w-100"
-                    disabled={
-                      editedCategory.name === "" ||
-                      (!editedCategory.noDelete &&
-                        editedCategory.budget <= 0) ||
-                      (!editedCategory.fixed && editedCategory.budget === "") ||
-                      (editedCategory.fixed &&
-                        editedCategory.subcategories.length === 0 &&
-                        (editedCategory.budget === "" ||
-                          editedCategory.dueDate === "" ||
-                          editedCategory.dueDate < 1 ||
-                          editedCategory.dueDate > 31))
-                    }
-                    onClick={updateCategory}
-                  >
-                    Save Changes
-                  </Button>
-                </div>
+                <div className="text-center mt-4"></div>
               </div>
             )}
 
@@ -338,18 +328,22 @@ const EditCategoryModal = ({
                 <Button variant="secondary" onClick={closeEditCategoryModal}>
                   Cancel
                 </Button>
-                {!editedCategory.noDelete && (
-                  <Button
-                    variant="danger"
-                    disabled={
-                      (!editedCategory.fixed && editedCategory.actual !== 0) ||
-                      editedCategory.subcategories.length !== 0
-                    }
-                    onClick={openDeleteModal}
-                  >
-                    Delete
-                  </Button>
-                )}
+                <Button
+                  disabled={
+                    editedCategory.name === "" ||
+                    (!editedCategory.noDelete && editedCategory.budget <= 0) ||
+                    (!editedCategory.fixed && editedCategory.budget === "") ||
+                    (editedCategory.fixed &&
+                      editedCategory.subcategories.length === 0 &&
+                      (editedCategory.budget === "" ||
+                        editedCategory.dueDate === "" ||
+                        editedCategory.dueDate < 1 ||
+                        editedCategory.dueDate > 31))
+                  }
+                  onClick={updateCategory}
+                >
+                  Save
+                </Button>
               </div>
             </Modal.Footer>
           )}
