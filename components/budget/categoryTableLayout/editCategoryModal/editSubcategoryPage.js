@@ -10,7 +10,6 @@ const EditSubcategoryPage = ({
   setEditedCategory,
   editedSubcategory,
   setEditedSubcategory,
-  backToDetails,
   setPage,
   nameChange,
   setNameChange,
@@ -98,17 +97,19 @@ const EditSubcategoryPage = ({
 
   return (
     <div>
-      <Form.Group controlId="name" className="mb-2">
-        <Form.Label>Subcategory Name</Form.Label>
-        <Form.Control
-          className="h-100"
-          type="text"
-          placeholder="Name"
-          value={editedSubcategory.name}
-          onChange={handleInput}
-          required
-        />
-      </Form.Group>
+      <Col className="col-12 col-md-8">
+        <Form.Group controlId="name" className="mb-2">
+          <Form.Label>Subcategory Name</Form.Label>
+          <Form.Control
+            className="h-100"
+            type="text"
+            placeholder="Name"
+            value={editedSubcategory.name}
+            onChange={handleInput}
+            required
+          />
+        </Form.Group>
+      </Col>
       {editedCategory.fixed && (
         <div>
           <Col className="col-12 col-md-8">
@@ -154,33 +155,29 @@ const EditSubcategoryPage = ({
           </Col>
         </div>
       )}
-      <Button
-        variant="primary"
-        className="w-100 mt-2"
-        disabled={
-          editedSubcategory.name === "" ||
-          (editedCategory.fixed &&
-            (editedSubcategory.actual === "" ||
-              editedSubcategory.actual <= 0 ||
-              editedSubcategory.dueDate === "" ||
-              editedSubcategory.dueDate > 31 ||
-              editedSubcategory.dueDate < 1 ||
-              !editedSubcategory.dueDate))
-        }
-        onClick={saveSubcategory}
-      >
-        Update Subcategory
-      </Button>
       <div className="w-100 d-flex justify-content-between mt-4">
-        <Button variant="secondary" onClick={backToDetails}>
-          Back
-        </Button>
         <Button
           variant="danger"
           disabled={!editedCategory.fixed && editedSubcategory.actual !== 0}
           onClick={deleteSubcategory}
         >
           Delete
+        </Button>
+        <Button
+          variant="primary"
+          disabled={
+            editedSubcategory.name === "" ||
+            (editedCategory.fixed &&
+              (editedSubcategory.actual === "" ||
+                editedSubcategory.actual <= 0 ||
+                editedSubcategory.dueDate === "" ||
+                editedSubcategory.dueDate > 31 ||
+                editedSubcategory.dueDate < 1 ||
+                !editedSubcategory.dueDate))
+          }
+          onClick={saveSubcategory}
+        >
+          Save
         </Button>
       </div>
     </div>

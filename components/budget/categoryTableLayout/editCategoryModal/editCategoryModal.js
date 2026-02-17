@@ -312,7 +312,6 @@ const EditCategoryModal = ({
                   setEditedCategory={setEditedCategory}
                   editedSubcategory={editedSubcategory}
                   setEditedSubcategory={setEditedSubcategory}
-                  backToDetails={backToDetails}
                   setPage={setPage}
                   nameChange={nameChange}
                   setNameChange={setNameChange}
