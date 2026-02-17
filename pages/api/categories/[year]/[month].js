@@ -404,6 +404,9 @@ async function getPreviousCategories(
   // Insert the newly created categories into MongoDB
   await categoriesCol.insertMany(newCategories, { session });
 
+  // Update user's Fun Money category for the new month
+  await updateFunMoney({ username, month, year, session });
+
   return await getCurrentCategories(
     username,
     month,
