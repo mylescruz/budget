@@ -134,7 +134,7 @@ const EditCategoryModal = ({
               {page === "addSubcategory" && <span>Add new subcategory</span>}
               {page === "editSubcategory" && <span>Edit a subcategory</span>}
             </Modal.Title>
-            {!editedCategory.noDelete && (
+            {page === "details" && !editedCategory.noDelete && (
               <Button
                 variant="danger"
                 disabled={!editedCategory.fixed && editedCategory.actual !== 0}
