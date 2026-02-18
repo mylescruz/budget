@@ -17,14 +17,19 @@ const AddIncomeModal = ({
   showAddIncome,
   setShowAddIncome,
 }) => {
+  const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
+
   const emptySource = {
     type: "Paycheck",
-    date: year === todayInfo.year ? todayInfo.date : `${year}-01-01`,
+    date: sourceDate,
     name: "",
     description: "",
     gross: "",
     deductions: "",
     amount: "",
+    repeating: false,
+    frequency: "Weekly",
+    endRepeatDate: sourceDate,
   };
 
   const [source, setSource] = useState(emptySource);
@@ -36,6 +41,13 @@ const AddIncomeModal = ({
     } else {
       setSource({ ...source, [e.target.id]: e.target.value });
     }
+  };
+
+  const setRepeating = () => {
+    setSource((prev) => ({
+      ...prev,
+      repeating: !prev.repeating,
+    }));
   };
 
   const addNewMoneyIn = async (e) => {
@@ -93,7 +105,10 @@ const AddIncomeModal = ({
                 </Form.Select>
               </Form.Group>
               {source.type === "Paycheck" && (
-                <PaycheckForm {...incomeFormProps} />
+                <PaycheckForm
+                  setRepeating={setRepeating}
+                  {...incomeFormProps}
+                />
               )}
               {source.type === "Sale" && <SaleForm {...incomeFormProps} />}
               {source.type === "Gift" && <GiftForm {...incomeFormProps} />}
