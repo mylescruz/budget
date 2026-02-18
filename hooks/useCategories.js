@@ -12,6 +12,8 @@ const useCategories = (month, year) => {
   const { monthIncome } = useMonthIncome(month, year);
 
   const getCategories = useCallback(async (month, year) => {
+    setCategoriesLoading(true);
+
     try {
       const response = await fetch(`/api/categories/${year}/${month}`);
 

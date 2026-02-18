@@ -6,6 +6,8 @@ const useTransactions = (month, year) => {
 
   // Function to retrieve transactions from the server
   const getTransactions = useCallback(async (month, year) => {
+    setTransactionsLoading(true);
+
     try {
       const rsp = await fetch(`/api/transactions/${year}/${month}`);
 
@@ -57,7 +59,7 @@ const useTransactions = (month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [transactions, year, month]
+    [transactions, year, month],
   );
 
   // PUT request that updates a transaction based on the transaction's id
@@ -97,7 +99,7 @@ const useTransactions = (month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [transactions]
+    [transactions],
   );
 
   // DELETE request that deletes a transaction based on the username, year and month
@@ -133,7 +135,7 @@ const useTransactions = (month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [transactions]
+    [transactions],
   );
 
   const updateTransactions = useCallback(
@@ -162,7 +164,7 @@ const useTransactions = (month, year) => {
         setTransactionsLoading(false);
       }
     },
-    [year, month]
+    [year, month],
   );
 
   return {
