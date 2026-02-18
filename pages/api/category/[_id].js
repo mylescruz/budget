@@ -90,7 +90,6 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         { _id: new ObjectId(categoryId) },
         {
           $set: {
-            name: category.name.trim(),
             budget: category.budget,
             actual: category.actual,
             frequency: category.frequency,
@@ -101,11 +100,12 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         { session },
       );
 
-      // Update the color for all the categories with that name
+      // Update the name and color for all the categories with that name
       await categoriesCol.updateMany(
-        { username, name: category.name },
+        { username, name: category.oldName },
         {
           $set: {
+            name: category.name.trim(),
             color: category.color,
           },
         },
