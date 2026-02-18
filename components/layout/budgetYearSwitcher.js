@@ -54,7 +54,7 @@ const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
             </Button>
           </Col>
         </Row>
-        <p className="my-2 mx-auto text-center">{pageInfo.description}</p>
+        <p className="my-2 mx-4 text-center">{pageInfo.description}</p>
 
         <div>{children}</div>
       </div>
