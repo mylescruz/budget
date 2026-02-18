@@ -1,6 +1,7 @@
 // API endpoint to add a new user to the system
 
 import clientPromise from "@/lib/mongodb";
+import { updateFunMoney } from "@/lib/updateFunMoney";
 import { v4 as uuidv4 } from "uuid";
 
 const funMoney = "Fun Money";
@@ -42,9 +43,6 @@ async function createAccount(
     let insertedUser;
 
     await mongoSession.withTransaction(async (session) => {
-      // Add the user's inputted income to MongoDB
-      let monthIncome = 0;
-
       const incomeSources = [];
 
       newUser.income.forEach((source) => {
@@ -53,11 +51,6 @@ async function createAccount(
         const [sourceYear, sourceMonth, sourceDay] = sourceInfo.date
           .split("-")
           .map(Number);
-
-        // Get the current month's total income
-        if (month === sourceMonth && year === sourceYear) {
-          monthIncome += parseFloat(sourceInfo.amount) * 100;
-        }
 
         const formattedSource = {
           username: newUser.username,
@@ -195,22 +188,26 @@ async function createAccount(
         categories = await getDefaultCategories(categoriesCol);
       }
 
-      // Get the budget sum to update current Fun Money
-      let budgetTotal = 0;
-      for (const category of categories) {
-        if (category.name !== funMoney) {
-          budgetTotal += category.budget;
-        }
-      }
-
-      const funMoneyIndex = categories.findIndex(
-        (category) => category.name === funMoney,
-      );
-
-      categories[funMoneyIndex].budget = monthIncome - budgetTotal;
+      // Add the user's identifiers to the categories
+      const finalCategories = categories.map((category) => {
+        return {
+          ...category,
+          username: newUser.username,
+          month,
+          year,
+        };
+      });
 
       // Insert the user's categories for the year
-      await categoriesCol.insertMany(categories, { session });
+      await categoriesCol.insertMany(finalCategories, { session });
+
+      // Update the Fun Money category's budget based on the user's income
+      await updateFunMoney({
+        username: newUser.username,
+        month,
+        year,
+        session,
+      });
 
       // Mark the onboarded flag as true
       insertedUser = await usersCol.updateOne(
