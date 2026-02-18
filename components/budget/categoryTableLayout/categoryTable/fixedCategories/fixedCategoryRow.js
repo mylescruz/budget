@@ -1,5 +1,4 @@
 import { useState } from "react";
-import todayInfo from "@/helpers/todayInfo";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
@@ -19,46 +18,37 @@ const FixedCategoryRow = ({
     (a, b) => a.dueDate - b.dueDate,
   );
 
+  const today = new Date();
+
   // Find the actual value currently charged to the user based on the current date and the category's charge date
   let currentActual = 0;
 
-  // Automatically assign the total actual if not in the current month's budget
-  if (dateInfo.month !== todayInfo.month || dateInfo.year !== todayInfo.year) {
-    currentActual = dollarsToCents(category.actual);
+  // Get the current charges for fixed expenses based on the day of the month
+  if (category.dueDate) {
+    const categoryDate = new Date(
+      `${dateInfo.month}/${category.dueDate}/${dateInfo.year}`,
+    );
+
+    if (categoryDate.getTime() <= today.getTime()) {
+      currentActual = dollarsToCents(category.actual);
+    }
   } else {
-    // Get the current charges for fixed expenses based on the day of the month
-    if (category.dueDate) {
-      const categoryDate = new Date(
-        `${dateInfo.month}/${category.dueDate}/${dateInfo.year}`,
-      );
-
-      const categoryISODate = categoryDate.toISOString().split("T")[0];
-
-      if (categoryISODate <= todayInfo.date) {
-        currentActual = dollarsToCents(category.actual);
-      }
+    if (category.subcategories.length === 0) {
+      // If no dueDate field, automatically charge the category's whole actual value
+      currentActual = dollarsToCents(category.actual);
     } else {
-      if (category.subcategories.length === 0) {
-        // If no dueDate field, automatically charge the category's whole actual value
-        currentActual = dollarsToCents(category.actual);
-      } else {
-        for (const subcategory of category.subcategories) {
-          if (subcategory.dueDate) {
-            const subcategoryDate = new Date(
-              `${dateInfo.month}/${subcategory.dueDate}/${dateInfo.year}`,
-            );
+      for (const subcategory of category.subcategories) {
+        if (subcategory.dueDate) {
+          const subcategoryDate = new Date(
+            `${dateInfo.month}/${subcategory.dueDate}/${dateInfo.year}`,
+          );
 
-            const subcategoryISODate = subcategoryDate
-              .toISOString()
-              .split("T")[0];
-
-            if (subcategoryISODate <= todayInfo.date) {
-              currentActual += dollarsToCents(subcategory.actual);
-            }
-          } else {
-            // If no dueDate field, automatically charge the subcategory's actual value
+          if (subcategoryDate.getTime() <= today.getTime()) {
             currentActual += dollarsToCents(subcategory.actual);
           }
+        } else {
+          // If no dueDate field, automatically charge the subcategory's actual value
+          currentActual += dollarsToCents(subcategory.actual);
         }
       }
     }
