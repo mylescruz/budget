@@ -61,8 +61,8 @@ const BudgetMonthSwitcher = ({
               size="sm"
               className="btn-dark fw-bold"
               disabled={
-                budgetMonths.current.month === budgetMonths.min.month &&
-                budgetMonths.current.year === budgetMonths.min.year
+                monthInfo.month === budgetMonths.min.month &&
+                monthInfo.year === budgetMonths.min.year
               }
             >
               &#60;
@@ -77,8 +77,8 @@ const BudgetMonthSwitcher = ({
               size="sm"
               className="btn-dark fw-bold"
               disabled={
-                budgetMonths.current.month === budgetMonths.max.month &&
-                budgetMonths.current.year === budgetMonths.max.year
+                monthInfo.month === budgetMonths.max.month &&
+                monthInfo.year === budgetMonths.max.year
               }
             >
               &#62;
