@@ -101,41 +101,89 @@ async function addIncome(req, res, { client, incomeCol, username }) {
       newSource.name = "EDD";
     }
 
-    let insertedSource;
+    const incomeSources = [];
+
+    if (newSource.type === "Paycheck" && req.body.repeating) {
+      let dateIndex = newSource.date;
+
+      while (dateIndex <= req.body.endRepeatDate) {
+        const [year, month, day] = dateIndex.split("-").map(Number);
+        const date = new Date(year, month - 1, day);
+
+        const paycheckSource = { ...newSource, date: dateIndex, month: month };
+
+        incomeSources.push(paycheckSource);
+
+        switch (req.body.frequency) {
+          case "Weekly":
+            date.setDate(date.getDate() + 7);
+            dateIndex = date.toLocaleDateString("en-CA");
+            break;
+          case "Bi-Weekly":
+            date.setDate(date.getDate() + 14);
+            dateIndex = date.toLocaleDateString("en-CA");
+            break;
+          case "Monthly":
+            const day = dateIndex.split("-")[2];
+            const nextDate = new Date(
+              `${date.getMonth() + 1}/${day}/${date.getFullYear()}`,
+            );
+            dateIndex = nextDate.toLocaleDateString("en-CA");
+            break;
+          default:
+            throw new Error("Invalid repeating paycheck frequency");
+        }
+      }
+    } else {
+      incomeSources.push(newSource);
+    }
+
+    let insertedSources;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      // Add the new source to the income collection in MongoDB
-      insertedSource = await incomeCol.insertOne(newSource, {
+      // Add the new sources to the income collection in MongoDB
+      insertedSources = await incomeCol.insertMany(incomeSources, {
         session,
       });
 
-      // Update the Fun Money category for the source's month
-      await updateFunMoney({
-        username,
-        month: sourceMonth,
-        year: sourceYear,
-        session,
-      });
+      // Update the Fun Money category for each month that a paycheck was added to
+      let monthIndex = sourceMonth;
+      const [year, endRepeatMonth, day] = req.body.endRepeatDate
+        .split("-")
+        .map(Number);
+
+      while (monthIndex <= endRepeatMonth) {
+        await updateFunMoney({
+          username,
+          month: monthIndex,
+          year: sourceYear,
+          session,
+        });
+
+        monthIndex += 1;
+      }
     });
 
-    const { username: u, month: m, year: y, ...sourceDetails } = newSource;
+    const sources = incomeSources.map((source, index) => {
+      const { username: u, month: m, year: y, ...sourceDetails } = source;
 
-    const addedSource = {
-      ...sourceDetails,
-      _id: insertedSource.insertedId,
-      amount: centsToDollars(sourceDetails.amount),
-    };
+      const addedSource = {
+        ...sourceDetails,
+        _id: insertedSources.insertedIds[index],
+        amount: centsToDollars(sourceDetails.amount),
+      };
 
-    if (addedSource.type === "Paycheck") {
-      addedSource.gross = centsToDollars(addedSource.gross);
-      addedSource.deductions = centsToDollars(addedSource.deductions);
-    }
+      if (addedSource.type === "Paycheck") {
+        addedSource.gross = centsToDollars(addedSource.gross);
+        addedSource.deductions = centsToDollars(addedSource.deductions);
+      }
 
-    // Send the new source back to the client
-    return res
-      .status(200)
-      .json({ _id: insertedSource.insertedId, ...addedSource });
+      return addedSource;
+    });
+
+    // Send the new sources back to the client
+    return res.status(200).json(sources);
   } catch (error) {
     console.error(`POST income request failed for ${username}: ${error}`);
     return res

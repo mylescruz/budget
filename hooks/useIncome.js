@@ -44,8 +44,8 @@ const useIncome = (year) => {
         });
 
         if (response.ok) {
-          const addedSource = await response.json();
-          setIncome([...income, addedSource]);
+          const addedSources = await response.json();
+          setIncome([...income, ...addedSources]);
         } else {
           const message = await response.text();
           throw new Error(message);
