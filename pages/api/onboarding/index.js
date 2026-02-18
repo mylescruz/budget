@@ -44,13 +44,19 @@ async function createAccount(
     await mongoSession.withTransaction(async (session) => {
       // Add the user's inputted income to MongoDB
       let monthIncome = 0;
-      const income = newUser.income.map((source) => {
-        const sourceDate = new Date(`${source.date}T00:00:00Z`);
-        const sourceMonth = sourceDate.getUTCMonth() + 1;
-        const sourceYear = sourceDate.getUTCFullYear();
 
+      const incomeSources = [];
+
+      newUser.income.forEach((source) => {
+        const sourceInfo = { ...source };
+
+        const [sourceYear, sourceMonth, sourceDay] = sourceInfo.date
+          .split("-")
+          .map(Number);
+
+        // Get the current month's total income
         if (month === sourceMonth && year === sourceYear) {
-          monthIncome += parseFloat(source.amount) * 100;
+          monthIncome += parseFloat(sourceInfo.amount) * 100;
         }
 
         const formattedSource = {
@@ -74,10 +80,48 @@ async function createAccount(
           formattedSource.name = "EDD";
         }
 
-        return formattedSource;
+        if (formattedSource.type === "Paycheck" && sourceInfo.repeating) {
+          let dateIndex = formattedSource.date;
+
+          while (dateIndex <= sourceInfo.endRepeatDate) {
+            const [year, month, day] = dateIndex.split("-").map(Number);
+            const date = new Date(year, month - 1, day);
+
+            const paycheckSource = {
+              ...formattedSource,
+              date: dateIndex,
+              month: month,
+            };
+
+            incomeSources.push(paycheckSource);
+
+            switch (sourceInfo.frequency) {
+              case "Weekly":
+                date.setDate(date.getDate() + 7);
+                dateIndex = date.toLocaleDateString("en-CA");
+                break;
+              case "Bi-Weekly":
+                date.setDate(date.getDate() + 14);
+                dateIndex = date.toLocaleDateString("en-CA");
+                break;
+              case "Monthly":
+                const nextDate = new Date(
+                  date.getFullYear(),
+                  date.getMonth() + 1,
+                  day,
+                );
+                dateIndex = nextDate.toLocaleDateString("en-CA");
+                break;
+              default:
+                throw new Error("Invalid repeating paycheck frequency");
+            }
+          }
+        } else {
+          incomeSources.push(formattedSource);
+        }
       });
 
-      await incomeCol.insertMany(income, { session });
+      await incomeCol.insertMany(incomeSources, { session });
 
       // Define the user's categories
       let categories = [];

@@ -26,6 +26,9 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
     gross: "",
     deductions: "",
     amount: "",
+    repeating: false,
+    frequency: "Weekly",
+    endRepeatDate: dateInfo.date,
   };
 
   const [source, setSource] = useState(emptySource);
@@ -36,6 +39,13 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
     } else {
       setSource({ ...source, [e.target.id]: e.target.value });
     }
+  };
+
+  const setRepeating = () => {
+    setSource((prev) => ({
+      ...prev,
+      repeating: !prev.repeating,
+    }));
   };
 
   // Update the new income array with the user's inputted sources
@@ -96,7 +106,10 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
                 </Form.Select>
               </Form.Group>
               {source.type === "Paycheck" && (
-                <PaycheckForm {...incomeFormProps} />
+                <PaycheckForm
+                  setRepeating={setRepeating}
+                  {...incomeFormProps}
+                />
               )}
               {source.type === "Sale" && <SaleForm {...incomeFormProps} />}
               {source.type === "Gift" && <GiftForm {...incomeFormProps} />}
