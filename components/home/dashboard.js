@@ -169,14 +169,7 @@ const InnerDashboard = ({ dateInfo }) => {
                   <Card.Body>
                     <h4>{dateInfo.year} Summary</h4>
                     <p>View your total spending for the year</p>
-                    <Button
-                      as={Link}
-                      href={{
-                        pathname: "/summary",
-                        query: { year: dateInfo.year },
-                      }}
-                      variant="primary"
-                    >
+                    <Button as={Link} href={"/summary"} variant="primary">
                       Summary
                     </Button>
                   </Card.Body>
