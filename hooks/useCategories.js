@@ -140,8 +140,8 @@ const useCategories = (month, year) => {
   // Gets the total budget, actual and remaining for categories
   // Budget: Based on amount value from income
   // Actual:
-  //  - If a category or subcategory's date of charge is greater than today, add that value to the total actual values
-  //  - If no dueDate field, just sum all categories' actual values
+  //  If a category or subcategory's due date is greater than today, add its actual value
+  //  If it doesn't have a due date, just add its actual value
   const categoryTotals = useMemo(() => {
     if (!categories) {
       return null;
@@ -169,7 +169,7 @@ const useCategories = (month, year) => {
             const day = subcategory.dueDate;
             const subcategoryDate = new Date(`${month}/${day}/${year}`);
 
-            if (subcategoryDate <= today) {
+            if (subcategoryDate.getTime() <= today.getTime()) {
               categoryActuals += subcategoryActual;
               fixedActual += subcategoryActual;
             }
@@ -185,7 +185,7 @@ const useCategories = (month, year) => {
           const day = category.dueDate;
           const categoryDate = new Date(`${month}/${day}/${year}`);
 
-          if (categoryDate <= today) {
+          if (categoryDate.getTime() <= today.getTime()) {
             categoryActuals += categoryActual;
             fixedActual += categoryActual;
           }
@@ -220,7 +220,7 @@ const useCategories = (month, year) => {
       nonFixedActual: changedCategoriesActual,
       nonFixedRemaining: changedCategoriesRemaining,
     };
-  }, [categories, monthIncome]);
+  }, [categories, monthIncome, month, year]);
 
   // Define all the category and subcategory's correlating colors
   const categoryColors = useMemo(() => {
