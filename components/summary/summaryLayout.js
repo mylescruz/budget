@@ -1,5 +1,5 @@
 import useSummary from "@/hooks/useSummary";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
@@ -7,7 +7,7 @@ import TotalsCards from "./totalsCards/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
-import useBudgetMonths from "@/hooks/useBudgetMonths";
+import BudgetYearSwitcher from "../layout/budgetYearSwitcher";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);
@@ -74,63 +74,16 @@ const SummaryLayout = () => {
 
   const [year, setYear] = useState(today.getFullYear());
 
-  const { budgetMonths, budgetMonthsLoading } = useBudgetMonths();
-
-  const previousYear = () => {
-    setYear((prev) => prev - 1);
+  const pageInfo = {
+    title: "Summary",
+    description: "View all your spending summaries for the year.",
   };
 
-  const nextYear = () => {
-    setYear((prev) => prev + 1);
-  };
-
-  if (budgetMonthsLoading) {
-    return <LoadingIndicator />;
-  } else if (!budgetMonths) {
-    return (
-      <Row className="mt-4 text-center">
-        <p className="fw-bold text-danger">
-          &#9432; There was an error loading your budget months. Please try
-          again later!
-        </p>
-      </Row>
-    );
-  } else {
-    return (
-      <div className="mx-auto">
-        <Row className="d-flex col-12 col-md-8 col-lg-6 col-xl-5 justify-items-between mx-auto align-items-center text-center">
-          <Col className="col-2">
-            <Button
-              onClick={previousYear}
-              size="sm"
-              className="btn-dark fw-bold"
-              disabled={year === budgetMonths.min.year}
-            >
-              &#60;
-            </Button>
-          </Col>
-          <Col className="col-8">
-            <h1 className="p-0 m-0 fw-bold">{year} Summary</h1>
-          </Col>
-          <Col className="col-2">
-            <Button
-              onClick={nextYear}
-              size="sm"
-              className="btn-dark fw-bold"
-              disabled={year === budgetMonths.max.year}
-            >
-              &#62;
-            </Button>
-          </Col>
-        </Row>
-        <Container className="my-2 mx-auto text-center">
-          <p>View all your spending summaries for the year.</p>
-        </Container>
-
-        <InnerSummaryLayout year={year} />
-      </div>
-    );
-  }
+  return (
+    <BudgetYearSwitcher year={year} setYear={setYear} pageInfo={pageInfo}>
+      <InnerSummaryLayout year={year} />
+    </BudgetYearSwitcher>
+  );
 };
 
 export default SummaryLayout;

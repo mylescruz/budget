@@ -1,7 +1,6 @@
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import { useEffect, useMemo, useState } from "react";
 import LoadingIndicator from "../layout/loadingIndicator";
-import BudgetYearChooser from "../layout/budgetYearChooser";
 import useIncome from "@/hooks/useIncome";
 import AddIncomeModal from "./addIncomeModal";
 import IncomeTable from "./incomeTable/incomeTable";
@@ -11,6 +10,7 @@ import stringSorter from "@/helpers/stringSorter";
 import dollarSorter from "@/helpers/dollarSorter";
 import styles from "@/styles/income/incomeLayout.module.css";
 import IncomeTotalsLayout from "./incomeTotalsLayout";
+import BudgetYearSwitcher from "../layout/budgetYearSwitcher";
 
 const sourcesPerPage = 20;
 
@@ -275,20 +275,19 @@ const InnerIncomeLayout = ({ year }) => {
 };
 
 const IncomeLayout = ({ dateInfo }) => {
-  // Define state to change years for user
-  const [year, setYear] = useState(dateInfo.year);
+  const today = new Date();
+
+  const [year, setYear] = useState(today.getFullYear());
+
+  const pageInfo = {
+    title: "Income",
+    description: "View and add all your income for the current year.",
+  };
 
   return (
-    <Container className="w-100">
-      <aside className="text-center">
-        <h1>Income</h1>
-        <p>View and add all your income for the current year.</p>
-      </aside>
-
-      <BudgetYearChooser year={year} setYear={setYear} />
-
+    <BudgetYearSwitcher year={year} setYear={setYear} pageInfo={pageInfo}>
       <InnerIncomeLayout year={year} />
-    </Container>
+    </BudgetYearSwitcher>
   );
 };
 
