@@ -20,7 +20,7 @@ const AddTransactionModal = ({
     return !category.fixed && !category.subcategories.length > 0;
   });
 
-  // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at current budget or history
+  // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at their current budget or a previous/future budget
   const newTransactionDate =
     todayInfo.month === dateInfo.month ? todayInfo.date : dateInfo.startOfMonth;
 
@@ -124,7 +124,7 @@ const AddTransactionModal = ({
                           key={category._id}
                           category={category}
                         />
-                      )
+                      ),
                   )}
                 </Form.Select>
               </Form.Group>

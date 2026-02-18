@@ -15,7 +15,6 @@ const UserNavbar = ({
     { name: "Budget", link: "/budget" },
     { name: "Income", link: "/income" },
     { name: "Summary", link: "/summary", year: currentYear },
-    { name: "History", link: "/history", year: currentYear },
     { name: "Account", link: "/account" },
   ];
 
