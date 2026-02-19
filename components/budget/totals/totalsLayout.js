@@ -9,13 +9,17 @@ const MAX_VALUE = 100;
 const TotalsLayout = () => {
   const { categoryTotals } = useContext(CategoriesContext);
 
+  // Define the text color of the amount values for the cards
   const nonFixedSpendingPercentage = Math.round(
     (categoryTotals.nonFixedActual / categoryTotals.nonFixedBudget) * 100,
   );
 
   let nonFixedRemainingColor;
 
-  if (nonFixedSpendingPercentage >= MAX_VALUE || categoryTotals.budget === 0) {
+  console.log(nonFixedSpendingPercentage);
+
+  // Show red text if the user has no income or if their available spending balance is less than 0
+  if (categoryTotals.budget === 0 || categoryTotals.nonFixedRemaining < 0) {
     nonFixedRemainingColor = "text-danger";
   } else if (
     nonFixedSpendingPercentage < MAX_VALUE &&
