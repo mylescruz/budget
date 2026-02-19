@@ -53,7 +53,7 @@ const CategorySummaryTableRow = ({ category }) => {
       </tr>
       {showSubcategories &&
         category.subcategories.map((subcategory) => (
-          <tr key={subcategory.id} className="d-flex">
+          <tr key={subcategory.name} className="d-flex">
             <th className={categoryColumn}>
               <span className="mx-2">{subcategory.name}</span>
             </th>

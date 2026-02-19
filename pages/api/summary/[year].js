@@ -107,109 +107,95 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
     .sort({ actual: -1 })
     .toArray();
 
-  const categoriesSummary = [];
+  // Create a map to get the totals of each category related by name
+  const categoriesMap = new Map();
 
   categories.forEach((category) => {
-    // Find the category based on the index
-    const categoryIndex = categoriesSummary.findIndex(
-      (cat) =>
-        cat.name.toLowerCase().trim() === category.name.toLowerCase().trim(),
-    );
+    const mappedCategory = categoriesMap.get(category.name);
 
-    if (categoryIndex !== -1) {
-      const foundCategory = categoriesSummary[categoryIndex];
+    if (!mappedCategory) {
+      // Create a map to get the totals of each subcategory related by name
+      const subcategoriesMap = new Map();
 
-      // Check if the category has subcategories
-      if (category.subcategories.length > 0) {
-        // Create a set of subcategory names
-        const subcategoryNames = new Set(
-          foundCategory.subcategories.map((subcategory) =>
-            subcategory.name.toLowerCase().trim(),
-          ),
+      category.subcategories.forEach((subcategory) => {
+        subcategoriesMap.set(subcategory.name, {
+          name: subcategory.name,
+          actual: subcategory.actual,
+          totalMonths: 1,
+        });
+      });
+
+      categoriesMap.set(category.name, {
+        name: category.name,
+        color: category.color,
+        budget: category.budget,
+        actual: category.actual,
+        fixed: category.fixed,
+        subcategoriesMap: subcategoriesMap,
+        totalMonths: 1,
+      });
+    } else {
+      category.subcategories.forEach((subcategory) => {
+        const mappedSubcategory = mappedCategory.subcategoriesMap.get(
+          subcategory.name,
         );
 
-        category.subcategories.forEach((subcategory) => {
-          // Check a category's subcategory is already in the categoriesSummary array
-          if (subcategoryNames.has(subcategory.name.toLowerCase().trim())) {
-            const foundSubcategoryIndex = foundCategory.subcategories.findIndex(
-              (sub) => sub.name === subcategory.name,
-            );
-
-            // Get the current actual value for the subcategory
-            const subcategoryActual =
-              foundCategory.subcategories[foundSubcategoryIndex].actual;
-
-            if (subcategoryActual !== 0) {
-              // Add the subcategory's actual to the actual value in the categoriesSummary array
-              categoriesSummary[categoryIndex].subcategories[
-                foundSubcategoryIndex
-              ].actual = subcategory.actual + subcategoryActual;
-
-              categoriesSummary[categoryIndex].subcategories[
-                foundSubcategoryIndex
-              ].totalMonths += 1;
-            }
-          } else {
-            if (subcategory.actual !== 0) {
-              // If the subcategory is not in the categoriesSummary array, add it
-              categoriesSummary[categoryIndex].subcategories.push({
-                ...subcategory,
-                totalMonths: 1,
-              });
-            }
-          }
-        });
-      }
-
-      // Add the totals for the budget and the actual values to the categoriesSummary array for that category
-      categoriesSummary[categoryIndex].budget =
-        foundCategory.budget + category.budget;
-      categoriesSummary[categoryIndex].actual =
-        foundCategory.actual + category.actual;
-      categoriesSummary[categoryIndex].totalMonths += 1;
-
-      categoriesSummary[categoryIndex].subcategories.sort(
-        (a, b) => b.actual - a.actual,
-      );
-    } else {
-      const updatedSubcategories = category.subcategories
-        .filter((subcategory) => subcategory.actual !== 0)
-        .map((subcategory) => {
-          return {
-            ...subcategory,
+        if (!mappedSubcategory) {
+          mappedCategory.subcategoriesMap.set(subcategory.name, {
+            name: subcategory.name,
+            actual: subcategory.actual,
             totalMonths: 1,
-          };
-        });
-      categoriesSummary.push({
-        ...category,
-        totalMonths: 1,
-        subcategories: updatedSubcategories,
+          });
+        } else {
+          // Increment the subcategory's values
+          mappedCategory.subcategoriesMap.set(subcategory.name, {
+            ...mappedSubcategory,
+            actual: mappedSubcategory.actual + subcategory.actual,
+            totalMonths: mappedSubcategory.totalMonths + 1,
+          });
+        }
+      });
+
+      // Increment the category's values
+      categoriesMap.set(category.name, {
+        ...mappedCategory,
+        budget: mappedCategory.budget + category.budget,
+        actual: mappedCategory.actual + category.actual,
+        totalMonths: mappedCategory.totalMonths + 1,
       });
     }
   });
 
-  const finalSummary = categoriesSummary
+  // Format the final summary to be sent back to the frontend
+  const finalCategories = [...categoriesMap.values()]
     .map((category) => {
-      const updatedSubcategories = category.subcategories.map((subcategory) => {
-        return {
-          ...subcategory,
-          actual: centsToDollars(subcategory.actual),
-          average: centsToDollars(subcategory.actual / subcategory.totalMonths),
-        };
-      });
+      const subcategories = [...category.subcategoriesMap.values()].map(
+        (subcategory) => {
+          return {
+            ...subcategory,
+            actual: centsToDollars(subcategory.actual),
+            average: centsToDollars(
+              subcategory.actual / subcategory.totalMonths,
+            ),
+          };
+        },
+      );
 
       return {
-        ...category,
+        name: category.name,
+        color: category.color,
         budget: centsToDollars(category.budget),
         actual: centsToDollars(category.actual),
         remaining: centsToDollars(category.budget - category.actual),
         average: centsToDollars(category.actual / category.totalMonths),
-        subcategories: updatedSubcategories,
+        totalMonths: category.totalMonths,
+        fixed: category.fixed,
+        subcategories: subcategories,
       };
     })
     .sort((a, b) => b.actual - a.actual);
 
-  return finalSummary;
+  return finalCategories;
 }
 
 // Get the total sum of each type of income

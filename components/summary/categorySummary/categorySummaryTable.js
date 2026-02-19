@@ -14,11 +14,17 @@ const monthsColumn = "d-none d-md-block col-md-1 text-end";
 
 const CategorySummaryTable = ({ categories, year, monthsLength }) => {
   const totalBudget = centsToDollars(
-    categories.reduce((sum, current) => sum + dollarsToCents(current.budget), 0)
+    categories.reduce(
+      (sum, current) => sum + dollarsToCents(current.budget),
+      0,
+    ),
   );
 
   const totalActual = centsToDollars(
-    categories.reduce((sum, current) => sum + dollarsToCents(current.actual), 0)
+    categories.reduce(
+      (sum, current) => sum + dollarsToCents(current.actual),
+      0,
+    ),
   );
 
   const totalLeft = subtractDecimalValues(totalBudget, totalActual);
@@ -39,7 +45,7 @@ const CategorySummaryTable = ({ categories, year, monthsLength }) => {
         <tbody>
           {categories.map((category) => (
             <CategorySummaryTableRow
-              key={category._id}
+              key={category.name}
               category={category}
               year={year}
             />

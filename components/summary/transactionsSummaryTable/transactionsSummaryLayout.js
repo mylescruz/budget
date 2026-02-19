@@ -40,7 +40,6 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
       if (!category.fixed) {
         if (category.subcategories.length !== 0) {
           filteredCategories.push({
-            id: category._id,
             name: category.name,
             subcategories: category.subcategories.map(
               (subcategory) => subcategory.name,
@@ -49,14 +48,12 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
 
           category.subcategories.forEach((subcategory) => {
             filteredCategories.push({
-              id: subcategory.id,
               name: subcategory.name,
               isSubcategory: true,
             });
           });
         } else {
           filteredCategories.push({
-            id: category._id,
             name: category.name,
           });
         }
@@ -186,7 +183,7 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
             <Dropdown.Menu className={styles.filterMenu}>
               {categoriesFilters.map((category) => (
                 <Dropdown.Item
-                  key={category.id}
+                  key={category.name}
                   onClick={() => {
                     setCategoryFilter(category);
                   }}
