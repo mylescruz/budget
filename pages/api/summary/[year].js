@@ -17,11 +17,22 @@ export default async function handler(req, res) {
   // Configure MongoDB
   const db = (await clientPromise).db(process.env.MONGO_DB);
 
+  const year = parseInt(req.query.year);
+
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+
+  // Only show the current and previous months if getting the summary for the current year
+  const queryMonth = year === currentYear ? currentMonth : 12;
+
   const summaryContext = {
     categoriesCol: db.collection("categories"),
     transactionsCol: db.collection("transactions"),
     incomeCol: db.collection("income"),
     username: session.user.username,
+    month: queryMonth,
+    year: year,
   };
 
   switch (req.method) {
@@ -35,26 +46,31 @@ export default async function handler(req, res) {
 async function getYearSummary(
   req,
   res,
-  { categoriesCol, transactionsCol, incomeCol, username }
+  { categoriesCol, transactionsCol, incomeCol, username, month, year },
 ) {
-  const year = parseInt(req.query.year);
-
   try {
     const categories = await getCategoriesSummary(
       categoriesCol,
       username,
-      year
+      month,
+      year,
     );
 
-    const income = await getIncomeSummary(incomeCol, username, year);
+    const income = await getIncomeSummary(incomeCol, username, month, year);
 
     const transactions = await getAllTransactions(
       transactionsCol,
       username,
-      year
+      month,
+      year,
     );
 
-    const months = await getMonthsSummaries(categoriesCol, username, year);
+    const months = await getMonthsSummaries(
+      categoriesCol,
+      username,
+      month,
+      year,
+    );
 
     // Send the year summary back to the client
     return res.status(200).json({
@@ -73,10 +89,10 @@ async function getYearSummary(
 }
 
 // Get the total spent for each summary
-async function getCategoriesSummary(categoriesCol, username, year) {
+async function getCategoriesSummary(categoriesCol, username, month, year) {
   const categories = await categoriesCol
     .find(
-      { username, year },
+      { username, year, month: { $lte: month } },
       {
         projection: {
           name: 1,
@@ -86,7 +102,7 @@ async function getCategoriesSummary(categoriesCol, username, year) {
           fixed: 1,
           subcategories: 1,
         },
-      }
+      },
     )
     .sort({ actual: -1 })
     .toArray();
@@ -97,7 +113,7 @@ async function getCategoriesSummary(categoriesCol, username, year) {
     // Find the category based on the index
     const categoryIndex = categoriesSummary.findIndex(
       (cat) =>
-        cat.name.toLowerCase().trim() === category.name.toLowerCase().trim()
+        cat.name.toLowerCase().trim() === category.name.toLowerCase().trim(),
     );
 
     if (categoryIndex !== -1) {
@@ -108,15 +124,15 @@ async function getCategoriesSummary(categoriesCol, username, year) {
         // Create a set of subcategory names
         const subcategoryNames = new Set(
           foundCategory.subcategories.map((subcategory) =>
-            subcategory.name.toLowerCase().trim()
-          )
+            subcategory.name.toLowerCase().trim(),
+          ),
         );
 
         category.subcategories.forEach((subcategory) => {
           // Check a category's subcategory is already in the categoriesSummary array
           if (subcategoryNames.has(subcategory.name.toLowerCase().trim())) {
             const foundSubcategoryIndex = foundCategory.subcategories.findIndex(
-              (sub) => sub.name === subcategory.name
+              (sub) => sub.name === subcategory.name,
             );
 
             // Get the current actual value for the subcategory
@@ -153,7 +169,7 @@ async function getCategoriesSummary(categoriesCol, username, year) {
       categoriesSummary[categoryIndex].totalMonths += 1;
 
       categoriesSummary[categoryIndex].subcategories.sort(
-        (a, b) => b.actual - a.actual
+        (a, b) => b.actual - a.actual,
       );
     } else {
       const updatedSubcategories = category.subcategories
@@ -197,10 +213,10 @@ async function getCategoriesSummary(categoriesCol, username, year) {
 }
 
 // Get the total sum of each type of income
-async function getIncomeSummary(incomeCol, username, year) {
+async function getIncomeSummary(incomeCol, username, month, year) {
   const incomeTypes = await incomeCol
     .aggregate([
-      { $match: { username, year } },
+      { $match: { username, year, month: { $lte: month } } },
       {
         $group: {
           _id: "$type",
@@ -260,10 +276,10 @@ async function getIncomeSummary(incomeCol, username, year) {
 }
 
 // Get total spending for each month
-async function getMonthsSummaries(categoriesCol, username, year) {
+async function getMonthsSummaries(categoriesCol, username, month, year) {
   const months = await categoriesCol
     .aggregate([
-      { $match: { username, year } },
+      { $match: { username, year, month: { $lte: month } } },
       {
         $group: {
           _id: "$month",
@@ -303,10 +319,10 @@ async function getMonthsSummaries(categoriesCol, username, year) {
 }
 
 // Get all the user's transactions for a given year
-async function getAllTransactions(transactionsCol, username, year) {
+async function getAllTransactions(transactionsCol, username, month, year) {
   return await transactionsCol
     .aggregate([
-      { $match: { username, year } },
+      { $match: { username, year, month: { $lte: month } } },
       {
         $project: {
           month: 1,
