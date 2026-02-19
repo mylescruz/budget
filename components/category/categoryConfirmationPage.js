@@ -1,6 +1,7 @@
 import dayFormatter from "@/helpers/dayFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
+import CategoryBadge from "./categoryBadge";
 
 const titleStyle = "fw-bold fs-5";
 
@@ -9,20 +10,12 @@ const CategoryConfirmationPage = ({ newCategory }) => {
     <div>
       <h5 className="text-center mb-2">Confirm the category information</h5>
       <p className="my-1">
-        <span className={titleStyle}>Name:</span> {newCategory.name}
+        <span className={titleStyle}>Name:</span>{" "}
+        <CategoryBadge name={newCategory.name} color={newCategory.color} />
       </p>
       <p className="my-1">
         <span className={titleStyle}>Budget:</span>{" "}
         {dollarFormatter(newCategory.budget)}
-      </p>
-      <p className="my-1">
-        <span className={titleStyle}>Color:</span>{" "}
-        <Button
-          style={{
-            backgroundColor: newCategory.color,
-            border: newCategory.color,
-          }}
-        />
       </p>
       <p className="my-1">
         <span className={titleStyle}>Fixed:</span>{" "}
