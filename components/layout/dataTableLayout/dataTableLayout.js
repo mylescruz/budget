@@ -7,6 +7,7 @@ import { Dropdown, Form } from "react-bootstrap";
 import styles from "@/styles/layout/dataTableLayout/dataTableLayout.module.css";
 import DataTable from "./dataTable";
 import DataTablePages from "./dataTablePages";
+import DataTableSortDropdown from "./dataTableSortDropdown";
 
 const sourcesPerPage = 20;
 
@@ -121,49 +122,41 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
   return (
     <div className="d-flex flex-column">
       <div className="d-flex align-items-center col-12 mt-2 mb-4 mx-auto">
-        <Form.Group
-          controlId="searchInput"
-          className="col-6 col-md-8 col-lg-10"
-        >
-          <Form.Control
-            type="text"
-            value={searchInput}
-            placeholder="Search"
-            onChange={handleInput}
+        <div className="col-6 col-md-8 col-lg-10">
+          <Form.Group controlId="searchInput">
+            <Form.Control
+              type="text"
+              value={searchInput}
+              placeholder="Search"
+              onChange={handleInput}
+            />
+          </Form.Group>
+        </div>
+        <div className="col-3 col-md-2 col-lg-1">
+          <Dropdown className="text-start text-md-end">
+            <Dropdown.Toggle variant="dark">Filter</Dropdown.Toggle>
+            <Dropdown.Menu className={styles.menu}>
+              {arrayFilters.map((type) => (
+                <Dropdown.Item
+                  key={type}
+                  className={typeFilter === type ? "bg-primary text-white" : ""}
+                  onClick={() => {
+                    setTypeFilter(type);
+                  }}
+                >
+                  {type}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+        <div className="col-3 col-md-2 col-lg-1">
+          <DataTableSortDropdown
+            sortOptions={sortOptions}
+            sortOption={sortOption}
+            setSortOption={setSortOption}
           />
-        </Form.Group>
-        <Dropdown className="col-3 col-md-2 col-lg-1 text-start text-md-end">
-          <Dropdown.Toggle variant="dark">Filter</Dropdown.Toggle>
-          <Dropdown.Menu className={styles.menu}>
-            {arrayFilters.map((type) => (
-              <Dropdown.Item
-                key={type}
-                className={typeFilter === type ? "bg-primary text-white" : ""}
-                onClick={() => {
-                  setTypeFilter(type);
-                }}
-              >
-                {type}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-        <Dropdown className="col-3 col-md-2 col-lg-1 text-end">
-          <Dropdown.Toggle variant="dark">Sort</Dropdown.Toggle>
-          <Dropdown.Menu className={styles.menu}>
-            {sortOptions.map((option) => (
-              <Dropdown.Item
-                key={option}
-                className={sortOption === option ? "bg-primary text-white" : ""}
-                onClick={() => {
-                  setSortOption(option);
-                }}
-              >
-                {option}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
+        </div>
       </div>
 
       <DataTable sortedArray={sortedArray} columnNames={columnNames} />
