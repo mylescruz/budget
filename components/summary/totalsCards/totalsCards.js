@@ -1,6 +1,6 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { useState } from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import IncomeSummaryModal from "./incomeSummaryModal";
 import MonthsSpendingModal from "./monthsSpendingModal";
 import RemainingSummaryModal from "./remainingSummaryModal";
@@ -22,7 +22,7 @@ const TotalsCards = ({ summary }) => {
   // Define spending summaries
   const numMonths = summary.months.length;
   const sortedMonthsBySpending = summary.months.sort(
-    (a, b) => b.actual - a.actual
+    (a, b) => b.actual - a.actual,
   );
   const highestSpentMonth = sortedMonthsBySpending[0];
   const lowestSpentMonth = sortedMonthsBySpending[numMonths - 1];
@@ -32,14 +32,14 @@ const TotalsCards = ({ summary }) => {
   const totalSpent = centsToDollars(
     summary.months.reduce(
       (sum, current) => sum + dollarsToCents(current.actual),
-      0
-    )
+      0,
+    ),
   );
   const averageSpentPerMonth = totalSpent / numMonths;
 
   const totalRemaining = subtractDecimalValues(
     income.totalIncome.amount,
-    totalSpent
+    totalSpent,
   );
 
   const totalSummary = [
@@ -79,8 +79,8 @@ const TotalsCards = ({ summary }) => {
   ];
 
   return (
-    <Container>
-      <Row className="d-flex align-items-start">
+    <>
+      <Row className="d-flex justify-content-center">
         {totalSummary.map((total, index) => (
           <Col key={index} className="col-12 col-md-4">
             <Card className="my-2 card-background">
@@ -108,7 +108,7 @@ const TotalsCards = ({ summary }) => {
           </Col>
         ))}
       </Row>
-      <Row className="d-flex align-items-start">
+      <Row className="d-flex justify-content-center">
         {monthsSummary.map((month, index) => (
           <Col key={index} className="col-12 col-md-4">
             <Card className="my-2 card-background">
@@ -141,7 +141,7 @@ const TotalsCards = ({ summary }) => {
         modal={modal}
         setModal={setModal}
       />
-    </Container>
+    </>
   );
 };
 

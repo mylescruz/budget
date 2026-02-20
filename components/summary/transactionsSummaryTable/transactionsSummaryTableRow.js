@@ -4,7 +4,7 @@ import TransactionSummaryModal from "./transactionSummaryModal";
 import { useState } from "react";
 
 const dateColumn = "col-3 col-md-2 col-lg-1";
-const storeColumn = "col-6 col-md-5 col-lg-3";
+const storeColumn = "col-6 col-md-6 col-lg-3";
 const itemsColumn = "d-none d-lg-block col-lg-4";
 const categoryColumn = "d-none d-md-block col-md-2";
 const amountColumn = "col-3 col-md-2 text-end";

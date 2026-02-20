@@ -191,14 +191,12 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
   }, [months, categories, transactions]);
 
   return (
-    <>
-      <Row>
-        <h3 className="text-center">Spending Insights</h3>
-        {insights.map((insight) => (
-          <InsightCard key={insight.title} insight={insight} />
-        ))}
-      </Row>
-    </>
+    <Row>
+      <h3 className="text-center">Spending Insights</h3>
+      {insights.map((insight) => (
+        <InsightCard key={insight.title} insight={insight} />
+      ))}
+    </Row>
   );
 };
 
