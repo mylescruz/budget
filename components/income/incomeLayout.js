@@ -156,7 +156,7 @@ const InnerIncomeLayout = ({ year }) => {
     );
   } else {
     return (
-      <div className="w-100">
+      <Container>
         <IncomeTotalsLayout incomeTotals={incomeTotals} />
 
         <Container className="text-center mt-2">
@@ -269,7 +269,7 @@ const InnerIncomeLayout = ({ year }) => {
         )}
 
         <AddIncomeModal {...AddIncomeModalProps} />
-      </div>
+      </Container>
     );
   }
 };
