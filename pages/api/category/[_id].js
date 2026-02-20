@@ -102,7 +102,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
 
       // Update the name and color for all the categories with that name
       await categoriesCol.updateMany(
-        { username, name: category.oldName },
+        { username, name: category.currentName },
         {
           $set: {
             name: category.name.trim(),
