@@ -3,11 +3,11 @@ import descendingDateSorter from "@/helpers/descendingDateSorter";
 import dollarSorter from "@/helpers/dollarSorter";
 import stringSorter from "@/helpers/stringSorter";
 import { useEffect, useMemo, useState } from "react";
-import { Form } from "react-bootstrap";
 import DataTable from "./dataTable";
 import DataTablePages from "./dataTablePages";
 import DataTableSortDropdown from "./dataTableSortDropdown";
 import DataTableFilterDropdown from "./dataTableFilterDropdown";
+import DataTableSearchBar from "./dataTableSearchBar";
 
 const sourcesPerPage = 20;
 
@@ -115,22 +115,14 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
   // Get the total pages for the array after the search and filter options to display for pagination
   const totalPages = Math.ceil(searchedArray.length / sourcesPerPage);
 
-  const handleInput = (e) => {
-    setSearchInput(e.target.value);
-  };
-
   return (
     <div className="d-flex flex-column">
       <div className="d-flex align-items-center col-12 mt-2 mb-4 mx-auto">
         <div className="col-6 col-md-8 col-lg-10">
-          <Form.Group controlId="searchInput">
-            <Form.Control
-              type="text"
-              value={searchInput}
-              placeholder="Search"
-              onChange={handleInput}
-            />
-          </Form.Group>
+          <DataTableSearchBar
+            searchInput={searchInput}
+            setSearchInput={setSearchInput}
+          />
         </div>
         <div className="col-3 col-md-2 col-lg-1">
           <DataTableFilterDropdown
