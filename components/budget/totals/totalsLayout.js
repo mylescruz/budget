@@ -16,8 +16,6 @@ const TotalsLayout = () => {
 
   let nonFixedRemainingColor;
 
-  console.log(nonFixedSpendingPercentage);
-
   // Show red text if the user has no income or if their available spending balance is less than 0
   if (categoryTotals.budget === 0 || categoryTotals.nonFixedRemaining < 0) {
     nonFixedRemainingColor = "text-danger";
@@ -48,8 +46,8 @@ const TotalsLayout = () => {
   ];
 
   return (
-    <Container className="mb-4">
-      <Row className="text-center d-flex justify-content-evenly mx-auto">
+    <>
+      <div className="d-flex flex-column flex-md-row justify-content-between mb-4">
         {totals.map((total) => (
           <Col key={total.title} className="col-12 col-md-5 mb-2">
             <TotalsCard
@@ -60,8 +58,8 @@ const TotalsLayout = () => {
             />
           </Col>
         ))}
-      </Row>
-    </Container>
+      </div>
+    </>
   );
 };
 

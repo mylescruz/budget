@@ -4,7 +4,7 @@ import { Card } from "react-bootstrap";
 
 const TotalsCard = ({ title, amount, amountTextColor, description }) => {
   return (
-    <Card className="bg-dark">
+    <Card className="bg-dark text-center">
       <Card.Body className="text-white">
         <h4 className="fw-bold">
           {title}

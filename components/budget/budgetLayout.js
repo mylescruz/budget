@@ -32,23 +32,18 @@ const InnerBudgetLayout = ({ dateInfo }) => {
     );
   } else {
     return (
-      <Container className="w-100">
+      <Container>
         <Row className="d-flex justify-content-center">
           <Col className="col-12 col-xl-10">
             <TotalsLayout />
-          </Col>
-        </Row>
 
-        <Row className="d-flex flex-column flex-lg-row align-items-center">
-          <Col className="col-12 col-xl-4">
             <CategoryPieChart categories={categories} />
-          </Col>
-          <Col className="col-12 col-xl-8">
+
             <CategoryTableLayout dateInfo={dateInfo} />
+
+            <TransactionsLayout dateInfo={dateInfo} />
           </Col>
         </Row>
-
-        <TransactionsLayout dateInfo={dateInfo} />
       </Container>
     );
   }

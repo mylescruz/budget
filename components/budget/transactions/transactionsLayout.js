@@ -42,12 +42,6 @@ const TransactionsLayout = ({ dateInfo }) => {
     setAddTransactionClicked(true);
   };
 
-  const addTransactionModalProps = {
-    dateInfo: dateInfo,
-    addTransactionClicked: addTransactionClicked,
-    setAddTransactionClicked: setAddTransactionClicked,
-  };
-
   if (!transactions) {
     return (
       <Row className="mt-4 text-center">
@@ -60,39 +54,37 @@ const TransactionsLayout = ({ dateInfo }) => {
   } else {
     return (
       <>
-        <Row className="mx-auto d-flex justify-content-between my-4 text-center">
-          <Col className="col-6">
-            <Button
-              variant="secondary"
-              onClick={toggleTransactions}
-              className="text-nowrap"
-            >
-              {buttonText}
-            </Button>
-          </Col>
-          <Col className="col-6">
-            <Button
-              variant="primary"
-              onClick={addTransaction}
-              className="text-nowrap"
-            >
-              Add Transaction
-            </Button>
-          </Col>
-        </Row>
+        <div className="mx-auto my-4 d-flex flew-row justify-content-between">
+          <Button
+            variant="secondary"
+            onClick={toggleTransactions}
+            className="text-nowrap"
+          >
+            {buttonText}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={addTransaction}
+            className="text-nowrap"
+          >
+            Add Transaction
+          </Button>
+        </div>
 
-        <Row className="d-flex">
-          <Col className="col-12 col-xl-10 mx-auto">
-            {view === VIEWS.CALENDAR && (
-              <TransactionsCalendar dateInfo={dateInfo} />
-            )}
-            {view === VIEWS.TABLE && (
-              <TransactionsTableLayout dateInfo={dateInfo} />
-            )}
-          </Col>
-        </Row>
+        <div>
+          {view === VIEWS.CALENDAR && (
+            <TransactionsCalendar dateInfo={dateInfo} />
+          )}
+          {view === VIEWS.TABLE && (
+            <TransactionsTableLayout dateInfo={dateInfo} />
+          )}
+        </div>
 
-        <AddTransactionModal {...addTransactionModalProps} />
+        <AddTransactionModal
+          dateInfo={dateInfo}
+          addTransactionClicked={addTransactionClicked}
+          setAddTransactionClicked={setAddTransactionClicked}
+        />
       </>
     );
   }
