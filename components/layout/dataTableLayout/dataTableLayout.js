@@ -3,12 +3,10 @@ import descendingDateSorter from "@/helpers/descendingDateSorter";
 import dollarSorter from "@/helpers/dollarSorter";
 import stringSorter from "@/helpers/stringSorter";
 import { useEffect, useMemo, useState } from "react";
-import { Button, Dropdown, Form, Table } from "react-bootstrap";
+import { Dropdown, Form } from "react-bootstrap";
 import styles from "@/styles/layout/dataTableLayout/dataTableLayout.module.css";
-import PopUp from "../popUp";
-import dollarFormatter from "@/helpers/dollarFormatter";
-import dateFormatter from "@/helpers/dateFormatter";
 import DataTable from "./dataTable";
+import DataTablePages from "./dataTablePages";
 
 const sourcesPerPage = 20;
 
@@ -120,14 +118,6 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
     setSearchInput(e.target.value);
   };
 
-  const previousPage = () => {
-    setPage(page - 1);
-  };
-
-  const nextPage = () => {
-    setPage(page + 1);
-  };
-
   return (
     <div className="d-flex flex-column">
       <div className="d-flex align-items-center col-12 mt-2 mb-4 mx-auto">
@@ -179,29 +169,7 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
       <DataTable sortedArray={sortedArray} columnNames={columnNames} />
 
       {sortedArray.length !== 0 && (
-        <div className="mx-auto d-flex flex-row align-items-center justify-content-between col-12 col-md-4 col-lg-3 col-xl-2">
-          <Button
-            onClick={previousPage}
-            size="sm"
-            className="btn-dark fw-bold"
-            disabled={page === 1}
-          >
-            &#60;
-          </Button>
-          <div>
-            <h5 className="p-0 m-0 fw-bold">
-              {page}/{totalPages}
-            </h5>
-          </div>
-          <Button
-            onClick={nextPage}
-            size="sm"
-            className="btn-dark fw-bold"
-            disabled={page === totalPages}
-          >
-            &#62;
-          </Button>
-        </div>
+        <DataTablePages page={page} setPage={setPage} totalPages={totalPages} />
       )}
     </div>
   );
