@@ -3,15 +3,15 @@ import descendingDateSorter from "@/helpers/descendingDateSorter";
 import dollarSorter from "@/helpers/dollarSorter";
 import stringSorter from "@/helpers/stringSorter";
 import { useEffect, useMemo, useState } from "react";
-import { Dropdown, Form } from "react-bootstrap";
-import styles from "@/styles/layout/dataTableLayout/dataTableLayout.module.css";
+import { Form } from "react-bootstrap";
 import DataTable from "./dataTable";
 import DataTablePages from "./dataTablePages";
 import DataTableSortDropdown from "./dataTableSortDropdown";
+import DataTableFilterDropdown from "./dataTableFilterDropdown";
 
 const sourcesPerPage = 20;
 
-const allTypes = "All";
+const allOptions = "All";
 
 const DataTableLayout = ({ formattedArray, columnNames }) => {
   const sortOptions = [
@@ -25,7 +25,7 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
     `${columnNames.column4} (Desc)`,
   ];
 
-  const [typeFilter, setTypeFilter] = useState(allTypes);
+  const [filterOption, setFilterOption] = useState(allOptions);
   const [sortOption, setSortOption] = useState(sortOptions[0]);
   const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(1);
@@ -33,11 +33,11 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
   // Reset the results if the type or search filter changes
   useEffect(() => {
     setPage(1);
-  }, [typeFilter, searchInput]);
+  }, [filterOption, searchInput]);
 
   // Define the filter options the user can select from
-  const arrayFilters = useMemo(() => {
-    setTypeFilter(allTypes);
+  const filterOptions = useMemo(() => {
+    setFilterOption(allOptions);
 
     const filteredArray = ["All"];
 
@@ -52,12 +52,12 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
 
   // Filters the array based on the selected filter option
   const filteredArray = useMemo(() => {
-    if (typeFilter === "All") {
+    if (filterOption === "All") {
       return formattedArray;
     }
 
-    return formattedArray.filter((elem) => elem.type === typeFilter);
-  }, [typeFilter, formattedArray]);
+    return formattedArray.filter((elem) => elem.type === filterOption);
+  }, [filterOption, formattedArray]);
 
   // Filters the array based on the searched input
   const searchedArray = useMemo(() => {
@@ -133,22 +133,11 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
           </Form.Group>
         </div>
         <div className="col-3 col-md-2 col-lg-1">
-          <Dropdown className="text-start text-md-end">
-            <Dropdown.Toggle variant="dark">Filter</Dropdown.Toggle>
-            <Dropdown.Menu className={styles.menu}>
-              {arrayFilters.map((type) => (
-                <Dropdown.Item
-                  key={type}
-                  className={typeFilter === type ? "bg-primary text-white" : ""}
-                  onClick={() => {
-                    setTypeFilter(type);
-                  }}
-                >
-                  {type}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
+          <DataTableFilterDropdown
+            filterOptions={filterOptions}
+            filterOption={filterOption}
+            setFilterOption={setFilterOption}
+          />
         </div>
         <div className="col-3 col-md-2 col-lg-1">
           <DataTableSortDropdown
