@@ -1,5 +1,5 @@
 import useSummary from "@/hooks/useSummary";
-import { Col, Container, Row } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../layout/loadingIndicator";
 import { useState } from "react";
@@ -26,39 +26,34 @@ const InnerSummaryLayout = ({ year }) => {
   } else {
     return (
       <Container>
-        <Row className="d-flex justify-content-center text-center">
-          <Col className="col-12 col-xl-10">
-            <div className="my-4">
-              <h3>Year Totals</h3>
-              <TotalsCards summary={summary} />
-            </div>
+        <Row className="mx-auto d-flex justify-content-center align-items-center col-12 col-xl-10">
+          <div className="my-4 text-center">
+            <h3>Year Totals</h3>
+            <TotalsCards summary={summary} />
+          </div>
 
-            <div className="my-4">
-              <SpendingInsightsLayout
-                categories={summary.categories}
-                months={summary.months}
-                transactions={summary.transactions}
-              />
-            </div>
+          <div className="my-4">
+            <SpendingInsightsLayout
+              categories={summary.categories}
+              months={summary.months}
+              transactions={summary.transactions}
+            />
+          </div>
 
-            <div className="my-4">
-              <h3>Categories Breakdown</h3>
-              <CategoryPieChart categories={summary.categories} />
-              <CategorySummaryTable
-                categories={summary.categories}
-                year={year}
-                monthsLength={summary.monthsLength}
-              />
-            </div>
+          <div className="my-4">
+            <h3 className="text-center">Categories Breakdown</h3>
+            <CategoryPieChart categories={summary.categories} />
+            <CategorySummaryTable
+              categories={summary.categories}
+              year={year}
+              monthsLength={summary.monthsLength}
+            />
+          </div>
 
-            <div className="my-4">
-              <h3>{year} Transactions</h3>
-              <TransactionsSummaryLayout
-                transactions={summary.transactions}
-                categories={summary.categories}
-              />
-            </div>
-          </Col>
+          <div className="my-4">
+            <h3 className="text-center">{year} Transactions</h3>
+            <TransactionsSummaryLayout transactions={summary.transactions} />
+          </div>
         </Row>
       </Container>
     );
