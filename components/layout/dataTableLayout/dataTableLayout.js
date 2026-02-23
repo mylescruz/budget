@@ -13,16 +13,16 @@ const sourcesPerPage = 20;
 
 const allOptions = "All";
 
-const DataTableLayout = ({ formattedArray, columnNames }) => {
+const DataTableLayout = ({ data, columns }) => {
   const sortOptions = [
-    `${columnNames.column1} (Asc)`,
-    `${columnNames.column1} (Desc)`,
-    `${columnNames.column2} (Asc)`,
-    `${columnNames.column2} (Desc)`,
-    `${columnNames.column3} (Asc)`,
-    `${columnNames.column3} (Desc)`,
-    `${columnNames.column4} (Asc)`,
-    `${columnNames.column4} (Desc)`,
+    `${columns.column1} (Asc)`,
+    `${columns.column1} (Desc)`,
+    `${columns.column2} (Asc)`,
+    `${columns.column2} (Desc)`,
+    `${columns.column3} (Asc)`,
+    `${columns.column3} (Desc)`,
+    `${columns.column4} (Asc)`,
+    `${columns.column4} (Desc)`,
   ];
 
   const [filterOption, setFilterOption] = useState(allOptions);
@@ -39,81 +39,81 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
   const filterOptions = useMemo(() => {
     setFilterOption(allOptions);
 
-    const filteredArray = ["All"];
+    const filteredData = ["All"];
 
-    formattedArray.forEach((elem) => {
-      if (!filteredArray.includes(elem.type)) {
-        filteredArray.push(elem.type);
+    data.forEach((item) => {
+      if (!filteredData.includes(item.type)) {
+        filteredData.push(item.type);
       }
     });
 
-    return filteredArray;
-  }, [formattedArray]);
+    return filteredData;
+  }, [data]);
 
   // Filters the array based on the selected filter option
-  const filteredArray = useMemo(() => {
+  const filteredData = useMemo(() => {
     if (filterOption === "All") {
-      return formattedArray;
+      return data;
     }
 
-    return formattedArray.filter((elem) => elem.type === filterOption);
-  }, [filterOption, formattedArray]);
+    return data.filter((item) => item.type === filterOption);
+  }, [filterOption, data]);
 
   // Filters the array based on the searched input
-  const searchedArray = useMemo(() => {
+  const searchedData = useMemo(() => {
     if (searchInput === "") {
-      return filteredArray;
+      return filteredData;
     }
 
-    return filteredArray.filter((elem) => {
+    return filteredData.filter((item) => {
       return (
-        elem.name.toLowerCase().includes(searchInput.toLowerCase()) ||
-        elem.description.toLowerCase().includes(searchInput.toLowerCase())
+        item.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchInput.toLowerCase())
       );
     });
-  }, [searchInput, filteredArray]);
+  }, [searchInput, filteredData]);
 
   // Sort the array based on the selected sort option
-  const sortedArray = useMemo(() => {
+  const sortedData = useMemo(() => {
     let sorted;
 
     switch (sortOption) {
-      case `${columnNames.column1} (Asc)`:
-        sorted = ascendingDateSorter(searchedArray);
+      case `${columns.column1} (Asc)`:
+        sorted = ascendingDateSorter(searchedData);
         break;
-      case `${columnNames.column1} (Desc)`:
-        sorted = descendingDateSorter(searchedArray);
+      case `${columns.column1} (Desc)`:
+        sorted = descendingDateSorter(searchedData);
         break;
-      case `${columnNames.column2} (Asc)`:
-        sorted = stringSorter(searchedArray, "name", "asc");
+      case `${columns.column2} (Asc)`:
+        sorted = stringSorter(searchedData, "name", "asc");
         break;
-      case `${columnNames.column2} (Desc)`:
-        sorted = stringSorter(searchedArray, "name", "desc");
+      case `${columns.column2} (Desc)`:
+        sorted = stringSorter(searchedData, "name", "desc");
         break;
-      case `${columnNames.column3} (Asc)`:
-        sorted = stringSorter(searchedArray, "type", "asc");
+      case `${columns.column3} (Asc)`:
+        sorted = stringSorter(searchedData, "type", "asc");
         break;
-      case `${columnNames.column3} (Desc)`:
-        sorted = stringSorter(searchedArray, "type", "desc");
+      case `${columns.column3} (Desc)`:
+        sorted = stringSorter(searchedData, "type", "desc");
         break;
-      case `${columnNames.column4} (Asc)`:
-        sorted = dollarSorter(searchedArray, "amount", "asc");
+      case `${columns.column4} (Asc)`:
+        sorted = dollarSorter(searchedData, "amount", "asc");
         break;
-      case `${columnNames.column4} (Desc)`:
-        sorted = dollarSorter(searchedArray, "amount", "desc");
+      case `${columns.column4} (Desc)`:
+        sorted = dollarSorter(searchedData, "amount", "desc");
         break;
       default:
-        sorted = ascendingDateSorter(searchedArray);
+        sorted = ascendingDateSorter(searchedData);
     }
 
     return sorted.slice(
       page * sourcesPerPage - sourcesPerPage,
       page * sourcesPerPage,
     );
-  }, [searchedArray, sortOption, page]);
+  }, [searchedData, sortOption, page]);
 
   // Get the total pages for the array after the search and filter options to display for pagination
-  const totalPages = Math.ceil(searchedArray.length / sourcesPerPage);
+  const totalPages = Math.ceil(searchedData.length / sourcesPerPage);
 
   return (
     <div className="d-flex flex-column">
@@ -140,9 +140,9 @@ const DataTableLayout = ({ formattedArray, columnNames }) => {
         </div>
       </div>
 
-      <DataTable sortedArray={sortedArray} columnNames={columnNames} />
+      <DataTable sortedData={sortedData} columns={columns} />
 
-      {sortedArray.length !== 0 && (
+      {sortedData.length !== 0 && (
         <DataTablePages page={page} setPage={setPage} totalPages={totalPages} />
       )}
     </div>
