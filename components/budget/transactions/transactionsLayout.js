@@ -123,7 +123,7 @@ const TransactionsLayout = ({ dateInfo }) => {
           )}
         </div>
 
-        {modal === "transactionDetails" && chosenTransaction && (
+        {modal === "transactionDetails" && (
           <TransactionDetailsModal
             chosenTransaction={chosenTransaction}
             modal={modal}
@@ -139,7 +139,7 @@ const TransactionsLayout = ({ dateInfo }) => {
           />
         )}
 
-        {modal === "editTransaction" && chosenTransaction && (
+        {modal === "editTransaction" && (
           <EditTransactionModal
             chosenTransaction={chosenTransaction}
             setChosenTransaction={setChosenTransaction}
@@ -149,7 +149,7 @@ const TransactionsLayout = ({ dateInfo }) => {
           />
         )}
 
-        {modal === "deleteTransaction" && chosenTransaction && (
+        {modal === "deleteTransaction" && (
           <DeleteTransactionModal
             chosenTransaction={chosenTransaction}
             dateInfo={dateInfo}
