@@ -41,19 +41,13 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
         </Row>
       </Modal.Body>
       {!chosenTransaction.fromCalendar && (
-        <Modal.Footer>
-          <Row>
-            <Col>
-              <Button variant="danger" onClick={openDeleteModal}>
-                Delete
-              </Button>
-            </Col>
-            <Col>
-              <Button variant="info" onClick={openEditModal}>
-                Edit
-              </Button>
-            </Col>
-          </Row>
+        <Modal.Footer className="d-flex flex-row justify-content-between">
+          <Button variant="danger" onClick={openDeleteModal}>
+            Delete
+          </Button>
+          <Button variant="info" onClick={openEditModal}>
+            Edit
+          </Button>
         </Modal.Footer>
       )}
     </Modal>
