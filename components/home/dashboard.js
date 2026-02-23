@@ -30,7 +30,7 @@ const InnerDashboard = ({ dateInfo }) => {
     dateInfo.year,
   );
 
-  const [addTransactionClicked, setAddTransactionClicked] = useState(false);
+  const [modal, setModal] = useState("none");
 
   // Get the top 5 categories to display on the dashboard
   const topCategories = useMemo(() => {
@@ -58,13 +58,7 @@ const InnerDashboard = ({ dateInfo }) => {
   }, [categories]);
 
   const openAddTransaction = () => {
-    setAddTransactionClicked(true);
-  };
-
-  const addTransactionModalProps = {
-    dateInfo: dateInfo,
-    addTransactionClicked: addTransactionClicked,
-    setAddTransactionClicked: setAddTransactionClicked,
+    setModal("addTransaction");
   };
 
   if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
@@ -179,9 +173,11 @@ const InnerDashboard = ({ dateInfo }) => {
           </Col>
         </Row>
 
-        {addTransactionClicked && (
-          <AddTransactionModal {...addTransactionModalProps} />
-        )}
+        <AddTransactionModal
+          dateInfo={dateInfo}
+          modal={modal}
+          setModal={setModal}
+        />
       </Container>
     );
   }
