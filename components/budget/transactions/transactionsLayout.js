@@ -122,7 +122,6 @@ const TransactionsLayout = ({ dateInfo }) => {
               data={formattedTransactions}
               columns={transactionColumns}
               openDetails={openTransactionDetails}
-              editable={true}
             />
           )}
         </div>

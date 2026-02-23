@@ -43,7 +43,6 @@ const TransactionsSummaryLayout = ({ transactions }) => {
         data={formattedTransactions}
         columns={transactionColumns}
         openDetails={openTransactionDetails}
-        editable={true}
       />
 
       {modal === "transactionDetails" && (

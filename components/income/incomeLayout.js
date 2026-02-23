@@ -85,7 +85,6 @@ const InnerIncomeLayout = ({ year }) => {
               data={formattedIncome}
               columns={incomeColumns}
               openDetails={openIncomeDetails}
-              editable={true}
             />
           </Row>
         )}
