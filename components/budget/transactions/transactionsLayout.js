@@ -1,12 +1,12 @@
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import AddTransactionModal from "./addTransactionModal";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
-import TransactionsTableLayout from "./transactionsTable/transactionsTableLayout";
 import EditTransactionModal from "./editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal";
+import DataTableLayout from "@/components/layout/dataTableLayout/dataTableLayout";
 
 const VIEWS_LABEL = {
   CALENDAR: "View Calendar",
@@ -23,6 +23,26 @@ const TransactionsLayout = ({ dateInfo }) => {
   const [buttonText, setButtonText] = useState(VIEWS_LABEL.TABLE);
   const [modal, setModal] = useState(false);
   const [chosenTransaction, setChosenTransaction] = useState(null);
+
+  const formattedTransactions = useMemo(() => {
+    return transactions.map((transaction) => {
+      return {
+        _id: transaction._id,
+        date: transaction.date,
+        name: transaction.store,
+        description: transaction.items,
+        type: transaction.category,
+        amount: transaction.amount,
+      };
+    });
+  }, [transactions]);
+
+  const transactionColumns = {
+    column1: "Date",
+    column2: "Store",
+    column3: "Category",
+    column4: "Amount",
+  };
 
   const toggleTransactions = () => {
     setView((prev) => {
@@ -44,6 +64,16 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   const openAddTransaction = () => {
     setModal("addTransaction");
+  };
+
+  const openTransactionDetails = (transactionId) => {
+    const foundTransaction = transactions.find(
+      (transaction) => transaction._id === transactionId,
+    );
+
+    setChosenTransaction(foundTransaction);
+
+    setModal("transactionDetails");
   };
 
   if (!transactions) {
@@ -84,10 +114,11 @@ const TransactionsLayout = ({ dateInfo }) => {
             />
           )}
           {view === VIEWS.TABLE && (
-            <TransactionsTableLayout
-              dateInfo={dateInfo}
-              setChosenTransaction={setChosenTransaction}
-              setModal={setModal}
+            <DataTableLayout
+              data={formattedTransactions}
+              columns={transactionColumns}
+              openDetails={openTransactionDetails}
+              editable={true}
             />
           )}
         </div>
