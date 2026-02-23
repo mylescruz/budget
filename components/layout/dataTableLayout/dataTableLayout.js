@@ -13,7 +13,7 @@ const sourcesPerPage = 20;
 
 const allOptions = "All";
 
-const DataTableLayout = ({ data, columns }) => {
+const DataTableLayout = ({ data, columns, onEdit, editable }) => {
   const sortOptions = [
     `${columns.column1} (Asc)`,
     `${columns.column1} (Desc)`,
@@ -140,7 +140,12 @@ const DataTableLayout = ({ data, columns }) => {
         </div>
       </div>
 
-      <DataTable sortedData={sortedData} columns={columns} />
+      <DataTable
+        sortedData={sortedData}
+        columns={columns}
+        onEdit={onEdit}
+        editable={editable}
+      />
 
       {sortedData.length !== 0 && (
         <DataTablePages page={page} setPage={setPage} totalPages={totalPages} />

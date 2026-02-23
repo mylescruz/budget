@@ -1,7 +1,7 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
-const DataTableRow = ({ item }) => {
+const DataTableRow = ({ item, onEdit, editable }) => {
   const xsName =
     item.name.length > 15 ? item.name.slice(0, 12) + "..." : item.name;
   const smName =
@@ -12,7 +12,10 @@ const DataTableRow = ({ item }) => {
     item.name.length > 40 ? item.name.slice(0, 27) + "..." : item.name;
 
   return (
-    <tr className="d-flex">
+    <tr
+      className={`d-flex ${editable ? "click" : ""} `}
+      onClick={editable ? () => onEdit(item._id) : undefined}
+    >
       <td className="col-3 col-md-2">{dateFormatter(item.date)}</td>
       <td className="col-6 col-md-5">
         <span className="d-sm-none">{xsName}</span>

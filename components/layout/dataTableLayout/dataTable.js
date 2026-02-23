@@ -2,7 +2,7 @@ import { Table } from "react-bootstrap";
 import PopUp from "../popUp";
 import DataTableRow from "./dataTableRow";
 
-const DataTable = ({ sortedData, columns }) => {
+const DataTable = ({ sortedData, columns, onEdit, editable }) => {
   return (
     <Table striped hover>
       <thead className="table-dark">
@@ -26,7 +26,14 @@ const DataTable = ({ sortedData, columns }) => {
             </td>
           </tr>
         ) : (
-          sortedData.map((item) => <DataTableRow key={item._id} item={item} />)
+          sortedData.map((item) => (
+            <DataTableRow
+              key={item._id}
+              item={item}
+              onEdit={onEdit}
+              editable={editable}
+            />
+          ))
         )}
       </tbody>
     </Table>
