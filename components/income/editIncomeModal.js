@@ -2,11 +2,11 @@ import ErrorMessage from "@/components/layout/errorMessage";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import PaycheckForm from "../incomeTypeForms/paycheckForm";
-import LoanForm from "../incomeTypeForms/loanForm";
-import SaleForm from "../incomeTypeForms/saleForm";
-import GiftForm from "../incomeTypeForms/giftForm";
-import UnemploymentForm from "../incomeTypeForms/unemploymentForm";
+import PaycheckForm from "./incomeTypeForms/paycheckForm";
+import LoanForm from "./incomeTypeForms/loanForm";
+import SaleForm from "./incomeTypeForms/saleForm";
+import GiftForm from "./incomeTypeForms/giftForm";
+import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 
 const EditIncomeModal = ({
   chosenSource,
