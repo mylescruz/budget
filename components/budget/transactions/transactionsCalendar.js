@@ -13,7 +13,19 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
   const { categories, categoryColors } = useContext(CategoriesContext);
 
   const openTransactionDetails = (transaction) => {
-    setChosenTransaction(transaction);
+    if (transaction.isCategory) {
+      setChosenTransaction(transaction);
+    } else {
+      const foundTransaction = transactions.find(
+        (trans) => trans._id === transaction._id,
+      );
+
+      setChosenTransaction({
+        ...foundTransaction,
+        oldCategory: foundTransaction.category,
+        oldAmount: foundTransaction.amount,
+      });
+    }
 
     setModal("transactionDetails");
   };
@@ -41,7 +53,6 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
         amount: transaction.amount,
         color: categoryColors[transaction.category],
         icon: "●",
-        fromCalendar: true,
       });
     });
 
@@ -74,7 +85,6 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
                 color: category.color,
                 icon: "■",
                 isCategory: true,
-                fromCalendar: true,
               });
             }
           });
@@ -97,7 +107,6 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
               color: category.color,
               icon: "■",
               isCategory: true,
-              fromCalendar: true,
             });
           }
         }

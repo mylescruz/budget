@@ -43,8 +43,6 @@ const EditTransactionModal = ({
       await putTransaction({
         ...chosenTransaction,
         amount: formattedAmount,
-        oldCategory: transaction.category,
-        oldAmount: transaction.amount,
       });
 
       // Fetch the categories to update the state for the categories table

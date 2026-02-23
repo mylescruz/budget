@@ -71,7 +71,11 @@ const TransactionsLayout = ({ dateInfo }) => {
       (transaction) => transaction._id === transactionId,
     );
 
-    setChosenTransaction(foundTransaction);
+    setChosenTransaction({
+      ...foundTransaction,
+      oldCategory: foundTransaction.category,
+      oldAmount: foundTransaction.amount,
+    });
 
     setModal("transactionDetails");
   };

@@ -1,6 +1,6 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import { Button, Col, Modal, Row } from "react-bootstrap";
+import { Button, Modal, Row } from "react-bootstrap";
 
 const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
   const closeDetailsModal = () => {
@@ -40,7 +40,7 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
           Amount: {dollarFormatter(chosenTransaction.amount)}
         </Row>
       </Modal.Body>
-      {!chosenTransaction.fromCalendar && (
+      {!chosenTransaction.isCategory && (
         <Modal.Footer className="d-flex flex-row justify-content-between">
           <Button variant="danger" onClick={openDeleteModal}>
             Delete
