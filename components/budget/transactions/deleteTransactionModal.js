@@ -55,8 +55,8 @@ const DeleteTransactionModal = ({
             <p>Are you sure you want to delete this transaction?</p>
             {errorOccurred && <ErrorMessage />}
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="info" onClick={closeDeleteModal}>
+          <Modal.Footer className="d-flex flex-row justify-content-between">
+            <Button variant="secondary" onClick={closeDeleteModal}>
               Cancel
             </Button>
             <Button variant="danger" onClick={confirmDelete}>
