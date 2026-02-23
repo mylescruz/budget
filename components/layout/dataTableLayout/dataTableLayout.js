@@ -124,7 +124,7 @@ const DataTableLayout = ({ data, columns, openDetails, editable }) => {
             setSearchInput={setSearchInput}
           />
         </div>
-        <div className="col-3 col-md-2 col-lg-1">
+        <div className="col-3 col-md-2 col-lg-1 d-flex justify-content-end">
           <DataTableFilterDropdown
             filterOptions={filterOptions}
             filterOption={filterOption}
