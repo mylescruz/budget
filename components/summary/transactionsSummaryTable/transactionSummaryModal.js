@@ -2,22 +2,28 @@ import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Modal, Row } from "react-bootstrap";
 
-const TransactionSummaryModal = ({ transaction, showModal, setShowModal }) => {
-  const closeModal = () => {
-    setShowModal(false);
+const TransactionSummaryModal = ({ chosenTransaction, modal, setModal }) => {
+  const closeDetailsModal = () => {
+    setModal("none");
   };
 
   return (
-    <Modal show={showModal} onHide={closeModal} centered>
+    <Modal
+      show={modal === "transactionDetails"}
+      onHide={closeDetailsModal}
+      centered
+    >
       <Modal.Header closeButton>
         <Modal.Title>Transaction Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Row className="m-2">Date: {dateFormatter(transaction.date)}</Row>
-        <Row className="m-2">Store: {transaction.store}</Row>
-        <Row className="m-2">Items Purchased: {transaction.items}</Row>
-        <Row className="m-2">Category: {transaction.category}</Row>
-        <Row className="m-2">Amount: {dollarFormatter(transaction.amount)}</Row>
+        <Row className="m-2">Date: {dateFormatter(chosenTransaction.date)}</Row>
+        <Row className="m-2">Store: {chosenTransaction.store}</Row>
+        <Row className="m-2">Items Purchased: {chosenTransaction.items}</Row>
+        <Row className="m-2">Category: {chosenTransaction.category}</Row>
+        <Row className="m-2">
+          Amount: {dollarFormatter(chosenTransaction.amount)}
+        </Row>
       </Modal.Body>
     </Modal>
   );

@@ -7,7 +7,11 @@ const itemsColumn = "d-none d-lg-block col-lg-4";
 const categoryColumn = "d-none d-md-block col-md-2";
 const amountColumn = "col-3 col-md-2 text-end";
 
-const TransactionsSummaryTable = ({ sortedTransactions }) => {
+const TransactionsSummaryTable = ({
+  sortedTransactions,
+  setChosenTransaction,
+  setModal,
+}) => {
   return (
     <Table striped hover>
       <thead>
@@ -30,6 +34,8 @@ const TransactionsSummaryTable = ({ sortedTransactions }) => {
           sortedTransactions.map((transaction) => (
             <TransactionsSummaryTableRow
               key={transaction._id}
+              setChosenTransaction={setChosenTransaction}
+              setModal={setModal}
               transaction={transaction}
             />
           ))

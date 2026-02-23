@@ -6,6 +6,7 @@ import ascendingDateSorter from "@/helpers/ascendingDateSorter";
 import descendingDateSorter from "@/helpers/descendingDateSorter";
 import stringSorter from "@/helpers/stringSorter";
 import dollarSorter from "@/helpers/dollarSorter";
+import TransactionSummaryModal from "./transactionSummaryModal";
 
 const transactionsPerPage = 25;
 
@@ -27,6 +28,9 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
   const [sortOption, setSortOption] = useState("Date (Asc)");
   const [searchFilter, setSearchFilter] = useState("");
   const [page, setPage] = useState(1);
+
+  const [chosenTransaction, setChosenTransaction] = useState(null);
+  const [modal, setModal] = useState("none");
 
   // Reset the page if the user changes the category or search filter
   useEffect(() => {
@@ -215,7 +219,11 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
         </div>
       </div>
 
-      <TransactionsSummaryTable sortedTransactions={sortedTransactions} />
+      <TransactionsSummaryTable
+        sortedTransactions={sortedTransactions}
+        setChosenTransaction={setChosenTransaction}
+        setModal={setModal}
+      />
 
       {sortedTransactions.length !== 0 && (
         <Row className="d-flex col-12 col-md-6 col-lg-4 justify-items-between mx-auto align-items-center text-center">
@@ -245,6 +253,14 @@ const TransactionsSummaryLayout = ({ transactions, categories }) => {
             </Button>
           </Col>
         </Row>
+      )}
+
+      {modal === "transactionDetails" && (
+        <TransactionSummaryModal
+          chosenTransaction={chosenTransaction}
+          modal={modal}
+          setModal={setModal}
+        />
       )}
     </>
   );
