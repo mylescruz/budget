@@ -8,17 +8,14 @@ import TransactionDetailsModal from "./transactionDetailsModal";
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const WEEK_LENGTH = 7;
 
-const TransactionsCalendar = ({ dateInfo }) => {
+const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
   const { transactions } = useContext(TransactionsContext);
   const { categories, categoryColors } = useContext(CategoriesContext);
 
-  const [chosenTransaction, setChosenTransaction] = useState({});
-  const [modal, setModal] = useState("none");
-
-  const openTransaction = (transaction) => {
+  const openTransactionDetails = (transaction) => {
     setChosenTransaction(transaction);
 
-    setModal("details");
+    setModal("transactionDetails");
   };
 
   const monthCalendar = useMemo(() => {
@@ -184,7 +181,7 @@ const TransactionsCalendar = ({ dateInfo }) => {
                         key={transaction._id}
                         style={{ color: transaction.color }}
                         className="mx-md-1 fs-2 clicker"
-                        onClick={() => openTransaction(transaction)}
+                        onClick={() => openTransactionDetails(transaction)}
                       >
                         {transaction.icon}
                       </span>
@@ -196,12 +193,6 @@ const TransactionsCalendar = ({ dateInfo }) => {
           ))}
         </tbody>
       </Table>
-
-      <TransactionDetailsModal
-        transaction={chosenTransaction}
-        modal={modal}
-        setModal={setModal}
-      />
     </>
   );
 };

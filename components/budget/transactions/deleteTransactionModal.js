@@ -5,14 +5,19 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeleteTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
+const DeleteTransactionModal = ({
+  chosenTransaction,
+  dateInfo,
+  modal,
+  setModal,
+}) => {
   const { getCategories } = useContext(CategoriesContext);
   const { deleteTransaction } = useContext(TransactionsContext);
   const [deletingTransaction, setDeletingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
 
-  const closeDelete = () => {
-    setModal("details");
+  const closeDeleteModal = () => {
+    setModal("transactionDetails");
   };
 
   const confirmDelete = async () => {
@@ -20,7 +25,7 @@ const DeleteTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
 
     try {
       // Deletes a transaction from the transactions array by sending a DELETE request to the API
-      await deleteTransaction(transaction);
+      await deleteTransaction(chosenTransaction);
 
       // Fetch the categories to update the state for the categories table
       await getCategories(dateInfo.month, dateInfo.year);
@@ -38,7 +43,11 @@ const DeleteTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
   };
 
   return (
-    <Modal show={modal === "delete"} onHide={closeDelete} centered>
+    <Modal
+      show={modal === "deleteTransaction"}
+      onHide={closeDeleteModal}
+      centered
+    >
       {!deletingTransaction ? (
         <>
           <Modal.Header closeButton>Delete Transaction</Modal.Header>
@@ -47,7 +56,7 @@ const DeleteTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
             {errorOccurred && <ErrorMessage />}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="info" onClick={closeDelete}>
+            <Button variant="info" onClick={closeDeleteModal}>
               Cancel
             </Button>
             <Button variant="danger" onClick={confirmDelete}>

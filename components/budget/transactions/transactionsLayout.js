@@ -4,6 +4,9 @@ import { useContext, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
 import TransactionsTableLayout from "./transactionsTable/transactionsTableLayout";
+import EditTransactionModal from "./editTransactionModal";
+import DeleteTransactionModal from "./deleteTransactionModal";
+import TransactionDetailsModal from "./transactionDetailsModal";
 
 const VIEWS_LABEL = {
   CALENDAR: "View Calendar",
@@ -18,7 +21,8 @@ const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const [view, setView] = useState(VIEWS.CALENDAR);
   const [buttonText, setButtonText] = useState(VIEWS_LABEL.TABLE);
-  const [modal, setModal] = useState("none");
+  const [modal, setModal] = useState(false);
+  const [chosenTransaction, setChosenTransaction] = useState(null);
 
   const toggleTransactions = () => {
     setView((prev) => {
@@ -73,15 +77,50 @@ const TransactionsLayout = ({ dateInfo }) => {
 
         <div>
           {view === VIEWS.CALENDAR && (
-            <TransactionsCalendar dateInfo={dateInfo} />
+            <TransactionsCalendar
+              dateInfo={dateInfo}
+              setChosenTransaction={setChosenTransaction}
+              setModal={setModal}
+            />
           )}
           {view === VIEWS.TABLE && (
-            <TransactionsTableLayout dateInfo={dateInfo} />
+            <TransactionsTableLayout
+              dateInfo={dateInfo}
+              setChosenTransaction={setChosenTransaction}
+              setModal={setModal}
+            />
           )}
         </div>
 
+        {modal === "transactionDetails" && chosenTransaction && (
+          <TransactionDetailsModal
+            chosenTransaction={chosenTransaction}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
+
         {modal === "addTransaction" && (
           <AddTransactionModal
+            dateInfo={dateInfo}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
+
+        {modal === "editTransaction" && chosenTransaction && (
+          <EditTransactionModal
+            chosenTransaction={chosenTransaction}
+            setChosenTransaction={setChosenTransaction}
+            dateInfo={dateInfo}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
+
+        {modal === "deleteTransaction" && chosenTransaction && (
+          <DeleteTransactionModal
+            chosenTransaction={chosenTransaction}
             dateInfo={dateInfo}
             modal={modal}
             setModal={setModal}

@@ -2,7 +2,12 @@ import { Table } from "react-bootstrap";
 import PopUp from "@/components/layout/popUp";
 import TransactionsTableRow from "./transactionsTableRow";
 
-const TransactionsTable = ({ sortedTransactions, dateInfo }) => {
+const TransactionsTable = ({
+  sortedTransactions,
+  dateInfo,
+  setChosenTransaction,
+  setModal,
+}) => {
   return (
     <Table striped>
       <thead className="table-dark">
@@ -35,6 +40,8 @@ const TransactionsTable = ({ sortedTransactions, dateInfo }) => {
               key={transaction._id}
               transaction={transaction}
               dateInfo={dateInfo}
+              setChosenTransaction={setChosenTransaction}
+              setModal={setModal}
             />
           ))
         )}

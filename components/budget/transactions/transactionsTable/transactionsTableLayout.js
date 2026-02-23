@@ -24,7 +24,11 @@ const sortOptions = [
   "Amount (Desc)",
 ];
 
-const TransactionsTableLayout = ({ dateInfo }) => {
+const TransactionsTableLayout = ({
+  dateInfo,
+  setChosenTransaction,
+  setModal,
+}) => {
   const { categories } = useContext(CategoriesContext);
   const { transactions } = useContext(TransactionsContext);
 
@@ -226,6 +230,8 @@ const TransactionsTableLayout = ({ dateInfo }) => {
       <TransactionsTable
         sortedTransactions={sortedTransactions}
         dateInfo={dateInfo}
+        setChosenTransaction={setChosenTransaction}
+        setModal={setModal}
       />
 
       {sortedTransactions.length !== 0 && (

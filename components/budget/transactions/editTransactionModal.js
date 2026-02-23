@@ -6,19 +6,24 @@ import SelectCategoryOption from "./selectCategoryOption";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorMessage from "@/components/layout/errorMessage";
 
-const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
+const EditTransactionModal = ({
+  chosenTransaction,
+  setChosenTransaction,
+  dateInfo,
+  modal,
+  setModal,
+}) => {
   const { categories, getCategories } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
-  const [editedTransaction, setEditedTransaction] = useState(transaction);
   const [status, setStatus] = useState("editing");
 
-  const closeEdit = () => {
-    setModal("details");
+  const closeEditModal = () => {
+    setModal("transactionDetails");
   };
 
   const handleInput = (e) => {
-    setEditedTransaction({
-      ...editedTransaction,
+    setChosenTransaction({
+      ...chosenTransaction,
       [e.target.id]: e.target.value,
     });
   };
@@ -29,14 +34,14 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
     try {
       e.preventDefault();
 
-      const formattedAmount = Number(editedTransaction.amount);
+      const formattedAmount = Number(chosenTransaction.amount);
 
       if (isNaN(formattedAmount)) {
         throw new Error("Invalid amount entered");
       }
 
       await putTransaction({
-        ...editedTransaction,
+        ...chosenTransaction,
         amount: formattedAmount,
         oldCategory: transaction.category,
         oldAmount: transaction.amount,
@@ -56,7 +61,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
   };
 
   return (
-    <Modal show={modal === "edit"} onHide={closeEdit} centered>
+    <Modal show={modal === "editTransaction"} onHide={closeEditModal} centered>
       {status !== "updating" && (
         <>
           <Modal.Header>
@@ -72,7 +77,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                   type="date"
                   min={dateInfo.startOfMonth}
                   max={dateInfo.endOfMonth}
-                  value={editedTransaction.date}
+                  value={chosenTransaction.date}
                   onChange={handleInput}
                   required
                 />
@@ -84,7 +89,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                   className="h-100"
                   type="text"
                   placeholder="Store"
-                  value={editedTransaction.store}
+                  value={chosenTransaction.store}
                   onChange={handleInput}
                   required
                 />
@@ -96,7 +101,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                   className="h-100"
                   type="text"
                   placeholder="What was purchased?"
-                  value={editedTransaction.items}
+                  value={chosenTransaction.items}
                   onChange={handleInput}
                   required
                 />
@@ -106,7 +111,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                 <Form.Select
                   id="category"
                   className="h-100"
-                  value={editedTransaction.category}
+                  value={chosenTransaction.category}
                   onChange={handleInput}
                   required
                 >
@@ -117,7 +122,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                           key={category._id}
                           category={category}
                         />
-                      )
+                      ),
                   )}
                 </Form.Select>
               </Form.Group>
@@ -129,7 +134,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
                   type="number"
                   step="0.01"
                   placeholder="Amount"
-                  value={editedTransaction.amount}
+                  value={chosenTransaction.amount}
                   onChange={handleInput}
                   required
                 />
@@ -137,7 +142,7 @@ const EditTransactionModal = ({ transaction, dateInfo, modal, setModal }) => {
               {status === "error" && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
-              <Button variant="secondary" onClick={closeEdit}>
+              <Button variant="secondary" onClick={closeEditModal}>
                 Cancel
               </Button>
               <Button variant="primary" type="submit" className="text-nowrap">

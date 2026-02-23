@@ -2,45 +2,54 @@ import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
-const TransactionDetailsModal = ({ transaction, modal, setModal }) => {
-  const closeDetails = () => {
+const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
+  const closeDetailsModal = () => {
     setModal("none");
   };
 
-  const openDelete = () => {
-    setModal("delete");
+  const openDeleteModal = () => {
+    setModal("deleteTransaction");
   };
 
-  const openEdit = () => {
-    setModal("edit");
+  const openEditModal = () => {
+    setModal("editTransaction");
   };
 
   return (
-    <Modal show={modal === "details"} onHide={closeDetails} centered>
+    <Modal
+      show={modal === "transactionDetails"}
+      onHide={closeDetailsModal}
+      centered
+    >
       <Modal.Header closeButton>
         <Modal.Title>
-          {!transaction.isCategory ? "Transaction" : transaction.items} Details
+          {!chosenTransaction.isCategory
+            ? "Transaction"
+            : chosenTransaction.items}{" "}
+          Details
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Row className="m-2">Date: {dateFormatter(transaction.date)}</Row>
-        <Row className="m-2">Store: {transaction.store}</Row>
-        {!transaction.isCategory && (
-          <Row className="m-2">Items Purchased: {transaction.items}</Row>
+        <Row className="m-2">Date: {dateFormatter(chosenTransaction.date)}</Row>
+        <Row className="m-2">Store: {chosenTransaction.store}</Row>
+        {!chosenTransaction.isCategory && (
+          <Row className="m-2">Items Purchased: {chosenTransaction.items}</Row>
         )}
-        <Row className="m-2">Category: {transaction.category}</Row>
-        <Row className="m-2">Amount: {dollarFormatter(transaction.amount)}</Row>
+        <Row className="m-2">Category: {chosenTransaction.category}</Row>
+        <Row className="m-2">
+          Amount: {dollarFormatter(chosenTransaction.amount)}
+        </Row>
       </Modal.Body>
-      {!transaction.fromCalendar && (
+      {!chosenTransaction.fromCalendar && (
         <Modal.Footer>
           <Row>
             <Col>
-              <Button variant="danger" onClick={openDelete}>
+              <Button variant="danger" onClick={openDeleteModal}>
                 Delete
               </Button>
             </Col>
             <Col>
-              <Button variant="info" onClick={openEdit}>
+              <Button variant="info" onClick={openEditModal}>
                 Edit
               </Button>
             </Col>
