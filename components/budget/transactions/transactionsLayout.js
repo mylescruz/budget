@@ -18,7 +18,7 @@ const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const [view, setView] = useState(VIEWS.CALENDAR);
   const [buttonText, setButtonText] = useState(VIEWS_LABEL.TABLE);
-  const [addTransactionClicked, setAddTransactionClicked] = useState(false);
+  const [modal, setModal] = useState("none");
 
   const toggleTransactions = () => {
     setView((prev) => {
@@ -38,8 +38,8 @@ const TransactionsLayout = ({ dateInfo }) => {
     });
   };
 
-  const addTransaction = () => {
-    setAddTransactionClicked(true);
+  const openAddTransaction = () => {
+    setModal("addTransaction");
   };
 
   if (!transactions) {
@@ -64,7 +64,7 @@ const TransactionsLayout = ({ dateInfo }) => {
           </Button>
           <Button
             variant="primary"
-            onClick={addTransaction}
+            onClick={openAddTransaction}
             className="text-nowrap"
           >
             Add Transaction
@@ -80,11 +80,13 @@ const TransactionsLayout = ({ dateInfo }) => {
           )}
         </div>
 
-        <AddTransactionModal
-          dateInfo={dateInfo}
-          addTransactionClicked={addTransactionClicked}
-          setAddTransactionClicked={setAddTransactionClicked}
-        />
+        {modal === "addTransaction" && (
+          <AddTransactionModal
+            dateInfo={dateInfo}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
       </>
     );
   }

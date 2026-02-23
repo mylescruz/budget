@@ -7,11 +7,7 @@ import SelectCategoryOption from "./selectCategoryOption";
 import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorMessage from "@/components/layout/errorMessage";
 
-const AddTransactionModal = ({
-  dateInfo,
-  addTransactionClicked,
-  setAddTransactionClicked,
-}) => {
+const AddTransactionModal = ({ dateInfo, modal, setModal }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
   const { postTransaction } = useContext(TransactionsContext);
 
@@ -39,9 +35,9 @@ const AddTransactionModal = ({
     setTransaction({ ...newTransaction, [e.target.id]: e.target.value });
   };
 
-  const closeModal = () => {
+  const closeAddModal = () => {
     setStatus("inputting");
-    setAddTransactionClicked(false);
+    setModal("none");
   };
 
   const AddNewTransaction = async (e) => {
@@ -57,7 +53,7 @@ const AddTransactionModal = ({
       await getCategories(dateInfo.month, dateInfo.year);
 
       setTransaction(emptyTransaction);
-      closeModal();
+      closeAddModal();
     } catch (error) {
       setStatus("error");
       console.error(error);
@@ -66,7 +62,7 @@ const AddTransactionModal = ({
   };
 
   return (
-    <Modal show={addTransactionClicked} onHide={closeModal} centered>
+    <Modal show={modal === "addTransaction"} onHide={closeAddModal} centered>
       {status !== "posting" && (
         <>
           <Modal.Header closeButton>
@@ -142,7 +138,7 @@ const AddTransactionModal = ({
               {status === "error" && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
-              <Button variant="secondary" onClick={closeModal}>
+              <Button variant="secondary" onClick={closeAddModal}>
                 Close
               </Button>
               <Button variant="primary" type="submit">
