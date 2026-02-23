@@ -4,24 +4,20 @@ import LoadingMessage from "@/components/layout/loadingMessage";
 import ErrorMessage from "@/components/layout/errorMessage";
 import dateFormatter from "@/helpers/dateFormatter";
 
-const DeleteIncomeModal = ({
-  source,
-  deleteIncome,
-  showModal,
-  setShowModal,
-}) => {
+const DeleteIncomeModal = ({ chosenSource, deleteIncome, modal, setModal }) => {
   const [status, setStatus] = useState("confirming");
 
   const closeDeleteModal = () => {
     setStatus("confirming");
-    setShowModal("none");
+
+    setModal("none");
   };
 
   const confirmDelete = async () => {
     setStatus("deleting");
 
     try {
-      await deleteIncome(source);
+      await deleteIncome(chosenSource);
 
       closeDeleteModal();
     } catch (error) {
@@ -32,14 +28,14 @@ const DeleteIncomeModal = ({
   };
 
   return (
-    <Modal show={showModal === "delete"} onHide={closeDeleteModal} centered>
+    <Modal show={modal === "deleteIncome"} onHide={closeDeleteModal} centered>
       {status !== "deleting" && (
         <>
           <Modal.Header closeButton>Delete Income</Modal.Header>
           <Modal.Body>
             <p className="mb-2">
               Are you sure you want to delete this source of income:{" "}
-              {source.name} on {dateFormatter(source.date)}?
+              {chosenSource.name} on {dateFormatter(chosenSource.date)}?
             </p>
             {status === "error" && <ErrorMessage />}
           </Modal.Body>

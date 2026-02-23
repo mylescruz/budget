@@ -9,32 +9,23 @@ import GiftForm from "../incomeTypeForms/giftForm";
 import UnemploymentForm from "../incomeTypeForms/unemploymentForm";
 
 const EditIncomeModal = ({
-  source,
+  chosenSource,
+  setChosenSource,
   putIncome,
   year,
-  showModal,
-  setShowModal,
+  modal,
+  setModal,
 }) => {
-  const formattedSource = {
-    ...source,
-    amount: source.amount,
-  };
-
-  if (source.type === "Paycheck") {
-    formattedSource.gross = source.gross;
-    formattedSource.deductions = source.deductions;
-  }
-
-  const [editedSource, setEditedSource] = useState(formattedSource);
   const [status, setStatus] = useState("editing");
 
   const handleInput = (e) => {
-    setEditedSource({ ...editedSource, [e.target.id]: e.target.value });
+    setChosenSource({ ...chosenSource, [e.target.id]: e.target.value });
   };
 
-  const closeEditIncomeModal = () => {
+  const closeEditModal = () => {
     setStatus("editing");
-    setShowModal("details");
+
+    setModal("details");
   };
 
   const updatePaycheck = async (e) => {
@@ -44,11 +35,11 @@ const EditIncomeModal = ({
 
     try {
       await putIncome({
-        ...editedSource,
-        oldDate: source.date,
+        ...chosenSource,
+        oldDate: chosenSource.date,
       });
 
-      closeEditIncomeModal();
+      closeEditModal();
     } catch (error) {
       setStatus("error");
       console.error(error);
@@ -57,13 +48,13 @@ const EditIncomeModal = ({
   };
 
   const incomeFormProps = {
-    source: editedSource,
+    source: chosenSource,
     handleInput: handleInput,
     year: year,
   };
 
   return (
-    <Modal show={showModal === "edit"} onHide={closeEditIncomeModal} centered>
+    <Modal show={modal === "editIncome"} onHide={closeEditModal} centered>
       {status !== "loading" && (
         <>
           <Modal.Header closeButton>
@@ -71,25 +62,25 @@ const EditIncomeModal = ({
           </Modal.Header>
           <Form onSubmit={updatePaycheck}>
             <Modal.Body>
-              {editedSource.type === "Paycheck" && (
+              {chosenSource.type === "Paycheck" && (
                 <PaycheckForm {...incomeFormProps} />
               )}
-              {editedSource.type === "Loan" && (
+              {chosenSource.type === "Loan" && (
                 <LoanForm {...incomeFormProps} />
               )}
-              {editedSource.type === "Sale" && (
+              {chosenSource.type === "Sale" && (
                 <SaleForm {...incomeFormProps} />
               )}
-              {editedSource.type === "Gift" && (
+              {chosenSource.type === "Gift" && (
                 <GiftForm {...incomeFormProps} />
               )}
-              {editedSource.type === "Unemployment" && (
+              {chosenSource.type === "Unemployment" && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               {status === "error" && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer className="my-2 d-flex justify-content-between">
-              <Button variant="secondary" onClick={closeEditIncomeModal}>
+              <Button variant="secondary" onClick={closeEditModal}>
                 Cancel
               </Button>
               <Button variant="primary" type="submit" className="text-nowrap">

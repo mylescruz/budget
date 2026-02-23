@@ -11,6 +11,9 @@ import dollarSorter from "@/helpers/dollarSorter";
 import styles from "@/styles/income/incomeLayout.module.css";
 import IncomeTotalsLayout from "./incomeTotalsLayout";
 import BudgetYearSwitcher from "../layout/budgetYearSwitcher";
+import EditIncomeModal from "./incomeTable/editIncomeModal";
+import IncomeDetailsModal from "./incomeTable/incomeDetailsModal";
+import DeleteIncomeModal from "./incomeTable/deleteIncomeModal";
 
 const sourcesPerPage = 20;
 
@@ -37,7 +40,10 @@ const InnerIncomeLayout = ({ year }) => {
     incomeTotals,
   } = useIncome(year);
 
-  const [showAddIncome, setShowAddIncome] = useState(false);
+  const [modal, setModal] = useState("none");
+
+  const [chosenSource, setChosenSource] = useState(null);
+
   const [typeFilter, setTypeFilter] = useState(allTypes);
   const [sortOption, setSortOption] = useState(sortOptions[0]);
   const [searchFilter, setSearchFilter] = useState("");
@@ -135,15 +141,8 @@ const InnerIncomeLayout = ({ year }) => {
     setPage(page + 1);
   };
 
-  const openAddIncomeModal = () => {
-    setShowAddIncome(true);
-  };
-
-  const AddIncomeModalProps = {
-    year: year,
-    postIncome: postIncome,
-    showAddIncome: showAddIncome,
-    setShowAddIncome: setShowAddIncome,
+  const openAddModal = () => {
+    setModal("addIncome");
   };
 
   if (incomeLoading) {
@@ -160,7 +159,7 @@ const InnerIncomeLayout = ({ year }) => {
         <IncomeTotalsLayout incomeTotals={incomeTotals} />
 
         <Container className="text-center mt-2">
-          <Button variant="primary" onClick={openAddIncomeModal}>
+          <Button variant="primary" onClick={openAddModal}>
             Add Income
           </Button>
         </Container>
@@ -228,10 +227,8 @@ const InnerIncomeLayout = ({ year }) => {
               <Col className="mx-auto col-12 col-lg-10">
                 <IncomeTable
                   sortedIncome={sortedIncome}
-                  year={year}
-                  putIncome={putIncome}
-                  deleteIncome={deleteIncome}
-                  incomeTotals={incomeTotals}
+                  setChosenSource={setChosenSource}
+                  setModal={setModal}
                 />
               </Col>
             </Row>
@@ -268,7 +265,42 @@ const InnerIncomeLayout = ({ year }) => {
           </div>
         )}
 
-        <AddIncomeModal {...AddIncomeModalProps} />
+        {modal === "addIncome" && (
+          <AddIncomeModal
+            year={year}
+            postIncome={postIncome}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
+
+        {modal === "incomeDetails" && (
+          <IncomeDetailsModal
+            chosenSource={chosenSource}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
+
+        {modal === "editIncome" && (
+          <EditIncomeModal
+            chosenSource={chosenSource}
+            setChosenSource={setChosenSource}
+            year={year}
+            putIncome={putIncome}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
+
+        {modal === "deleteIncome" && (
+          <DeleteIncomeModal
+            chosenSource={chosenSource}
+            deleteIncome={deleteIncome}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
       </Container>
     );
   }

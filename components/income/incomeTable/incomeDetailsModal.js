@@ -2,74 +2,74 @@ import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { Button, Modal, Row } from "react-bootstrap";
 
-const IncomeDetailsModal = ({ source, showModal, setShowModal }) => {
+const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
   const closeDetailsModal = () => {
-    setShowModal("none");
+    setModal("none");
   };
 
   const openEditModal = () => {
-    setShowModal("edit");
+    setModal("editIncome");
   };
 
   const openDeleteModal = () => {
-    setShowModal("delete");
+    setModal("deleteIncome");
   };
 
   return (
-    <Modal show={showModal === "details"} onHide={closeDetailsModal} centered>
+    <Modal show={modal === "incomeDetails"} onHide={closeDetailsModal} centered>
       <Modal.Header closeButton>
-        <Modal.Title>{source.type} Details</Modal.Title>
+        <Modal.Title>{chosenSource.type} Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Row className="m-2">Date: {dateFormatter(source.date)}</Row>
-        {source.type === "Paycheck" && (
+        <Row className="m-2">Date: {dateFormatter(chosenSource.date)}</Row>
+        {chosenSource.type === "Paycheck" && (
           <>
-            <Row className="m-2">Company: {source.name}</Row>
-            <Row className="m-2">Description: {source.description}</Row>
+            <Row className="m-2">Company: {chosenSource.name}</Row>
+            <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
-              Gross Income: {dollarFormatter(source.gross)}
+              Gross Income: {dollarFormatter(chosenSource.gross)}
             </Row>
             <Row className="m-2">
-              Deductions: {dollarFormatter(source.deductions)}
+              Deductions: {dollarFormatter(chosenSource.deductions)}
             </Row>
             <Row className="m-2">
-              Net Income: {dollarFormatter(source.amount)}
+              Net Income: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}
-        {source.type === "Sale" && (
+        {chosenSource.type === "Sale" && (
           <>
-            <Row className="m-2">Item Sold: {source.name}</Row>
-            <Row className="m-2">Description: {source.description}</Row>
+            <Row className="m-2">Item Sold: {chosenSource.name}</Row>
+            <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
-              Sale Amount: {dollarFormatter(source.amount)}
+              Sale Amount: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}
-        {source.type === "Gift" && (
+        {chosenSource.type === "Gift" && (
           <>
-            <Row className="m-2">Received Gift From: {source.name}</Row>
-            <Row className="m-2">Description: {source.description}</Row>
+            <Row className="m-2">Received Gift From: {chosenSource.name}</Row>
+            <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
-              Gift Amount: {dollarFormatter(source.amount)}
+              Gift Amount: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}
-        {source.type === "Unemployment" && (
+        {chosenSource.type === "Unemployment" && (
           <>
             <Row className="m-2">Received Unemployment from EDD</Row>
-            <Row className="m-2">Description: {source.description}</Row>
+            <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
-              Payout Amount: {dollarFormatter(source.amount)}
+              Payout Amount: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}
-        {source.type === "Loan" && (
+        {chosenSource.type === "Loan" && (
           <>
-            <Row className="m-2">Loan Servicer: {source.name}</Row>
-            <Row className="m-2">Description: {source.description}</Row>
+            <Row className="m-2">Loan Servicer: {chosenSource.name}</Row>
+            <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
-              Loan Amount: {dollarFormatter(source.amount)}
+              Loan Amount: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}

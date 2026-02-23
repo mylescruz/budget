@@ -2,7 +2,7 @@ import { Table } from "react-bootstrap";
 import IncomeTableRow from "./incomeTableRow";
 import PopUp from "@/components/layout/popUp";
 
-const IncomeTable = ({ sortedIncome, year, putIncome, deleteIncome }) => {
+const IncomeTable = ({ sortedIncome, setChosenSource, setModal }) => {
   return (
     <Table striped hover>
       <thead className="table-dark">
@@ -33,9 +33,8 @@ const IncomeTable = ({ sortedIncome, year, putIncome, deleteIncome }) => {
             <IncomeTableRow
               key={source._id}
               source={source}
-              putIncome={putIncome}
-              deleteIncome={deleteIncome}
-              year={year}
+              setChosenSource={setChosenSource}
+              setModal={setModal}
             />
           ))
         )}

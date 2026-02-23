@@ -11,12 +11,7 @@ import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 
 const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment", "Loan"];
 
-const AddIncomeModal = ({
-  year,
-  postIncome,
-  showAddIncome,
-  setShowAddIncome,
-}) => {
+const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
 
   const emptySource = {
@@ -69,7 +64,7 @@ const AddIncomeModal = ({
   const closeAddModal = () => {
     setStatus("inputting");
     setSource(emptySource);
-    setShowAddIncome(false);
+    setModal("none");
   };
 
   const incomeFormProps = {
@@ -79,7 +74,7 @@ const AddIncomeModal = ({
   };
 
   return (
-    <Modal show={showAddIncome} onHide={closeAddModal} centered>
+    <Modal show={modal === "addIncome"} onHide={closeAddModal} centered>
       {status !== "loading" && (
         <>
           <Modal.Header closeButton>
