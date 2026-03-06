@@ -181,7 +181,9 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
                   onClick={confirmDetails}
                   disabled={
                     newCategory.name === "" ||
-                    (!newCategory.fixed && newCategory.budget === "") ||
+                    (!newCategory.fixed &&
+                      (newCategory.budget === "" ||
+                        Number(newCategory.budget) === 0)) ||
                     (newCategory.fixed &&
                       !newCategory.hasSubcategory &&
                       (newCategory.budget === "" || newCategory.dueDate === ""))
