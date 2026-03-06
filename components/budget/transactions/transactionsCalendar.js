@@ -4,6 +4,7 @@ import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import TransactionDetailsModal from "./transactionDetailsModal";
+import todayInfo from "@/helpers/todayInfo";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const WEEK_LENGTH = 7;
@@ -130,6 +131,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
         ) {
           month[week].push({
             dateNumber: null,
+            date: dateISO,
             transactions: [],
           });
         }
@@ -144,6 +146,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
       // Add the dateNumber and date's transactions to the calendar
       month[week].push({
         dateNumber,
+        date: dateISO,
         transactions: transactionsMap.get(dateISO) ?? [],
       });
 
@@ -156,6 +159,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
         ) {
           month[week].push({
             dateNumber: null,
+            date: dateISO,
             transactions: [],
           });
         }
@@ -164,6 +168,8 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
 
     return month;
   }, [dateInfo, categories, categoryColors, transactions]);
+
+  console.log(monthCalendar);
 
   return (
     <>
@@ -183,7 +189,13 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
             <tr key={weekIndex} className={styles.fixed_height}>
               {week.map((day, index) => (
                 <td key={index}>
-                  <p className="fw-bold text-dark">{day.dateNumber}</p>
+                  <div className="d-flex justify-content-between">
+                    <p
+                      className={`fw-bold ${todayInfo.date === day.date ? "text-danger" : "text-dark"}`}
+                    >
+                      {day.dateNumber}
+                    </p>
+                  </div>
                   <div className="d-flex flex-wrap justify-content-center">
                     {day.transactions.map((transaction) => (
                       <span
