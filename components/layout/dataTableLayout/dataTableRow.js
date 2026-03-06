@@ -1,7 +1,7 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 
-const DataTableRow = ({ item, openDetails }) => {
+const DataTableRow = ({ item, type, openDetails }) => {
   const xsName =
     item.name.length > 15 ? item.name.slice(0, 12) + "..." : item.name;
   const smName =
@@ -10,6 +10,17 @@ const DataTableRow = ({ item, openDetails }) => {
     item.name.length > 30 ? item.name.slice(0, 27) + "..." : item.name;
   const lgName =
     item.name.length > 40 ? item.name.slice(0, 37) + "..." : item.name;
+
+  let amountColor = "text-dark";
+
+  switch (type) {
+    case "transactions":
+      amountColor = item.amount < 0 && "text-success fw-bold";
+      break;
+    case "income":
+      amountColor = item.amount < 0 && "text-danger fw-bold";
+      break;
+  }
 
   return (
     <tr className="d-flex click" onClick={() => openDetails(item._id)}>
@@ -22,7 +33,7 @@ const DataTableRow = ({ item, openDetails }) => {
       </td>
       <td className="d-none d-md-block col-md-3">{item.type}</td>
       <td className="col-3 col-md-2 text-end">
-        {dollarFormatter(item.amount)}
+        <span className={amountColor}>{dollarFormatter(item.amount)}</span>
       </td>
     </tr>
   );

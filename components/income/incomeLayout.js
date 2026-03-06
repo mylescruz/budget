@@ -84,6 +84,7 @@ const InnerIncomeLayout = ({ year }) => {
             <DataTableLayout
               data={formattedIncome}
               columns={incomeColumns}
+              type={"income"}
               openDetails={openIncomeDetails}
             />
           </Row>

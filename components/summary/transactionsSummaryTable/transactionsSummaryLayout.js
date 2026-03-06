@@ -42,6 +42,7 @@ const TransactionsSummaryLayout = ({ transactions }) => {
       <DataTableLayout
         data={formattedTransactions}
         columns={transactionColumns}
+        type={"transactions"}
         openDetails={openTransactionDetails}
       />
 

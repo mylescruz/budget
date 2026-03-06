@@ -121,6 +121,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             <DataTableLayout
               data={formattedTransactions}
               columns={transactionColumns}
+              type="transactions"
               openDetails={openTransactionDetails}
             />
           )}
