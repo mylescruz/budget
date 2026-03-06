@@ -1,6 +1,7 @@
-import dateFormatter from "@/helpers/dateFormatter";
-import dollarFormatter from "@/helpers/dollarFormatter";
-import { Button, Modal, Row } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
+import ExpenseDetails from "./expenseDetails";
+import TransferDetails from "./transferDetails";
+import CategoryDetails from "./categoryDetails";
 
 const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
   const closeDetailsModal = () => {
@@ -22,25 +23,22 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>
-          {!chosenTransaction.isCategory
-            ? "Transaction"
-            : chosenTransaction.items}{" "}
-          Details
-        </Modal.Title>
+        <Modal.Title>{`${chosenTransaction.type} Details`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Row className="m-2">Date: {dateFormatter(chosenTransaction.date)}</Row>
-        <Row className="m-2">Store: {chosenTransaction.store}</Row>
-        {!chosenTransaction.isCategory && (
-          <Row className="m-2">Items Purchased: {chosenTransaction.items}</Row>
+        {chosenTransaction.type === "Expense" && (
+          <ExpenseDetails chosenTransaction={chosenTransaction} />
         )}
-        <Row className="m-2">Category: {chosenTransaction.category}</Row>
-        <Row className="m-2">
-          Amount: {dollarFormatter(chosenTransaction.amount)}
-        </Row>
+        {chosenTransaction.type === "Transfer" && (
+          <TransferDetails chosenTransaction={chosenTransaction} />
+        )}
+        {(chosenTransaction.type === "Category" ||
+          chosenTransaction.type === "Subcategory") && (
+          <CategoryDetails chosenTransaction={chosenTransaction} />
+        )}
       </Modal.Body>
-      {!chosenTransaction.isCategory && (
+      {(chosenTransaction.type === "Expense" ||
+        chosenTransaction.type === "Transfer") && (
         <Modal.Footer className="d-flex flex-row justify-content-between">
           <Button variant="danger" onClick={openDeleteModal}>
             Delete

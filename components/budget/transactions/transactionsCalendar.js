@@ -3,7 +3,7 @@ import { useContext, useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import TransactionDetailsModal from "./transactionDetailsModal";
+import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import todayInfo from "@/helpers/todayInfo";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -14,7 +14,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
   const { categories, categoryColors } = useContext(CategoriesContext);
 
   const openTransactionDetails = (transaction) => {
-    if (transaction.isCategory) {
+    if (["Category", "Subcategory", "Transfer"].includes(transaction.type)) {
       setChosenTransaction(transaction);
     } else {
       const foundTransaction = transactions.find(
@@ -45,16 +45,29 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
         transactionsMap.set(transaction.date, []);
       }
 
-      transactionsMap.get(transaction.date).push({
+      const transactionObject = {
         _id: transaction._id,
+        type: transaction.type,
         date: transaction.date,
-        store: transaction.store,
-        items: transaction.items,
-        category: transaction.category,
-        amount: transaction.amount,
-        color: categoryColors[transaction.category],
-        icon: "●",
-      });
+      };
+
+      if (transaction.type === "Expense") {
+        transactionObject.store = transaction.store;
+        transactionObject.items = transaction.items;
+        transactionObject.category = transaction.category;
+        transactionObject.amount = transaction.amount;
+        transactionObject.color = categoryColors[transaction.category];
+        transactionObject.icon = "●";
+      } else {
+        transactionObject.fromAccount = transaction.fromAccount;
+        transactionObject.toAccount = transaction.toAccount;
+        transactionObject.amount = transaction.amount;
+        transactionObject.description = transaction.description;
+        transactionObject.color = "#000000";
+        transactionObject.icon = "▴";
+      }
+
+      transactionsMap.get(transaction.date).push(transactionObject);
     });
 
     // If dueDate field is present in the fixed category or subcategory, add it to the transactions calendar
@@ -78,6 +91,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
 
               transactionsMap.get(subcategoryDateISO).push({
                 _id: subcategory.id,
+                type: "Subcategory",
                 date: subcategoryDateISO,
                 store: subcategory.name,
                 items: "Fixed Subcategory",
@@ -85,7 +99,6 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
                 amount: subcategory.actual,
                 color: category.color,
                 icon: "■",
-                isCategory: true,
               });
             }
           });
@@ -100,6 +113,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
 
             transactionsMap.get(categoryDateISO).push({
               _id: category._id,
+              type: "Category",
               date: categoryDateISO,
               store: category.name,
               items: "Fixed Category",
@@ -107,7 +121,6 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
               amount: category.actual,
               color: category.color,
               icon: "■",
-              isCategory: true,
             });
           }
         }
@@ -168,8 +181,6 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
 
     return month;
   }, [dateInfo, categories, categoryColors, transactions]);
-
-  console.log(monthCalendar);
 
   return (
     <>

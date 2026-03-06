@@ -5,7 +5,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
 import EditTransactionModal from "./editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
-import TransactionDetailsModal from "./transactionDetailsModal";
+import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import DataTableLayout from "@/components/layout/dataTableLayout/dataTableLayout";
 
 const VIEWS_LABEL = {
@@ -26,7 +26,6 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   const formattedTransactions = useMemo(() => {
     return transactions.map((transaction) => {
-      console.log(transaction);
       if (transaction.type === "Expense") {
         return {
           _id: transaction._id,
@@ -50,8 +49,6 @@ const TransactionsLayout = ({ dateInfo }) => {
       }
     });
   }, [transactions]);
-
-  console.log("trans: ", formattedTransactions);
 
   const transactionColumns = {
     column1: "Date",
