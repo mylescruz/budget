@@ -10,6 +10,7 @@ const EditSubcategoryPage = ({
   setEditedCategory,
   editedSubcategory,
   setEditedSubcategory,
+  setNameChange,
   setPage,
 }) => {
   const handleInput = (e) => {
@@ -21,6 +22,7 @@ const EditSubcategoryPage = ({
         [id]: e.target.value,
         nameChanged: true,
       });
+      setNameChange(true);
     } else {
       setEditedSubcategory({
         ...editedSubcategory,

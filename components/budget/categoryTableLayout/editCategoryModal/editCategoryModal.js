@@ -19,14 +19,19 @@ const EditCategoryModal = ({
   setModal,
 }) => {
   const { getCategories, putCategory } = useContext(CategoriesContext);
-  const { transactions, updateTransactions } = useContext(TransactionsContext);
+  const { getTransactions } = useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
   const [status, setStatus] = useState("editing");
+  const [nameChange, setNameChange] = useState(false);
 
   const handleInput = (e) => {
     const id = e.target.id;
+
+    if (id === "name") {
+      setNameChange(true);
+    }
 
     setEditedCategory({ ...editedCategory, [id]: e.target.value });
   };
@@ -56,6 +61,11 @@ const EditCategoryModal = ({
 
       // Fetch the updated categories to show changes to the Fun Money category's budget
       await getCategories(dateInfo.month, dateInfo.year);
+
+      // Fetch the updated transactions to show any category names changes
+      if (nameChange && !editedCategory.fixed) {
+        await getTransactions(dateInfo.month, dateInfo.year);
+      }
 
       closeEditCategoryModal();
     } catch (error) {
@@ -267,6 +277,7 @@ const EditCategoryModal = ({
                   setEditedCategory={setEditedCategory}
                   editedSubcategory={editedSubcategory}
                   setEditedSubcategory={setEditedSubcategory}
+                  setNameChange={setNameChange}
                   setPage={setPage}
                 />
               </div>
