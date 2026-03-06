@@ -1,5 +1,5 @@
 import { Button, Row } from "react-bootstrap";
-import AddTransactionModal from "./addTransactionModal";
+import AddTransactionModal from "./addTransactionModal/addTransactionModal";
 import { useContext, useMemo, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
@@ -26,16 +26,32 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   const formattedTransactions = useMemo(() => {
     return transactions.map((transaction) => {
-      return {
-        _id: transaction._id,
-        date: transaction.date,
-        name: transaction.store,
-        description: transaction.items,
-        type: transaction.category,
-        amount: transaction.amount,
-      };
+      console.log(transaction);
+      if (transaction.type === "Expense") {
+        return {
+          _id: transaction._id,
+          date: transaction.date,
+          name: transaction.store,
+          description: transaction.items,
+          type: transaction.category,
+          amount: transaction.amount,
+        };
+      } else if (transaction.type === "Transfer") {
+        return {
+          _id: transaction._id,
+          date: transaction.date,
+          name: `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`,
+          description: transaction.desciption,
+          type: transaction.type,
+          amount: transaction.amount,
+        };
+      } else {
+        return null;
+      }
     });
   }, [transactions]);
+
+  console.log("trans: ", formattedTransactions);
 
   const transactionColumns = {
     column1: "Date",

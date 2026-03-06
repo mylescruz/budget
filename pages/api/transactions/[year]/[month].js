@@ -48,10 +48,14 @@ async function fetchTransactions(transactionsCol, username, month, year) {
       { $match: { username, month, year } },
       {
         $project: {
+          type: 1,
           date: 1,
           store: 1,
           items: 1,
           category: 1,
+          fromAccount: 1,
+          toAccount: 1,
+          description: 1,
           amount: { $divide: ["$amount", 100] },
         },
       },
@@ -92,15 +96,31 @@ async function addTransaction(
   const mongoSession = client.startSession();
 
   try {
+    const transactionType = req.body.type;
+
     const newTransaction = {
-      ...req.body,
-      store: req.body.store.trim(),
-      items: req.body.items.trim(),
-      amount: parseFloat(req.body.amount) * 100,
       username,
       month,
       year,
+      type: transactionType,
+      date: req.body.date,
+      amount: Number(req.body.amount) * 100,
     };
+
+    // Define the transaction body based on the transaction type
+    if (transactionType === "Expense") {
+      newTransaction.store = req.body.store.trim();
+      newTransaction.items = req.body.items.trim();
+      newTransaction.category = req.body.category;
+    } else if (transactionType === "Transfer") {
+      newTransaction.fromAccount = req.body.fromAccount;
+      newTransaction.toAccount = req.body.toAccount;
+      newTransaction.description = req.body.description;
+    } else {
+      return res
+        .status(500)
+        .send(`${transactionType} is an invalid transaction type`);
+    }
 
     let insertedId;
 
@@ -114,51 +134,53 @@ async function addTransaction(
 
       insertedId = insertedTransaction.insertedId;
 
-      // Find the matching category or subcategory
-      const category = await categoriesCol.findOne(
-        {
-          username,
-          month,
-          year,
-          $or: [
-            { name: newTransaction.category },
-            { "subcategories.name": newTransaction.category },
-          ],
-        },
-        { session },
-      );
+      if (transactionType === "Expense") {
+        // Find the matching category or subcategory
+        const category = await categoriesCol.findOne(
+          {
+            username,
+            month,
+            year,
+            $or: [
+              { name: newTransaction.category },
+              { "subcategories.name": newTransaction.category },
+            ],
+          },
+          { session },
+        );
 
-      if (category) {
-        // Update the corresponding category's actual amount
-        if (category.name === newTransaction.category) {
-          // Increment the actual value of the category
-          await categoriesCol.updateOne(
-            { _id: new ObjectId(category._id) },
-            {
-              $inc: {
-                actual: newTransaction.amount,
+        if (category) {
+          // Update the corresponding category's actual amount
+          if (category.name === newTransaction.category) {
+            // Increment the actual value of the category
+            await categoriesCol.updateOne(
+              { _id: new ObjectId(category._id) },
+              {
+                $inc: {
+                  actual: newTransaction.amount,
+                },
               },
-            },
-            { session },
-          );
+              { session },
+            );
+          } else {
+            // Increment the actual value of the category and subcategory
+            await categoriesCol.updateOne(
+              {
+                _id: new ObjectId(category._id),
+                "subcategories.name": newTransaction.category,
+              },
+              {
+                $inc: {
+                  actual: newTransaction.amount,
+                  "subcategories.$.actual": newTransaction.amount,
+                },
+              },
+              { session },
+            );
+          }
         } else {
-          // Increment the actual value of the category and subcategory
-          await categoriesCol.updateOne(
-            {
-              _id: new ObjectId(category._id),
-              "subcategories.name": newTransaction.category,
-            },
-            {
-              $inc: {
-                actual: newTransaction.amount,
-                "subcategories.$.actual": newTransaction.amount,
-              },
-            },
-            { session },
-          );
+          throw new Error(`Category, ${newTransaction.category} not found`);
         }
-      } else {
-        throw new Error(`Category, ${newTransaction.category} not found`);
       }
     });
 

@@ -8,7 +8,7 @@ import {
 } from "@/contexts/CategoriesContext";
 import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
-import AddTransactionModal from "../budget/transactions/addTransactionModal";
+import AddTransactionModal from "../budget/transactions/addTransactionModal/addTransactionModal";
 import {
   TransactionsContext,
   TransactionsProvider,
