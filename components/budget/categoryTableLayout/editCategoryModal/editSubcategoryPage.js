@@ -11,14 +11,11 @@ const EditSubcategoryPage = ({
   editedSubcategory,
   setEditedSubcategory,
   setPage,
-  nameChange,
-  setNameChange,
 }) => {
   const handleInput = (e) => {
     const id = e.target.id;
 
     if (id === "name") {
-      setNameChange({ ...nameChange, subcategory: true });
       setEditedSubcategory({
         ...editedSubcategory,
         [id]: e.target.value,

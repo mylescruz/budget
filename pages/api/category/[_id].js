@@ -24,6 +24,7 @@ export default async function handler(req, res) {
   const categoriesContext = {
     client: client,
     categoriesCol: db.collection("categories"),
+    transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
 
@@ -38,7 +39,11 @@ export default async function handler(req, res) {
 }
 
 // Update an editted category in MongoDB
-async function updateCategory(req, res, { client, categoriesCol, username }) {
+async function updateCategory(
+  req,
+  res,
+  { client, categoriesCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
@@ -55,7 +60,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     }
 
     let subcategoryTotal = 0;
-    category.subcategories = category.subcategories.map((subcategory) => {
+    const updatedSubcategories = category.subcategories.map((subcategory) => {
       if (category.fixed) {
         subcategoryTotal += dollarsToCents(subcategory.actual);
 
@@ -75,9 +80,9 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       }
     });
 
-    if (category.fixed && category.subcategories.length === 0) {
+    if (category.fixed && updatedSubcategories.length === 0) {
       category.actual = category.budget;
-    } else if (category.fixed && category.subcategories.length !== 0) {
+    } else if (category.fixed && updatedSubcategories.length !== 0) {
       category.actual = subcategoryTotal;
     } else {
       category.actual = dollarsToCents(category.actual);
@@ -94,7 +99,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             actual: category.actual,
             frequency: category.frequency,
             dueDate: category.dueDate,
-            subcategories: category.subcategories,
+            subcategories: updatedSubcategories,
           },
         },
         { session },
@@ -119,6 +124,48 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         year: category.year,
         session,
       });
+
+      if (!category.fixed) {
+        // If a non-fixed category's name was changed, update the correlating transactions' category field
+        if (category.name !== category.currentName) {
+          await transactionsCol.updateMany(
+            {
+              category: category.currentName,
+              month: category.month,
+              year: category.year,
+            },
+            {
+              $set: {
+                category: category.name,
+              },
+            },
+            { session },
+          );
+        }
+
+        // If any non-fixed subcategories' name was changed, update the correlating transactions' category field
+        const changedSubcategories = category.subcategories.filter(
+          (subcategory) => subcategory.nameChanged,
+        );
+
+        if (changedSubcategories.length > 0) {
+          for (const subcategory of changedSubcategories) {
+            await transactionsCol.updateMany(
+              {
+                category: subcategory.currentName,
+                month: category.month,
+                year: category.year,
+              },
+              {
+                $set: {
+                  category: subcategory.name,
+                },
+              },
+              { session },
+            );
+          }
+        }
+      }
     });
 
     // Send the updated category back to the client

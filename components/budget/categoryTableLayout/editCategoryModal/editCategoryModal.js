@@ -22,19 +22,11 @@ const EditCategoryModal = ({
   const { transactions, updateTransactions } = useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
-  const [nameChange, setNameChange] = useState({
-    category: false,
-    subcategory: false,
-  });
   const [page, setPage] = useState("details");
   const [status, setStatus] = useState("editing");
 
   const handleInput = (e) => {
     const id = e.target.id;
-
-    if (id === "name") {
-      setNameChange({ ...nameChange, category: true });
-    }
 
     setEditedCategory({ ...editedCategory, [id]: e.target.value });
   };
@@ -47,7 +39,7 @@ const EditCategoryModal = ({
     setEditedSubcategory({
       ...subcategory,
       actual: subcategory.actual,
-      oldName: subcategory.name,
+      currentName: subcategory.name,
     });
     setPage("editSubcategory");
   };
@@ -62,42 +54,6 @@ const EditCategoryModal = ({
         year: dateInfo.year,
       });
 
-      if (
-        nameChange.category &&
-        !editedCategory.fixed &&
-        editedCategory.actual > 0
-      ) {
-        const updatedTransactions = transactions
-          .filter((transaction) => transaction.category === category.name)
-          .map((transaction) => {
-            return { ...transaction, category: editedCategory.name };
-          });
-
-        await updateTransactions(updatedTransactions);
-      }
-
-      if (
-        nameChange.subcategory &&
-        !editedCategory.fixed &&
-        editedCategory.actual > 0
-      ) {
-        const changedSubcategories = editedCategory.subcategories.filter(
-          (subcategory) => subcategory.nameChanged,
-        );
-
-        for (const subcategory of changedSubcategories) {
-          const updatedTransactions = transactions
-            .filter(
-              (transaction) => transaction.category === subcategory.oldName,
-            )
-            .map((transaction) => {
-              return { ...transaction, category: subcategory.name };
-            });
-
-          await updateTransactions(updatedTransactions);
-        }
-      }
-
       // Fetch the updated categories to show changes to the Fun Money category's budget
       await getCategories(dateInfo.month, dateInfo.year);
 
@@ -105,7 +61,6 @@ const EditCategoryModal = ({
     } catch (error) {
       setStatus("error");
       console.error(error);
-      return;
     }
   };
 
@@ -313,8 +268,6 @@ const EditCategoryModal = ({
                   editedSubcategory={editedSubcategory}
                   setEditedSubcategory={setEditedSubcategory}
                   setPage={setPage}
-                  nameChange={nameChange}
-                  setNameChange={setNameChange}
                 />
               </div>
             )}
