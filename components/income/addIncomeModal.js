@@ -4,12 +4,11 @@ import todayInfo from "@/helpers/todayInfo";
 import LoadingMessage from "../layout/loadingMessage";
 import ErrorMessage from "../layout/errorMessage";
 import PaycheckForm from "./incomeTypeForms/paycheckForm";
-import LoanForm from "./incomeTypeForms/loanForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 
-const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment", "Loan"];
+const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment"];
 
 const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
@@ -110,7 +109,6 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
               {source.type === "Unemployment" && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
-              {source.type === "Loan" && <LoanForm {...incomeFormProps} />}
               {status === "error" && <ErrorMessage />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">

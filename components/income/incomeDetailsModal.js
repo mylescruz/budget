@@ -64,15 +64,6 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
             </Row>
           </>
         )}
-        {chosenSource.type === "Loan" && (
-          <>
-            <Row className="m-2">Loan Servicer: {chosenSource.name}</Row>
-            <Row className="m-2">Description: {chosenSource.description}</Row>
-            <Row className="m-2">
-              Loan Amount: {dollarFormatter(chosenSource.amount)}
-            </Row>
-          </>
-        )}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button variant="danger" onClick={openDeleteModal}>

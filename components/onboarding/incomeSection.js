@@ -13,9 +13,8 @@ import PaycheckForm from "@/components/income/incomeTypeForms/paycheckForm";
 import SaleForm from "@/components/income/incomeTypeForms/saleForm";
 import GiftForm from "@/components/income/incomeTypeForms/giftForm";
 import UnemploymentForm from "@/components/income/incomeTypeForms/unemploymentForm";
-import LoanForm from "@/components/income/incomeTypeForms/loanForm";
 
-const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment", "Loan"];
+const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment"];
 
 const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const emptySource = {
@@ -116,7 +115,6 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
               {source.type === "Unemployment" && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
-              {source.type === "Loan" && <LoanForm {...incomeFormProps} />}
               <Button type="submit" className="w-100 my-2">
                 Add Income
               </Button>

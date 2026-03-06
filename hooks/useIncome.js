@@ -139,7 +139,6 @@ const useIncome = (year) => {
       Gift: 0,
       Sale: 0,
       Unemployment: 0,
-      Loan: 0,
     };
 
     let totalGross = 0;
