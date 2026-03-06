@@ -15,10 +15,10 @@ const DataTableRow = ({ item, type, openDetails }) => {
 
   switch (type) {
     case "transactions":
-      amountColor = item.amount < 0 && "text-success fw-bold";
+      amountColor = item.amount < 0 ? "text-success fw-bold" : "text-dark";
       break;
     case "income":
-      amountColor = item.amount < 0 && "text-danger fw-bold";
+      amountColor = item.amount < 0 ? "text-danger fw-bold" : "text-dark";
       break;
   }
 
