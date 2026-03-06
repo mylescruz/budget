@@ -24,13 +24,18 @@ const EditCategoryModal = ({
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
   const [status, setStatus] = useState("editing");
-  const [nameChange, setNameChange] = useState(false);
+  const [fieldChanges, setFieldChanges] = useState({
+    name: false,
+    budget: false,
+  });
 
   const handleInput = (e) => {
     const id = e.target.id;
 
     if (id === "name") {
-      setNameChange(true);
+      setFieldChanges((prev) => ({ ...prev, name: true }));
+    } else if (id === "budget") {
+      setFieldChanges((prev) => ({ ...prev, budget: true }));
     }
 
     setEditedCategory({ ...editedCategory, [id]: e.target.value });
@@ -60,10 +65,12 @@ const EditCategoryModal = ({
       });
 
       // Fetch the updated categories to show changes to the Fun Money category's budget
-      await getCategories(dateInfo.month, dateInfo.year);
+      if (fieldChanges.budget) {
+        await getCategories(dateInfo.month, dateInfo.year);
+      }
 
       // Fetch the updated transactions to show any category names changes
-      if (nameChange && !editedCategory.fixed) {
+      if (fieldChanges.name && !editedCategory.fixed) {
         await getTransactions(dateInfo.month, dateInfo.year);
       }
 
@@ -277,7 +284,7 @@ const EditCategoryModal = ({
                   setEditedCategory={setEditedCategory}
                   editedSubcategory={editedSubcategory}
                   setEditedSubcategory={setEditedSubcategory}
-                  setNameChange={setNameChange}
+                  setFieldChanges={setFieldChanges}
                   setPage={setPage}
                 />
               </div>
