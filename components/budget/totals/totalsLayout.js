@@ -103,14 +103,26 @@ const TotalsLayout = () => {
         </Col>
       </Row>
 
-      <Row className="mb-4 text-center">
+      <ProgressBar
+        currentValue={
+          categoryTotals.nonFixedActual +
+          categoryTotals.fixedActual +
+          transfersOut
+        }
+        totalValue={availableFunds}
+      />
+
+      <Row className="mt-4 text-center">
         <Col className="col-12 col-md-4 my-1">
           <PopUp
             id="variableSpent"
-            title={"Total spent in changing categories"}
+            title={"Total spent between fixed and changing categories"}
           >
             <div>
-              Total Spent: {dollarFormatter(categoryTotals.nonFixedActual)}
+              Total Spent:{" "}
+              {dollarFormatter(
+                categoryTotals.nonFixedActual + categoryTotals.fixedActual,
+              )}
             </div>
           </PopUp>
         </Col>
@@ -125,15 +137,6 @@ const TotalsLayout = () => {
           </PopUp>
         </Col>
       </Row>
-
-      <ProgressBar
-        currentValue={
-          categoryTotals.nonFixedActual +
-          categoryTotals.fixedActual +
-          transfersOut
-        }
-        totalValue={availableFunds}
-      />
     </div>
   );
 };
