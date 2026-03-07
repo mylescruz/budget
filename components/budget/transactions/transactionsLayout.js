@@ -11,8 +11,8 @@ import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
   const [view, setView] = useState({
-    display: "Calendar",
-    text: "View Table",
+    display: "Table",
+    text: "View Calendar",
   });
   const [modal, setModal] = useState(false);
   const [chosenTransaction, setChosenTransaction] = useState(null);
