@@ -8,19 +8,12 @@ import TransactionDetailsModal from "./transactionDetailsModal/transactionDetail
 import DataTableLayout from "@/components/layout/dataTableLayout/dataTableLayout";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 
-const VIEWS_LABEL = {
-  CALENDAR: "View Calendar",
-  TABLE: "View Table",
-};
-const VIEWS = {
-  CALENDAR: "CALENDAR",
-  TABLE: "TABLE",
-};
-
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
-  const [view, setView] = useState(VIEWS.CALENDAR);
-  const [buttonText, setButtonText] = useState(VIEWS_LABEL.TABLE);
+  const [view, setView] = useState({
+    display: "Calendar",
+    text: "View Table",
+  });
   const [modal, setModal] = useState(false);
   const [chosenTransaction, setChosenTransaction] = useState(null);
 
@@ -58,21 +51,17 @@ const TransactionsLayout = ({ dateInfo }) => {
   };
 
   const toggleTransactions = () => {
-    setView((prev) => {
-      if (prev === VIEWS.CALENDAR) {
-        return VIEWS.TABLE;
-      } else {
-        return VIEWS.CALENDAR;
-      }
-    });
-
-    setButtonText((prev) => {
-      if (prev === VIEWS_LABEL.CALENDAR) {
-        return VIEWS_LABEL.TABLE;
-      } else {
-        return VIEWS_LABEL.CALENDAR;
-      }
-    });
+    setView((prev) =>
+      prev.display === "Calendar"
+        ? {
+            display: "Table",
+            text: "View Calendar",
+          }
+        : {
+            display: "Calendar",
+            text: "View Table",
+          },
+    );
   };
 
   const openAddTransaction = () => {
@@ -111,7 +100,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             onClick={toggleTransactions}
             className="text-nowrap"
           >
-            {buttonText}
+            {view.text}
           </Button>
           <Button
             variant="primary"
@@ -123,14 +112,14 @@ const TransactionsLayout = ({ dateInfo }) => {
         </div>
 
         <div>
-          {view === VIEWS.CALENDAR && (
+          {view.display === "Calendar" && (
             <TransactionsCalendar
               dateInfo={dateInfo}
               setChosenTransaction={setChosenTransaction}
               setModal={setModal}
             />
           )}
-          {view === VIEWS.TABLE && (
+          {view.display === "Table" && (
             <DataTableLayout
               data={formattedTransactions}
               columns={transactionColumns}
@@ -159,7 +148,6 @@ const TransactionsLayout = ({ dateInfo }) => {
         {modal === "editTransaction" && (
           <EditTransactionModal
             chosenTransaction={chosenTransaction}
-            setChosenTransaction={setChosenTransaction}
             dateInfo={dateInfo}
             modal={modal}
             setModal={setModal}
