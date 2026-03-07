@@ -57,14 +57,13 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
         transactionObject.category = transaction.category;
         transactionObject.amount = transaction.amount;
         transactionObject.color = categoryColors[transaction.category];
-        transactionObject.icon = "●";
+        transactionObject.icon = "💸";
       } else {
         transactionObject.fromAccount = transaction.fromAccount;
         transactionObject.toAccount = transaction.toAccount;
         transactionObject.amount = transaction.amount;
         transactionObject.description = transaction.description;
-        transactionObject.color = "#000000";
-        transactionObject.icon = "▴";
+        transactionObject.icon = "🔄";
       }
 
       transactionsMap.get(transaction.date).push(transactionObject);
@@ -98,7 +97,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
                 category: category.name,
                 amount: subcategory.actual,
                 color: category.color,
-                icon: "■",
+                icon: "🔒",
               });
             }
           });
@@ -120,7 +119,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
               category: category.name,
               amount: category.actual,
               color: category.color,
-              icon: "■",
+              icon: "🔒",
             });
           }
         }
@@ -211,8 +210,13 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
                     {day.transactions.map((transaction) => (
                       <span
                         key={transaction._id}
-                        style={{ color: transaction.color }}
-                        className="mx-md-1 fs-2 clicker"
+                        style={{
+                          backgroundColor: transaction.color,
+                          borderRadius: "5px",
+                          padding: "0px 5px",
+                          margin: "1px",
+                        }}
+                        className="mx-md-1 fs-5 clicker"
                         onClick={() => openTransactionDetails(transaction)}
                       >
                         {transaction.icon}
