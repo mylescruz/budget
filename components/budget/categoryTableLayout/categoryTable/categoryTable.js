@@ -215,13 +215,7 @@ const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
               )}
             </span>
           </th>
-          <th className="d-none d-md-block col-md-4 col-lg-3">
-            <ProgressBar
-              actualValue={categoryTotals.actual}
-              budgetValue={categoryTotals.budget}
-              fixedCategory={false}
-            />
-          </th>
+          <th className="d-none d-md-block col-md-4 col-lg-3" />
         </tr>
       </tfoot>
     </Table>

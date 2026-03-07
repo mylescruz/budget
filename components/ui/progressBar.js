@@ -1,93 +1,80 @@
-const MIN_VALUE = 0;
-const SAFE_LIMIT = 10;
-const WARNING_LIMIT = 11;
-const MAX_VALUE = 12;
+const WARNING_PERCENTAGE = 90;
+const MAX_PERCENTAGE = 100;
 
-const ProgressBar = ({ actualValue, budgetValue, fixedCategory }) => {
-  let percentSpent = Math.round((actualValue / budgetValue) * 100);
+const ProgressBar = ({ currentValue, totalValue, fixedCategory = false }) => {
+  let percent = Math.round((currentValue / totalValue) * 100);
 
-  // Get the length of the bar that shows how much was spent
-  let actualBarLength = Math.round((actualValue * 12) / budgetValue);
-
-  // If the Fun Money category has a negative budget, the percentSpent should be above 100%
-  if (budgetValue < 0) {
-    percentSpent = Math.round(
-      ((actualValue - budgetValue) / -budgetValue) * 100,
-    );
-
-    actualBarLength = 12;
+  // If the total value is negative, the percent should be above 100%
+  if (totalValue < 0) {
+    percent = Math.round(((currentValue - totalValue) / -totalValue) * 100);
   }
 
-  // Don't mark the bar as full if there is still a remaining balance in the budget
-  if (actualBarLength === 12 && actualValue < budgetValue) {
-    actualBarLength = 11;
-
-    if (percentSpent === 100) {
-      percentSpent = 99;
-    }
+  // Don't mark the bar as full if there is still a remaining value
+  if (percent === 100 && currentValue < totalValue) {
+    percent = 99;
   }
 
-  // Keep any overspending set to the full amount
-  if (actualBarLength > 12) {
-    actualBarLength = 12;
+  // If there's a small amount on a large total, still show there is progress
+  if (percent === 0 && currentValue > 0) {
+    percent = 1;
   }
 
-  // If there's a small amount spent on a large budget, still show something was spent
-  if (actualValue > 0 && actualBarLength <= 0) {
-    percentSpent = 1;
-    actualBarLength = 1;
-  }
+  // Set the background color for the current value bar
+  let currentBarColor;
 
-  // Set the background color for the actual bar based on its length
-  let actualBarColor;
-
-  if (actualBarLength === MIN_VALUE) {
-    actualBarColor = "bg-dark";
-  } else if (actualBarLength <= SAFE_LIMIT) {
-    actualBarColor = "bg-success";
-  } else if (actualBarLength === WARNING_LIMIT || actualValue === budgetValue) {
-    actualBarColor = "bg-warning";
+  if (fixedCategory && percent !== 0) {
+    // Always show a successful color with fixed categories
+    currentBarColor = "bg-success";
+  } else if (percent > MAX_PERCENTAGE) {
+    // Show a danger color for overspending
+    currentBarColor = "bg-danger";
+  } else if (percent <= MAX_PERCENTAGE && percent >= WARNING_PERCENTAGE) {
+    // Show a warning color if within 90% of your available funds
+    currentBarColor = "bg-warning";
+  } else if (percent === 0) {
+    // Show nothing if there is no spending
+    currentBarColor = "bg-dark";
   } else {
-    actualBarColor = "bg-danger";
-  }
-
-  // Always show a successful color with fixed categories
-  if (fixedCategory && actualBarLength !== MIN_VALUE) {
-    actualBarColor = "bg-success";
+    currentBarColor = "bg-success";
   }
 
   // Show either a percentage or no budget if the percentage value is infinity
-  const formattedPercent =
-    percentSpent !== Infinity ? `${percentSpent}%` : "NO BUDGET";
+  const formattedPercent = percent !== Infinity ? percent : 100;
 
-  const remainingBarLength = 12 - actualBarLength;
+  const remainingPercent = 100 - formattedPercent;
 
-  if (actualValue === MIN_VALUE && budgetValue === MIN_VALUE) {
+  const percentText = percent !== Infinity ? `${percent}%` : "NO BUDGET";
+
+  if (currentValue === 0 && totalValue === 0) {
     return (
       <div
-        className={`col-12 rounded py-1 px-2 status-bar bg-dark text-white text-center`}
+        className={`rounded py-1 px-2 status-bar bg-dark text-white text-center fw-bold`}
+        style={{ width: "100%" }}
       >
         NO BUDGET
       </div>
     );
-  } else if (actualBarLength === MIN_VALUE || actualBarLength === MAX_VALUE) {
+  } else if (percent === 0 || percent === MAX_PERCENTAGE) {
     return (
       <div
-        className={`col-12 rounded py-1 px-2 status-bar ${actualBarColor} text-white text-center`}
+        className={`rounded py-1 px-2 status-bar ${currentBarColor} text-white text-center fw-bold`}
+        style={{ width: "100%" }}
       >
-        {formattedPercent}
+        {percentText}
       </div>
     );
   } else {
     return (
-      <div className="d-flex flex-row align-items-center">
+      <div className="w-100 d-flex flex-row align-items-center">
         <div
-          className={`col-${actualBarLength} border rounded-start py-1 px-2 status-bar ${actualBarColor} text-white text-center`}
+          className={`border rounded-start py-1 px-2 status-bar ${currentBarColor} text-white text-center fw-bold`}
+          style={{ width: `${formattedPercent}%` }}
         >
-          {formattedPercent}
+          {percentText}
         </div>
         <div
-          className={`col-${remainingBarLength} border rounded-end status-bar bg-dark`}
+          className={`border rounded-end status-bar bg-dark`}
+          style={{ width: `${remainingPercent}%` }}
         />
       </div>
     );

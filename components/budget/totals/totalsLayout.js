@@ -127,13 +127,12 @@ const TotalsLayout = () => {
       </Row>
 
       <ProgressBar
-        actualValue={
+        currentValue={
           categoryTotals.nonFixedActual +
           categoryTotals.fixedActual +
           transfersOut
         }
-        budgetValue={availableFunds}
-        fixedCategory={false}
+        totalValue={availableFunds}
       />
     </div>
   );

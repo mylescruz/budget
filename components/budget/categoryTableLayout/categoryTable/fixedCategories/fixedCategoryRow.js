@@ -101,8 +101,8 @@ const FixedCategoryRow = ({
         </td>
         <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
           <ProgressBar
-            actualValue={categoryActual}
-            budgetValue={category.budget}
+            currentValue={categoryActual}
+            totalValue={category.budget}
             fixedCategory={category.fixed}
           />
         </td>

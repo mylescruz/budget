@@ -65,9 +65,8 @@ const ChangingCategoryRow = ({ category, setEditedCategory, setModal }) => {
         </td>
         <td className={progressColumn}>
           <ProgressBar
-            actualValue={category.actual}
-            budgetValue={category.budget}
-            fixedCategory={category.fixed}
+            currentValue={category.actual}
+            totalValue={category.budget}
           />
         </td>
       </tr>
