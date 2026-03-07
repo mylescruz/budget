@@ -169,40 +169,35 @@ async function deleteTransaction(
 
   try {
     const transactionId = req.query._id;
-    const transaction = {
-      ...req.body,
-      amount: parseFloat(req.body.amount) * 100,
-    };
-
-    // Get the month and date for the given transaction
-    const transactionDate = new Date(`${transaction.date}T00:00:00Z`);
-    const month = transactionDate.getUTCMonth() + 1;
-    const year = transactionDate.getFullYear();
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
+      const transaction = await transactionsCol.findOne({
+        _id: new ObjectId(transactionId),
+      });
+
       // Delete the given transaction from the transactions collection in MongoDB
       await transactionsCol.deleteOne(
         { _id: new ObjectId(transactionId) },
         { session },
       );
 
-      // Update the correlating category to remove old transaction amount
-      await updateCategoryActual({
-        session,
-        categoriesCol,
-        username,
-        month,
-        year,
-        categoryName: transaction.category,
-        amount: -transaction.amount,
-      });
+      if (transaction.type === "Expense") {
+        // Update the correlating category to remove old transaction amount
+        await updateCategoryActual({
+          session,
+          categoriesCol,
+          username,
+          month: transaction.month,
+          year: transaction.year,
+          categoryName: transaction.category,
+          amount: -transaction.amount,
+        });
+      }
     });
 
     // Send a success message back to the client
-    return res
-      .status(200)
-      .json({ _id: transactionId, message: "Transaction was deleted" });
+    return res.status(200).send("Transaction was deleted successfully");
   } catch (error) {
     console.error(
       `DELETE transaction request failed for ${username}: ${error}`,

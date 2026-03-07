@@ -105,22 +105,19 @@ const useTransactions = (month, year) => {
   // DELETE request that deletes a transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
   const deleteTransaction = useCallback(
-    async (transaction) => {
+    async (transactionId) => {
       try {
-        const rsp = await fetch(`/api/transaction/${transaction._id}`, {
+        const rsp = await fetch(`/api/transaction/${transactionId}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(transaction),
         });
 
         if (rsp.ok) {
-          const deleteResult = await rsp.json();
-
           const updatedTransactions = transactions.filter((transaction) => {
-            return transaction._id !== deleteResult._id;
+            return transaction._id !== transactionId;
           });
 
           setTransactions(updatedTransactions);

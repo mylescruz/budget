@@ -25,7 +25,7 @@ const DeleteTransactionModal = ({
 
     try {
       // Deletes a transaction from the transactions array by sending a DELETE request to the API
-      await deleteTransaction(chosenTransaction);
+      await deleteTransaction(chosenTransaction._id);
 
       // Fetch the categories to update the state for the categories table
       await getCategories(dateInfo.month, dateInfo.year);
