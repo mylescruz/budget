@@ -40,17 +40,40 @@ export default async function handler(req, res) {
 async function updateTransaction(
   req,
   res,
-  { client, transactionsCol, categoriesCol, username }
+  { client, transactionsCol, categoriesCol, username },
 ) {
   const mongoSession = client.startSession();
 
   try {
     const transactionId = req.query._id;
+
+    // Define the updated transaction based on its type
     const transaction = {
-      ...req.body,
+      _id: transactionId,
+      type: req.body.type,
+      date: req.body.date,
       amount: parseFloat(req.body.amount) * 100,
-      oldAmount: parseFloat(req.body.oldAmount) * 100,
     };
+
+    if (transaction.type === "Expense") {
+      transaction.store = req.body.store;
+      transaction.items = req.body.items;
+      transaction.category = req.body.category;
+    } else if (transaction.type === "Transfer") {
+      transaction.fromAccount = req.body.fromAccount;
+      transaction.toAccount = req.body.toAccount;
+      transaction.description = req.body.description;
+    } else {
+      return res
+        .status(500)
+        .send(`${transaction.type} is not a valid transaction type`);
+    }
+
+    // Get the old transaction amount
+    const oldAmount = parseFloat(req.body.oldAmount) * 100;
+
+    // Get the old category
+    const oldCategory = req.body.oldCategory;
 
     // Get the month and date for the given transaction
     const transactionDate = new Date(`${transaction.date}T00:00:00Z`);
@@ -59,52 +82,71 @@ async function updateTransaction(
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      // Update the transaction with the new values in MongoDB
-      await transactionsCol.updateOne(
-        {
-          _id: new ObjectId(transactionId),
-        },
-        {
-          $set: {
-            date: transaction.date,
-            store: transaction.store.trim(),
-            items: transaction.items.trim(),
-            category: transaction.category,
-            amount: transaction.amount,
+      // Update an expense transaction and the correlating category's actual values
+      if (transaction.type === "Expense") {
+        await transactionsCol.updateOne(
+          {
+            _id: new ObjectId(transactionId),
           },
-        },
-        { session }
-      );
+          {
+            $set: {
+              date: transaction.date,
+              store: transaction.store.trim(),
+              items: transaction.items.trim(),
+              category: transaction.category,
+              amount: transaction.amount,
+            },
+          },
+          { session },
+        );
 
-      // Update the old category
-      await updateCategoryActual({
-        session,
-        categoriesCol,
-        username,
-        month,
-        year,
-        categoryName: transaction.oldCategory,
-        amount: -transaction.oldAmount,
-      });
+        // Update the old category
+        await updateCategoryActual({
+          session,
+          categoriesCol,
+          username,
+          month,
+          year,
+          categoryName: oldCategory,
+          amount: -oldAmount,
+        });
 
-      // Update the new category
-      await updateCategoryActual({
-        session,
-        categoriesCol,
-        username,
-        month,
-        year,
-        categoryName: transaction.category,
-        amount: transaction.amount,
-      });
+        // Update the new category
+        await updateCategoryActual({
+          session,
+          categoriesCol,
+          username,
+          month,
+          year,
+          categoryName: transaction.category,
+          amount: transaction.amount,
+        });
+      }
+
+      // Update a transfer transaction
+      if (transaction.type === "Transfer") {
+        await transactionsCol.updateOne(
+          {
+            _id: new ObjectId(transactionId),
+          },
+          {
+            $set: {
+              date: transaction.date,
+              fromAccount: transaction.fromAccount,
+              toAccount: transaction.toAccount,
+              description: transaction.description.trim(),
+              amount: transaction.amount,
+            },
+          },
+          { session },
+        );
+      }
     });
-
-    const { oldCategory, oldAmount, ...transactionDetails } = transaction;
 
     // Send the updated transaction back to the client
     const updatedTransaction = {
-      ...transactionDetails,
-      amount: centsToDollars(transactionDetails.amount),
+      ...transaction,
+      amount: centsToDollars(transaction.amount),
     };
 
     return res.status(200).json(updatedTransaction);
@@ -112,7 +154,7 @@ async function updateTransaction(
     console.error(`PUT transaction request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while editting a transaction for ${username}`);
+      .send(`Error occurred while editing a transaction for ${username}`);
   } finally {
     await mongoSession.endSession();
   }
@@ -121,7 +163,7 @@ async function updateTransaction(
 async function deleteTransaction(
   req,
   res,
-  { client, transactionsCol, categoriesCol, username }
+  { client, transactionsCol, categoriesCol, username },
 ) {
   const mongoSession = client.startSession();
 
@@ -142,7 +184,7 @@ async function deleteTransaction(
       // Delete the given transaction from the transactions collection in MongoDB
       await transactionsCol.deleteOne(
         { _id: new ObjectId(transactionId) },
-        { session }
+        { session },
       );
 
       // Update the correlating category to remove old transaction amount
@@ -163,7 +205,7 @@ async function deleteTransaction(
       .json({ _id: transactionId, message: "Transaction was deleted" });
   } catch (error) {
     console.error(
-      `DELETE transaction request failed for ${username}: ${error}`
+      `DELETE transaction request failed for ${username}: ${error}`,
     );
     return res
       .status(500)
@@ -190,7 +232,7 @@ async function updateCategoryActual({
       year,
       $or: [{ name: categoryName }, { "subcategories.name": categoryName }],
     },
-    { session }
+    { session },
   );
 
   if (!category) {
@@ -203,14 +245,14 @@ async function updateCategoryActual({
     await categoriesCol.updateOne(
       { _id: new ObjectId(category._id) },
       { $inc: { actual: amount } },
-      { session }
+      { session },
     );
   } else {
     // Update parent category and subcategory
     await categoriesCol.updateOne(
       { _id: new ObjectId(category._id), "subcategories.name": categoryName },
       { $inc: { actual: amount, "subcategories.$.actual": amount } },
-      { session }
+      { session },
     );
   }
 }

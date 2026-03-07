@@ -3,10 +3,10 @@ import AddTransactionModal from "./addTransactionModal/addTransactionModal";
 import { useContext, useMemo, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
-import EditTransactionModal from "./editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import DataTableLayout from "@/components/layout/dataTableLayout/dataTableLayout";
+import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 
 const VIEWS_LABEL = {
   CALENDAR: "View Calendar",
