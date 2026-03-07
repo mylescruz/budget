@@ -201,7 +201,17 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
                 <td key={index}>
                   <div className="d-flex justify-content-between">
                     <p
-                      className={`fw-bold ${todayInfo.date === day.date ? "text-danger" : "text-dark"}`}
+                      className={`fw-bold`}
+                      style={
+                        todayInfo.date === day.date
+                          ? {
+                              backgroundColor: "red",
+                              color: "white",
+                              borderRadius: "15px",
+                              padding: "0px 5px",
+                            }
+                          : { color: "black" }
+                      }
                     >
                       {day.dateNumber}
                     </p>
@@ -215,8 +225,9 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
                           borderRadius: "5px",
                           padding: "0px 5px",
                           margin: "1px",
+                          fontSize: "15px",
                         }}
-                        className="mx-md-1 fs-5 clicker"
+                        className="mx-md-1 clicker"
                         onClick={() => openTransactionDetails(transaction)}
                       >
                         {transaction.icon}
