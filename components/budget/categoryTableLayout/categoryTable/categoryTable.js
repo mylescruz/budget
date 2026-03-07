@@ -6,9 +6,12 @@ import { useContext } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import FixedCategoryRow from "./fixedCategories/fixedCategoryRow";
 import ChangingCategoryRow from "./changingCategories/changingCategoryRow";
+import { TransactionsContext } from "@/contexts/TransactionsContext";
+import dollarsToCents from "@/helpers/dollarsToCents";
+import centsToDollars from "@/helpers/centsToDollars";
+import addDecimalValues from "@/helpers/addDecimalValues";
 
-const SAFE_LIMIT = Math.round((10 / 12) * 100);
-const MAX_VALUE = 100;
+const WARNING_PERCENTAGE = 10;
 
 const categoryColumn = "col-6 col-md-4 col-lg-3 d-flex align-items-center";
 const budgetColumn =
@@ -20,35 +23,61 @@ const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
 
 const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
   const { categories, categoryTotals } = useContext(CategoriesContext);
+  const { transactions } = useContext(TransactionsContext);
+
+  // Calculate the money transferred in and out of a user's account
+  const transfers = transactions.reduce(
+    (sum, current) => {
+      if (current.type === "Transfer") {
+        if (current.toAccount === "Checking") {
+          sum.in += dollarsToCents(current.amount);
+        }
+
+        if (current.toAccount === "Savings") {
+          sum.out += dollarsToCents(current.amount);
+        }
+      }
+
+      return sum;
+    },
+    { in: 0, out: 0 },
+  );
+
+  const transfersIn = centsToDollars(transfers.in);
+  const transfersOut = centsToDollars(transfers.out);
+
+  // Get the total available funds for the month
+  const availableFunds = addDecimalValues(categoryTotals.budget, transfersIn);
+
+  const leftoverVariableFunds = centsToDollars(
+    dollarsToCents(availableFunds) -
+      dollarsToCents(categoryTotals.fixedBudget) -
+      dollarsToCents(categoryTotals.nonFixedActual) -
+      transfers.out,
+  );
+
+  // Define the text color of the amount values for the cards
+  const variableSpendingPercentage = Math.round(
+    (leftoverVariableFunds / availableFunds) * 100,
+  );
+
+  let leftoverFundsColor;
+
+  // Show red text if the user has no income or if their available spending balance is less than 0
+  if (variableSpendingPercentage <= 0 && leftoverVariableFunds <= 0) {
+    leftoverFundsColor = "text-danger";
+  } else if (
+    variableSpendingPercentage >= 0 &&
+    variableSpendingPercentage < WARNING_PERCENTAGE
+  ) {
+    leftoverFundsColor = "text-warning";
+  } else {
+    leftoverFundsColor = "text-success";
+  }
 
   const openAddModal = () => {
     setModal("add");
   };
-
-  let percent = Math.round(
-    (categoryTotals.actual / categoryTotals.budget) * 100,
-  );
-
-  if (
-    categoryTotals.budget < 0 &&
-    categoryTotals.actual > categoryTotals.budget
-  ) {
-    percent = Math.round(
-      ((categoryTotals.actual + categoryTotals.budget * -1) /
-        -categoryTotals.budget) *
-        100,
-    );
-  }
-
-  let remainingTextColor;
-
-  if (percent <= SAFE_LIMIT) {
-    remainingTextColor = "text-success";
-  } else if (percent > SAFE_LIMIT && percent <= MAX_VALUE) {
-    remainingTextColor = "text-warning";
-  } else {
-    remainingTextColor = "text-danger";
-  }
 
   return (
     <Table striped>
@@ -174,14 +203,16 @@ const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
             {dollarFormatter(categoryTotals.actual)}
           </th>
           <th className="d-none d-lg-flex col-lg-2 align-items-center justify-content-end">
-            {dollarFormatter(categoryTotals.budget)}
+            {dollarFormatter(availableFunds - transfersOut)}
           </th>
           <th className="d-none d-lg-flex col-lg-2 align-items-center justify-content-end">
             {dollarFormatter(categoryTotals.actual)}
           </th>
           <th className="col-3 col-md-2 text-end d-flex align-items-center justify-content-end">
-            <span className={remainingTextColor}>
-              {dollarFormatter(categoryTotals.remaining)}
+            <span className={leftoverFundsColor}>
+              {dollarFormatter(
+                categoryTotals.remaining + transfersIn - transfersOut,
+              )}
             </span>
           </th>
           <th className="d-none d-md-block col-md-4 col-lg-3">
