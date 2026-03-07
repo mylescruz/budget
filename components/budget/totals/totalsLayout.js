@@ -5,8 +5,8 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import PopUp from "@/components/layout/popUp";
-import ProgressBar from "@/components/layout/progressBar";
+import PopUp from "@/components/ui/popUp";
+import ProgressBar from "@/components/ui/progressBar";
 import addDecimalValues from "@/helpers/addDecimalValues";
 
 const WARNING_PERCENTAGE = 10;

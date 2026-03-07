@@ -3,7 +3,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import dayFormatter from "@/helpers/dayFormatter";
-import ProgressBar from "@/components/layout/progressBar";
+import ProgressBar from "@/components/ui/progressBar";
 import FixedSubcategoryRow from "./fixedSubcategoryRow";
 import CategoryBadge from "@/components/category/categoryBadge";
 

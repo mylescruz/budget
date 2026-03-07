@@ -1,5 +1,5 @@
 import IncomeLayout from "@/components/income/incomeLayout";
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 import getDateInfo from "@/helpers/getDateInfo";
 import { useSession } from "next-auth/react";
 import Head from "next/head";

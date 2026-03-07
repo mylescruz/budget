@@ -1,4 +1,4 @@
-import PopUp from "@/components/layout/popUp";
+import PopUp from "@/components/ui/popUp";
 import { useState } from "react";
 import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
 import dollarFormatter from "@/helpers/dollarFormatter";

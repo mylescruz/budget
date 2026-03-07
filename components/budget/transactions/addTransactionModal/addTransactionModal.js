@@ -3,8 +3,8 @@ import { Form, Button, Modal, Col, Row } from "react-bootstrap";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import todayInfo from "@/helpers/todayInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
-import LoadingMessage from "@/components/layout/loadingMessage";
-import ErrorMessage from "@/components/layout/errorMessage";
+import LoadingMessage from "@/components/ui/loadingMessage";
+import ErrorMessage from "@/components/ui/errorMessage";
 import {
   transactionTypes,
   transferAccounts,

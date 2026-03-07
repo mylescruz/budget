@@ -1,13 +1,13 @@
 import useSummary from "@/hooks/useSummary";
 import { Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
-import LoadingIndicator from "../layout/loadingIndicator";
+import LoadingIndicator from "../ui/loadingIndicator";
 import { useState } from "react";
 import TotalsCards from "./totalsCards/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
-import BudgetYearSwitcher from "../layout/budgetYearSwitcher";
+import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryLoading } = useSummary(year);

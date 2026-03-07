@@ -1,5 +1,5 @@
 import ErrorLayout from "@/components/errors/errorLayout";
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";

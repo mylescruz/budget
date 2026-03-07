@@ -1,5 +1,5 @@
 import { Dropdown } from "react-bootstrap";
-import styles from "@/styles/layout/dataTableLayout/dataTableLayout.module.css";
+import styles from "@/styles/ui/dataTableLayout/dataTableLayout.module.css";
 
 const DataTableSortDropdown = ({ sortOptions, sortOption, setSortOption }) => {
   return (

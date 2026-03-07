@@ -5,7 +5,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
-import DataTableLayout from "@/components/layout/dataTableLayout/dataTableLayout";
+import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 
 const TransactionsLayout = ({ dateInfo }) => {

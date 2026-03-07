@@ -14,7 +14,7 @@ import {
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
 import getDateInfo from "@/helpers/getDateInfo";
-import LoadingIndicator from "../layout/loadingIndicator";
+import LoadingIndicator from "../ui/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../category/categoryBadge";

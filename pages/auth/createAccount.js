@@ -1,4 +1,4 @@
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 import CreateUserLayout from "@/components/user/createUser/createUserLayout";
 import { getCsrfToken, useSession } from "next-auth/react";
 

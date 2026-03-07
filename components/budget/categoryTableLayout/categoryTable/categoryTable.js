@@ -1,7 +1,7 @@
-import PopUp from "@/components/layout/popUp";
+import PopUp from "@/components/ui/popUp";
 import { Button, Table } from "react-bootstrap";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import ProgressBar from "@/components/layout/progressBar";
+import ProgressBar from "@/components/ui/progressBar";
 import { useContext } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import FixedCategoryRow from "./fixedCategories/fixedCategoryRow";

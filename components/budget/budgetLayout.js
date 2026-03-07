@@ -10,10 +10,10 @@ import {
   TransactionsContext,
   TransactionsProvider,
 } from "@/contexts/TransactionsContext";
-import LoadingIndicator from "../layout/loadingIndicator";
+import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
 import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
-import BudgetMonthSwitcher from "../layout/budgetMonthSwitcher";
+import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);

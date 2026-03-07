@@ -8,7 +8,7 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import PopUp from "@/components/layout/popUp";
+import PopUp from "@/components/ui/popUp";
 import PaycheckForm from "@/components/income/incomeTypeForms/paycheckForm";
 import SaleForm from "@/components/income/incomeTypeForms/saleForm";
 import GiftForm from "@/components/income/incomeTypeForms/giftForm";

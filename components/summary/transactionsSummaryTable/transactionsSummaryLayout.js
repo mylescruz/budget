@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import TransactionSummaryModal from "./transactionSummaryModal";
-import DataTableLayout from "@/components/layout/dataTableLayout/dataTableLayout";
+import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
 
 const TransactionsSummaryLayout = ({ transactions }) => {
   const [chosenTransaction, setChosenTransaction] = useState(null);

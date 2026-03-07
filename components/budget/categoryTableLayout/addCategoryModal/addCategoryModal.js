@@ -1,8 +1,8 @@
-import LoadingMessage from "@/components/layout/loadingMessage";
+import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
 import { Button, Col, Modal, Row } from "react-bootstrap";
-import ErrorMessage from "@/components/layout/errorMessage";
+import ErrorMessage from "@/components/ui/errorMessage";
 import centsToDollars from "@/helpers/centsToDollars";
 import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";

@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import getDateInfo from "@/helpers/getDateInfo";
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 
 export default function Budget() {
   const { data: session, status } = useSession();

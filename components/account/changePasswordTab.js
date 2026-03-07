@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
-import ErrorModal from "../layout/errorModal";
-import LoadingMessage from "../layout/loadingMessage";
+import ErrorModal from "../ui/errorModal";
+import LoadingMessage from "../ui/loadingMessage";
 
 const ChangePasswordTab = ({ user, putUser }) => {
   const oldUser = {

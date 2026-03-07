@@ -1,8 +1,8 @@
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import ErrorMessage from "../layout/errorMessage";
-import LoadingMessage from "../layout/loadingMessage";
+import ErrorMessage from "../ui/errorMessage";
+import LoadingMessage from "../ui/loadingMessage";
 
 const DeleteAccountTab = ({ user, deleteUser }) => {
   const [password, setPassword] = useState("");

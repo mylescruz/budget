@@ -6,7 +6,7 @@ import { useState } from "react";
 import ChangeEmailTab from "./changeEmailTab";
 import DeleteAccountTab from "./deleteAccountTab";
 import useUser from "@/hooks/useUser";
-import LoadingIndicator from "../layout/loadingIndicator";
+import LoadingIndicator from "../ui/loadingIndicator";
 
 const AccountLayout = () => {
   const [section, setSection] = useState("account");

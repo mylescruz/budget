@@ -1,4 +1,4 @@
-import PopUp from "@/components/layout/popUp";
+import PopUp from "@/components/ui/popUp";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 
 const defaultExampleCategories = [

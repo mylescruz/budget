@@ -1,7 +1,7 @@
 import { useState } from "react";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
-import ProgressBar from "@/components/layout/progressBar";
+import ProgressBar from "@/components/ui/progressBar";
 import ChangingSubcategoryRow from "./changingSubcategoryRow";
 import CategoryBadge from "@/components/category/categoryBadge";
 

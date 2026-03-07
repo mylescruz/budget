@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Form, Button, Modal } from "react-bootstrap";
 import todayInfo from "@/helpers/todayInfo";
-import LoadingMessage from "../layout/loadingMessage";
-import ErrorMessage from "../layout/errorMessage";
+import LoadingMessage from "../ui/loadingMessage";
+import ErrorMessage from "../ui/errorMessage";
 import PaycheckForm from "./incomeTypeForms/paycheckForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";

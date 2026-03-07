@@ -1,5 +1,5 @@
-import ErrorMessage from "@/components/layout/errorMessage";
-import LoadingMessage from "@/components/layout/loadingMessage";
+import ErrorMessage from "@/components/ui/errorMessage";
+import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useState } from "react";

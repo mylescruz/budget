@@ -1,7 +1,7 @@
 import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
-import LoadingMessage from "@/components/layout/loadingMessage";
-import ErrorMessage from "@/components/layout/errorMessage";
+import LoadingMessage from "@/components/ui/loadingMessage";
+import ErrorMessage from "@/components/ui/errorMessage";
 import dateFormatter from "@/helpers/dateFormatter";
 
 const DeleteIncomeModal = ({ chosenSource, deleteIncome, modal, setModal }) => {

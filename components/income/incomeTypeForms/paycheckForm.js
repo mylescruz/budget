@@ -1,4 +1,4 @@
-import PopUp from "@/components/layout/popUp";
+import PopUp from "@/components/ui/popUp";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { Button, Form } from "react-bootstrap";
 

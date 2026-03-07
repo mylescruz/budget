@@ -1,14 +1,14 @@
 import { Button, Container, Row } from "react-bootstrap";
 import { useMemo, useState } from "react";
-import LoadingIndicator from "../layout/loadingIndicator";
+import LoadingIndicator from "../ui/loadingIndicator";
 import useIncome from "@/hooks/useIncome";
 import AddIncomeModal from "./addIncomeModal";
 import IncomeTotalsLayout from "./incomeTotalsLayout";
-import BudgetYearSwitcher from "../layout/budgetYearSwitcher";
+import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import EditIncomeModal from "./editIncomeModal";
 import IncomeDetailsModal from "./incomeDetailsModal";
 import DeleteIncomeModal from "./deleteIncomeModal";
-import DataTableLayout from "../layout/dataTableLayout/dataTableLayout";
+import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
 
 const InnerIncomeLayout = ({ year }) => {
   const {

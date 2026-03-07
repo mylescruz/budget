@@ -1,7 +1,7 @@
 import useUsers from "@/hooks/useUsers";
 import { Col, Row, Table } from "react-bootstrap";
 import UsersTableRow from "./usersTableRow";
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 
 const UsersLayout = () => {
   const { users, usersLoading, putUser, deleteUser } = useUsers();

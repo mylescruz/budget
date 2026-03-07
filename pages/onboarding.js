@@ -1,4 +1,4 @@
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 import OnboardingLayout from "@/components/onboarding/onboardingLayout";
 import { useSession } from "next-auth/react";
 import Head from "next/head";

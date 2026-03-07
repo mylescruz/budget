@@ -2,8 +2,8 @@ import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useContext, useState } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
-import LoadingMessage from "@/components/layout/loadingMessage";
-import ErrorMessage from "@/components/layout/errorMessage";
+import LoadingMessage from "@/components/ui/loadingMessage";
+import ErrorMessage from "@/components/ui/errorMessage";
 import EditExpenseForm from "./editExpenseForm";
 import EditTransferForm from "./editTransferForm";
 

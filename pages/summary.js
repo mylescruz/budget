@@ -1,4 +1,4 @@
-import LoadingIndicator from "@/components/layout/loadingIndicator";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
 import SummaryLayout from "@/components/summary/summaryLayout";
 import getDateInfo from "@/helpers/getDateInfo";
 import { useSession } from "next-auth/react";
