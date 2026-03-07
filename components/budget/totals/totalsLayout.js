@@ -1,10 +1,13 @@
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext } from "react";
-import { Col } from "react-bootstrap";
-import TotalsCard from "./totalsCard";
+import { Card, Col, Row } from "react-bootstrap";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
+import dollarFormatter from "@/helpers/dollarFormatter";
+import PopUp from "@/components/layout/popUp";
+import ProgressBar from "@/components/layout/progressBar";
+import addDecimalValues from "@/helpers/addDecimalValues";
 
 const WARNING_PERCENTAGE = 10;
 
@@ -30,66 +33,109 @@ const TotalsLayout = () => {
     { in: 0, out: 0 },
   );
 
-  const availableFunds = centsToDollars(
-    dollarsToCents(categoryTotals.budget) + transfers.in,
-  );
+  const transfersIn = centsToDollars(transfers.in);
+  const transfersOut = centsToDollars(transfers.out);
 
-  const leftoverVariableFunds = centsToDollars(
+  // Get the total available funds for the month
+  const availableFunds = addDecimalValues(categoryTotals.budget, transfersIn);
+
+  // Get the total funds left to spend for the month
+  const leftToSpend = centsToDollars(
     dollarsToCents(availableFunds) -
       dollarsToCents(categoryTotals.fixedBudget) -
       dollarsToCents(categoryTotals.nonFixedActual) -
-      transfers.out,
+      dollarsToCents(transfersOut),
   );
 
   // Define the text color of the amount values for the cards
-  const variableSpendingPercentage = Math.round(
-    (leftoverVariableFunds / availableFunds) * 100,
-  );
+  const availableFundsTextColor =
+    availableFunds === 0 ? "text-danger" : "text-white";
 
-  let leftoverFundsColor;
+  let leftToSpendTextColor;
 
-  // Show red text if the user has no income or if their available spending balance is less than 0
-  if (variableSpendingPercentage <= 0 && leftoverVariableFunds <= 0) {
-    leftoverFundsColor = "text-danger";
+  const variableSpentPercent = Math.round((leftToSpend / availableFunds) * 100);
+
+  if (variableSpentPercent <= 0 && leftToSpend <= 0) {
+    leftToSpendTextColor = "text-danger";
   } else if (
-    variableSpendingPercentage >= 0 &&
-    variableSpendingPercentage < WARNING_PERCENTAGE
+    variableSpentPercent >= 0 &&
+    variableSpentPercent < WARNING_PERCENTAGE
   ) {
-    leftoverFundsColor = "text-warning";
+    leftToSpendTextColor = "text-warning";
   } else {
-    leftoverFundsColor = "text-success";
+    leftToSpendTextColor = "text-success";
   }
 
-  const totals = [
-    {
-      title: "Total Funds",
-      amount: availableFunds,
-      amountTextColor: availableFunds === 0 ? "text-danger" : "text-white",
-      description: "Monthly income plus incoming transfers.",
-    },
-    {
-      title: "Available to Spend",
-      amount: leftoverVariableFunds,
-      amountTextColor: leftoverFundsColor,
-      description: "Available to spend after all expenses and transfers.",
-    },
-  ];
-
   return (
-    <>
-      <div className="d-flex flex-column flex-md-row justify-content-between mb-4">
-        {totals.map((total) => (
-          <Col key={total.title} className="col-12 col-md-5 mb-2">
-            <TotalsCard
-              title={total.title}
-              amount={total.amount}
-              amountTextColor={total.amountTextColor}
-              description={total.description}
-            />
-          </Col>
-        ))}
-      </div>
-    </>
+    <div className="mb-4">
+      <Row className="mb-3">
+        <Col className="col-12 col-md-6 my-1">
+          <Card className="text-center bg-dark text-white p-3">
+            <h5>
+              Available Funds{" "}
+              <PopUp
+                id="availableFunds"
+                title={"Monthly income plus incoming transfers."}
+              >
+                <span className="fs-6"> &#9432;</span>
+              </PopUp>
+            </h5>
+            <h2 className={availableFundsTextColor}>
+              {dollarFormatter(availableFunds)}
+            </h2>
+          </Card>
+        </Col>
+        <Col className="col-12 col-md-6 my-1">
+          <Card className="text-center bg-dark p-3">
+            <h5 className="text-white">
+              Left to Spend
+              <PopUp
+                id="leftToSpend"
+                title={"Available to spend after all expenses and transfers."}
+              >
+                <span className="fs-6"> &#9432;</span>
+              </PopUp>
+            </h5>
+            <h2 className={leftToSpendTextColor}>
+              {dollarFormatter(leftToSpend)}
+            </h2>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row className="mb-4 text-center">
+        <Col className="col-12 col-md-4 my-1">
+          <PopUp
+            id="variableSpent"
+            title={"Total spent in changing categories"}
+          >
+            <div>
+              Total Spent: {dollarFormatter(categoryTotals.nonFixedActual)}
+            </div>
+          </PopUp>
+        </Col>
+        <Col className="col-12 col-md-4 my-1">
+          <PopUp id="transfersIn" title={"Total transfers out to savings"}>
+            <div>Transferred In: {dollarFormatter(transfersIn)}</div>
+          </PopUp>
+        </Col>
+        <Col className="col-12 col-md-4 my-1">
+          <PopUp id="transfersOut" title={"Total transfers out to savings"}>
+            <div>Transferred to Savings: {dollarFormatter(transfersOut)}</div>
+          </PopUp>
+        </Col>
+      </Row>
+
+      <ProgressBar
+        actualValue={
+          categoryTotals.nonFixedActual +
+          categoryTotals.fixedActual +
+          transfersOut
+        }
+        budgetValue={availableFunds}
+        fixedCategory={false}
+      />
+    </div>
   );
 };
 
