@@ -9,9 +9,13 @@ const ProgressBar = ({ currentValue, totalValue, fixedCategory = false }) => {
     percent = Math.round(((currentValue - totalValue) / -totalValue) * 100);
   }
 
-  // Don't mark the bar as full if there is still a remaining value
-  if (percent === 100 && currentValue < totalValue) {
-    percent = 99;
+  // Adjust edge cases if the percent is 100 but the current value doesn't equal the total value
+  if (percent === 100) {
+    if (currentValue < totalValue) {
+      percent = 99;
+    } else {
+      percent = 101;
+    }
   }
 
   // If there's a small amount on a large total, still show there is progress
