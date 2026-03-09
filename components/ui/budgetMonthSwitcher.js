@@ -1,7 +1,23 @@
 import useBudgetMonths from "@/hooks/useBudgetMonths";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Dropdown, Row } from "react-bootstrap";
 import LoadingIndicator from "./loadingIndicator";
 import getDateInfo from "@/helpers/getDateInfo";
+import styles from "@/styles/ui/budgetMonthSwitcher.module.css";
+
+const MONTHS_MAP = {
+  1: "January",
+  2: "February",
+  3: "March",
+  4: "April",
+  5: "May",
+  6: "June",
+  7: "July",
+  8: "August",
+  9: "September",
+  10: "October",
+  11: "November",
+  12: "December",
+};
 
 const BudgetMonthSwitcher = ({
   monthInfo,
@@ -11,6 +27,15 @@ const BudgetMonthSwitcher = ({
 }) => {
   const { budgetMonths, budgetMonthsLoading } = useBudgetMonths();
 
+  // Allow a user to choose a month from the dropdown
+  const chooseBudget = (monthNum, monthYear) => {
+    const date = new Date(`${monthNum}/01/${monthYear}`);
+    const info = getDateInfo(date);
+
+    setMonthInfo(info);
+  };
+
+  // Function to move one month back
   const previousMonth = () => {
     let monthNum = monthInfo.month - 1;
     let yearNum = monthInfo.year;
@@ -25,6 +50,8 @@ const BudgetMonthSwitcher = ({
 
     setMonthInfo(info);
   };
+
+  // Function to move one month forward
   const nextMonth = () => {
     let monthNum = monthInfo.month + 1;
     let yearNum = monthInfo.year;
@@ -55,7 +82,7 @@ const BudgetMonthSwitcher = ({
     return (
       <div className="mx-auto">
         <Row className="d-flex col-12 col-md-8 col-lg-6 col-xl-5 justify-items-between mx-auto align-items-center text-center">
-          <Col className="col-2">
+          <Col className="col-2 col-lg-1">
             <Button
               onClick={previousMonth}
               size="sm"
@@ -68,10 +95,35 @@ const BudgetMonthSwitcher = ({
               &#60;
             </Button>
           </Col>
-          <Col className="col-8">
-            <h1 className="p-0 m-0 fw-bold">{pageInfo.title}</h1>
+          <Col className="col-8 col-lg-10 px-0">
+            <div className="d-flex justify-content-center align-items-center">
+              <h1 className={styles.title}>{pageInfo.title}</h1>
+              <Dropdown className="mx-2 mx-md-3 mx-lg-3">
+                <Dropdown.Toggle variant="dark" size="sm" />
+                <Dropdown.Menu className={styles.menu}>
+                  {budgetMonths.months.map((month) => (
+                    <div key={`${month.month}/${month.year}`}>
+                      <Dropdown.Item
+                        className={
+                          monthInfo.month === month.month &&
+                          monthInfo.year === month.year
+                            ? "bg-primary text-white"
+                            : ""
+                        }
+                        onClick={() => chooseBudget(month.month, month.year)}
+                      >
+                        {`${MONTHS_MAP[month.month]} ${month.year}`}
+                      </Dropdown.Item>
+                      {MONTHS_MAP[month.month] === "January" && (
+                        <hr className="my-1" />
+                      )}
+                    </div>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </Col>
-          <Col className="col-2">
+          <Col className="col-2 col-lg-1">
             <Button
               onClick={nextMonth}
               size="sm"

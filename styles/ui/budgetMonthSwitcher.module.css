@@ -1,0 +1,18 @@
+.title {
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+  font-size: 22px;
+}
+
+.menu {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+/* Media query inside module */
+@media (min-width: 768px) {
+  .title {
+    font-size: 36px;
+  }
+}

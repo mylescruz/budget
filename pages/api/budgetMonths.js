@@ -53,6 +53,7 @@ async function getBudgetMonths(res, { categoriesCol, username }) {
     const currentYear = date.getFullYear();
 
     const budgetMonths = {
+      months: [...months].reverse(),
       current: {
         month: currentMonth,
         year: currentYear,
