@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     case "GET":
       return getTransactions(res, transactionsContext);
     case "POST":
-      return addTransaction(req, res, transactionsContext);
+      return addTransactions(req, res, transactionsContext);
     case "PUT":
       return updateTransactions(req, res, transactionsContext);
     default:
@@ -88,7 +88,7 @@ async function getTransactions(
 }
 
 // Add the user's transaction to MongoDB
-async function addTransaction(
+async function addTransactions(
   req,
   res,
   { client, transactionsCol, categoriesCol, username, month, year },
@@ -96,102 +96,108 @@ async function addTransaction(
   const mongoSession = client.startSession();
 
   try {
-    const transactionType = req.body.type;
+    // Format each transaction based on its type
+    const newTransactions = [...req.body].map((transaction) => {
+      const transactionType = transaction.type;
 
-    const newTransaction = {
-      username,
-      month,
-      year,
-      type: transactionType,
-      date: req.body.date,
-      amount: Number(req.body.amount) * 100,
-    };
+      const newTransaction = {
+        username,
+        month,
+        year,
+        type: transactionType,
+        date: transaction.date,
+        amount: Number(transaction.amount) * 100,
+      };
 
-    // Define the transaction body based on the transaction type
-    if (transactionType === "Expense") {
-      newTransaction.store = req.body.store.trim();
-      newTransaction.items = req.body.items.trim();
-      newTransaction.category = req.body.category;
-    } else if (transactionType === "Transfer") {
-      newTransaction.fromAccount = req.body.fromAccount;
-      newTransaction.toAccount = req.body.toAccount;
-      newTransaction.description = req.body.description;
-    } else {
-      return res
-        .status(500)
-        .send(`${transactionType} is an invalid transaction type`);
-    }
-
-    let insertedId;
-
-    // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async (session) => {
-      // Add the new transaction to the transactions collection in MongoDB
-      const insertedTransaction = await transactionsCol.insertOne(
-        newTransaction,
-        { session },
-      );
-
-      insertedId = insertedTransaction.insertedId;
-
+      // Define the transaction body based on the transaction type
       if (transactionType === "Expense") {
-        // Find the matching category or subcategory
-        const category = await categoriesCol.findOne(
-          {
-            username,
-            month,
-            year,
-            $or: [
-              { name: newTransaction.category },
-              { "subcategories.name": newTransaction.category },
-            ],
-          },
-          { session },
-        );
+        newTransaction.store = transaction.store.trim();
+        newTransaction.items = transaction.items.trim();
+        newTransaction.category = transaction.category;
+      } else if (transactionType === "Transfer") {
+        newTransaction.fromAccount = transaction.fromAccount;
+        newTransaction.toAccount = transaction.toAccount;
+        newTransaction.description = transaction.description;
+      } else {
+        return res
+          .status(500)
+          .send(`${transactionType} is an invalid transaction type`);
+      }
 
-        if (category) {
-          // Update the corresponding category's actual amount
-          if (category.name === newTransaction.category) {
-            // Increment the actual value of the category
-            await categoriesCol.updateOne(
-              { _id: new ObjectId(category._id) },
-              {
-                $inc: {
-                  actual: newTransaction.amount,
+      return newTransaction;
+    });
+
+    let insertedIds;
+
+    // Start a MongoDB transaction
+    await mongoSession.withTransaction(async (session) => {
+      // Insert all the transactions into MongoDB
+      insertedIds = await transactionsCol.insertMany(newTransactions, {
+        session,
+      });
+
+      // Update the correlating category's actual value for all expense transactions
+      for (const transaction of newTransactions) {
+        if (transaction.type === "Expense") {
+          // Find the matching category or subcategory
+          const category = await categoriesCol.findOne(
+            {
+              username,
+              month,
+              year,
+              $or: [
+                { name: transaction.category },
+                { "subcategories.name": transaction.category },
+              ],
+            },
+            { session },
+          );
+
+          if (category) {
+            if (category.name === transaction.category) {
+              // Increment the actual value of the category
+              await categoriesCol.updateOne(
+                { _id: new ObjectId(category._id) },
+                {
+                  $inc: {
+                    actual: transaction.amount,
+                  },
                 },
-              },
-              { session },
-            );
+                { session },
+              );
+            } else {
+              // Increment the actual value of the category and subcategory
+              await categoriesCol.updateOne(
+                {
+                  _id: new ObjectId(category._id),
+                  "subcategories.name": transaction.category,
+                },
+                {
+                  $inc: {
+                    actual: transaction.amount,
+                    "subcategories.$.actual": transaction.amount,
+                  },
+                },
+                { session },
+              );
+            }
           } else {
-            // Increment the actual value of the category and subcategory
-            await categoriesCol.updateOne(
-              {
-                _id: new ObjectId(category._id),
-                "subcategories.name": newTransaction.category,
-              },
-              {
-                $inc: {
-                  actual: newTransaction.amount,
-                  "subcategories.$.actual": newTransaction.amount,
-                },
-              },
-              { session },
-            );
+            throw new Error(`Category, ${transaction.category} not found`);
           }
-        } else {
-          throw new Error(`Category, ${newTransaction.category} not found`);
         }
       }
     });
 
-    // Send the new transaction back to the client
-    const insertedTransaction = {
-      ...newTransaction,
-      _id: insertedId,
-      amount: centsToDollars(newTransaction.amount),
-    };
+    // Send the new transactions back to the client with their inserted MongoDB _id and the formatted dollar amount
+    const insertedTransactions = newTransactions.map((transaction, index) => {
+      return {
+        ...transaction,
+        _id: insertedIds.insertedIds[index],
+        amount: centsToDollars(transaction.amount),
+      };
+    });
 
-    return res.status(200).json(insertedTransaction);
+    return res.status(200).json(insertedTransactions);
   } catch (error) {
     console.error(`POST transactions request failed for ${username}: ${error}`);
     return res

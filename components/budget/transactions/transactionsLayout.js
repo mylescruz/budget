@@ -1,5 +1,4 @@
 import { Button, Row } from "react-bootstrap";
-import AddTransactionModal from "./addTransactionModal/addTransactionModal";
 import { useContext, useMemo, useState } from "react";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
@@ -7,6 +6,7 @@ import DeleteTransactionModal from "./deleteTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
+import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
@@ -107,7 +107,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             onClick={openAddTransaction}
             className="text-nowrap"
           >
-            Add Transaction
+            Add Transactions
           </Button>
         </div>
 
@@ -138,7 +138,7 @@ const TransactionsLayout = ({ dateInfo }) => {
         )}
 
         {modal === "addTransaction" && (
-          <AddTransactionModal
+          <AddTransactionsModal
             dateInfo={dateInfo}
             modal={modal}
             setModal={setModal}

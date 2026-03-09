@@ -1,0 +1,35 @@
+.delete {
+  &:hover {
+    cursor: pointer;
+    color: red;
+    transition: color 0.3s;
+  }
+
+  &:active {
+    scale: 0.9;
+  }
+}
+
+.edit {
+  &:hover {
+    cursor: pointer;
+    color: rgb(184, 242, 238);
+    transition: color 0.3s;
+  }
+
+  &:active {
+    scale: 0.9;
+  }
+}
+
+.add {
+  &:hover {
+    cursor: pointer;
+    color: rgb(74, 109, 173);
+    transition: color 0.3s;
+  }
+
+  &:active {
+    scale: 0.9;
+  }
+}

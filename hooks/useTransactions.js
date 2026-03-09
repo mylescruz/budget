@@ -31,10 +31,9 @@ const useTransactions = (month, year) => {
     getTransactions(month, year);
   }, [month, year, getTransactions]);
 
-  // POST request that adds a new transaction based on the month and year
-  // Then it sets the transactions array to the array returned by the response
-  const postTransaction = useCallback(
-    async (newTransaction) => {
+  // Add the new transactions to the database
+  const postTransactions = useCallback(
+    async (newTransactions) => {
       try {
         const rsp = await fetch(`/api/transactions/${year}/${month}`, {
           method: "POST",
@@ -42,12 +41,12 @@ const useTransactions = (month, year) => {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newTransaction),
+          body: JSON.stringify(newTransactions),
         });
 
         if (rsp.ok) {
-          const addedTransaction = await rsp.json();
-          setTransactions([...transactions, addedTransaction]);
+          const addedTransactions = await rsp.json();
+          setTransactions([...transactions, ...addedTransactions]);
         } else {
           const message = await rsp.text();
           throw new Error(message);
@@ -168,7 +167,7 @@ const useTransactions = (month, year) => {
     transactions,
     transactionsLoading,
     getTransactions,
-    postTransaction,
+    postTransactions,
     putTransaction,
     deleteTransaction,
     updateTransactions,

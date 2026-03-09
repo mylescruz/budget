@@ -8,7 +8,6 @@ import {
 } from "@/contexts/CategoriesContext";
 import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
-import AddTransactionModal from "../budget/transactions/addTransactionModal/addTransactionModal";
 import {
   TransactionsContext,
   TransactionsProvider,
@@ -18,6 +17,7 @@ import LoadingIndicator from "../ui/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../category/categoryBadge";
+import AddTransactionsModal from "../budget/transactions/addTransactionsModal/addTransactionsModal";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -173,7 +173,7 @@ const InnerDashboard = ({ dateInfo }) => {
           </Col>
         </Row>
 
-        <AddTransactionModal
+        <AddTransactionsModal
           dateInfo={dateInfo}
           modal={modal}
           setModal={setModal}
