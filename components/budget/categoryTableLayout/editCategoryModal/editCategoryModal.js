@@ -8,6 +8,7 @@ import EditSubcategoryPage from "./editSubcategoryPage";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import dayFormatter from "@/helpers/dayFormatter";
+import PopUp from "@/components/ui/popUp";
 
 const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
@@ -94,6 +95,13 @@ const EditCategoryModal = ({
     setModal("none");
   };
 
+  // Conditions to determine if a category can be deleted
+  const noTransactions = !editedCategory.fixed && editedCategory.actual === 0;
+  const funMoney = editedCategory.noDelete;
+  const fixed = editedCategory.fixed;
+
+  const ableToDelete = (noTransactions || fixed) && !funMoney;
+
   return (
     <Modal show={modal === "edit"} onHide={closeEditCategoryModal} centered>
       {status !== "updating" && status !== "deleting" && (
@@ -106,14 +114,25 @@ const EditCategoryModal = ({
               {page === "addSubcategory" && <span>Add new subcategory</span>}
               {page === "editSubcategory" && <span>Edit a subcategory</span>}
             </Modal.Title>
-            {page === "details" && !editedCategory.noDelete && (
-              <Button
-                variant="danger"
-                disabled={!editedCategory.fixed && editedCategory.actual !== 0}
-                onClick={openDeleteModal}
-              >
-                Delete
-              </Button>
+            {page === "details" && (
+              <div>
+                {ableToDelete ? (
+                  <Button variant="danger" onClick={openDeleteModal}>
+                    Delete
+                  </Button>
+                ) : (
+                  <PopUp
+                    id="deletePopUp"
+                    title={
+                      editedCategory.noDelete
+                        ? "Use this to track the money you can spend after all other expenses are covered."
+                        : "This category has transactions and cannot be deleted"
+                    }
+                  >
+                    <i className="bi bi-info-circle" />
+                  </PopUp>
+                )}
+              </div>
             )}
           </Modal.Header>
 
