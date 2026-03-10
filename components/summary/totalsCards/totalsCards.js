@@ -19,6 +19,26 @@ const TotalsCards = ({ summary }) => {
   const income = summary.income;
   const totalIncome = income.totalIncome.amount;
 
+  // Define transfer summary
+  const transfersTransactions = summary.transactions.filter(
+    (transaction) => transaction.type === "Transfer",
+  );
+
+  const transfers = transfersTransactions.reduce(
+    (sum, current) => {
+      if (current.toAccount === "Savings") {
+        sum.out += current.amount;
+      }
+
+      if (current.toAccount === "Checking") {
+        sum.in += current.amount;
+      }
+
+      return sum;
+    },
+    { in: 0, out: 0 },
+  );
+
   // Define spending summaries
   const numMonths = summary.months.length;
   const sortedMonthsBySpending = summary.months.sort(
@@ -60,6 +80,21 @@ const TotalsCards = ({ summary }) => {
     },
   ];
 
+  const transferSummary = [
+    {
+      title: "Total Savings",
+      amount: transfers.out,
+    },
+    {
+      title: "Transferred In",
+      amount: transfers.in,
+    },
+    {
+      title: "Net Savings",
+      amount: transfers.out - transfers.in,
+    },
+  ];
+
   const monthsSummary = [
     {
       title: "Highest Spent",
@@ -72,7 +107,7 @@ const TotalsCards = ({ summary }) => {
       amount: lowestSpentMonth.actual,
     },
     {
-      title: "Average",
+      title: "Average Spent",
       name: "Per Month",
       amount: averageSpentPerMonth,
     },
@@ -103,6 +138,26 @@ const TotalsCards = ({ summary }) => {
                 >
                   Details
                 </p>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <Row className="d-flex justify-content-center">
+        {transferSummary.map((total, index) => (
+          <Col key={index} className="col-12 col-md-4">
+            <Card className="my-2 card-background">
+              <Card.Body>
+                <h4 className="fw-bold">{total.title}</h4>
+                <h5>
+                  <span
+                    className={`${
+                      total.amount < 0 ? "text-danger fw-bold" : ""
+                    }`}
+                  >
+                    {dollarFormatter(total.amount)}
+                  </span>
+                </h5>
               </Card.Body>
             </Card>
           </Col>
