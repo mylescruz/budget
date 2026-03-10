@@ -67,6 +67,8 @@ async function getYearSummary(
 
     const months = await getMonthsSummaries(
       categoriesCol,
+      transactionsCol,
+      incomeCol,
       username,
       month,
       year,
@@ -262,30 +264,123 @@ async function getIncomeSummary(incomeCol, username, month, year) {
 }
 
 // Get total spending for each month
-async function getMonthsSummaries(categoriesCol, username, month, year) {
-  const months = await categoriesCol
+async function getMonthsSummaries(
+  categoriesCol,
+  transactionsCol,
+  incomeCol,
+  username,
+  month,
+  year,
+) {
+  // Get the total fixed expenses for each month
+  const fixedCategoriesPerMonth = await categoriesCol
     .aggregate([
-      { $match: { username, year, month: { $lte: month } } },
+      { $match: { username, year, month: { $lte: month }, fixed: true } },
       {
         $group: {
           _id: "$month",
-          totalBudget: { $sum: "$budget" },
           totalActual: { $sum: "$actual" },
         },
       },
       {
         $project: {
           number: "$_id",
-          budget: "$totalBudget",
           actual: "$totalActual",
-          remaining: { $subtract: ["$totalBudget", "$totalActual"] },
           _id: 0,
         },
       },
     ])
     .toArray();
 
-  return months
+  // Get the total expenses per month based on type and transfers based on the account
+  const expensesPerMonth = await transactionsCol
+    .aggregate([
+      { $match: { username, year, month: { $lte: month } } },
+      {
+        $group: {
+          _id: { month: "$month", type: "$type", toAccount: "$toAccount" },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          number: "$_id.month",
+          type: "$_id.type",
+          toAccount: "$_id.toAccount",
+          amount: "$totalAmount",
+          _id: 0,
+        },
+      },
+    ])
+    .toArray();
+
+  // Get the total income per month
+  const incomePerMonth = await incomeCol
+    .aggregate([
+      { $match: { username, year, month: { $lte: month } } },
+      {
+        $group: {
+          _id: "$month",
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      {
+        $project: {
+          number: "$_id",
+          amount: "$totalAmount",
+          _id: 0,
+        },
+      },
+    ])
+    .toArray();
+
+  // Create a map to store each month's total income and expenses
+  const monthsMap = new Map();
+
+  // Map the fixed expenses to each month of the year
+  fixedCategoriesPerMonth.forEach((month) => {
+    const foundMonth = monthsMap.get(month.number);
+
+    if (!foundMonth) {
+      monthsMap.set(month.number, {
+        number: month.number,
+        income: 0,
+        transfers: {
+          in: 0,
+          out: 0,
+        },
+        actual: month.actual,
+      });
+    } else {
+      foundMonth.actual += month.actual;
+    }
+  });
+
+  // Map the expenses to the actual values and transfers to each month of the year
+  expensesPerMonth.forEach((month) => {
+    const foundMonth = monthsMap.get(month.number);
+
+    if (month.type === "Expense") {
+      foundMonth.actual += month.amount;
+    }
+
+    if (month.type === "Transfer") {
+      if (month.toAccount === "Savings") {
+        foundMonth.transfers.out += month.amount;
+      } else {
+        foundMonth.transfers.in += month.amount;
+      }
+    }
+  });
+
+  // Map each month's total income
+  incomePerMonth.forEach((month) => {
+    const foundMonth = monthsMap.get(month.number);
+
+    foundMonth.income += month.amount;
+  });
+
+  return [...monthsMap.values()]
     .map((month) => {
       const monthNumber = month.number;
       const monthDate = new Date(year, monthNumber - 1);
@@ -296,9 +391,13 @@ async function getMonthsSummaries(categoriesCol, username, month, year) {
       return {
         ...month,
         name: monthName,
-        budget: centsToDollars(month.budget),
+        income: centsToDollars(month.income),
         actual: centsToDollars(month.actual),
-        remaining: centsToDollars(month.remaining),
+        remaining: centsToDollars(month.income - month.actual),
+        transfers: {
+          in: centsToDollars(month.transfers.in),
+          out: centsToDollars(month.transfers.out),
+        },
       };
     })
     .sort((a, b) => a.number - b.number);

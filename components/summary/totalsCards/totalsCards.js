@@ -6,7 +6,6 @@ import MonthsSpendingModal from "./monthsSpendingModal";
 import RemainingSummaryModal from "./remainingSummaryModal";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
-import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
 const TotalsCards = ({ summary }) => {
   const [modal, setModal] = useState("none");
@@ -15,162 +14,102 @@ const TotalsCards = ({ summary }) => {
     setModal(modalName);
   };
 
-  // Define income summaries
-  const income = summary.income;
-  const totalIncome = income.totalIncome.amount;
+  // Get the totals for income, expenses and transfers
+  const rawTotals = summary.months.reduce(
+    (sum, month) => {
+      sum.income += dollarsToCents(month.income);
 
-  // Define transfer summary
-  const transfersTransactions = summary.transactions.filter(
-    (transaction) => transaction.type === "Transfer",
-  );
+      sum.expenses += dollarsToCents(month.actual);
 
-  const transfers = transfersTransactions.reduce(
-    (sum, current) => {
-      if (current.toAccount === "Savings") {
-        sum.out += current.amount;
-      }
+      sum.transfers.in += dollarsToCents(month.transfers.in);
 
-      if (current.toAccount === "Checking") {
-        sum.in += current.amount;
-      }
+      sum.transfers.out += dollarsToCents(month.transfers.out);
 
       return sum;
     },
-    { in: 0, out: 0 },
+    { income: 0, expenses: 0, transfers: { in: 0, out: 0 } },
   );
 
-  // Define spending summaries
-  const numMonths = summary.months.length;
-  const sortedMonthsBySpending = summary.months.sort(
-    (a, b) => b.actual - a.actual,
-  );
-  const highestSpentMonth = sortedMonthsBySpending[0];
-  const lowestSpentMonth = sortedMonthsBySpending[numMonths - 1];
+  // Get the net cash flow for the year
+  const netCashFlow = rawTotals.income - rawTotals.expenses;
 
-  const sortedMonths = summary.months.sort((a, b) => a.number - b.number);
+  // Get the net savings for the year
+  const netSavings = rawTotals.transfers.out - rawTotals.transfers.in;
 
-  const totalSpent = centsToDollars(
-    summary.months.reduce(
-      (sum, current) => sum + dollarsToCents(current.actual),
-      0,
-    ),
-  );
-  const averageSpentPerMonth = totalSpent / numMonths;
+  const totals = {
+    income: centsToDollars(rawTotals.income),
+    expenses: centsToDollars(rawTotals.expenses),
+    netCashFlow: centsToDollars(netCashFlow),
+    toSavings: centsToDollars(rawTotals.transfers.out),
+    toChecking: centsToDollars(rawTotals.transfers.in),
+    netSavings: centsToDollars(netSavings),
+  };
 
-  const totalRemaining = subtractDecimalValues(
-    income.totalIncome.amount,
-    totalSpent,
-  );
-
-  const totalSummary = [
+  const totalsArray = [
     {
-      title: "Total Income",
-      amount: totalIncome,
+      title: "Income",
+      amount: totals.income,
+      textColor: "text-dark",
       modal: "income",
     },
     {
-      title: "Total Spent",
-      amount: totalSpent,
+      title: "Expenses",
+      amount: totals.expenses,
+      textColor: "text-dark",
       modal: "spent",
     },
     {
-      title: "Total Left",
-      amount: totalRemaining,
+      title: "Net Cash Flow",
+      amount: totals.netCashFlow,
+      textColor:
+        totals.netCashFlow >= 0
+          ? "text-success fw-bold"
+          : "text-danger fw-bold",
       modal: "remaining",
     },
-  ];
-
-  const transferSummary = [
     {
-      title: "Total Savings",
-      amount: transfers.out,
+      title: "Saved",
+      amount: totals.toSavings,
+      textColor:
+        totals.toSavings > 0 ? "text-success fw-bold" : "text-danger fw-bold",
     },
     {
-      title: "Transferred In",
-      amount: transfers.in,
+      title: "Transfers In",
+      amount: totals.toChecking,
+      textColor:
+        totals.toChecking > 0 ? "text-danger fw-bold" : "text-success fw-bold",
     },
     {
       title: "Net Savings",
-      amount: transfers.out - transfers.in,
-    },
-  ];
-
-  const monthsSummary = [
-    {
-      title: "Highest Spent",
-      name: highestSpentMonth.name,
-      amount: highestSpentMonth.actual,
-    },
-    {
-      title: "Lowest Spent",
-      name: lowestSpentMonth.name,
-      amount: lowestSpentMonth.actual,
-    },
-    {
-      title: "Average Spent",
-      name: "Per Month",
-      amount: averageSpentPerMonth,
+      amount: totals.netSavings,
+      textColor:
+        totals.netSavings >= 0 ? "text-success fw-bold" : "text-danger fw-bold",
     },
   ];
 
   return (
     <>
       <Row className="d-flex justify-content-center">
-        {totalSummary.map((total, index) => (
+        {totalsArray.map((total, index) => (
           <Col key={index} className="col-12 col-md-4">
             <Card className="my-2 card-background">
               <Card.Body>
-                <h4 className="fw-bold">{total.title}</h4>
-                <h5>
-                  <span
-                    className={`${
-                      total.amount < 0 ? "text-danger fw-bold" : ""
-                    }`}
-                  >
+                <h5 className="fw-bold">{total.title}</h5>
+                <h4>
+                  <span className={total.textColor}>
                     {dollarFormatter(total.amount)}
                   </span>
-                </h5>
-                <p
-                  className="text-center text-decoration-underline clicker m-0"
-                  onClick={() => {
-                    showModal(total.modal);
-                  }}
-                >
-                  Details
-                </p>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <Row className="d-flex justify-content-center">
-        {transferSummary.map((total, index) => (
-          <Col key={index} className="col-12 col-md-4">
-            <Card className="my-2 card-background">
-              <Card.Body>
-                <h4 className="fw-bold">{total.title}</h4>
-                <h5>
-                  <span
-                    className={`${
-                      total.amount < 0 ? "text-danger fw-bold" : ""
-                    }`}
+                </h4>
+                {total.modal && (
+                  <p
+                    className="text-center text-decoration-underline clicker m-0"
+                    onClick={() => {
+                      showModal(total.modal);
+                    }}
                   >
-                    {dollarFormatter(total.amount)}
-                  </span>
-                </h5>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <Row className="d-flex justify-content-center">
-        {monthsSummary.map((month, index) => (
-          <Col key={index} className="col-12 col-md-4">
-            <Card className="my-2 card-background">
-              <Card.Body>
-                <h4 className="fw-bold">{month.title}</h4>
-                <h5>{month.name}</h5>
-                <h5>{dollarFormatter(month.amount)}</h5>
+                    Details
+                  </p>
+                )}
               </Card.Body>
             </Card>
           </Col>
@@ -184,15 +123,15 @@ const TotalsCards = ({ summary }) => {
       />
 
       <MonthsSpendingModal
-        months={sortedMonths}
-        totalSpent={totalSpent}
+        months={summary.months}
+        totalExpenses={totals.expenses}
         modal={modal}
         setModal={setModal}
       />
 
       <RemainingSummaryModal
-        months={sortedMonths}
-        totalRemaining={totalRemaining}
+        months={summary.months}
+        totalRemaining={totals.netCashFlow}
         modal={modal}
         setModal={setModal}
       />
