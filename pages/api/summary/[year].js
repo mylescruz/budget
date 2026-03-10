@@ -58,7 +58,7 @@ async function getYearSummary(
 
     const income = await getIncomeSummary(incomeCol, username, month, year);
 
-    const transactions = await getExpenseTransactions(
+    const transactions = await getTransactions(
       transactionsCol,
       username,
       month,
@@ -305,17 +305,21 @@ async function getMonthsSummaries(categoriesCol, username, month, year) {
 }
 
 // Get all the user's transactions for a given year
-async function getExpenseTransactions(transactionsCol, username, month, year) {
+async function getTransactions(transactionsCol, username, month, year) {
   return await transactionsCol
     .aggregate([
-      { $match: { username, year, month: { $lte: month }, type: "Expense" } },
+      { $match: { username, year, month: { $lte: month } } },
       {
         $project: {
           month: 1,
+          type: 1,
           date: 1,
           store: 1,
           items: 1,
           category: 1,
+          fromAccount: 1,
+          toAccount: 1,
+          description: 1,
           amount: { $divide: ["$amount", 100] },
         },
       },

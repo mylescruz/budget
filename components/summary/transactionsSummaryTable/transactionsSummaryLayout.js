@@ -6,17 +6,29 @@ const TransactionsSummaryLayout = ({ transactions }) => {
   const [chosenTransaction, setChosenTransaction] = useState(null);
   const [modal, setModal] = useState("none");
 
-  console.log(transactions);
   const formattedTransactions = useMemo(() => {
     return transactions.map((transaction) => {
-      return {
-        _id: transaction._id,
-        date: transaction.date,
-        name: transaction.store,
-        description: transaction.items,
-        type: transaction.category,
-        amount: transaction.amount,
-      };
+      if (transaction.type === "Expense") {
+        return {
+          _id: transaction._id,
+          type: transaction.type,
+          date: transaction.date,
+          name: transaction.store,
+          description: transaction.items,
+          type: transaction.category,
+          amount: transaction.amount,
+        };
+      } else {
+        return {
+          _id: transaction._id,
+          type: transaction.type,
+          date: transaction.date,
+          name: `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`,
+          description: transaction.description,
+          type: "Transfer",
+          amount: transaction.amount,
+        };
+      }
     });
   }, [transactions]);
 
