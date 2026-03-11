@@ -194,30 +194,6 @@ const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
           <th className={progressColumn} />
         </tr>
       </tbody>
-      <tfoot>
-        <tr className="d-flex table-dark">
-          <th className="col-6 col-md-4 col-lg-3 d-flex align-items-center">
-            Month Totals
-          </th>
-          <th className="col-3 col-md-2 d-lg-none d-flex align-items-center justify-content-end">
-            {dollarFormatter(categoryTotals.actual)}
-          </th>
-          <th className="d-none d-lg-flex col-lg-2 align-items-center justify-content-end">
-            {dollarFormatter(availableFunds - transfersOut)}
-          </th>
-          <th className="d-none d-lg-flex col-lg-2 align-items-center justify-content-end">
-            {dollarFormatter(categoryTotals.actual)}
-          </th>
-          <th className="col-3 col-md-2 text-end d-flex align-items-center justify-content-end">
-            <span className={leftoverFundsColor}>
-              {dollarFormatter(
-                categoryTotals.remaining + transfersIn - transfersOut,
-              )}
-            </span>
-          </th>
-          <th className="d-none d-md-block col-md-4 col-lg-3" />
-        </tr>
-      </tfoot>
     </Table>
   );
 };
