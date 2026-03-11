@@ -24,21 +24,18 @@ const EditSubcategoryPage = ({
       });
 
       setFieldChanges((prev) => ({ ...prev, name: true }));
-    } else if (id === "actual" && editedCategory.fixed) {
-      setEditedSubcategory({
-        ...editedSubcategory,
-        [id]: e.target.value,
-      });
-
-      setFieldChanges((prev) => ({
-        ...prev,
-        budget: true,
-      }));
     } else {
       setEditedSubcategory({
         ...editedSubcategory,
         [id]: e.target.value,
       });
+
+      if (id === "actual" && editedCategory.fixed) {
+        setFieldChanges((prev) => ({
+          ...prev,
+          budget: true,
+        }));
+      }
     }
   };
 
