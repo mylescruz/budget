@@ -39,6 +39,13 @@ const TotalsLayout = () => {
   // Get the total available funds for the month
   const availableFunds = addDecimalValues(categoryTotals.budget, transfersIn);
 
+  // Get the total amount currently charged for the month
+  const currentSpending = centsToDollars(
+    dollarsToCents(categoryTotals.nonFixedActual) +
+      dollarsToCents(categoryTotals.fixedActual) +
+      dollarsToCents(transfersOut),
+  );
+
   // Get the total funds left to spend for the month
   const leftToSpend = centsToDollars(
     dollarsToCents(availableFunds) -
@@ -103,37 +110,32 @@ const TotalsLayout = () => {
         </Col>
       </Row>
 
-      <ProgressBar
-        currentValue={
-          categoryTotals.nonFixedActual +
-          categoryTotals.fixedActual +
-          transfersOut
-        }
-        totalValue={availableFunds}
-      />
+      <ProgressBar currentValue={currentSpending} totalValue={availableFunds} />
 
       <Row className="mt-4 text-center">
-        <Col className="col-12 col-md-4 my-1">
+        <Col className="col-4 my-1">
           <PopUp
             id="variableSpent"
-            title={"Total spent between fixed and changing categories"}
+            title={"Total spent on expense transactions"}
           >
             <div>
-              Total Spent:{" "}
-              {dollarFormatter(
-                categoryTotals.nonFixedActual + categoryTotals.fixedActual,
-              )}
+              Expenses: {dollarFormatter(categoryTotals.nonFixedActual)}
             </div>
           </PopUp>
         </Col>
-        <Col className="col-12 col-md-4 my-1">
-          <PopUp id="transfersIn" title={"Total transfers out to savings"}>
-            <div>Transferred In: {dollarFormatter(transfersIn)}</div>
+        <Col className="col-4 my-1">
+          <PopUp
+            id="fixedCategories"
+            title={"Total obligation for all fixed categories"}
+          >
+            <div>
+              Fixed Bills: {dollarFormatter(categoryTotals.fixedBudget)}
+            </div>
           </PopUp>
         </Col>
-        <Col className="col-12 col-md-4 my-1">
-          <PopUp id="transfersOut" title={"Total transfers out to savings"}>
-            <div>Transferred to Savings: {dollarFormatter(transfersOut)}</div>
+        <Col className="col-4 my-1">
+          <PopUp id="saved" title={"Total transferred out to savings"}>
+            <div>Saved: {dollarFormatter(transfersOut)}</div>
           </PopUp>
         </Col>
       </Row>
