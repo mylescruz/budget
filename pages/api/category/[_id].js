@@ -48,7 +48,7 @@ async function updateCategory(
 
   try {
     const categoryId = req.query._id;
-    const category = req.body;
+    const category = { ...req.body };
 
     category.budget = dollarsToCents(category.budget);
 
@@ -173,6 +173,7 @@ async function updateCategory(
       ...category,
       budget: centsToDollars(category.budget),
       actual: centsToDollars(category.actual),
+      subcategories: updatedSubcategories,
     };
 
     updatedCategory.subcategories = updatedCategory.subcategories.map(
