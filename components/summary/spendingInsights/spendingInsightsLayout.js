@@ -86,6 +86,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
 
     // Top transactions of the year
     const topTransactions = [...transactions]
+      .filter((transaction) => transaction.type === "Expense")
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 10)
       .map((transaction) => {
@@ -99,21 +100,23 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const storesMap = new Map();
 
     transactions.forEach((transaction) => {
-      const store = storesMap.get(transaction.store);
+      if (transaction.type === "Expense") {
+        const store = storesMap.get(transaction.store);
 
-      if (!store) {
-        storesMap.set(transaction.store, {
-          store: transaction.store,
-          amount: transaction.amount,
-          visits: 1,
-        });
-      } else {
-        const totalSpent = addDecimalValues(store.amount, transaction.amount);
-        storesMap.set(transaction.store, {
-          store: transaction.store,
-          amount: totalSpent,
-          visits: store.visits + 1,
-        });
+        if (!store) {
+          storesMap.set(transaction.store, {
+            store: transaction.store,
+            amount: transaction.amount,
+            visits: 1,
+          });
+        } else {
+          const totalSpent = addDecimalValues(store.amount, transaction.amount);
+          storesMap.set(transaction.store, {
+            store: transaction.store,
+            amount: totalSpent,
+            visits: store.visits + 1,
+          });
+        }
       }
     });
 
