@@ -410,7 +410,11 @@ async function generateMissingMonths({
             $match: {
               username,
               $or: [
-                { month: previousMonth, year: previousYear },
+                {
+                  month: previousMonth,
+                  year: previousYear,
+                  frequency: { $nin: ["Semi-Annually", "Annually"] },
+                },
                 {
                   month: semiAnnualMonth,
                   year: semiAnnualYear,
@@ -425,117 +429,151 @@ async function generateMissingMonths({
             },
           },
           {
-            $match: {
-              $or: [
-                { fixed: false },
-                {
-                  fixed: true,
-                  frequency: {
-                    $in: ["Monthly", "Semi-Annually", "Annually"],
-                  },
-                },
-                {
-                  fixed: true,
-                  subcategories: {
-                    $elemMatch: { frequency: "Monthly" },
-                  },
-                },
-              ],
-            },
-          },
-          {
             $project: {
+              _id: 1,
               username: 1,
+              month: 1,
+              year: 1,
               name: 1,
               color: 1,
               budget: 1,
               actual: { $cond: ["$fixed", "$actual", 0] },
               fixed: 1,
               frequency: 1,
-              subcategories: 1,
+              parentCategoryId: 1,
               noDelete: 1,
               dueDate: 1,
-              _id: 0,
             },
           },
-          { $sort: { budget: -1 } },
+          { $sort: { year: 1, month: 1 } },
         ],
         { session },
       )
       .toArray();
 
-    // Reset the subcategories' values
-    const newCategories = previousCategories.map((category) => {
-      let formattedSubcategories;
+    if (previousCategories.length > 0) {
+      // Tracks all the subcategories' parent category ids
+      const parentCategoryIds = new Set();
 
-      if (category.subcategories.length > 0) {
-        formattedSubcategories = category.subcategories
-          .map((subcategory) => {
-            if (category.fixed) {
-              return {
-                ...subcategory,
-                id: uuidv4(),
-                actual: subcategory.actual,
-                frequency: subcategory.frequency,
-                dueDate: subcategory.dueDate,
-              };
-            } else {
-              return {
-                ...subcategory,
-                id: uuidv4(),
-                actual: 0,
-              };
-            }
-          })
-          .filter((subcategory) => {
-            return (
-              !category.fixed ||
-              (category.fixed && subcategory.frequency === "Monthly")
-            );
-          });
-      } else {
-        formattedSubcategories = category.subcategories;
-      }
+      // Keep track of the current parent category's
+      const existingParentIds = new Set();
 
-      const formattedCategory = {
-        username: category.username,
+      previousCategories.forEach((category) => {
+        if (category.parentCategoryId) {
+          // Add all subcategories' parent categories to the set
+          parentCategoryIds.add(category.parentCategoryId.toString());
+        } else {
+          // Add all the parent categories to the set
+          existingParentIds.add(category._id.toString());
+        }
+      });
+
+      // Find the missing parent ids from semi-annual and annual months
+      const missingParentIds = [...parentCategoryIds].filter(
+        (categoryId) => !existingParentIds.has(categoryId),
+      );
+
+      // Get the old parent categories from the semi-annual and annual months
+      const missingParentCategories = await categoriesCol
+        .find(
+          {
+            _id: {
+              $in: missingParentIds.map(
+                (categoryId) => new ObjectId(categoryId),
+              ),
+            },
+          },
+          { session },
+        )
+        .toArray();
+
+      // Combine both categories to be formatted
+      const allCategories = [...previousCategories, ...missingParentCategories];
+
+      const formattedParentCategories = [];
+
+      // Loop through each parent category while holding on to its old _id
+      allCategories.forEach((category) => {
+        if (!category.parentCategoryId) {
+          const formattedCategory = {
+            oldId: category._id,
+            username,
+            month: monthIndex,
+            year: yearIndex,
+            name: category.name,
+            color: category.color,
+            fixed: category.fixed,
+            budget: category.budget,
+          };
+
+          if (formattedCategory.fixed) {
+            formattedCategory.frequency = category.frequency;
+            formattedCategory.dueDate = category.dueDate;
+          }
+
+          formattedParentCategories.push(formattedCategory);
+        }
+      });
+
+      // Insert the new parent categories without the old _id
+      const insertedParentCategories = await categoriesCol.insertMany(
+        formattedParentCategories.map(({ oldId, ...category }) => category),
+        { session },
+      );
+
+      const parentIdMap = new Map();
+
+      // Map the old parent _id with then new _id
+      formattedParentCategories.forEach((category, index) => {
+        const oldId = category.oldId.toString();
+        const newId = insertedParentCategories.insertedIds[index];
+
+        parentIdMap.set(oldId, newId);
+      });
+
+      const subcategories = [];
+
+      // Format the subcategories and attach their new parent id
+      allCategories.forEach((category) => {
+        if (category.parentCategoryId) {
+          const newParentId = parentIdMap.get(
+            category.parentCategoryId.toString(),
+          );
+
+          if (!newParentId) {
+            return;
+          }
+
+          const formattedSubcategory = {
+            username,
+            month: monthIndex,
+            year: yearIndex,
+            parentCategoryId: newParentId,
+            name: category.name,
+            color: category.color,
+            fixed: category.fixed,
+            actual: category.fixed ? category.actual : 0,
+          };
+
+          if (formattedSubcategory.fixed) {
+            formattedSubcategory.dueDate = category.dueDate;
+            formattedSubcategory.frequency = category.frequency;
+          }
+
+          subcategories.push(formattedSubcategory);
+        }
+      });
+
+      await categoriesCol.insertMany(subcategories, { session });
+
+      // Update user's Fun Money category for the missing month
+      await updateFunMoney({
+        username,
         month: monthIndex,
         year: yearIndex,
-        name: category.name,
-        color: category.color,
-        budget: category.budget,
-        actual: category.actual,
-        fixed: category.fixed,
-        subcategories: formattedSubcategories,
-      };
-
-      if (formattedCategory.fixed) {
-        if (formattedCategory.subcategories.length > 0) {
-          formattedCategory.frequency = null;
-          formattedCategory.dueDate = null;
-        } else {
-          formattedCategory.frequency = category.frequency;
-          formattedCategory.dueDate = category.dueDate;
-        }
-      }
-
-      if (formattedCategory.name === "Fun Money") {
-        formattedCategory.noDelete = true;
-      }
-
-      return formattedCategory;
-    });
-
-    // Insert the month's missing categories for the user into MongoDB
-    await categoriesCol.insertMany(newCategories, { session });
-
-    // Update user's Fun Money category for the missing month
-    await updateFunMoney({
-      username,
-      month: monthIndex,
-      year: yearIndex,
-      session,
-    });
+        session,
+      });
+    }
 
     monthIndex += 1;
 
