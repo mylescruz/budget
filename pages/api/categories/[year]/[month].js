@@ -181,56 +181,40 @@ async function getCurrentCategories(
   categoriesCol,
   session,
 ) {
-  // Get the categories for the current month and year
+  // Fetch all the user's categories for the given month and year with the sum of each category's correlating transaction amounts
   const categoriesDocs = await categoriesCol
-    .find({ username, month, year }, { session })
+    .aggregate(
+      [
+        { $match: { username, month, year } },
+        {
+          $lookup: {
+            from: "transactions",
+            localField: "name",
+            foreignField: "category",
+            pipeline: [
+              { $match: { username, month, year } },
+              { $project: { category: 1, amount: 1 } },
+            ],
+            as: "transactions",
+          },
+        },
+        {
+          $addFields: {
+            transactionsAmount: { $sum: "$transactions.amount" },
+          },
+        },
+        {
+          $project: {
+            transactions: 0,
+          },
+        },
+      ],
+      { session },
+    )
     .toArray();
 
-  // If the categories already exist, send the categories array back to the client
-  if (categoriesDocs.length > 0) {
-    const categories = categoriesDocs
-      .map((category) => {
-        const formattedCategory = {
-          _id: category._id,
-          name: category.name,
-          color: category.color,
-          fixed: category.fixed,
-          budget: centsToDollars(category.budget),
-          actual: centsToDollars(category.actual),
-        };
-
-        if (formattedCategory.fixed) {
-          formattedCategory.frequency = category.frequency;
-          formattedCategory.dueDate = category.dueDate;
-        }
-
-        const subcategories = category.subcategories.map((subcategory) => {
-          const formattedSubcategory = {
-            id: subcategory.id,
-            name: subcategory.name,
-            actual: centsToDollars(subcategory.actual),
-          };
-
-          if (formattedCategory.fixed) {
-            formattedSubcategory.frequency = subcategory.frequency;
-            formattedSubcategory.dueDate = subcategory.dueDate;
-          }
-
-          return formattedSubcategory;
-        });
-
-        formattedCategory.subcategories = subcategories;
-
-        if (formattedCategory.name === "Fun Money") {
-          formattedCategory.noDelete = true;
-        }
-
-        return formattedCategory;
-      })
-      .sort((a, b) => b.budget - a.budget);
-
-    return categories;
-  } else {
+  // If the categories don't exist, fetch the last budget month's categories
+  if (categoriesDocs.length === 0) {
     return await getPreviousCategories(
       username,
       month,
@@ -239,6 +223,99 @@ async function getCurrentCategories(
       session,
     );
   }
+
+  // Create a map object to place the subcategories with the correlating parent category
+  const categoriesMap = new Map();
+
+  // Filter the parent and subcategories
+  const parentCategories = [];
+  const subcategories = [];
+
+  categoriesDocs.forEach((category) => {
+    if (!category.parentCategoryId) {
+      parentCategories.push(category);
+    } else {
+      subcategories.push(category);
+    }
+  });
+
+  // Format each parent category
+  parentCategories.forEach((category) => {
+    const formattedCategory = {
+      _id: category._id,
+      username: category.username,
+      month: category.month,
+      year: category.year,
+      name: category.name,
+      color: category.color,
+      fixed: category.fixed,
+      budget: category.budget,
+      actual: category.fixed ? category.actual : category.transactionsAmount,
+      subcategories: [],
+    };
+
+    if (formattedCategory.fixed) {
+      formattedCategory.frequency = category.frequency;
+      formattedCategory.dueDate = category.dueDate;
+    }
+
+    // Add the noDelete flag to the Fun Money category
+    if (formattedCategory.name === "Fun Money") {
+      formattedCategory.noDelete = true;
+    }
+
+    categoriesMap.set(category._id.toString(), formattedCategory);
+  });
+
+  // Format each subcategory and place it in the parent category's subcategories array
+  subcategories.forEach((subcategory) => {
+    const formattedSubcategory = {
+      id: subcategory._id,
+      name: subcategory.name,
+      actual: subcategory.fixed
+        ? subcategory.actual
+        : subcategory.transactionsAmount,
+    };
+
+    if (subcategory.fixed) {
+      formattedSubcategory.frequency = subcategory.frequency;
+      formattedSubcategory.dueDate = subcategory.dueDate;
+    }
+
+    const foundParent = categoriesMap.get(
+      subcategory.parentCategoryId.toString(),
+    );
+
+    if (foundParent) {
+      if (foundParent.fixed && foundParent.subcategories.length == 0) {
+        // Set the parent category's actual value to 0 to get the total sum of the subcategories' actual values
+        foundParent.actual = 0;
+
+        // Set the parent category's frequency and due date to null since the calculations will be based on the subcategory
+        foundParent.frequency = null;
+        foundParent.dueDate = null;
+      }
+
+      foundParent.actual += formattedSubcategory.actual;
+
+      // Format the subcategory's actual value to be sent back to the client in USD
+      foundParent.subcategories.push({
+        ...formattedSubcategory,
+        actual: centsToDollars(formattedSubcategory.actual),
+      });
+    }
+  });
+
+  // Format the category's budget and actual values to be sent back to the client in USD
+  const categories = [...categoriesMap.values()].map((category) => {
+    return {
+      ...category,
+      budget: centsToDollars(category.budget),
+      actual: centsToDollars(category.actual),
+    };
+  });
+
+  return categories;
 }
 
 // If the categories for the current month and year don't exist, get the categories from the last populated month
