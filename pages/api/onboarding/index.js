@@ -1,5 +1,6 @@
 // API endpoint to add a new user to the system
 
+import dollarsToCents from "@/helpers/dollarsToCents";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { v4 as uuidv4 } from "uuid";
@@ -116,90 +117,26 @@ async function createAccount(
 
       await incomeCol.insertMany(incomeSources, { session });
 
-      // Define the user's categories
-      let categories = [];
-      if (newUser.customCategories) {
-        categories = newUser.categories.map((category) => {
-          const finalCategory = {
-            name: category.name.trim(),
-            color: category.color,
-            fixed: category.fixed,
-            subcategories: category.subcategories,
-          };
-
-          finalCategory.budget = parseFloat(category.budget) * 100;
-
-          let subcategoriesActual = 0;
-          if (category.subcategories.length > 0) {
-            // Set all subcategory values to cents
-            finalCategory.subcategories = category.subcategories.map(
-              (subcategory) => {
-                const subcategoryActual = parseFloat(subcategory.actual) * 100;
-
-                if (category.fixed) {
-                  subcategoriesActual += subcategoryActual;
-
-                  return {
-                    id: subcategory.id,
-                    name: subcategory.name.trim(),
-                    actual: subcategoryActual,
-                    frequency: subcategory.frequency,
-                    dueDate: parseInt(subcategory.dueDate),
-                  };
-                } else {
-                  return {
-                    id: subcategory.id,
-                    name: subcategory.name.trim(),
-                    actual: 0,
-                  };
-                }
-              },
-            );
-          }
-
-          if (category.fixed) {
-            if (category.subcategories.length > 0) {
-              finalCategory.budget = subcategoriesActual;
-              finalCategory.actual = subcategoriesActual;
-            } else {
-              finalCategory.actual = finalCategory.budget;
-            }
-          } else {
-            finalCategory.actual = 0;
-          }
-
-          if (category.fixed) {
-            if (category.subcategories.length > 0) {
-              finalCategory.frequency = null;
-              finalCategory.dueDate = null;
-            } else {
-              finalCategory.frequency = category.frequency;
-              finalCategory.dueDate = parseInt(category.dueDate);
-            }
-          }
-
-          if (category.name === funMoney) {
-            finalCategory.noDelete = true;
-          }
-
-          return finalCategory;
-        });
-      } else {
-        categories = await getDefaultCategories(categoriesCol);
-      }
-
-      // Add the user's identifiers to the categories
-      const finalCategories = categories.map((category) => {
-        return {
-          ...category,
+      if (!newUser.customCategories) {
+        // Assign the default categories to the user
+        await addUserDefaultCategories({
           username: newUser.username,
           month,
           year,
-        };
-      });
-
-      // Insert the user's categories for the year
-      await categoriesCol.insertMany(finalCategories, { session });
+          categoriesCol,
+          session,
+        });
+      } else {
+        // Insert the user's custom categories
+        await createUserCategories({
+          categories: newUser.categories,
+          username: newUser.username,
+          month,
+          year,
+          categoriesCol,
+          session,
+        });
+      }
 
       // Update the Fun Money category's budget based on the user's income
       await updateFunMoney({
@@ -231,52 +168,169 @@ async function createAccount(
   }
 }
 
-async function getDefaultCategories(categoriesCol) {
+// Fetch and assign the user the default parent and subcategories
+async function addUserDefaultCategories({
+  username,
+  month,
+  year,
+  categoriesCol,
+  session,
+}) {
+  // Fetch both the parent categories and subcategories
   const defaultCategories = await categoriesCol
-    .find({ defaultCategory: true })
-    .sort({ budget: 1 })
+    .aggregate(
+      [
+        { $match: { defaultCategory: true } },
+        { $project: { defaultCategory: 0 } },
+      ],
+      { session },
+    )
     .toArray();
 
-  const usersCategories = defaultCategories.map((category) => {
-    const finalCategory = {
-      name: category.name,
-      color: category.color,
-      budget: category.budget,
-      actual: category.actual,
-      fixed: category.fixed,
-      subcategories: category.subcategories,
+  // Separate both types of categories
+  const parentCategories = [];
+  const subcategories = [];
+
+  defaultCategories.forEach((category) => {
+    const formattedCategory = {
+      ...category,
+      username,
+      month,
+      year,
     };
 
-    if (category.subcategories.length > 0) {
-      finalCategory.subcategories = category.subcategories.map(
-        (subcategory) => {
-          const finalSubcategory = {
-            id: uuidv4(),
-            name: subcategory.name,
-            actual: subcategory.actual,
-          };
-
-          if (category.fixed) {
-            finalSubcategory.frequency = subcategory.frequency;
-            finalSubcategory.dueDate = subcategory.dueDate;
-          }
-
-          return finalSubcategory;
-        },
-      );
+    if (category.parentCategoryId) {
+      subcategories.push(formattedCategory);
+    } else {
+      parentCategories.push(formattedCategory);
     }
-
-    if (category.fixed) {
-      finalCategory.frequency = category.frequency;
-      finalCategory.dueDate = category.dueDate;
-    }
-
-    if (category.name === funMoney) {
-      finalCategory.noDelete = true;
-    }
-
-    return finalCategory;
   });
 
-  return usersCategories;
+  // Insert the parent categories while removing the old id
+  const insertedParents = await categoriesCol.insertMany(
+    parentCategories.map(({ _id, ...category }) => category),
+    {
+      session,
+    },
+  );
+
+  // Map the old default category _id to the user's new parent categories' _ids
+  const parentCategoryMap = new Map();
+
+  parentCategories.forEach((category, index) => {
+    parentCategoryMap.set(
+      category._id.toString(),
+      insertedParents.insertedIds[index],
+    );
+  });
+
+  const formattedSubcategories = subcategories.map((subcategory) => {
+    const { _id, ...formattedSubcategory } = subcategory;
+
+    // Fetch the new parent category's _id
+    const parentId = parentCategoryMap.get(
+      subcategory.parentCategoryId.toString(),
+    );
+
+    return {
+      ...formattedSubcategory,
+      parentCategoryId: parentId,
+    };
+  });
+
+  // Insert the parent categories to get their _id
+  await categoriesCol.insertMany(formattedSubcategories, {
+    session,
+  });
+}
+
+// Format the user's custom parent and subcategories to add to the database
+async function createUserCategories({
+  categories,
+  username,
+  month,
+  year,
+  categoriesCol,
+  session,
+}) {
+  // Format the user's custom categories
+  for (const category of categories) {
+    const formattedCategory = {
+      username,
+      month,
+      year,
+      name: category.name.trim(),
+      color: category.color,
+      fixed: category.fixed,
+      budget: dollarsToCents(category.budget),
+      actual: 0,
+    };
+
+    const subcategories = [];
+
+    if (category.subcategories.length > 0) {
+      let subcategoriesActual = 0;
+
+      // Format each subcategory with the identifiers and make sure all values are formatted properly
+      category.subcategories.forEach((subcategory) => {
+        const subcategoryActual = dollarsToCents(subcategory.actual);
+
+        const formattedSubcategory = {
+          username,
+          month,
+          year,
+          name: subcategory.name.trim(),
+          fixed: category.fixed,
+          actual: subcategoryActual,
+        };
+
+        // If fixed, get the total actual value of subcategories to set equal to the budget
+        if (category.fixed) {
+          subcategoriesActual += subcategoryActual;
+
+          formattedSubcategory.frequency = subcategory.frequency;
+          formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+        }
+
+        subcategories.push(formattedSubcategory);
+      });
+
+      // Set the parent category's actual value equal to the total sum of the subcategories' actual value
+      formattedCategory.actual = subcategoriesActual;
+
+      // A fixed category with subcategories should have the same budget value as its actual
+      if (formattedCategory.fixed) {
+        formattedCategory.budget = subcategoriesActual;
+      }
+    } else {
+      if (category.fixed) {
+        // A fixed category with no subcategories should have the same actual value as its budget
+        formattedCategory.actual = formattedCategory.budget;
+
+        formattedCategory.frequency = category.frequency;
+        formattedCategory.dueDate = parseInt(category.dueDate);
+      }
+    }
+
+    // Give the no delete flag for the Fun Money category
+    if (category.name === funMoney) {
+      formattedCategory.noDelete = true;
+    }
+
+    const insertedCategory = await categoriesCol.insertOne(formattedCategory, {
+      session,
+    });
+
+    // If there are subcategories, assign the category's _id to all the subcategories' parentCategoryId
+    if (subcategories.length > 0) {
+      const formattedSubcategories = subcategories.map((subcategory) => {
+        return {
+          ...subcategory,
+          parentCategoryId: insertedCategory.insertedId,
+        };
+      });
+
+      await categoriesCol.insertMany(formattedSubcategories, { session });
+    }
+  }
 }
