@@ -50,93 +50,129 @@ async function updateCategory(
     const categoryId = req.query._id;
     const category = { ...req.body };
 
-    category.budget = dollarsToCents(category.budget);
+    // Define the category's edited fields
+    const editedCategory = {
+      month: category.month,
+      year: category.year,
+      name: category.name,
+      currentName: category.currentName,
+      color: category.color,
+      fixed: category.fixed,
+      budget: dollarsToCents(category.budget),
+      actual: dollarsToCents(category.actual),
+    };
 
-    if (category.fixed && category.subcategories.length === 0) {
-      category.dueDate = parseInt(category.dueDate);
-    } else {
-      category.frequency = null;
-      category.dueDate = null;
+    if (editedCategory.fixed && category.subcategories.length === 0) {
+      editedCategory.frequency = category.frequency;
+      editedCategory.dueDate = parseInt(category.dueDate);
     }
 
-    let subcategoryTotal = 0;
-    const updatedSubcategories = category.subcategories.map((subcategory) => {
-      if (category.fixed) {
-        subcategoryTotal += dollarsToCents(subcategory.actual);
+    // Format the category's subcategories
+    const editedSubcategories = [];
 
-        return {
+    if (category.subcategories.length > 0) {
+      let subcategoryActual = 0;
+
+      category.subcategories.forEach((subcategory) => {
+        const formattedSubcategory = {
           id: subcategory.id,
-          name: subcategory.name.trim(),
-          actual: dollarsToCents(subcategory.actual),
-          frequency: subcategory.frequency,
-          dueDate: parseInt(subcategory.dueDate),
-        };
-      } else {
-        return {
-          id: subcategory.id,
+          parentCategoryId: subcategory.parentCategoryId,
           name: subcategory.name.trim(),
           actual: dollarsToCents(subcategory.actual),
         };
+
+        if (editedCategory.fixed) {
+          subcategoryActual += dollarsToCents(subcategory.actual);
+
+          formattedSubcategory.frequency = subcategory.frequency;
+          formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+        }
+
+        editedSubcategories.push(formattedSubcategory);
+      });
+
+      // Update the category's actual value to remain the same or if fixed, equal the new total of the new subcategories' actual value
+      if (editedCategory.fixed) {
+        if (editedSubcategories.length > 0) {
+          editedCategory.actual = editedCategory.budget;
+        } else {
+          editedCategory.actual = subcategoryActual;
+        }
       }
-    });
-
-    if (category.fixed && updatedSubcategories.length === 0) {
-      category.actual = category.budget;
-    } else if (category.fixed && updatedSubcategories.length !== 0) {
-      category.actual = subcategoryTotal;
-    } else {
-      category.actual = dollarsToCents(category.actual);
     }
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
       // Update the new fields for the category in MongoDB
+      const categoryQuery = {
+        budget: editedCategory.budget,
+        actual: editedCategory.actual,
+      };
+
+      if (editedCategory.fixed && editedSubcategories.length === 0) {
+        categoryQuery.frequency = editedCategory.frequency;
+        categoryQuery.dueDate = editedCategory.dueDate;
+      }
+
       await categoriesCol.updateOne(
         { _id: new ObjectId(categoryId) },
-        {
-          $set: {
-            budget: category.budget,
-            actual: category.actual,
-            frequency: category.frequency,
-            dueDate: category.dueDate,
-            subcategories: updatedSubcategories,
-          },
-        },
+        { $set: categoryQuery },
         { session },
       );
 
       // Update the name and color for all the categories with that name
       await categoriesCol.updateMany(
-        { username, name: category.currentName },
+        { username, name: editedCategory.currentName },
         {
           $set: {
-            name: category.name.trim(),
-            color: category.color,
+            name: editedCategory.name.trim(),
+            color: editedCategory.color,
           },
         },
         { session },
       );
 
+      // Update the changes to any subcategory documents
+      if (editedSubcategories.length > 0) {
+        for (const subcategory of editedSubcategories) {
+          const subcategoryQuery = {
+            name: subcategory.name,
+          };
+
+          if (editedCategory.fixed) {
+            subcategoryQuery.actual = subcategory.actual;
+            subcategoryQuery.frequency = subcategory.frequency;
+            subcategoryQuery.dueDate = subcategory.dueDate;
+          }
+
+          await categoriesCol.updateOne(
+            { _id: new ObjectId(subcategory.id) },
+            { $set: subcategoryQuery },
+            { session },
+          );
+        }
+      }
+
       // Update the Fun Money category for the category's month
       await updateFunMoney({
         username,
-        month: category.month,
-        year: category.year,
+        month: editedCategory.month,
+        year: editedCategory.year,
         session,
       });
 
-      if (!category.fixed) {
+      if (!editedCategory.fixed) {
         // If a non-fixed category's name was changed, update the correlating transactions' category field
-        if (category.name !== category.currentName) {
+        if (editedCategory.name !== editedCategory.currentName) {
           await transactionsCol.updateMany(
             {
-              category: category.currentName,
-              month: category.month,
-              year: category.year,
+              category: editedCategory.currentName,
+              month: editedCategory.month,
+              year: editedCategory.year,
             },
             {
               $set: {
-                category: category.name,
+                category: editedCategory.name,
               },
             },
             { session },
@@ -170,20 +206,20 @@ async function updateCategory(
 
     // Send the updated category back to the client
     const updatedCategory = {
-      ...category,
-      budget: centsToDollars(category.budget),
-      actual: centsToDollars(category.actual),
-      subcategories: updatedSubcategories,
+      _id: categoryId,
+      name: editedCategory.name,
+      color: editedCategory.color,
+      fixed: editedCategory.fixed,
+      budget: centsToDollars(editedCategory.budget),
+      actual: centsToDollars(editedCategory.actual),
     };
 
-    updatedCategory.subcategories = updatedCategory.subcategories.map(
-      (subcategory) => {
-        return {
-          ...subcategory,
-          actual: centsToDollars(subcategory.actual),
-        };
-      },
-    );
+    updatedCategory.subcategories = editedSubcategories.map((subcategory) => {
+      return {
+        ...subcategory,
+        actual: centsToDollars(subcategory.actual),
+      };
+    });
 
     return res.status(200).json(updatedCategory);
   } catch (error) {
