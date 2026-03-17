@@ -76,92 +76,126 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     const month = parseInt(req.query.month);
     const year = parseInt(req.query.year);
 
-    const categoryBody = req.body;
+    const newCategory = { ...req.body };
 
     // Convert the budget value to cents
-    const categoryBudget = dollarsToCents(categoryBody.budget);
-    let categoryActual = categoryBody.fixed ? categoryBudget : 0;
+    const categoryBudget = dollarsToCents(newCategory.budget);
+    let categoryActual = 0;
 
-    // If category has fixed subcategories, update their actual values to cents
-    let updatedSubcategories = categoryBody.subcategories;
+    const newSubcategories = [];
 
-    if (categoryBody.subcategories.length > 0) {
-      if (categoryBody.fixed) {
-        categoryActual = 0;
-        updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
-          categoryActual += dollarsToCents(subcategory.actual);
-          return {
-            id: subcategory.id,
-            name: subcategory.name.trim(),
-            actual: dollarsToCents(subcategory.actual),
-            frequency: subcategory.frequency,
-            dueDate: parseInt(subcategory.dueDate),
-          };
-        });
-      } else {
-        updatedSubcategories = categoryBody.subcategories.map((subcategory) => {
-          return {
-            id: subcategory.id,
-            name: subcategory.name.trim(),
-            actual: 0,
-          };
-        });
+    // Format each subcategory to be added to the database
+    if (newCategory.subcategories.length === 0) {
+      if (newCategory.fixed) {
+        categoryActual = categoryBudget;
       }
+    } else {
+      newCategory.subcategories.forEach((subcategory) => {
+        const formattedSubcategory = {
+          username,
+          month,
+          year,
+          name: subcategory.name.trim(),
+          color: newCategory.color,
+          fixed: newCategory.fixed,
+        };
+
+        if (newCategory.fixed) {
+          const subcategoryActual = dollarsToCents(subcategory.actual);
+
+          // Increment the parent category's actual field
+          categoryActual += subcategoryActual;
+
+          // Define the fixed fields
+          formattedSubcategory.actual = subcategoryActual;
+          formattedSubcategory.frequency = subcategory.frequency;
+          formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+        } else {
+          formattedSubcategory.actual = 0;
+        }
+
+        newSubcategories.push(formattedSubcategory);
+      });
     }
 
-    const newCategory = {
+    // Format the new category for the database
+    const formattedCategory = {
       username,
       month,
       year,
-      name: categoryBody.name.trim(),
-      color: categoryBody.color,
+      name: newCategory.name.trim(),
+      color: newCategory.color,
       budget: categoryBudget,
       actual: categoryActual,
-      fixed: categoryBody.fixed,
-      subcategories: updatedSubcategories,
+      fixed: newCategory.fixed,
     };
 
-    // A fixed category or subcategories date will pop up as a transaction on the budget's calendar
-    if (newCategory.fixed) {
-      if (newCategory.subcategories.length === 0) {
-        newCategory.frequency = categoryBody.frequency;
-        newCategory.dueDate = parseInt(categoryBody.dueDate);
-      } else {
-        newCategory.frequency = null;
-        newCategory.dueDate = null;
+    // A fixed category or subcategory date will pop up as a transaction on the budget's calendar
+    if (formattedCategory.fixed) {
+      if (newSubcategories.length === 0) {
+        formattedCategory.frequency = newCategory.frequency;
+        formattedCategory.dueDate = parseInt(newCategory.dueDate);
       }
     }
 
     let insertedCategory;
+    let insertedSubcategories;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      // Add the new category to the categories collection in MongoDB
-      insertedCategory = await categoriesCol.insertOne(newCategory, {
+      insertedCategory = await categoriesCol.insertOne(formattedCategory, {
         session,
       });
+
+      if (newSubcategories.length > 0) {
+        // Map the parent category _id to each subcategory
+        const formattedSubcategories = newSubcategories.map((subcategory) => {
+          return {
+            ...subcategory,
+            parentCategoryId: insertedCategory.insertedId,
+          };
+        });
+
+        insertedSubcategories = await categoriesCol.insertMany(
+          formattedSubcategories,
+          { session },
+        );
+      }
 
       await updateFunMoney({ username, month, year, session });
     });
 
-    const { username: u, month: m, year: y, ...categoryDetails } = newCategory;
+    // Add the inserted _id to each subcategory and format the actual value to be sent back to the client
+    const addedSubcategories = newSubcategories.map((subcategory, index) => {
+      const formattedSubcategory = {
+        id: insertedSubcategories.insertedIds[index],
+        name: subcategory.name,
+        actual: centsToDollars(subcategory.actual),
+      };
+
+      if (subcategory.fixed) {
+        formattedSubcategory.frequency = subcategory.frequency;
+        formattedSubcategory.dueDate = subcategory.dueDate;
+      }
+
+      return formattedSubcategory;
+    });
 
     // Send the new category back to the client
     const addedCategory = {
-      ...categoryDetails,
       _id: insertedCategory.insertedId,
-      budget: centsToDollars(categoryDetails.budget),
-      actual: centsToDollars(categoryDetails.actual),
+      name: formattedCategory.name,
+      color: formattedCategory.color,
+      fixed: formattedCategory.fixed,
+      budget: centsToDollars(formattedCategory.budget),
+      actual: centsToDollars(formattedCategory.actual),
+      subcategories: addedSubcategories,
     };
 
-    addedCategory.subcategories = addedCategory.subcategories.map(
-      (subcategory) => {
-        return {
-          ...subcategory,
-          actual: centsToDollars(subcategory.actual),
-        };
-      },
-    );
+    if (addedCategory.fixed) {
+      addedCategory.frequency = formattedCategory.frequency;
+      addedCategory.dueDate = formattedCategory.dueDate;
+    }
 
     return res.status(200).json(addedCategory);
   } catch (error) {
