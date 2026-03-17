@@ -96,108 +96,79 @@ async function addTransactions(
   const mongoSession = client.startSession();
 
   try {
-    // Format each transaction based on its type
-    const newTransactions = [...req.body].map((transaction) => {
-      const transactionType = transaction.type;
+    const transactions = [...req.body];
 
-      const newTransaction = {
-        username,
-        month,
-        year,
-        type: transactionType,
-        date: transaction.date,
-        amount: Number(transaction.amount) * 100,
-      };
-
-      // Define the transaction body based on the transaction type
-      if (transactionType === "Expense") {
-        newTransaction.store = transaction.store.trim();
-        newTransaction.items = transaction.items.trim();
-        newTransaction.category = transaction.category;
-      } else if (transactionType === "Transfer") {
-        newTransaction.fromAccount = transaction.fromAccount;
-        newTransaction.toAccount = transaction.toAccount;
-        newTransaction.description = transaction.description;
-      } else {
-        return res
-          .status(500)
-          .send(`${transactionType} is an invalid transaction type`);
-      }
-
-      return newTransaction;
-    });
-
-    let insertedIds;
+    let addedTransactions;
 
     // Start a MongoDB transaction
     await mongoSession.withTransaction(async (session) => {
-      // Insert all the transactions into MongoDB
-      insertedIds = await transactionsCol.insertMany(newTransactions, {
-        session,
-      });
+      const formattedTransactions = [];
 
-      // Update the correlating category's actual value for all expense transactions
-      for (const transaction of newTransactions) {
-        if (transaction.type === "Expense") {
-          // Find the matching category or subcategory
-          const category = await categoriesCol.findOne(
+      // Format each transaction based on its type
+      for (const transaction of transactions) {
+        const transactionType = transaction.type;
+
+        const newTransaction = {
+          username,
+          month,
+          year,
+          type: transactionType,
+          date: transaction.date,
+          amount: Number(transaction.amount) * 100,
+        };
+
+        // Define the transaction body based on the transaction type
+        if (transactionType === "Expense") {
+          newTransaction.store = transaction.store.trim();
+          newTransaction.items = transaction.items.trim();
+
+          // Get the correlating category's _id to add to the transaction
+          const transactionCategory = await categoriesCol.findOne(
             {
               username,
               month,
               year,
-              $or: [
-                { name: transaction.category },
-                { "subcategories.name": transaction.category },
-              ],
+              name: transaction.category,
             },
             { session },
           );
 
-          if (category) {
-            if (category.name === transaction.category) {
-              // Increment the actual value of the category
-              await categoriesCol.updateOne(
-                { _id: new ObjectId(category._id) },
-                {
-                  $inc: {
-                    actual: transaction.amount,
-                  },
-                },
-                { session },
-              );
-            } else {
-              // Increment the actual value of the category and subcategory
-              await categoriesCol.updateOne(
-                {
-                  _id: new ObjectId(category._id),
-                  "subcategories.name": transaction.category,
-                },
-                {
-                  $inc: {
-                    actual: transaction.amount,
-                    "subcategories.$.actual": transaction.amount,
-                  },
-                },
-                { session },
-              );
-            }
-          } else {
-            throw new Error(`Category, ${transaction.category} not found`);
-          }
+          newTransaction.category = transaction.category;
+          newTransaction.categoryId = transactionCategory._id;
+        } else if (transactionType === "Transfer") {
+          newTransaction.fromAccount = transaction.fromAccount;
+          newTransaction.toAccount = transaction.toAccount;
+          newTransaction.description = transaction.description;
+        } else {
+          return res
+            .status(500)
+            .send(`${transactionType} is an invalid transaction type`);
         }
+
+        formattedTransactions.push(newTransaction);
       }
+
+      let insertedTransactions;
+
+      // Insert all the transactions into MongoDB
+      insertedTransactions = await transactionsCol.insertMany(
+        formattedTransactions,
+        {
+          session,
+        },
+      );
+
+      // Send the new transactions back to the client with their inserted MongoDB _id and the formatted dollar amount
+      addedTransactions = formattedTransactions.map((transaction, index) => {
+        return {
+          ...transaction,
+          _id: insertedTransactions.insertedIds[index],
+          amount: centsToDollars(transaction.amount),
+        };
+      });
     });
 
-    // Send the new transactions back to the client with their inserted MongoDB _id and the formatted dollar amount
-    const insertedTransactions = newTransactions.map((transaction, index) => {
-      return {
-        ...transaction,
-        _id: insertedIds.insertedIds[index],
-        amount: centsToDollars(transaction.amount),
-      };
-    });
-
-    return res.status(200).json(insertedTransactions);
+    return res.status(200).json(addedTransactions);
   } catch (error) {
     console.error(`POST transactions request failed for ${username}: ${error}`);
     return res
