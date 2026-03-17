@@ -34,109 +34,118 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
     const year = parseInt(req.query.year);
     const month = parseInt(req.query.month);
 
-    // Get the current month's categories
-    const currentCategoriesDocs = await categoriesCol
-      .find({ username, month, year }, { name: 1, _id: 0 })
+    // Get the current month's parent categories
+    const currentParentDocs = await categoriesCol
+      .find(
+        { username, month, year, parentCategoryId: { $exists: false } },
+        { name: 1, _id: 0 },
+      )
       .toArray();
 
-    const currentCategories = currentCategoriesDocs.map(
+    // Get the names of all current parent categories
+    const currentParentNames = currentParentDocs.map(
       (category) => category.name,
     );
 
-    // Get all user's categories that aren't in the current month
-    const allCategories = await categoriesCol
-      .find({ username, name: { $nin: currentCategories } })
+    // Get all the user's parent categories that aren't in the current month
+    const previousParentCategories = await categoriesCol
+      .find({
+        username,
+        parentCategoryId: { $exists: false },
+        name: { $nin: currentParentNames },
+      })
       .toArray();
 
+    // Map their ids
+    const previousParentIds = previousParentCategories.map(
+      (category) => category._id,
+    );
+
+    // Fetch all the previous subcategories that aren't in the current month
+    const previousSubcategories = await categoriesCol
+      .find({
+        username,
+        parentCategoryId: { $in: previousParentIds },
+      })
+      .toArray();
+
+    // Map the previous subcategories to their relating parentCategoryIds
+    const subcategoryMap = new Map();
+
+    previousSubcategories.forEach((subcategory) => {
+      const parentId = subcategory.parentCategoryId.toString();
+
+      if (!subcategoryMap.has(parentId)) {
+        subcategoryMap.set(parentId, []);
+      }
+
+      subcategoryMap.get(parentId).push(subcategory);
+    });
+
+    // Create a map of the previous categories based on their name
     const previousCategoriesMap = new Map();
 
-    // Map the categories based on their name into a final formatted object
-    allCategories.forEach((category) => {
-      const exists = previousCategoriesMap.get(category.name);
+    previousParentCategories.forEach((category) => {
+      const foundParent = previousCategoriesMap.get(category.name);
 
-      if (!exists) {
-        const formattedCategory = {
-          name: category.name,
-          color: category.color,
-          budget: centsToDollars(category.budget),
-          actual: 0,
-          fixed: category.fixed,
-        };
+      const formattedCategory = {
+        name: category.name,
+        color: category.color,
+        fixed: category.fixed,
+        budget: centsToDollars(category.budget),
+        actual: 0,
+        subcategories: [],
+      };
 
-        if (formattedCategory.fixed) {
-          formattedCategory.actual = category.actual;
-          formattedCategory.frequency = category.frequency;
+      if (formattedCategory.fixed) {
+        formattedCategory.actual = category.actual;
+        formattedCategory.frequency = category.frequency;
+        formattedCategory.dueDate = category.dueDate ?? 1;
+      }
 
-          // If a fixed category's dueDate field is not populated correctly, make the due date the 1st
-          if (category.dueDate === null || category.dueDate === undefined) {
-            formattedCategory.dueDate = 1;
-          } else {
-            formattedCategory.dueDate = category.dueDate;
-          }
-        }
-
-        formattedCategory.subcategories = category.subcategories.map(
-          (subcategory) => {
-            const formattedSubcategory = {
-              id: uuidv4(),
-              name: subcategory.name,
-              actual: 0,
-            };
-
-            if (category.fixed) {
-              formattedSubcategory.actual = centsToDollars(subcategory.actual);
-              formattedSubcategory.frequency = subcategory.frequency;
-
-              // If a fixed subcategory's dueDate field is not populated correctly, make the due date the 1st
-              if (
-                subcategory.dueDate === null ||
-                subcategory.dueDate === undefined
-              ) {
-                formattedSubcategory.dueDate = 1;
-              } else {
-                formattedSubcategory.dueDate = subcategory.dueDate;
-              }
-            }
-
-            return formattedSubcategory;
-          },
-        );
-
+      if (!foundParent) {
         previousCategoriesMap.set(category.name, formattedCategory);
-      } else {
-        // If the category is already in the map, just add the subcategories to the item
-        category.subcategories.forEach((subcategory) => {
-          if (
-            !exists.subcategories.find((sub) => sub.name === subcategory.name)
-          ) {
-            const formattedSubcategory = {
-              id: uuidv4(),
-              name: subcategory.name,
-              actual: 0,
-            };
-
-            if (category.fixed) {
-              formattedSubcategory.actual = centsToDollars(subcategory.actual);
-              formattedSubcategory.frequency = subcategory.frequency;
-
-              // If a fixed subcategory's dueDate field is not populated correctly, make the due date the 1st
-              if (
-                subcategory.dueDate === null ||
-                subcategory.dueDate === undefined
-              ) {
-                formattedSubcategory.dueDate = 1;
-              } else {
-                formattedSubcategory.dueDate = subcategory.dueDate;
-              }
-            }
-
-            exists.subcategories.push(formattedSubcategory);
-          }
-        });
       }
     });
 
-    const previousCategories = [...previousCategoriesMap.values()];
+    // Loop through each parent and add their subcategories to the parent in the map
+    previousParentCategories.forEach((category) => {
+      const parentCategory = previousCategoriesMap.get(category.name);
+      const subcategories = subcategoryMap.get(category._id.toString()) || [];
+
+      // If the subcategory doesn't exist, format and add it to the parent categories map
+      subcategories.forEach((subcategory) => {
+        const subcategoryExists = parentCategory.subcategories.find(
+          (sub) => sub.name === subcategory.name,
+        );
+
+        if (!subcategoryExists) {
+          const formattedSubcategory = {
+            id: subcategory._id,
+            name: subcategory.name,
+            actual: 0,
+          };
+
+          if (parentCategory.fixed) {
+            formattedSubcategory.actual = centsToDollars(subcategory.actual);
+            formattedSubcategory.frequency = subcategory.frequency;
+            formattedSubcategory.dueDate = subcategory.dueDate ?? 1;
+          }
+
+          parentCategory.subcategories.push(formattedSubcategory);
+        }
+      });
+    });
+
+    // Format the actual field to USD to send back to the client
+    const previousCategories = [...previousCategoriesMap.values()].map(
+      (category) => {
+        return {
+          ...category,
+          actual: centsToDollars(category.actual),
+        };
+      },
+    );
 
     return res.status(200).json(previousCategories);
   } catch (error) {
