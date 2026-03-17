@@ -1,7 +1,6 @@
 import { Container } from "react-bootstrap";
 import CustomCategoriesSection from "./customCategoriesSection";
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import ChooseCategoriesType from "./chooseCategoriesType";
 
 const CategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
@@ -13,27 +12,22 @@ const CategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
     fixed: false,
     subcategories: [
       {
-        id: uuidv4(),
         name: "Food",
         actual: 0,
       },
       {
-        id: uuidv4(),
         name: "Entertainment",
         actual: 0,
       },
       {
-        id: uuidv4(),
         name: "Miscellaneous",
         actual: 0,
       },
       {
-        id: uuidv4(),
         name: "Family & Friends",
         actual: 0,
       },
       {
-        id: uuidv4(),
         name: "Travel",
         actual: 0,
       },

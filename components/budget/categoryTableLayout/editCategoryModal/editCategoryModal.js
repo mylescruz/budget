@@ -262,7 +262,7 @@ const EditCategoryModal = ({
                     </thead>
                     <tbody>
                       {editedCategory.subcategories.map((subcategory) => (
-                        <tr key={subcategory.id}>
+                        <tr key={subcategory._id}>
                           <td>{subcategory.name}</td>
                           <td>{dollarFormatter(subcategory.actual)}</td>
                           {editedCategory.fixed && (

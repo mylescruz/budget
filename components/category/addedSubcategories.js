@@ -5,7 +5,7 @@ const AddedSubcategories = ({ newCategory, setNewCategory }) => {
     setNewCategory({
       ...newCategory,
       subcategories: newCategory.subcategories.filter(
-        (subCat) => subCat.id !== subcategory.id,
+        (subCat) => subCat._id !== subcategory._id,
       ),
     });
   };
@@ -19,8 +19,8 @@ const AddedSubcategories = ({ newCategory, setNewCategory }) => {
         <Col className={`${newCategory.fixed ? "col-2" : "col-3"}`}>Delete</Col>
       </Row>
       <div>
-        {newCategory.subcategories.map((subcategory) => (
-          <Row key={subcategory.id}>
+        {newCategory.subcategories.map((subcategory, index) => (
+          <Row key={index}>
             <Col className={`${newCategory.fixed ? "col-4" : "col-9"}`}>
               {subcategory.name}
             </Col>

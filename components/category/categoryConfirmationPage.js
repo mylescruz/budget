@@ -44,8 +44,8 @@ const CategoryConfirmationPage = ({ newCategory }) => {
             {newCategory.fixed && <Col className="col-3">Day</Col>}
           </Row>
           <div>
-            {newCategory.subcategories.map((subcategory) => (
-              <Row key={subcategory.id}>
+            {newCategory.subcategories.map((subcategory, index) => (
+              <Row key={index}>
                 <Col className={`${newCategory.fixed ? "col-6" : "col-12"}`}>
                   {subcategory.name}
                 </Col>

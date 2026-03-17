@@ -44,7 +44,7 @@ const EditSubcategoryPage = ({
 
     const updatedSubcategories = editedCategory.subcategories.map(
       (subcategory) => {
-        if (subcategory.id === editedSubcategory.id) {
+        if (subcategory._id === editedSubcategory._id) {
           subcategoriesTotal += dollarsToCents(editedSubcategory.actual);
 
           return { ...editedSubcategory, actual: editedSubcategory.actual };
@@ -87,7 +87,7 @@ const EditSubcategoryPage = ({
       budget: categoryBudget,
       actual: categoryActual,
       subcategories: editedCategory.subcategories.filter(
-        (sub) => sub.id !== editedSubcategory.id,
+        (sub) => sub._id !== editedSubcategory._id,
       ),
     };
 

@@ -109,7 +109,10 @@ const FixedCategoryRow = ({
       </tr>
       {showSubcategories &&
         subcategories.map((subcategory) => (
-          <FixedSubcategoryRow key={subcategory.id} subcategory={subcategory} />
+          <FixedSubcategoryRow
+            key={subcategory._id}
+            subcategory={subcategory}
+          />
         ))}
     </>
   );

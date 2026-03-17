@@ -121,7 +121,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
 
         if (!subcategoryExists) {
           const formattedSubcategory = {
-            id: subcategory._id,
+            _id: subcategory._id,
             name: subcategory.name,
             actual: 0,
           };

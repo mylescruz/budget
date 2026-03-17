@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
 import AddedSubcategories from "./addedSubcategories";
 
 const groupFormStyle = "my-2";
@@ -10,7 +9,6 @@ const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
 const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
   const emptySubcategory = {
-    id: uuidv4(),
     name: "",
     actual: "",
     frequency: "Monthly",

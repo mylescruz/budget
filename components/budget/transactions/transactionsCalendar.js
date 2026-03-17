@@ -89,7 +89,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
               }
 
               transactionsMap.get(subcategoryDateISO).push({
-                _id: subcategory.id,
+                _id: subcategory._id,
                 type: "Subcategory",
                 date: subcategoryDateISO,
                 store: subcategory.name,

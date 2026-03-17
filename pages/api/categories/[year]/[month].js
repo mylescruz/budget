@@ -168,7 +168,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     // Add the inserted _id to each subcategory and format the actual value to be sent back to the client
     const addedSubcategories = newSubcategories.map((subcategory, index) => {
       const formattedSubcategory = {
-        id: insertedSubcategories.insertedIds[index],
+        _id: insertedSubcategories.insertedIds[index],
         name: subcategory.name,
         actual: centsToDollars(subcategory.actual),
       };
@@ -304,7 +304,7 @@ async function getCurrentCategories(
   // Format each subcategory and place it in the parent category's subcategories array
   subcategories.forEach((subcategory) => {
     const formattedSubcategory = {
-      id: subcategory._id,
+      _id: subcategory._id,
       name: subcategory.name,
       actual: subcategory.fixed
         ? subcategory.actual

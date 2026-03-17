@@ -1,7 +1,6 @@
 import addDecimalValues from "@/helpers/addDecimalValues";
 import { useState } from "react";
 import { Button, Col, Form } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
 
 const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
@@ -12,7 +11,6 @@ const AddSubcategoryPage = ({
   setPage,
 }) => {
   const emptySubcategory = {
-    id: uuidv4(),
     name: "",
     actual: "",
     frequency: "Monthly",

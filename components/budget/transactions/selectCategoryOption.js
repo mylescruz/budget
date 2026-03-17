@@ -4,7 +4,7 @@ const SelectCategoryOption = ({ category }) => {
       {category.subcategories.length > 0 ? (
         <optgroup label={category.name}>
           {category.subcategories.map((subcategory) => (
-            <option key={subcategory.id} value={subcategory.name}>
+            <option key={subcategory._id} value={subcategory.name}>
               {subcategory.name}
             </option>
           ))}

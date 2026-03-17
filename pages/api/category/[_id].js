@@ -75,7 +75,7 @@ async function updateCategory(
 
       category.subcategories.forEach((subcategory) => {
         const formattedSubcategory = {
-          id: subcategory.id,
+          _id: subcategory._id,
           parentCategoryId: subcategory.parentCategoryId,
           name: subcategory.name.trim(),
           actual: dollarsToCents(subcategory.actual),
@@ -146,7 +146,7 @@ async function updateCategory(
           }
 
           await categoriesCol.updateOne(
-            { _id: new ObjectId(subcategory.id) },
+            { _id: new ObjectId(subcategory._id) },
             { $set: subcategoryQuery },
             { session },
           );

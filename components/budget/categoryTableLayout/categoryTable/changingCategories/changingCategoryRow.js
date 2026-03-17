@@ -73,7 +73,7 @@ const ChangingCategoryRow = ({ category, setEditedCategory, setModal }) => {
       {showSubcategories &&
         subcategories.map((subcategory) => (
           <ChangingSubcategoryRow
-            key={subcategory.id}
+            key={subcategory._id}
             subcategory={subcategory}
           />
         ))}
