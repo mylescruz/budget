@@ -205,6 +205,7 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
+      // Find the category in the database to update the month's Fun Money category
       const category = await categoriesCol.findOne(
         {
           _id: new ObjectId(categoryId),
@@ -212,9 +213,18 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
         { session },
       );
 
-      // Delete category from MongoDB
-      await categoriesCol.deleteOne(
-        { _id: new ObjectId(categoryId) },
+      if (!category) {
+        throw new Error("Category not found!");
+      }
+
+      // Delete the category and subcategories from MongoDB
+      await categoriesCol.deleteMany(
+        {
+          $or: [
+            { _id: new ObjectId(categoryId) },
+            { parentCategoryId: new ObjectId(categoryId) },
+          ],
+        },
         { session },
       );
 
