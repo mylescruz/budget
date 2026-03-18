@@ -2,7 +2,6 @@ import centsToDollars from "@/helpers/centsToDollars";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
-import { v4 as uuidv4 } from "uuid";
 
 export default async function handler(req, res) {
   // Use NextAuth to authenticate a user's session

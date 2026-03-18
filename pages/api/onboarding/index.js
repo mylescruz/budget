@@ -3,7 +3,6 @@
 import dollarsToCents from "@/helpers/dollarsToCents";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
-import { v4 as uuidv4 } from "uuid";
 
 const funMoney = "Fun Money";
 

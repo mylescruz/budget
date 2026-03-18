@@ -6,7 +6,6 @@ import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
-import { v4 as uuidv4 } from "uuid";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
