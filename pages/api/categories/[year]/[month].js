@@ -223,8 +223,8 @@ async function getCurrentCategories(
         {
           $lookup: {
             from: "transactions",
-            localField: "name",
-            foreignField: "category",
+            localField: "_id",
+            foreignField: "categoryId",
             pipeline: [
               { $match: { username, month, year } },
               { $project: { category: 1, amount: 1 } },
