@@ -34,8 +34,6 @@ export default async function handler(req, res) {
       return getTransactions(res, transactionsContext);
     case "POST":
       return addTransactions(req, res, transactionsContext);
-    case "PUT":
-      return updateTransactions(req, res, transactionsContext);
     default:
       return res.status(405).send(`${req.method} method not allowed`);
   }
@@ -202,46 +200,5 @@ async function addTransactions(
       .send(`Error occurred while adding a transaction for ${username}`);
   } finally {
     await mongoSession.endSession();
-  }
-}
-
-// Update the user's transactions category in MongoDB
-async function updateTransactions(
-  req,
-  res,
-  { transactionsCol, username, month, year },
-) {
-  try {
-    const changedTransactions = req.body;
-
-    const updates = changedTransactions.map((transaction) => ({
-      updateOne: {
-        filter: { _id: new ObjectId(transaction._id) },
-        update: { $set: { category: transaction.category } },
-      },
-    }));
-
-    const bulkWriteResult = await transactionsCol.bulkWrite(updates);
-
-    if (bulkWriteResult.modifiedCount === changedTransactions.length) {
-      // Send the updated transactions back to the client
-      const transactions = await fetchTransactions(
-        transactionsCol,
-        username,
-        month,
-        year,
-      );
-
-      return res.status(200).json(transactions);
-    } else {
-      throw new Error("Categories could not be updated");
-    }
-  } catch (error) {
-    console.error(`PUT transactions request failed for ${username}: ${error}`);
-    return res
-      .status(500)
-      .send(
-        `Error occurred while updating changed transactions for ${username}`,
-      );
   }
 }

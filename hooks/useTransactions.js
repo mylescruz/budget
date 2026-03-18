@@ -134,35 +134,6 @@ const useTransactions = (month, year) => {
     [transactions],
   );
 
-  const updateTransactions = useCallback(
-    async (changedTransactions) => {
-      try {
-        const rsp = await fetch(`/api/transactions/${year}/${month}`, {
-          method: "PUT",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(changedTransactions),
-        });
-
-        if (rsp.ok) {
-          const updatedTransactions = await rsp.json();
-          setTransactions(updatedTransactions);
-        } else {
-          const message = await rsp.text();
-          throw new Error(message);
-        }
-      } catch (error) {
-        setTransactions(null);
-        console.error(error);
-      } finally {
-        setTransactionsLoading(false);
-      }
-    },
-    [year, month],
-  );
-
   return {
     transactions,
     transactionsLoading,
@@ -170,7 +141,6 @@ const useTransactions = (month, year) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
-    updateTransactions,
   };
 };
 
