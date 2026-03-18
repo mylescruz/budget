@@ -52,12 +52,33 @@ async function fetchTransactions(transactionsCol, username, month, year) {
           date: 1,
           store: 1,
           items: 1,
-          category: 1,
+          categoryId: 1,
           fromAccount: 1,
           toAccount: 1,
           description: 1,
           amount: { $divide: ["$amount", 100] },
         },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "transactionCategory",
+        },
+      },
+      {
+        $addFields: {
+          category: { $arrayElemAt: ["$transactionCategory.name", 0] },
+          color: { $arrayElemAt: ["$transactionCategory.color", 0] },
+          fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
+          parentCategoryId: {
+            $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+          },
+        },
+      },
+      {
+        $project: { transactionCategory: 0 },
       },
       { $sort: { date: 1 } },
     ])
