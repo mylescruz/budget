@@ -162,7 +162,6 @@ async function addTransactions(
               );
           }
 
-          newTransaction.category = transaction.category;
           newTransaction.categoryId = transactionCategory._id;
         } else if (transactionType === "Transfer") {
           newTransaction.fromAccount = transaction.fromAccount;
@@ -177,10 +176,8 @@ async function addTransactions(
         formattedTransactions.push(newTransaction);
       }
 
-      let insertedTransactions;
-
       // Insert all the transactions into MongoDB
-      insertedTransactions = await transactionsCol.insertMany(
+      const insertedTransactions = await transactionsCol.insertMany(
         formattedTransactions,
         {
           session,
