@@ -157,38 +157,14 @@ async function updateTransaction(
 async function deleteTransaction(
   req,
   res,
-  { client, transactionsCol, categoriesCol, username },
+  { client, transactionsCol, username },
 ) {
   const mongoSession = client.startSession();
 
   try {
     const transactionId = req.query._id;
 
-    // Start a transaction to process all MongoDB statements or rollback any failures
-    await mongoSession.withTransaction(async (session) => {
-      const transaction = await transactionsCol.findOne({
-        _id: new ObjectId(transactionId),
-      });
-
-      // Delete the given transaction from the transactions collection in MongoDB
-      await transactionsCol.deleteOne(
-        { _id: new ObjectId(transactionId) },
-        { session },
-      );
-
-      if (transaction.type === "Expense") {
-        // Update the correlating category to remove old transaction amount
-        await updateCategoryActual({
-          session,
-          categoriesCol,
-          username,
-          month: transaction.month,
-          year: transaction.year,
-          categoryName: transaction.category,
-          amount: -transaction.amount,
-        });
-      }
-    });
+    await transactionsCol.deleteOne({ _id: new ObjectId(transactionId) });
 
     // Send a success message back to the client
     return res.status(200).send("Transaction was deleted successfully");
@@ -201,47 +177,5 @@ async function deleteTransaction(
       .send(`Error occurred while deleting a transaction for ${username}`);
   } finally {
     await mongoSession.endSession();
-  }
-}
-
-// Update the given category or subcategory's actual value
-async function updateCategoryActual({
-  session,
-  categoriesCol,
-  username,
-  month,
-  year,
-  categoryName,
-  amount,
-}) {
-  const category = await categoriesCol.findOne(
-    {
-      username,
-      month,
-      year,
-      $or: [{ name: categoryName }, { "subcategories.name": categoryName }],
-    },
-    { session },
-  );
-
-  if (!category) {
-    throw new Error(`Category ${categoryName} was not found`);
-  }
-
-  // Check if the category is a parent or subcategory
-  if (category.name === categoryName) {
-    // Update parent category
-    await categoriesCol.updateOne(
-      { _id: new ObjectId(category._id) },
-      { $inc: { actual: amount } },
-      { session },
-    );
-  } else {
-    // Update parent category and subcategory
-    await categoriesCol.updateOne(
-      { _id: new ObjectId(category._id), "subcategories.name": categoryName },
-      { $inc: { actual: amount, "subcategories.$.actual": amount } },
-      { session },
-    );
   }
 }
