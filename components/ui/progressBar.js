@@ -13,8 +13,10 @@ const ProgressBar = ({ currentValue, totalValue, fixedCategory = false }) => {
   if (percent === 100) {
     if (currentValue < totalValue) {
       percent = 99;
-    } else {
+    } else if (currentValue > totalValue) {
       percent = 101;
+    } else {
+      percent = 100;
     }
   }
 
