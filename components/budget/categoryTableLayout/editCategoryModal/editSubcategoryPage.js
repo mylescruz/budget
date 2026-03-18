@@ -20,7 +20,6 @@ const EditSubcategoryPage = ({
       setEditedSubcategory({
         ...editedSubcategory,
         [id]: e.target.value,
-        nameChanged: true,
       });
 
       setFieldChanges((prev) => ({ ...prev, name: true }));
