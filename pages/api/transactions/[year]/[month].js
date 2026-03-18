@@ -133,6 +133,14 @@ async function addTransactions(
             { session },
           );
 
+          if (!transactionCategory) {
+            return res
+              .status(500)
+              .send(
+                `${newTransaction.category} is not a category in your budget.`,
+              );
+          }
+
           newTransaction.category = transaction.category;
           newTransaction.categoryId = transactionCategory._id;
         } else if (transactionType === "Transfer") {
