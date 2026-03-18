@@ -24,7 +24,6 @@ export default async function handler(req, res) {
   const categoriesContext = {
     client: client,
     categoriesCol: db.collection("categories"),
-    transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
 
@@ -39,11 +38,7 @@ export default async function handler(req, res) {
 }
 
 // Update an editted category in MongoDB
-async function updateCategory(
-  req,
-  res,
-  { client, categoriesCol, transactionsCol, username },
-) {
+async function updateCategory(req, res, { client, categoriesCol, username }) {
   const mongoSession = client.startSession();
 
   try {
@@ -160,48 +155,6 @@ async function updateCategory(
         year: editedCategory.year,
         session,
       });
-
-      if (!editedCategory.fixed) {
-        // If a non-fixed category's name was changed, update the correlating transactions' category field
-        if (editedCategory.name !== editedCategory.currentName) {
-          await transactionsCol.updateMany(
-            {
-              category: editedCategory.currentName,
-              month: editedCategory.month,
-              year: editedCategory.year,
-            },
-            {
-              $set: {
-                category: editedCategory.name,
-              },
-            },
-            { session },
-          );
-        }
-
-        // If any non-fixed subcategories' name was changed, update the correlating transactions' category field
-        const changedSubcategories = category.subcategories.filter(
-          (subcategory) => subcategory.nameChanged,
-        );
-
-        if (changedSubcategories.length > 0) {
-          for (const subcategory of changedSubcategories) {
-            await transactionsCol.updateMany(
-              {
-                category: subcategory.currentName,
-                month: category.month,
-                year: category.year,
-              },
-              {
-                $set: {
-                  category: subcategory.name,
-                },
-              },
-              { session },
-            );
-          }
-        }
-      }
     });
 
     // Send the updated category back to the client
