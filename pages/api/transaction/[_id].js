@@ -47,6 +47,11 @@ async function updateTransaction(
   try {
     const transactionId = req.query._id;
 
+    // Get the month and date for the given transaction
+    const transactionDate = new Date(`${req.body.date}T00:00:00Z`);
+    const month = transactionDate.getUTCMonth() + 1;
+    const year = transactionDate.getFullYear();
+
     // Define the updated transaction based on its type
     const transaction = {
       _id: transactionId,
@@ -55,33 +60,44 @@ async function updateTransaction(
       amount: parseFloat(req.body.amount) * 100,
     };
 
-    if (transaction.type === "Expense") {
-      transaction.store = req.body.store;
-      transaction.items = req.body.items;
-      transaction.category = req.body.category;
-    } else if (transaction.type === "Transfer") {
-      transaction.fromAccount = req.body.fromAccount;
-      transaction.toAccount = req.body.toAccount;
-      transaction.description = req.body.description;
-    } else {
-      return res
-        .status(500)
-        .send(`${transaction.type} is not a valid transaction type`);
-    }
-
-    // Get the old transaction amount
-    const oldAmount = parseFloat(req.body.oldAmount) * 100;
-
-    // Get the old category
-    const oldCategory = req.body.oldCategory;
-
-    // Get the month and date for the given transaction
-    const transactionDate = new Date(`${transaction.date}T00:00:00Z`);
-    const month = transactionDate.getUTCMonth() + 1;
-    const year = transactionDate.getFullYear();
-
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
+      if (transaction.type === "Expense") {
+        transaction.store = req.body.store;
+        transaction.items = req.body.items;
+
+        // Get the correlating category's _id to add to the transaction
+        const transactionCategory = await categoriesCol.findOne(
+          {
+            username,
+            month,
+            year,
+            name: req.body.category,
+          },
+          { session },
+        );
+
+        if (!transactionCategory) {
+          return res
+            .status(500)
+            .send(`${req.body.category} is not a category in your budget.`);
+        }
+
+        transaction.categoryId = transactionCategory._id;
+        transaction.category = transactionCategory.name;
+        transaction.color = transactionCategory.color;
+        transaction.fixed = transactionCategory.fixed;
+        transaction.parentCategoryId = transactionCategory.parentCategoryId;
+      } else if (transaction.type === "Transfer") {
+        transaction.fromAccount = req.body.fromAccount;
+        transaction.toAccount = req.body.toAccount;
+        transaction.description = req.body.description;
+      } else {
+        return res
+          .status(500)
+          .send(`${transaction.type} is not a valid transaction type`);
+      }
+
       // Update an expense transaction and the correlating category's actual values
       if (transaction.type === "Expense") {
         await transactionsCol.updateOne(
@@ -93,34 +109,12 @@ async function updateTransaction(
               date: transaction.date,
               store: transaction.store.trim(),
               items: transaction.items.trim(),
-              category: transaction.category,
+              categoryId: transaction.categoryId,
               amount: transaction.amount,
             },
           },
           { session },
         );
-
-        // Update the old category
-        await updateCategoryActual({
-          session,
-          categoriesCol,
-          username,
-          month,
-          year,
-          categoryName: oldCategory,
-          amount: -oldAmount,
-        });
-
-        // Update the new category
-        await updateCategoryActual({
-          session,
-          categoriesCol,
-          username,
-          month,
-          year,
-          categoryName: transaction.category,
-          amount: transaction.amount,
-        });
       }
 
       // Update a transfer transaction
