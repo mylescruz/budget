@@ -340,24 +340,64 @@ async function getMonthsSummaries(
   year,
 ) {
   // Get the total fixed expenses for each month
-  const fixedCategoriesPerMonth = await categoriesCol
+  const allFixedCategories = await categoriesCol
     .aggregate([
       { $match: { username, year, month: { $lte: month }, fixed: true } },
       {
-        $group: {
-          _id: "$month",
-          totalActual: { $sum: "$actual" },
-        },
-      },
-      {
         $project: {
-          number: "$_id",
-          actual: "$totalActual",
-          _id: 0,
+          _id: 1,
+          month: 1,
+          name: 1,
+          actual: 1,
+          parentCategoryId: 1,
         },
       },
     ])
     .toArray();
+
+  // Separate the parent and subcategories
+  const fixedParentCategoriesMap = new Map();
+  const fixedSubcategories = [];
+
+  allFixedCategories.forEach((category) => {
+    if (!category.parentCategoryId) {
+      fixedParentCategoriesMap.set(category._id.toString(), {
+        ...category,
+        originalActual: category.actual,
+        actual: 0,
+        subcategoriesCount: 0,
+      });
+    } else {
+      fixedSubcategories.push(category);
+    }
+  });
+
+  // Add each subcategory's actual value to the parent category's total
+  fixedSubcategories.forEach((subcategory) => {
+    const parent = fixedParentCategoriesMap.get(
+      subcategory.parentCategoryId.toString(),
+    );
+
+    parent.subcategoriesCount += 1;
+
+    parent.actual += subcategory.actual;
+  });
+
+  // Map through the categories to update the final actual total
+  const fixedCategoriesPerMonth = [...fixedParentCategoriesMap.values()].map(
+    (category) => {
+      const formattedCategory = {
+        number: category.month,
+        actual: category.actual,
+      };
+
+      if (category.subcategoriesCount === 0) {
+        formattedCategory.actual = category.originalActual;
+      }
+
+      return formattedCategory;
+    },
+  );
 
   // Get the total expenses per month based on type and transfers based on the account
   const expensesPerMonth = await transactionsCol
