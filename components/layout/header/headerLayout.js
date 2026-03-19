@@ -52,16 +52,23 @@ const HeaderLayout = () => {
           userSignIn={userSignIn}
         />
       )}
-      {status === "authenticated" && (
-        <UserNavbar
-          pages={pages}
-          session={session}
-          navbarExpanded={navbarExpanded}
-          toggleNavbar={toggleNavbar}
-          linkClicked={linkClicked}
-          userSignOut={userSignOut}
-        />
-      )}
+      {status === "authenticated" &&
+        (session ? (
+          <UserNavbar
+            pages={pages}
+            session={session}
+            navbarExpanded={navbarExpanded}
+            toggleNavbar={toggleNavbar}
+            linkClicked={linkClicked}
+            userSignOut={userSignOut}
+          />
+        ) : (
+          <LoginNavbar
+            navbarExpanded={navbarExpanded}
+            toggleNavbar={toggleNavbar}
+            userSignIn={userSignIn}
+          />
+        ))}
     </Navbar>
   );
 };
