@@ -266,7 +266,11 @@ const EditCategoryModal = ({
                         .map((subcategory) => (
                           <tr key={subcategory._id}>
                             <td>{subcategory.name}</td>
-                            <td>{dollarFormatter(subcategory.budget)}</td>
+                            <td>
+                              {subcategory.fixed
+                                ? dollarFormatter(subcategory.budget)
+                                : dollarFormatter(subcategory.actual)}
+                            </td>
                             {editedCategory.fixed && (
                               <td>{dayFormatter(subcategory.dueDate)}</td>
                             )}

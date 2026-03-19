@@ -261,31 +261,38 @@ async function createUserCategories({
       name: category.name.trim(),
       color: category.color,
       fixed: category.fixed,
-      budget: dollarsToCents(category.budget),
-      actual: 0,
     };
 
     const subcategories = [];
 
-    if (category.subcategories.length > 0) {
-      let subcategoriesActual = 0;
+    if (category.subcategories.length === 0) {
+      formattedCategory.budget = dollarsToCents(category.budget);
+
+      if (category.fixed) {
+        formattedCategory.frequency = category.frequency;
+        formattedCategory.dueDate = parseInt(category.dueDate);
+      }
+    } else {
+      let subcategoriesBudget = 0;
 
       // Format each subcategory with the identifiers and make sure all values are formatted properly
       category.subcategories.forEach((subcategory) => {
-        const subcategoryActual = dollarsToCents(subcategory.actual);
-
         const formattedSubcategory = {
           username,
           month,
           year,
           name: subcategory.name.trim(),
           fixed: category.fixed,
-          actual: subcategoryActual,
         };
 
-        // If fixed, get the total actual value of subcategories to set equal to the budget
+        // If fixed, get the total budget value of subcategories to set equal to the parent budget
         if (category.fixed) {
-          subcategoriesActual += subcategoryActual;
+          const subcategoryBudget = dollarsToCents(subcategory.budget);
+
+          formattedSubcategory.budget = subcategoryBudget;
+
+          // Increment the parent category's budget based on the subcategory's budget value
+          subcategoriesBudget += subcategoryBudget;
 
           formattedSubcategory.frequency = subcategory.frequency;
           formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
@@ -294,20 +301,9 @@ async function createUserCategories({
         subcategories.push(formattedSubcategory);
       });
 
-      // Set the parent category's actual value equal to the total sum of the subcategories' actual value
-      formattedCategory.actual = subcategoriesActual;
-
-      // A fixed category with subcategories should have the same budget value as its actual
-      if (formattedCategory.fixed) {
-        formattedCategory.budget = subcategoriesActual;
-      }
-    } else {
+      // Set the parent category's budget value equal to the total sum of the subcategories' budget value
       if (category.fixed) {
-        // A fixed category with no subcategories should have the same actual value as its budget
-        formattedCategory.actual = formattedCategory.budget;
-
-        formattedCategory.frequency = category.frequency;
-        formattedCategory.dueDate = parseInt(category.dueDate);
+        formattedCategory.budget = subcategoriesBudget;
       }
     }
 

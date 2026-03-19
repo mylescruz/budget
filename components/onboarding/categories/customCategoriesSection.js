@@ -6,13 +6,13 @@ import centsToDollars from "@/helpers/centsToDollars";
 import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
+import CategoryBadge from "@/components/category/categoryBadge";
 
 const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const emptyCategory = {
     name: "",
     color: "#000000",
     budget: "",
-    actual: "",
     dueDate: "",
     frequency: "Monthly",
     fixed: false,
@@ -41,12 +41,12 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
       let subcategoryTotal = 0;
 
       const subcategories = newCategory.subcategories.map((subcategory) => {
-        const parsedActual = parseFloat(subcategory.actual);
+        const budgetValue = Number(subcategory.budget);
 
-        subcategoryTotal = subcategoryTotal + parsedActual * 100;
+        subcategoryTotal = subcategoryTotal + budgetValue * 100;
         return {
           ...subcategory,
-          actual: parsedActual,
+          budget: budgetValue,
         };
       });
 
@@ -59,7 +59,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
       setNewCategory({
         ...newCategory,
         subcategories: newCategory.subcategories.map((subcategory) => {
-          return { ...subcategory, actual: 0 };
+          return { ...subcategory, budget: 0 };
         }),
       });
     }
@@ -177,22 +177,40 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
             </thead>
             <tbody>
               {newUser.categories.map((category, index) => (
-                <tr key={index} className="d-flex">
-                  <td className="col-8 gray-background">
-                    {category.name}
-                    {category.name === "Fun Money" && (
-                      <PopUp
-                        title="The money you can spend on whatever you want after all other expenses have been covered. Includes food, entertainment, travel, etc."
-                        id="fun-money-info"
-                      >
-                        <span> &#9432;</span>
-                      </PopUp>
-                    )}
-                  </td>
-                  <td className="col-4 text-end gray-background">
-                    {dollarFormatter(category.budget)}
-                  </td>
-                </tr>
+                <>
+                  <tr key={index} className="d-flex">
+                    <td className="col-8 gray-background">
+                      <CategoryBadge
+                        name={category.name}
+                        color={category.color}
+                      />
+                      {category.name === "Fun Money" && (
+                        <PopUp
+                          title="The money you can spend on whatever you want after all other expenses have been covered. Includes food, entertainment, travel, etc."
+                          id="fun-money-info"
+                        >
+                          <span> &#9432;</span>
+                        </PopUp>
+                      )}
+                    </td>
+                    <td className="col-4 text-end gray-background">
+                      {dollarFormatter(category.budget)}
+                    </td>
+                  </tr>
+                  {category.subcategories.length > 0 &&
+                    category.subcategories.map((subcategory, subIndex) => (
+                      <tr key={subIndex} className="d-flex">
+                        <td className="col-8 px-4 gray-background">
+                          - {subcategory.name}
+                        </td>
+                        {category.fixed && (
+                          <td className="col-4 text-end gray-background">
+                            {dollarFormatter(subcategory.budget)}
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                </>
               ))}
             </tbody>
           </Table>

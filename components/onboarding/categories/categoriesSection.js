@@ -8,29 +8,13 @@ const CategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
     name: "Fun Money",
     color: "#6cc17a",
     budget: 500,
-    actual: 0,
     fixed: false,
     subcategories: [
-      {
-        name: "Food",
-        actual: 0,
-      },
-      {
-        name: "Entertainment",
-        actual: 0,
-      },
-      {
-        name: "Miscellaneous",
-        actual: 0,
-      },
-      {
-        name: "Family & Friends",
-        actual: 0,
-      },
-      {
-        name: "Travel",
-        actual: 0,
-      },
+      { name: "Food" },
+      { name: "Entertainment" },
+      { name: "Miscellaneous" },
+      { name: "Family & Friends" },
+      { name: "Travel" },
     ],
   };
 
