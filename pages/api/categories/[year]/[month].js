@@ -272,6 +272,9 @@ async function getCurrentCategories(
     }
   });
 
+  // Used for fixed categories to determine if their actual value has been charged yet
+  const today = new Date();
+
   // Format each parent category
   parentCategories.forEach((category) => {
     const formattedCategory = {
@@ -283,13 +286,30 @@ async function getCurrentCategories(
       color: category.color,
       fixed: category.fixed,
       budget: category.budget,
-      actual: category.fixed ? category.actual : category.transactionsAmount,
       subcategories: [],
     };
 
     if (formattedCategory.fixed) {
       formattedCategory.frequency = category.frequency;
       formattedCategory.dueDate = category.dueDate;
+
+      if (category.dueDate) {
+        const categoryDate = new Date(`${month}/${category.dueDate}/${year}`);
+
+        if (categoryDate <= today) {
+          // Charge a fixed parent's actual value to the total if their charge date already passed
+          formattedCategory.actual = category.actual;
+        } else {
+          // Apply no charge if their charge date hasn't passed
+          formattedCategory.actual = 0;
+        }
+      } else {
+        // A fixed parent with subcategories has no dueDate and therefore, set the actual value to 0 to sum the subcategories
+        formattedCategory.actual = 0;
+      }
+    } else {
+      // A non-fixed parent's value should be equal to the sum of their transactions
+      formattedCategory.actual = category.transactionsAmount;
     }
 
     // Add the noDelete flag to the Fun Money category
@@ -320,16 +340,19 @@ async function getCurrentCategories(
     );
 
     if (foundParent) {
-      if (foundParent.fixed && foundParent.subcategories.length == 0) {
-        // Set the parent category's actual value to 0 to get the total sum of the subcategories' actual values
-        foundParent.actual = 0;
+      if (foundParent.fixed) {
+        const subcategoryDate = new Date(
+          `${month}/${subcategory.dueDate}/${year}`,
+        );
 
-        // Set the parent category's frequency and due date to null since the calculations will be based on the subcategory
-        foundParent.frequency = null;
-        foundParent.dueDate = null;
+        // Add the fixed subcategory's actual value if their charge date has passed
+        if (subcategoryDate <= today) {
+          foundParent.actual += formattedSubcategory.actual;
+        }
+      } else {
+        // Add the non-fixed subcategory's actual value
+        foundParent.actual += formattedSubcategory.actual;
       }
-
-      foundParent.actual += formattedSubcategory.actual;
 
       // Format the subcategory's actual value to be sent back to the client in USD
       foundParent.subcategories.push({
@@ -340,13 +363,19 @@ async function getCurrentCategories(
   });
 
   // Format the category's budget and actual values to be sent back to the client in USD
-  const categories = [...categoriesMap.values()].map((category) => {
-    return {
-      ...category,
-      budget: centsToDollars(category.budget),
-      actual: centsToDollars(category.actual),
-    };
-  });
+  // Sort the subcategories by due date and the categories by budget
+  const categories = [...categoriesMap.values()]
+    .map((category) => {
+      return {
+        ...category,
+        budget: centsToDollars(category.budget),
+        actual: centsToDollars(category.actual),
+        subcategories: category.subcategories.sort(
+          (a, b) => a.dueDate - b.dueDate,
+        ),
+      };
+    })
+    .sort((a, b) => b.budget - a.budget);
 
   return categories;
 }

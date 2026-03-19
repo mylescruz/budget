@@ -14,47 +14,6 @@ const FixedCategoryRow = ({
   setModal,
 }) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
-  const subcategories = [...category.subcategories].sort(
-    (a, b) => a.dueDate - b.dueDate,
-  );
-
-  const today = new Date();
-
-  // Find the actual value currently charged to the user based on the current date and the category's charge date
-  let currentActual = 0;
-
-  // Get the current charges for fixed expenses based on the day of the month
-  if (category.dueDate) {
-    const categoryDate = new Date(
-      `${dateInfo.month}/${category.dueDate}/${dateInfo.year}`,
-    );
-
-    if (categoryDate.getTime() <= today.getTime()) {
-      currentActual = dollarsToCents(category.actual);
-    }
-  } else {
-    if (category.subcategories.length === 0) {
-      // If no dueDate field, automatically charge the category's whole actual value
-      currentActual = dollarsToCents(category.actual);
-    } else {
-      for (const subcategory of category.subcategories) {
-        if (subcategory.dueDate) {
-          const subcategoryDate = new Date(
-            `${dateInfo.month}/${subcategory.dueDate}/${dateInfo.year}`,
-          );
-
-          if (subcategoryDate.getTime() <= today.getTime()) {
-            currentActual += dollarsToCents(subcategory.actual);
-          }
-        } else {
-          // If no dueDate field, automatically charge the subcategory's actual value
-          currentActual += dollarsToCents(subcategory.actual);
-        }
-      }
-    }
-  }
-
-  const categoryActual = centsToDollars(currentActual);
 
   const dropdownSubcategories = () => {
     setShowSubcategories(!showSubcategories);
@@ -88,27 +47,27 @@ const FixedCategoryRow = ({
           </div>
         </th>
         <td className="col-3 col-md-2 d-lg-none text-end">
-          {dollarFormatter(categoryActual)}
+          {dollarFormatter(category.actual)}
         </td>
         <td className="col-3 col-md-2 cell text-end fw-bold">
           {dollarFormatter(category.budget)}
         </td>
         <td className="d-none d-lg-block col-lg-2 text-end">
-          {dollarFormatter(categoryActual)}
+          {dollarFormatter(category.actual)}
         </td>
         <td className="d-none d-lg-block col-lg-2 text-end">
           {dayFormatter(category.dueDate)}
         </td>
         <td className="d-none d-md-block col-md-4 col-lg-3 fw-bold">
           <ProgressBar
-            currentValue={categoryActual}
+            currentValue={category.actual}
             totalValue={category.budget}
             fixedCategory={category.fixed}
           />
         </td>
       </tr>
       {showSubcategories &&
-        subcategories.map((subcategory) => (
+        category.subcategories.map((subcategory) => (
           <FixedSubcategoryRow
             key={subcategory._id}
             subcategory={subcategory}
