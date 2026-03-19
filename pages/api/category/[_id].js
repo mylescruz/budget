@@ -66,32 +66,38 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     const editedSubcategories = [];
 
     if (category.subcategories.length > 0) {
-      let subcategoryActual = 0;
+      let subcategoryBudget = 0;
 
       category.subcategories.forEach((subcategory) => {
-        const formattedSubcategory = {
-          _id: subcategory._id,
-          parentCategoryId: subcategory.parentCategoryId,
-          name: subcategory.name.trim(),
-          actual: dollarsToCents(subcategory.actual),
-        };
+        if (subcategory.deleted) {
+          // Immediately send subcategory to the array to be deleted
+          editedSubcategories.push(subcategory);
+        } else {
+          const formattedSubcategory = {
+            _id: subcategory._id,
+            parentCategoryId: subcategory.parentCategoryId,
+            name: subcategory.name.trim(),
+            budget: dollarsToCents(subcategory.budget),
+            actual: subcategory.actual,
+          };
 
-        if (editedCategory.fixed) {
-          subcategoryActual += dollarsToCents(subcategory.actual);
+          if (editedCategory.fixed) {
+            subcategoryBudget += dollarsToCents(subcategory.budget);
 
-          formattedSubcategory.frequency = subcategory.frequency;
-          formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+            formattedSubcategory.frequency = subcategory.frequency;
+            formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+          }
+
+          editedSubcategories.push(formattedSubcategory);
         }
-
-        editedSubcategories.push(formattedSubcategory);
       });
 
-      // Update the category's actual value to remain the same or if fixed, equal the new total of the new subcategories' actual value
+      // Update the category's actual value to remain the same or if fixed, equal the new total of the new subcategories' budget value
       if (editedCategory.fixed) {
         if (editedSubcategories.length > 0) {
           editedCategory.actual = editedCategory.budget;
         } else {
-          editedCategory.actual = subcategoryActual;
+          editedCategory.actual = subcategoryBudget;
         }
       }
     }
@@ -101,7 +107,6 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       // Update the new fields for the category in MongoDB
       const categoryQuery = {
         budget: editedCategory.budget,
-        actual: editedCategory.actual,
       };
 
       if (editedCategory.fixed && editedSubcategories.length === 0) {
@@ -127,24 +132,32 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         { session },
       );
 
-      // Update the changes to any subcategory documents
+      // Update the changes to any subcategory documents and delete the remaining
       if (editedSubcategories.length > 0) {
         for (const subcategory of editedSubcategories) {
-          const subcategoryQuery = {
-            name: subcategory.name,
-          };
+          if (subcategory.deleted) {
+            // Delete the flagged subcategories
+            await categoriesCol.deleteOne(
+              { _id: new ObjectId(subcategory._id) },
+              { session },
+            );
+          } else {
+            const subcategoryQuery = {
+              name: subcategory.name,
+            };
 
-          if (editedCategory.fixed) {
-            subcategoryQuery.actual = subcategory.actual;
-            subcategoryQuery.frequency = subcategory.frequency;
-            subcategoryQuery.dueDate = subcategory.dueDate;
+            if (editedCategory.fixed) {
+              subcategoryQuery.budget = subcategory.budget;
+              subcategoryQuery.frequency = subcategory.frequency;
+              subcategoryQuery.dueDate = subcategory.dueDate;
+            }
+
+            await categoriesCol.updateOne(
+              { _id: new ObjectId(subcategory._id) },
+              { $set: subcategoryQuery },
+              { session },
+            );
           }
-
-          await categoriesCol.updateOne(
-            { _id: new ObjectId(subcategory._id) },
-            { $set: subcategoryQuery },
-            { session },
-          );
         }
       }
 
@@ -167,12 +180,33 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       actual: centsToDollars(editedCategory.actual),
     };
 
-    updatedCategory.subcategories = editedSubcategories.map((subcategory) => {
-      return {
-        ...subcategory,
-        actual: centsToDollars(subcategory.actual),
-      };
-    });
+    const today = new Date();
+
+    // Return the subcategories without the deleted categories and with the formatted budget and actual values
+    updatedCategory.subcategories = editedSubcategories
+      .filter((subcategory) => !subcategory.deleted)
+      .map((subcategory) => {
+        if (subcategory.fixed) {
+          const formattedSubcategory = {
+            ...subcategory,
+            budget: centsToDollars(subcategory.budget),
+          };
+
+          const subcategoryDate = new Date(
+            `${editedCategory.month}/${subcategory.dueDate}/${editedCategory.year}`,
+          );
+
+          if (subcategoryDate <= today) {
+            formattedSubcategory.actual = subcategory.actual;
+          } else {
+            formattedSubcategory.actual = 0;
+          }
+
+          return formattedSubcategory;
+        } else {
+          return subcategory;
+        }
+      });
 
     return res.status(200).json(updatedCategory);
   } catch (error) {

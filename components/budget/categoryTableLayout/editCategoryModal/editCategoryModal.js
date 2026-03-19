@@ -49,7 +49,7 @@ const EditCategoryModal = ({
   const openEditSubcategoryPage = (subcategory) => {
     setEditedSubcategory({
       ...subcategory,
-      actual: subcategory.actual,
+      budget: subcategory.budget,
       currentName: subcategory.name,
     });
     setPage("editSubcategory");
@@ -261,23 +261,25 @@ const EditCategoryModal = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {editedCategory.subcategories.map((subcategory) => (
-                        <tr key={subcategory._id}>
-                          <td>{subcategory.name}</td>
-                          <td>{dollarFormatter(subcategory.actual)}</td>
-                          {editedCategory.fixed && (
-                            <td>{dayFormatter(subcategory.dueDate)}</td>
-                          )}
-                          <td
-                            onClick={() => {
-                              openEditSubcategoryPage(subcategory);
-                            }}
-                            className="clicker"
-                          >
-                            &#8286;
-                          </td>
-                        </tr>
-                      ))}
+                      {editedCategory.subcategories
+                        .filter((subcategory) => !subcategory.deleted)
+                        .map((subcategory) => (
+                          <tr key={subcategory._id}>
+                            <td>{subcategory.name}</td>
+                            <td>{dollarFormatter(subcategory.budget)}</td>
+                            {editedCategory.fixed && (
+                              <td>{dayFormatter(subcategory.dueDate)}</td>
+                            )}
+                            <td
+                              onClick={() => {
+                                openEditSubcategoryPage(subcategory);
+                              }}
+                              className="clicker"
+                            >
+                              &#8286;
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </Table>
                 )}

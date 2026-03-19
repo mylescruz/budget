@@ -29,7 +29,7 @@ const EditSubcategoryPage = ({
         [id]: e.target.value,
       });
 
-      if (id === "actual" && editedCategory.fixed) {
+      if (id === "budget" && editedCategory.fixed) {
         setFieldChanges((prev) => ({
           ...prev,
           budget: true,
@@ -44,11 +44,11 @@ const EditSubcategoryPage = ({
     const updatedSubcategories = editedCategory.subcategories.map(
       (subcategory) => {
         if (subcategory._id === editedSubcategory._id) {
-          subcategoriesTotal += dollarsToCents(editedSubcategory.actual);
+          subcategoriesTotal += dollarsToCents(editedSubcategory.budget);
 
-          return { ...editedSubcategory, actual: editedSubcategory.actual };
+          return { ...editedSubcategory, budget: editedSubcategory.budget };
         } else {
-          subcategoriesTotal += dollarsToCents(subcategory.actual);
+          subcategoriesTotal += dollarsToCents(subcategory.budget);
           return subcategory;
         }
       },
@@ -59,9 +59,9 @@ const EditSubcategoryPage = ({
       budget: editedCategory.fixed
         ? centsToDollars(subcategoriesTotal)
         : editedCategory.budget,
-      actual: editedCategory.fixed
+      budget: editedCategory.fixed
         ? centsToDollars(subcategoriesTotal)
-        : editedCategory.actual,
+        : editedCategory.budget,
       subcategories: updatedSubcategories,
     });
 
@@ -76,18 +76,29 @@ const EditSubcategoryPage = ({
     if (editedCategory.fixed) {
       categoryBudget = subtractDecimalValues(
         categoryBudget,
-        editedSubcategory.actual,
+        editedSubcategory.budget,
       );
-      categoryActual -= dollarsToCents(editedSubcategory.actual);
+      categoryActual -= dollarsToCents(editedSubcategory.budget);
     }
+
+    const updatedSubcategories = editedCategory.subcategories.map(
+      (subcategory) => {
+        if (subcategory._id === editedSubcategory._id) {
+          return {
+            ...subcategory,
+            deleted: true,
+          };
+        } else {
+          return subcategory;
+        }
+      },
+    );
 
     const updatedCategory = {
       ...editedCategory,
       budget: categoryBudget,
       actual: categoryActual,
-      subcategories: editedCategory.subcategories.filter(
-        (sub) => sub._id !== editedSubcategory._id,
-      ),
+      subcategories: updatedSubcategories,
     };
 
     if (updatedCategory.subcategories.length === 0) {
@@ -119,12 +130,12 @@ const EditSubcategoryPage = ({
       {editedCategory.fixed && (
         <div>
           <Col className="col-12 col-md-8">
-            <Form.Group controlId="actual" className="my-2">
-              <Form.Label>Actual Amount</Form.Label>
+            <Form.Group controlId="budget" className="my-2">
+              <Form.Label>Amount Charged</Form.Label>
               <Form.Control
                 type="number"
                 placeholder="Amount"
-                value={editedSubcategory.actual}
+                value={editedSubcategory.budget}
                 onChange={handleInput}
               />
             </Form.Group>
@@ -164,7 +175,7 @@ const EditSubcategoryPage = ({
       <div className="w-100 d-flex justify-content-between mt-4">
         <Button
           variant="danger"
-          disabled={!editedCategory.fixed && editedSubcategory.actual !== 0}
+          disabled={!editedCategory.fixed && editedSubcategory.budget !== 0}
           onClick={deleteSubcategory}
         >
           Delete
@@ -174,8 +185,8 @@ const EditSubcategoryPage = ({
           disabled={
             editedSubcategory.name === "" ||
             (editedCategory.fixed &&
-              (editedSubcategory.actual === "" ||
-                editedSubcategory.actual <= 0 ||
+              (editedSubcategory.budget === "" ||
+                editedSubcategory.budget <= 0 ||
                 editedSubcategory.dueDate === "" ||
                 editedSubcategory.dueDate > 31 ||
                 editedSubcategory.dueDate < 1 ||
