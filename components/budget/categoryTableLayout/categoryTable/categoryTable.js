@@ -1,15 +1,10 @@
 import PopUp from "@/components/ui/popUp";
 import { Button, Table } from "react-bootstrap";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import ProgressBar from "@/components/ui/progressBar";
 import { useContext } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import FixedCategoryRow from "./fixedCategories/fixedCategoryRow";
 import ChangingCategoryRow from "./changingCategories/changingCategoryRow";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
-import dollarsToCents from "@/helpers/dollarsToCents";
-import centsToDollars from "@/helpers/centsToDollars";
-import addDecimalValues from "@/helpers/addDecimalValues";
 
 const WARNING_PERCENTAGE = 10;
 
@@ -23,56 +18,25 @@ const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
 
 const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
   const { categories, categoryTotals } = useContext(CategoriesContext);
-  const { transactions } = useContext(TransactionsContext);
-
-  // Calculate the money transferred in and out of a user's account
-  const transfers = transactions.reduce(
-    (sum, current) => {
-      if (current.type === "Transfer") {
-        if (current.toAccount === "Checking") {
-          sum.in += dollarsToCents(current.amount);
-        }
-
-        if (current.toAccount === "Savings") {
-          sum.out += dollarsToCents(current.amount);
-        }
-      }
-
-      return sum;
-    },
-    { in: 0, out: 0 },
-  );
-
-  const transfersIn = centsToDollars(transfers.in);
-  const transfersOut = centsToDollars(transfers.out);
-
-  // Get the total available funds for the month
-  const availableFunds = addDecimalValues(categoryTotals.income, transfersIn);
-
-  const leftoverVariableFunds = centsToDollars(
-    dollarsToCents(availableFunds) -
-      dollarsToCents(categoryTotals.fixedBudget) -
-      dollarsToCents(categoryTotals.variableActual) -
-      transfers.out,
-  );
 
   // Define the text color of the amount values for the cards
   const variableSpendingPercentage = Math.round(
-    (leftoverVariableFunds / availableFunds) * 100,
+    (categoryTotals.variableRemaining / categoryTotals.variableBudget) * 100,
   );
 
-  let leftoverFundsColor;
+  let variableRemainingText;
 
   // Show red text if the user has no income or if their available spending balance is less than 0
-  if (variableSpendingPercentage <= 0 && leftoverVariableFunds <= 0) {
-    leftoverFundsColor = "text-danger";
+  if (categoryTotals.variableRemaining <= 0) {
+    variableRemainingText = "text-danger";
   } else if (
+    categoryTotals.variableRemaining >= 0 &&
     variableSpendingPercentage >= 0 &&
-    variableSpendingPercentage < WARNING_PERCENTAGE
+    variableSpendingPercentage <= WARNING_PERCENTAGE
   ) {
-    leftoverFundsColor = "text-warning";
+    variableRemainingText = "text-warning";
   } else {
-    leftoverFundsColor = "text-success";
+    variableRemainingText = "text-success";
   }
 
   const openAddModal = () => {
@@ -181,13 +145,7 @@ const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
             {dollarFormatter(categoryTotals.variableActual)}
           </th>
           <th className={leftColumn}>
-            <span
-              className={
-                categoryTotals.variableRemaining < 0
-                  ? "fw-bold text-danger"
-                  : ""
-              }
-            >
+            <span className={variableRemainingText}>
               {dollarFormatter(categoryTotals.variableRemaining)}
             </span>
           </th>
