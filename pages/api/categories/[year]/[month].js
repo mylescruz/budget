@@ -344,6 +344,7 @@ async function getCurrentCategories(
       _id: subcategory._id,
       name: subcategory.name,
       fixed: subcategory.fixed,
+      parentCategoryId: subcategory.parentCategoryId,
     };
 
     if (formattedSubcategory.fixed) {
