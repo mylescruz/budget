@@ -122,11 +122,11 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
           const formattedSubcategory = {
             _id: subcategory._id,
             name: subcategory.name,
-            actual: 0,
+            budget: 0,
           };
 
           if (parentCategory.fixed) {
-            formattedSubcategory.actual = centsToDollars(subcategory.actual);
+            formattedSubcategory.budget = centsToDollars(subcategory.budget);
             formattedSubcategory.frequency = subcategory.frequency;
             formattedSubcategory.dueDate = subcategory.dueDate ?? 1;
           }
