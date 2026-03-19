@@ -325,14 +325,26 @@ async function getCurrentCategories(
     const formattedSubcategory = {
       _id: subcategory._id,
       name: subcategory.name,
-      actual: subcategory.fixed
-        ? subcategory.actual
-        : subcategory.transactionsAmount,
+      fixed: subcategory.fixed,
     };
 
-    if (subcategory.fixed) {
+    if (formattedSubcategory.fixed) {
+      formattedSubcategory.budget = subcategory.budget;
       formattedSubcategory.frequency = subcategory.frequency;
       formattedSubcategory.dueDate = subcategory.dueDate;
+
+      const subcategoryDate = new Date(
+        `${month}/${subcategory.dueDate}/${year}`,
+      );
+
+      if (subcategoryDate <= today) {
+        // Charge a fixed parent's actual value to the total if their charge date already passed
+        formattedSubcategory.actual = subcategory.budget;
+      } else {
+        formattedSubcategory.actual = 0;
+      }
+    } else {
+      formattedSubcategory.actual = subcategory.transactionsAmount;
     }
 
     const foundParent = categoriesMap.get(
@@ -340,25 +352,19 @@ async function getCurrentCategories(
     );
 
     if (foundParent) {
-      if (foundParent.fixed) {
-        const subcategoryDate = new Date(
-          `${month}/${subcategory.dueDate}/${year}`,
-        );
+      foundParent.actual += formattedSubcategory.actual;
 
-        // Add the fixed subcategory's actual value if their charge date has passed
-        if (subcategoryDate <= today) {
-          foundParent.actual += formattedSubcategory.actual;
-        }
-      } else {
-        // Add the non-fixed subcategory's actual value
-        foundParent.actual += formattedSubcategory.actual;
+      // Format the subcategory's budget and actual value to be sent back to the client in USD
+      formattedSubcategory.actual = centsToDollars(formattedSubcategory.actual);
+
+      if (formattedSubcategory.fixed) {
+        formattedSubcategory.budget = centsToDollars(
+          formattedSubcategory.budget,
+        );
       }
 
-      // Format the subcategory's actual value to be sent back to the client in USD
-      foundParent.subcategories.push({
-        ...formattedSubcategory,
-        actual: centsToDollars(formattedSubcategory.actual),
-      });
+      // Embed the subcategory in the parent category
+      foundParent.subcategories.push(formattedSubcategory);
     }
   });
 
