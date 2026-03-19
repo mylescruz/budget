@@ -72,6 +72,9 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         if (subcategory.deleted) {
           // Immediately send subcategory to the array to be deleted
           editedSubcategories.push(subcategory);
+        } else if (subcategory.added) {
+          // Immediately send subcategory to the array to be added to the database
+          editedSubcategories.push(subcategory);
         } else {
           const formattedSubcategory = {
             _id: subcategory._id,
@@ -102,6 +105,57 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
+      // Update the changes to any subcategory documents and delete the remaining
+      if (editedSubcategories.length > 0) {
+        for (const subcategory of editedSubcategories) {
+          if (subcategory.deleted) {
+            // Delete the flagged subcategories
+            await categoriesCol.deleteOne(
+              { _id: new ObjectId(subcategory._id) },
+              { session },
+            );
+          } else if (subcategory.added) {
+            // Add the new subcategory to the budget
+            const formattedSubcategory = {
+              username,
+              month: category.month,
+              year: category.year,
+              name: subcategory.name,
+              color: editedCategory.color,
+              fixed: editedCategory.fixed,
+              parentCategoryId: categoryId,
+            };
+
+            if (editedCategory.fixed) {
+              formattedSubcategory.budget = dollarsToCents(subcategory.budget);
+              formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+              formattedSubcategory.frequency = subcategory.frequency;
+
+              // Update the parent category's budget to account for the new subcategory
+              editedCategory.budget += dollarsToCents(subcategory.budget);
+            }
+
+            await categoriesCol.insertOne(formattedSubcategory);
+          } else {
+            const subcategoryQuery = {
+              name: subcategory.name,
+            };
+
+            if (editedCategory.fixed) {
+              subcategoryQuery.budget = subcategory.budget;
+              subcategoryQuery.frequency = subcategory.frequency;
+              subcategoryQuery.dueDate = subcategory.dueDate;
+            }
+
+            await categoriesCol.updateOne(
+              { _id: new ObjectId(subcategory._id) },
+              { $set: subcategoryQuery },
+              { session },
+            );
+          }
+        }
+      }
+
       // Update the new fields for the category in MongoDB
       const categoryQuery = {
         budget: editedCategory.budget,
@@ -129,35 +183,6 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         },
         { session },
       );
-
-      // Update the changes to any subcategory documents and delete the remaining
-      if (editedSubcategories.length > 0) {
-        for (const subcategory of editedSubcategories) {
-          if (subcategory.deleted) {
-            // Delete the flagged subcategories
-            await categoriesCol.deleteOne(
-              { _id: new ObjectId(subcategory._id) },
-              { session },
-            );
-          } else {
-            const subcategoryQuery = {
-              name: subcategory.name,
-            };
-
-            if (editedCategory.fixed) {
-              subcategoryQuery.budget = subcategory.budget;
-              subcategoryQuery.frequency = subcategory.frequency;
-              subcategoryQuery.dueDate = subcategory.dueDate;
-            }
-
-            await categoriesCol.updateOne(
-              { _id: new ObjectId(subcategory._id) },
-              { $set: subcategoryQuery },
-              { session },
-            );
-          }
-        }
-      }
 
       // Update the Fun Money category for the category's month
       await updateFunMoney({
@@ -192,6 +217,10 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       // Return and with the formatted budget and actual values
       updatedCategory.subcategories = filteredSubcategories.map(
         (subcategory) => {
+          if (subcategory.added) {
+            subcategory.budget = dollarsToCents(subcategory.budget);
+          }
+
           if (editedCategory.fixed) {
             let subcategoryActual = 0;
 

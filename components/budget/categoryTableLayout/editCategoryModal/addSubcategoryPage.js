@@ -15,6 +15,7 @@ const AddSubcategoryPage = ({
     actual: "",
     frequency: "Monthly",
     dueDate: "",
+    added: true,
   };
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
@@ -24,11 +25,11 @@ const AddSubcategoryPage = ({
   };
 
   const addSubcategory = () => {
-    // Set the actual value to cents or 0 if it is a new not fixed subcategory
+    // Set the budget value to cents or 0 if it is a new not fixed subcategory
     if (!editedCategory.fixed) {
-      newSubcategory.actual = 0;
+      newSubcategory.budget = 0;
     } else {
-      newSubcategory.actual = Number(newSubcategory.actual);
+      newSubcategory.budget = Number(newSubcategory.budget);
     }
 
     if (editedCategory.subcategories.length > 0) {
@@ -36,13 +37,13 @@ const AddSubcategoryPage = ({
 
       // If the category is fixed, add the new subcategory total to the budget value
       const budgetValue = editedCategory.fixed
-        ? addDecimalValues(editedCategory.budget, newSubcategory.actual)
+        ? addDecimalValues(editedCategory.budget, newSubcategory.budget)
         : editedCategory.budget;
 
       // If the category is fixed, the actual is set to the subcategory total
       const actualValue = editedCategory.fixed
-        ? addDecimalValues(editedCategory.budget, newSubcategory.actual)
-        : editedCategory.actual;
+        ? addDecimalValues(editedCategory.budget, newSubcategory.budget)
+        : editedCategory.budget;
 
       // Update the total budget and add subcategory
       setEditedCategory({
@@ -54,12 +55,12 @@ const AddSubcategoryPage = ({
     } else {
       // If the category is fixed, the budget is now dependent on the new subcategory total
       const budgetValue = editedCategory.fixed
-        ? newSubcategory.actual
+        ? newSubcategory.budget
         : editedCategory.budget;
 
       // If the category is fixed, the actual is set to the subcategory total
       const actualValue = editedCategory.fixed
-        ? newSubcategory.actual
+        ? newSubcategory.budget
         : editedCategory.actual;
 
       const updatedCategory = {
@@ -96,13 +97,13 @@ const AddSubcategoryPage = ({
       {editedCategory.fixed && (
         <div>
           <Col className="col-12 col-md-8">
-            <Form.Group controlId="actual" className="my-2">
-              <Form.Label>Actual Amount</Form.Label>
+            <Form.Group controlId="budget" className="my-2">
+              <Form.Label>How much are you charged?</Form.Label>
               <Form.Control
                 className="add-subcategory"
                 type="number"
                 placeholder="Amount"
-                value={newSubcategory.actual}
+                value={newSubcategory.budget}
                 onChange={handleInput}
               />
             </Form.Group>
@@ -148,8 +149,8 @@ const AddSubcategoryPage = ({
           disabled={
             newSubcategory.name === "" ||
             (editedCategory.fixed &&
-              (newSubcategory.actual === "" ||
-                newSubcategory.actual <= 0 ||
+              (newSubcategory.budget === "" ||
+                newSubcategory.budget <= 0 ||
                 newSubcategory.dueDate === "" ||
                 newSubcategory.dueDate > 31 ||
                 newSubcategory.dueDate < 1))
