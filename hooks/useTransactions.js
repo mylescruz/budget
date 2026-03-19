@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState([]);
@@ -134,6 +136,41 @@ const useTransactions = (month, year) => {
     [transactions],
   );
 
+  const transactionTotals = useMemo(() => {
+    if (!transactions) {
+      return null;
+    }
+
+    const totals = transactions.reduce(
+      (sum, transaction) => {
+        const amount = dollarsToCents(transaction.amount);
+
+        if (transaction.type === "Expense") {
+          sum.expenses += amount;
+        } else {
+          if (transaction.toAccount === "Checking") {
+            sum.toChecking += amount;
+          } else {
+            sum.toSavings += amount;
+          }
+        }
+
+        return sum;
+      },
+      {
+        expenses: 0,
+        toChecking: 0,
+        toSavings: 0,
+      },
+    );
+
+    return {
+      expenses: centsToDollars(totals.expenses),
+      checkingTransfers: centsToDollars(totals.toChecking),
+      savingsTransfers: centsToDollars(totals.toSavings),
+    };
+  }, [transactions]);
+
   return {
     transactions,
     transactionsLoading,
@@ -141,6 +178,7 @@ const useTransactions = (month, year) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
+    transactionTotals,
   };
 };
 

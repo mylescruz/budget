@@ -14,6 +14,7 @@ export const TransactionsProvider = ({ children, dateInfo }) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
+    transactionTotals,
   } = useTransactions(dateInfo.month, dateInfo.year);
 
   return (
@@ -25,6 +26,7 @@ export const TransactionsProvider = ({ children, dateInfo }) => {
         postTransactions,
         putTransaction,
         deleteTransaction,
+        transactionTotals,
       }}
     >
       {children}
