@@ -13,37 +13,18 @@ const WARNING_PERCENTAGE = 10;
 
 const TotalsLayout = () => {
   const { categoryTotals } = useContext(CategoriesContext);
-  const { transactions } = useContext(TransactionsContext);
-
-  // Calculate the money transferred in and out of a user's account
-  const transfers = transactions.reduce(
-    (sum, current) => {
-      if (current.type === "Transfer") {
-        if (current.toAccount === "Checking") {
-          sum.in += dollarsToCents(current.amount);
-        }
-
-        if (current.toAccount === "Savings") {
-          sum.out += dollarsToCents(current.amount);
-        }
-      }
-
-      return sum;
-    },
-    { in: 0, out: 0 },
-  );
-
-  const transfersIn = centsToDollars(transfers.in);
-  const transfersOut = centsToDollars(transfers.out);
+  const { transactionTotals } = useContext(TransactionsContext);
 
   // Get the total available funds for the month
-  const availableFunds = addDecimalValues(categoryTotals.income, transfersIn);
+  const availableFunds = addDecimalValues(
+    categoryTotals.income,
+    transactionTotals.checkingTransfers,
+  );
 
   // Get the total amount currently charged for the month
-  const currentSpending = centsToDollars(
-    dollarsToCents(categoryTotals.variableActual) +
-      dollarsToCents(categoryTotals.fixedActual) +
-      dollarsToCents(transfersOut),
+  const currentSpending = addDecimalValues(
+    categoryTotals.actual,
+    transactionTotals.savingsTransfers,
   );
 
   // Get the total funds left to spend for the month
@@ -51,7 +32,7 @@ const TotalsLayout = () => {
     dollarsToCents(availableFunds) -
       dollarsToCents(categoryTotals.fixedBudget) -
       dollarsToCents(categoryTotals.variableActual) -
-      dollarsToCents(transfersOut),
+      dollarsToCents(transactionTotals.savingsTransfers),
   );
 
   // Define the text color of the amount values for the cards
@@ -135,7 +116,9 @@ const TotalsLayout = () => {
         </Col>
         <Col className="col-4 my-1">
           <PopUp id="saved" title={"Total transferred out to savings"}>
-            <div>Saved: {dollarFormatter(transfersOut)}</div>
+            <div>
+              Saved: {dollarFormatter(transactionTotals.savingsTransfers)}
+            </div>
           </PopUp>
         </Col>
       </Row>
