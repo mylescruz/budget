@@ -30,7 +30,7 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
         budget: prevCategory.hasSubcategory ? "" : prevCategory.budget,
         dueDate: prevCategory.hasSubcategory ? "" : prevCategory.dueDate,
         subcategories: prevCategory.subcategories.map((subcategory) => {
-          return { ...subcategory, actual: "", dueDate: "" };
+          return { ...subcategory, budget: "", dueDate: "" };
         }),
       };
     });

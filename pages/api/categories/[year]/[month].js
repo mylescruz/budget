@@ -77,17 +77,14 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
 
     const newCategory = { ...req.body };
 
-    // Convert the budget value to cents
-    const categoryBudget = dollarsToCents(newCategory.budget);
-    let categoryActual = 0;
+    let categoryBudget = 0;
 
     const newSubcategories = [];
 
     // Format each subcategory to be added to the database
     if (newCategory.subcategories.length === 0) {
-      if (newCategory.fixed) {
-        categoryActual = categoryBudget;
-      }
+      // Convert the budget value to cents
+      categoryBudget = dollarsToCents(newCategory.budget);
     } else {
       newCategory.subcategories.forEach((subcategory) => {
         const formattedSubcategory = {
@@ -100,17 +97,15 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
         };
 
         if (newCategory.fixed) {
-          const subcategoryActual = dollarsToCents(subcategory.actual);
+          const subcategoryBudget = dollarsToCents(subcategory.budget);
 
-          // Increment the parent category's actual field
-          categoryActual += subcategoryActual;
+          // Increment the parent category's budget field
+          categoryBudget += subcategoryBudget;
 
           // Define the fixed fields
-          formattedSubcategory.actual = subcategoryActual;
+          formattedSubcategory.budget = subcategoryBudget;
           formattedSubcategory.frequency = subcategory.frequency;
           formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
-        } else {
-          formattedSubcategory.actual = 0;
         }
 
         newSubcategories.push(formattedSubcategory);
@@ -125,7 +120,6 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       name: newCategory.name.trim(),
       color: newCategory.color,
       budget: categoryBudget,
-      actual: categoryActual,
       fixed: newCategory.fixed,
     };
 
@@ -164,21 +158,45 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       await updateFunMoney({ username, month, year, session });
     });
 
-    // Add the inserted _id to each subcategory and format the actual value to be sent back to the client
-    const addedSubcategories = newSubcategories.map((subcategory, index) => {
-      const formattedSubcategory = {
-        _id: insertedSubcategories.insertedIds[index],
-        name: subcategory.name,
-        actual: centsToDollars(subcategory.actual),
-      };
+    const today = new Date();
 
-      if (subcategory.fixed) {
-        formattedSubcategory.frequency = subcategory.frequency;
-        formattedSubcategory.dueDate = subcategory.dueDate;
-      }
+    let categoryActual = 0;
 
-      return formattedSubcategory;
-    });
+    const addedSubcategories = [];
+
+    if (newSubcategories.length > 0) {
+      // Add the inserted _id to each subcategory and format the budget and actual values to be sent back to the client
+      newSubcategories.forEach((subcategory, index) => {
+        const formattedSubcategory = {
+          _id: insertedSubcategories.insertedIds[index],
+          name: subcategory.name,
+          fixed: subcategory.fixed,
+        };
+
+        if (subcategory.fixed) {
+          formattedSubcategory.budget = centsToDollars(subcategory.budget);
+          formattedSubcategory.frequency = subcategory.frequency;
+          formattedSubcategory.dueDate = subcategory.dueDate;
+
+          const subcategoryDate = new Date(
+            `${month}/${subcategory.dueDate}/${year}`,
+          );
+
+          if (subcategoryDate <= today) {
+            // Charge a fixed parent's actual value to the total if their charge date already passed
+            formattedSubcategory.actual = formattedSubcategory.budget;
+          } else {
+            formattedSubcategory.actual = 0;
+          }
+        } else {
+          formattedSubcategory.actual = 0;
+        }
+
+        categoryActual += formattedSubcategory;
+
+        addedSubcategories.push(formattedSubcategory);
+      });
+    }
 
     // Send the new category back to the client
     const addedCategory = {
@@ -187,7 +205,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       color: formattedCategory.color,
       fixed: formattedCategory.fixed,
       budget: centsToDollars(formattedCategory.budget),
-      actual: centsToDollars(formattedCategory.actual),
+      actual: centsToDollars(categoryActual),
       subcategories: addedSubcategories,
     };
 

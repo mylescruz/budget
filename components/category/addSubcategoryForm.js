@@ -10,14 +10,14 @@ const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
   const emptySubcategory = {
     name: "",
-    actual: "",
+    budget: "",
     frequency: "Monthly",
     dueDate: "",
   };
 
   const subcategoryValidation = {
     name: { valid: true, error: "" },
-    actual: { valid: true, error: "" },
+    budget: { valid: true, error: "" },
     dueDate: { valid: true, error: "" },
   };
 
@@ -43,15 +43,15 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
     }
 
     if (newCategory.fixed) {
-      if (newSubcategory.actual === "") {
-        errors.actual = {
+      if (newSubcategory.budget === "") {
+        errors.budget = {
           valid: false,
           error: "Please enter an amount",
         };
 
         valid = false;
-      } else if (newSubcategory.actual <= 0) {
-        errors.actual = {
+      } else if (newSubcategory.budget <= 0) {
+        errors.budget = {
           valid: false,
           error: "The amount must be greater than 0",
         };
@@ -134,18 +134,18 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
                 </Form.Group>
               </Col>
               <Col className="col-12">
-                <Form.Group controlId="actual" className={groupFormStyle}>
+                <Form.Group controlId="budget" className={groupFormStyle}>
                   <Form.Label>How much are you charged?</Form.Label>
                   <Form.Control
                     className={inputFormStyle}
                     type="number"
                     step={0.01}
-                    value={newSubcategory.actual}
+                    value={newSubcategory.budget}
                     onChange={handleInput}
-                    isInvalid={!validation.actual.valid}
+                    isInvalid={!validation.budget.valid}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {validation.actual.error}
+                    {validation.budget.error}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>

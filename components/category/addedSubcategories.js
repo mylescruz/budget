@@ -25,7 +25,7 @@ const AddedSubcategories = ({ newCategory, setNewCategory }) => {
               {subcategory.name}
             </Col>
             {newCategory.fixed && (
-              <Col className="col-3">${subcategory.actual}</Col>
+              <Col className="col-3">${subcategory.budget}</Col>
             )}
             {newCategory.fixed && (
               <Col className="col-3">{subcategory.dueDate}</Col>

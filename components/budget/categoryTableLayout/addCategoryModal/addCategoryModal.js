@@ -14,7 +14,6 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     name: "",
     color: "#000000",
     budget: "",
-    actual: "",
     dueDate: "",
     frequency: "Monthly",
     fixed: false,
@@ -64,12 +63,12 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
       let subcategoryTotal = 0;
 
       const subcategories = newCategory.subcategories.map((subcategory) => {
-        const parsedActual = parseFloat(subcategory.actual);
+        const subcategoryBudget = Number(subcategory.budget);
 
-        subcategoryTotal = subcategoryTotal + parsedActual * 100;
+        subcategoryTotal = subcategoryTotal + subcategoryBudget * 100;
         return {
           ...subcategory,
-          actual: parsedActual,
+          budget: subcategoryBudget,
         };
       });
 
@@ -82,7 +81,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
       setNewCategory({
         ...newCategory,
         subcategories: newCategory.subcategories.map((subcategory) => {
-          return { ...subcategory, actual: 0 };
+          return { ...subcategory, budget: 0 };
         }),
       });
     }
@@ -117,113 +116,115 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
 
   return (
     <Modal show={modal === "add"} onHide={closeModal} centered>
-      {status === "inputting" && (
-        <>
-          <Modal.Header closeButton>
-            <Modal.Title>Add a category</Modal.Title>
-          </Modal.Header>
+      {status === "inputting" ||
+        (status === "error" && (
+          <>
+            <Modal.Header closeButton>
+              <Modal.Title>Add a category</Modal.Title>
+            </Modal.Header>
 
-          <Modal.Body>
-            {modalPage === "question" && (
-              <Row className="text-center">
-                <h6>
-                  Do you want to add a new or a previously created category?
-                </h6>
-                <Row className="d-flex flex-col text-center mx-auto">
+            <Modal.Body>
+              {modalPage === "question" && (
+                <Row className="text-center">
+                  <h6>
+                    Do you want to add a new or a previously created category?
+                  </h6>
+                  <Row className="d-flex flex-col text-center mx-auto">
+                    <Button
+                      variant="primary"
+                      className="my-2"
+                      onClick={goToDetails}
+                    >
+                      New
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      className="my-2"
+                      onClick={goToPrevious}
+                    >
+                      Previous
+                    </Button>
+                  </Row>
+                </Row>
+              )}
+              {modalPage === "previous" && (
+                <PreviousCategoryForm
+                  dateInfo={dateInfo}
+                  setNewCategory={setNewCategory}
+                  setModalPage={setModalPage}
+                />
+              )}
+              {modalPage === "details" && (
+                <CategoryDetailsForm
+                  newCategory={newCategory}
+                  setNewCategory={setNewCategory}
+                />
+              )}
+              {modalPage === "subcategories" && (
+                <AddSubcategoryForm
+                  newCategory={newCategory}
+                  setNewCategory={setNewCategory}
+                />
+              )}
+              {modalPage === "confirm" && (
+                <CategoryConfirmationPage newCategory={newCategory} />
+              )}
+              {status === "error" && <ErrorMessage />}
+            </Modal.Body>
+            <Modal.Footer>
+              {modalPage === "details" && (
+                <div className="w-100 d-flex justify-content-between">
+                  <Button variant="secondary" onClick={closeModal}>
+                    Cancel
+                  </Button>
                   <Button
                     variant="primary"
-                    className="my-2"
-                    onClick={goToDetails}
+                    onClick={confirmDetails}
+                    disabled={
+                      newCategory.name === "" ||
+                      (!newCategory.fixed &&
+                        (newCategory.budget === "" ||
+                          Number(newCategory.budget) === 0)) ||
+                      (newCategory.fixed &&
+                        !newCategory.hasSubcategory &&
+                        (newCategory.budget === "" ||
+                          newCategory.dueDate === ""))
+                    }
                   >
-                    New
+                    Next
+                  </Button>
+                </div>
+              )}
+              {modalPage === "subcategories" && (
+                <div className="w-100 d-flex justify-content-between">
+                  <Button variant="secondary" onClick={backToDetails}>
+                    Back
                   </Button>
                   <Button
-                    variant="secondary"
-                    className="my-2"
-                    onClick={goToPrevious}
+                    variant="primary"
+                    onClick={openConfirmation}
+                    disabled={newCategory.subcategories.length === 0}
                   >
-                    Previous
+                    Next
                   </Button>
-                </Row>
-              </Row>
-            )}
-            {modalPage === "previous" && (
-              <PreviousCategoryForm
-                dateInfo={dateInfo}
-                setNewCategory={setNewCategory}
-                setModalPage={setModalPage}
-              />
-            )}
-            {modalPage === "details" && (
-              <CategoryDetailsForm
-                newCategory={newCategory}
-                setNewCategory={setNewCategory}
-              />
-            )}
-            {modalPage === "subcategories" && (
-              <AddSubcategoryForm
-                newCategory={newCategory}
-                setNewCategory={setNewCategory}
-              />
-            )}
-            {modalPage === "confirm" && (
-              <CategoryConfirmationPage newCategory={newCategory} />
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            {modalPage === "details" && (
-              <div className="w-100 d-flex justify-content-between">
-                <Button variant="secondary" onClick={closeModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={confirmDetails}
-                  disabled={
-                    newCategory.name === "" ||
-                    (!newCategory.fixed &&
-                      (newCategory.budget === "" ||
-                        Number(newCategory.budget) === 0)) ||
-                    (newCategory.fixed &&
-                      !newCategory.hasSubcategory &&
-                      (newCategory.budget === "" || newCategory.dueDate === ""))
-                  }
-                >
-                  Next
-                </Button>
-              </div>
-            )}
-            {modalPage === "subcategories" && (
-              <div className="w-100 d-flex justify-content-between">
-                <Button variant="secondary" onClick={backToDetails}>
-                  Back
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={openConfirmation}
-                  disabled={newCategory.subcategories.length === 0}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
-            {modalPage === "confirm" && (
-              <div className="w-100 d-flex justify-content-between">
-                <Button variant="secondary" onClick={backFromConfirm}>
-                  Back
-                </Button>
-                <Button variant="primary" onClick={addNewCategory}>
-                  Add
-                </Button>
-              </div>
-            )}
-          </Modal.Footer>
-        </>
-      )}
+                </div>
+              )}
+              {modalPage === "confirm" && (
+                <div className="w-100 d-flex justify-content-between">
+                  <Button variant="secondary" onClick={backFromConfirm}>
+                    Back
+                  </Button>
+                  <Button variant="primary" onClick={addNewCategory}>
+                    Add
+                  </Button>
+                </div>
+              )}
+            </Modal.Footer>
+          </>
+        ))}
       {status === "posting" && (
         <LoadingMessage message="Adding the new category" />
       )}
-      {status === "error" && <ErrorMessage />}
     </Modal>
   );
 };

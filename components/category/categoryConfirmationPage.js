@@ -51,7 +51,7 @@ const CategoryConfirmationPage = ({ newCategory }) => {
                 </Col>
                 {newCategory.fixed && (
                   <Col className="col-3">
-                    {dollarFormatter(subcategory.actual)}
+                    {dollarFormatter(subcategory.budget)}
                   </Col>
                 )}
                 {newCategory.fixed && (
