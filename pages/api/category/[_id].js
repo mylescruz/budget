@@ -7,6 +7,7 @@ import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
+import { update } from "tar";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -54,7 +55,6 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       color: category.color,
       fixed: category.fixed,
       budget: dollarsToCents(category.budget),
-      actual: dollarsToCents(category.actual),
     };
 
     if (editedCategory.fixed && category.subcategories.length === 0) {
@@ -75,10 +75,9 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
         } else {
           const formattedSubcategory = {
             _id: subcategory._id,
-            parentCategoryId: subcategory.parentCategoryId,
+            parentCategoryId: categoryId,
             name: subcategory.name.trim(),
             budget: dollarsToCents(subcategory.budget),
-            actual: subcategory.actual,
           };
 
           if (editedCategory.fixed) {
@@ -86,19 +85,18 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
 
             formattedSubcategory.frequency = subcategory.frequency;
             formattedSubcategory.dueDate = parseInt(subcategory.dueDate);
+          } else {
+            // Get the categories' transaction total amount to send back to the client
+            formattedSubcategory.actual = dollarsToCents(subcategory.actual);
           }
 
           editedSubcategories.push(formattedSubcategory);
         }
       });
 
-      // Update the category's actual value to remain the same or if fixed, equal the new total of the new subcategories' budget value
-      if (editedCategory.fixed) {
-        if (editedSubcategories.length > 0) {
-          editedCategory.actual = editedCategory.budget;
-        } else {
-          editedCategory.actual = subcategoryBudget;
-        }
+      // Update a fixed category's budget value to equal the new total of the subcategories' budget value
+      if (editedCategory.fixed && editedSubcategories.length > 0) {
+        editedCategory.budget = subcategoryBudget;
       }
     }
 
@@ -176,37 +174,61 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       name: editedCategory.name,
       color: editedCategory.color,
       fixed: editedCategory.fixed,
-      budget: centsToDollars(editedCategory.budget),
-      actual: centsToDollars(editedCategory.actual),
     };
 
     const today = new Date();
 
-    // Return the subcategories without the deleted categories and with the formatted budget and actual values
-    updatedCategory.subcategories = editedSubcategories
-      .filter((subcategory) => !subcategory.deleted)
-      .map((subcategory) => {
-        if (subcategory.fixed) {
-          const formattedSubcategory = {
-            ...subcategory,
-            budget: centsToDollars(subcategory.budget),
-          };
+    let categoryActual = 0;
+    let categoryBudget = 0;
 
-          const subcategoryDate = new Date(
-            `${editedCategory.month}/${subcategory.dueDate}/${editedCategory.year}`,
-          );
+    // Filter for the subcategories without the deleted categories
+    const filteredSubcategories = editedSubcategories.filter(
+      (subcategory) => !subcategory.deleted,
+    );
 
-          if (subcategoryDate <= today) {
-            formattedSubcategory.actual = subcategory.actual;
+    if (filteredSubcategories.length === 0) {
+      categoryBudget = centsToDollars(editedCategory.budget);
+    } else {
+      // Return and with the formatted budget and actual values
+      updatedCategory.subcategories = filteredSubcategories.map(
+        (subcategory) => {
+          if (editedCategory.fixed) {
+            let subcategoryActual = 0;
+
+            const subcategoryDate = new Date(
+              `${editedCategory.month}/${subcategory.dueDate}/${editedCategory.year}`,
+            );
+
+            // Increment the fixed subcategory actual if the charge date passed
+            if (subcategoryDate <= today) {
+              subcategoryActual = subcategory.budget;
+            }
+
+            categoryBudget += subcategory.budget;
+            categoryActual += subcategoryActual;
+
+            const formattedSubcategory = {
+              ...subcategory,
+              budget: centsToDollars(subcategory.budget),
+              actual: centsToDollars(subcategoryActual),
+            };
+
+            return formattedSubcategory;
           } else {
-            formattedSubcategory.actual = 0;
-          }
+            // Automatically increment variable actual values
+            categoryActual += subcategory.actual;
 
-          return formattedSubcategory;
-        } else {
-          return subcategory;
-        }
-      });
+            return subcategory;
+          }
+        },
+      );
+    }
+
+    // Format the final category values
+    updatedCategory.budget = updatedCategory.fixed
+      ? centsToDollars(categoryBudget)
+      : centsToDollars(editedCategory.budget);
+    updatedCategory.actual = centsToDollars(categoryActual);
 
     return res.status(200).json(updatedCategory);
   } catch (error) {
