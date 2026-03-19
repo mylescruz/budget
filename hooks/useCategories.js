@@ -137,88 +137,60 @@ const useCategories = (month, year) => {
     [categories],
   );
 
-  // Gets the total budget, actual and remaining for categories
-  // Budget: Based on amount value from income
-  // Actual:
-  //  If a category or subcategory's due date is greater than today, add its actual value
-  //  If it doesn't have a due date, just add its actual value
+  // Get the total budget, actual and remaining values for both fixed and variable categories
   const categoryTotals = useMemo(() => {
     if (!categories) {
       return null;
     }
 
-    const today = new Date();
+    const totals = categories.reduce(
+      (sum, category) => {
+        const categoryBudget = dollarsToCents(category.budget);
+        const categoryActual = dollarsToCents(category.actual);
 
-    let categoryActuals = 0;
-    let fixedBudget = 0;
-    let fixedActual = 0;
-    let changedBudget = 0;
-    let changedActual = 0;
+        if (category.fixed && category.subcategories.length > 0) {
+          category.subcategories.forEach((subcategory) => {
+            const subcategoryActual = dollarsToCents(subcategory.actual);
+            const subcategoryBudget = dollarsToCents(subcategory.budget);
 
-    categories.forEach((category) => {
-      const categoryBudget = dollarsToCents(category.budget);
-      const categoryActual = dollarsToCents(category.actual);
+            sum.categoryActuals += subcategoryActual;
+            sum.fixedActual += subcategoryActual;
+            sum.fixedBudget += subcategoryBudget;
+          });
+        } else if (category.fixed && category.subcategories.length === 0) {
+          sum.fixedBudget += categoryBudget;
 
-      if (category.fixed && category.subcategories.length > 0) {
-        fixedBudget += categoryActual;
-
-        category.subcategories.forEach((subcategory) => {
-          const subcategoryActual = dollarsToCents(subcategory.actual);
-
-          if (subcategory.dueDate) {
-            const day = subcategory.dueDate;
-            const subcategoryDate = new Date(`${month}/${day}/${year}`);
-
-            if (subcategoryDate.getTime() <= today.getTime()) {
-              categoryActuals += subcategoryActual;
-              fixedActual += subcategoryActual;
-            }
-          } else {
-            categoryActuals += subcategoryActual;
-            fixedActual += subcategoryActual;
-          }
-        });
-      } else if (category.fixed && category.subcategories.length === 0) {
-        fixedBudget += categoryActual;
-
-        if (category.dueDate) {
-          const day = category.dueDate;
-          const categoryDate = new Date(`${month}/${day}/${year}`);
-
-          if (categoryDate.getTime() <= today.getTime()) {
-            categoryActuals += categoryActual;
-            fixedActual += categoryActual;
-          }
+          sum.categoryActuals += categoryActual;
+          sum.fixedActual += categoryActual;
         } else {
-          categoryActuals += categoryActual;
-          fixedActual += categoryActual;
+          sum.variableBudget += categoryBudget;
+          sum.categoryActuals += categoryActual;
+          sum.variableActual += categoryActual;
         }
-      } else {
-        changedBudget += categoryBudget;
-        categoryActuals += categoryActual;
-        changedActual += categoryActual;
-      }
-    });
 
-    const actualValue = centsToDollars(categoryActuals);
-    const remaining = subtractDecimalValues(monthIncome, actualValue);
-    const fixedCategoriesBudget = centsToDollars(fixedBudget);
-    const fixedCategoriesActual = centsToDollars(fixedActual);
-    const changedCategoriesBudget = centsToDollars(changedBudget);
-    const changedCategoriesActual = centsToDollars(changedActual);
-    const changedCategoriesRemaining = centsToDollars(
-      changedBudget - changedActual,
+        return sum;
+      },
+      {
+        categoryActuals: 0,
+        fixedBudget: 0,
+        fixedActual: 0,
+        variableBudget: 0,
+        variableActual: 0,
+      },
     );
 
+    const totalRemaining = dollarsToCents(monthIncome) - totals.categoryActuals;
+    const variableRemaining = totals.variableBudget - totals.variableActual;
+
     return {
-      budget: monthIncome,
-      actual: actualValue,
-      remaining: remaining,
-      fixedBudget: fixedCategoriesBudget,
-      fixedActual: fixedCategoriesActual,
-      nonFixedBudget: changedCategoriesBudget,
-      nonFixedActual: changedCategoriesActual,
-      nonFixedRemaining: changedCategoriesRemaining,
+      income: monthIncome,
+      actual: centsToDollars(totals.categoryActuals),
+      remaining: centsToDollars(totalRemaining),
+      fixedBudget: centsToDollars(totals.fixedBudget),
+      fixedActual: centsToDollars(totals.fixedActual),
+      variableBudget: centsToDollars(totals.variableBudget),
+      variableActual: centsToDollars(totals.variableActual),
+      variableRemaining: centsToDollars(variableRemaining),
     };
   }, [categories, monthIncome, month, year]);
 

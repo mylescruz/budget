@@ -47,12 +47,12 @@ const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
   const transfersOut = centsToDollars(transfers.out);
 
   // Get the total available funds for the month
-  const availableFunds = addDecimalValues(categoryTotals.budget, transfersIn);
+  const availableFunds = addDecimalValues(categoryTotals.income, transfersIn);
 
   const leftoverVariableFunds = centsToDollars(
     dollarsToCents(availableFunds) -
       dollarsToCents(categoryTotals.fixedBudget) -
-      dollarsToCents(categoryTotals.nonFixedActual) -
+      dollarsToCents(categoryTotals.variableActual) -
       transfers.out,
   );
 
@@ -171,24 +171,24 @@ const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
           <th className={budgetColumn}>
             <span
               className={
-                categoryTotals.nonFixedBudget < 0 ? "fw-bold text-danger" : ""
+                categoryTotals.variableBudget < 0 ? "fw-bold text-danger" : ""
               }
             >
-              {dollarFormatter(categoryTotals.nonFixedBudget)}
+              {dollarFormatter(categoryTotals.variableBudget)}
             </span>
           </th>
           <th className={spentColumn}>
-            {dollarFormatter(categoryTotals.nonFixedActual)}
+            {dollarFormatter(categoryTotals.variableActual)}
           </th>
           <th className={leftColumn}>
             <span
               className={
-                categoryTotals.nonFixedRemaining < 0
+                categoryTotals.variableRemaining < 0
                   ? "fw-bold text-danger"
                   : ""
               }
             >
-              {dollarFormatter(categoryTotals.nonFixedRemaining)}
+              {dollarFormatter(categoryTotals.variableRemaining)}
             </span>
           </th>
           <th className={progressColumn} />

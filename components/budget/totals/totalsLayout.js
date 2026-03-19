@@ -37,11 +37,11 @@ const TotalsLayout = () => {
   const transfersOut = centsToDollars(transfers.out);
 
   // Get the total available funds for the month
-  const availableFunds = addDecimalValues(categoryTotals.budget, transfersIn);
+  const availableFunds = addDecimalValues(categoryTotals.income, transfersIn);
 
   // Get the total amount currently charged for the month
   const currentSpending = centsToDollars(
-    dollarsToCents(categoryTotals.nonFixedActual) +
+    dollarsToCents(categoryTotals.variableActual) +
       dollarsToCents(categoryTotals.fixedActual) +
       dollarsToCents(transfersOut),
   );
@@ -50,7 +50,7 @@ const TotalsLayout = () => {
   const leftToSpend = centsToDollars(
     dollarsToCents(availableFunds) -
       dollarsToCents(categoryTotals.fixedBudget) -
-      dollarsToCents(categoryTotals.nonFixedActual) -
+      dollarsToCents(categoryTotals.variableActual) -
       dollarsToCents(transfersOut),
   );
 
@@ -119,7 +119,7 @@ const TotalsLayout = () => {
             title={"Total spent on expense transactions"}
           >
             <div>
-              Expenses: {dollarFormatter(categoryTotals.nonFixedActual)}
+              Expenses: {dollarFormatter(categoryTotals.variableActual)}
             </div>
           </PopUp>
         </Col>
