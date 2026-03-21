@@ -1,10 +1,9 @@
 import { useContext, useState } from "react";
-import { Form, Button, Modal, Col, Row } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import todayInfo from "@/helpers/todayInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/ui/loadingMessage";
-import ErrorMessage from "@/components/ui/errorMessage";
 import {
   transactionTypes,
   transferAccounts,
@@ -17,10 +16,23 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
   const { categories, getCategories } = useContext(CategoriesContext);
   const { postTransactions } = useContext(TransactionsContext);
 
-  // When adding a new transaction, the first category option should be the first one that is not fixed and doesn't have a subcategory
-  const firstNotFixed = categories.find((category) => {
-    return !category.fixed && !category.subcategories.length > 0;
+  // Get a list of all the variable category names
+  const categoryNames = [];
+
+  categories.forEach((category) => {
+    if (!category.fixed) {
+      if (category.subcategories.length === 0) {
+        categoryNames.push(category.name);
+      } else {
+        category.subcategories.forEach((subcategory) => {
+          categoryNames.push(subcategory.name);
+        });
+      }
+    }
   });
+
+  // Make the user's first category choice the first variable category name
+  const firstVariableChoice = categoryNames[0];
 
   // Set the date for a new transaction either the current date or the first of the month based on if the user is looking at their current budget or a previous/future budget
   const transactionDate =
@@ -34,30 +46,12 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
     date: transactionDate,
     store: "",
     items: "",
-    category: firstNotFixed.name,
+    category: firstVariableChoice,
     amount: "",
   };
 
   const newTransfer = {
     active: true,
-    type: "Transfer",
-    date: transactionDate,
-    fromAccount: transferAccounts[0],
-    toAccount: transferAccounts[1],
-    amount: "",
-    description: "",
-  };
-
-  const oldExpense = {
-    type: "Expense",
-    date: transactionDate,
-    store: "",
-    items: "",
-    category: firstNotFixed.name,
-    amount: "",
-  };
-
-  const oldTransfer = {
     type: "Transfer",
     date: transactionDate,
     fromAccount: transferAccounts[0],
