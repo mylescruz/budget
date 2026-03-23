@@ -127,13 +127,16 @@ async function addTransactions(
       for (const transaction of transactions) {
         const transactionType = transaction.type;
 
+        const transactionDate = new Date(transaction.date);
+
         const newTransaction = {
           username,
           month,
           year,
           type: transactionType,
-          date: transaction.date,
+          date: transactionDate,
           amount: Number(transaction.amount) * 100,
+          createdTS: new Date(),
         };
 
         // Define the transaction body based on the transaction type
