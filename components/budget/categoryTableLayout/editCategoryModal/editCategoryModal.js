@@ -19,15 +19,27 @@ const EditCategoryModal = ({
   modal,
   setModal,
 }) => {
-  const { getCategories, putCategory } = useContext(CategoriesContext);
+  const { categories, getCategories, putCategory } =
+    useContext(CategoriesContext);
   const { getTransactions } = useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
-  const [status, setStatus] = useState("editing");
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
   const [fieldChanges, setFieldChanges] = useState({
     name: false,
     budget: false,
+  });
+
+  // Create a set of the user's categories so a user cannot create a category with the same name
+  const categoryNames = new Set();
+
+  categories.forEach((category) => {
+    categoryNames.add(category.name);
+
+    category.subcategories.forEach((subcategory) => {
+      categoryNames.add(subcategory.name);
+    });
   });
 
   const handleInput = (e) => {
@@ -55,8 +67,37 @@ const EditCategoryModal = ({
     setPage("editSubcategory");
   };
 
+  // Validate whether the inputted category name has been taken or not
+  const validateCategoryName = (categoryName) => {
+    let isValid = true;
+
+    if (categoryNames.has(categoryName)) {
+      setFormMeta({
+        status: "idle",
+        error: `There is already a category named ${categoryName}`,
+      });
+
+      isValid = false;
+    } else {
+      categoryNames.add(categoryName);
+
+      setFormMeta({
+        status: "idle",
+        error: null,
+      });
+    }
+
+    return isValid;
+  };
+
   const updateCategory = async () => {
-    setStatus("updating");
+    const validName = validateCategoryName(editedCategory.name);
+
+    if (!validName) {
+      return;
+    }
+
+    setFormMeta({ status: "updating", error: null });
 
     try {
       await putCategory({
@@ -77,7 +118,7 @@ const EditCategoryModal = ({
 
       closeEditCategoryModal();
     } catch (error) {
-      setStatus("error");
+      setFormMeta({ status: "idle", error: error.message });
       console.error(error);
     }
   };
@@ -91,7 +132,7 @@ const EditCategoryModal = ({
   };
 
   const closeEditCategoryModal = () => {
-    setStatus("editing");
+    setFormMeta({ status: "idle", error: null });
     setModal("none");
   };
 
@@ -104,7 +145,7 @@ const EditCategoryModal = ({
 
   return (
     <Modal show={modal === "edit"} onHide={closeEditCategoryModal} centered>
-      {status !== "updating" && status !== "deleting" && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header className="d-flex justify-content-between">
             <Modal.Title>
@@ -298,6 +339,7 @@ const EditCategoryModal = ({
                   setEditedCategory={setEditedCategory}
                   backToDetails={backToDetails}
                   setPage={setPage}
+                  validateCategoryName={validateCategoryName}
                 />
               </div>
             )}
@@ -311,11 +353,14 @@ const EditCategoryModal = ({
                   setEditedSubcategory={setEditedSubcategory}
                   setFieldChanges={setFieldChanges}
                   setPage={setPage}
+                  validateCategoryName={validateCategoryName}
                 />
               </div>
             )}
 
-            {status === "error" && <ErrorMessage />}
+            {formMeta.error && (
+              <p className="text-danger text-center">{formMeta.error}</p>
+            )}
           </Modal.Body>
           {page === "details" && (
             <Modal.Footer>
@@ -344,7 +389,7 @@ const EditCategoryModal = ({
           )}
         </>
       )}
-      {status === "updating" && (
+      {formMeta.status === "updating" && (
         <LoadingMessage message="Updating the category's details" />
       )}
     </Modal>

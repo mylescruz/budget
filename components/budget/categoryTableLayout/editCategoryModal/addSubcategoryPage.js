@@ -25,6 +25,13 @@ const AddSubcategoryPage = ({
   };
 
   const addSubcategory = () => {
+    // Validate whether the inputted subcategory name has been taken or not
+    const validName = validateCategoryName(newSubcategory.name);
+
+    if (!validName) {
+      return;
+    }
+
     // Set the budget value to cents or 0 if it is a new not fixed subcategory
     if (!editedCategory.fixed) {
       newSubcategory.budget = 0;

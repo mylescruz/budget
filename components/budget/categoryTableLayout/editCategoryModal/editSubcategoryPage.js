@@ -12,6 +12,7 @@ const EditSubcategoryPage = ({
   setEditedSubcategory,
   setFieldChanges,
   setPage,
+  validateCategoryName,
 }) => {
   const handleInput = (e) => {
     const id = e.target.id;
@@ -39,6 +40,13 @@ const EditSubcategoryPage = ({
   };
 
   const saveSubcategory = () => {
+    // Validate whether the inputted subcategory name has been taken or not
+    const validName = validateCategoryName(editedSubcategory.name);
+
+    if (!validName) {
+      return;
+    }
+
     let subcategoriesTotal = 0;
 
     const updatedSubcategories = editedCategory.subcategories.map(
