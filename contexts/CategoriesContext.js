@@ -16,6 +16,7 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
     deleteCategory,
     categoryTotals,
     categoryColors,
+    categoryNames,
   } = useCategories(dateInfo.month, dateInfo.year);
 
   return (
@@ -29,6 +30,7 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
         deleteCategory,
         categoryTotals,
         categoryColors,
+        categoryNames,
       }}
     >
       {children}

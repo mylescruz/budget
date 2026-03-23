@@ -215,6 +215,25 @@ const useCategories = (month, year) => {
     return colors;
   }, [categories]);
 
+  // Create a set of the user's categories so a user cannot create a category with the same name
+  const categoryNames = useMemo(() => {
+    if (!categories) {
+      return null;
+    }
+
+    const names = new Set();
+
+    categories.forEach((category) => {
+      categories.add(category.name);
+
+      category.subcategories.forEach((subcategory) => {
+        categories.add(subcategory.name);
+      });
+    });
+
+    return names;
+  }, [categories]);
+
   return {
     categories,
     categoriesLoading,
@@ -224,6 +243,7 @@ const useCategories = (month, year) => {
     deleteCategory,
     categoryTotals,
     categoryColors,
+    categoryNames,
   };
 };
 
