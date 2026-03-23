@@ -7,7 +7,11 @@ const inputFormStyle = "h-100";
 
 const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
-const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
+const AddSubcategoryForm = ({
+  newCategory,
+  setNewCategory,
+  validateCategoryName,
+}) => {
   const emptySubcategory = {
     name: "",
     budget: "",
@@ -39,6 +43,13 @@ const AddSubcategoryForm = ({ newCategory, setNewCategory }) => {
         error: "Please enter a subcategory name",
       };
 
+      valid = false;
+    }
+
+    // Check if the subcategory name is already in the user's budget for the month
+    const validName = validateCategoryName(newSubcategory.name);
+
+    if (!validName) {
       valid = false;
     }
 

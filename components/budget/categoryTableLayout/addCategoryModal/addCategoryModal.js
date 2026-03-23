@@ -21,12 +21,59 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     subcategories: [],
   };
 
-  const { postCategory, getCategories } = useContext(CategoriesContext);
+  const { categories, postCategory, getCategories } =
+    useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
+  const [formMeta, setFormMeta] = useState({
+    status: "idle",
+    error: null,
+  });
   const [status, setStatus] = useState("inputting");
   const [modalPage, setModalPage] = useState("question");
 
+  // Create a set of the user's categories so a user cannot create a category with the same name
+  const categoryNames = new Set();
+
+  categories.forEach((category) => {
+    categoryNames.add(category.name);
+
+    category.subcategories.forEach((subcategory) => {
+      categoryNames.add(subcategory.name);
+    });
+  });
+
+  // Validate whether the inputted category name has been taken or not
+  const validateCategoryName = (categoryName) => {
+    let isValid = true;
+
+    if (categoryNames.has(categoryName)) {
+      setFormMeta({
+        status: "idle",
+        error: `There is already a category named ${categoryName}`,
+      });
+
+      isValid = false;
+    } else {
+      categoryNames.add(categoryName);
+
+      setFormMeta({
+        status: "idle",
+        error: null,
+      });
+    }
+
+    return isValid;
+  };
+
   const confirmDetails = () => {
+    const validName = validateCategoryName(newCategory.name);
+
+    if (!validName) {
+      return;
+    }
+
+    setFormMeta({ status: "idle", error: null });
+
     if (newCategory.hasSubcategory) {
       setModalPage("subcategories");
     } else {
@@ -93,12 +140,12 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     setNewCategory(emptyCategory);
 
     setModalPage("details");
-    setStatus("inputting");
+    setFormMeta({ status: "idle", error: null });
     setModal("none");
   };
 
   const addNewCategory = async () => {
-    setStatus("posting");
+    setFormMeta({ status: "posting", error: null });
 
     try {
       await postCategory(newCategory);
@@ -108,15 +155,14 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
 
       closeModal();
     } catch (error) {
-      setStatus("error");
-      console.error(error);
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
 
   return (
     <Modal show={modal === "add"} onHide={closeModal} centered>
-      {(status === "inputting" || status === "error") && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>Add a category</Modal.Title>
@@ -163,12 +209,15 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
               <AddSubcategoryForm
                 newCategory={newCategory}
                 setNewCategory={setNewCategory}
+                validateCategoryName={validateCategoryName}
               />
             )}
             {modalPage === "confirm" && (
               <CategoryConfirmationPage newCategory={newCategory} />
             )}
-            {status === "error" && <ErrorMessage />}
+            {formMeta.error && (
+              <p className="text-danger text-center">{formMeta.error}</p>
+            )}
           </Modal.Body>
           <Modal.Footer>
             {modalPage === "details" && (
@@ -220,7 +269,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
           </Modal.Footer>
         </>
       )}
-      {status === "posting" && (
+      {formMeta.status === "posting" && (
         <LoadingMessage message="Adding the new category" />
       )}
     </Modal>
