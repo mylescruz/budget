@@ -48,6 +48,7 @@ async function fetchTransactions(transactionsCol, username, month, year) {
         $project: {
           type: 1,
           date: 1,
+          createdTS: 1,
           store: 1,
           items: 1,
           categoryId: 1,
@@ -78,7 +79,7 @@ async function fetchTransactions(transactionsCol, username, month, year) {
       {
         $project: { transactionCategory: 0 },
       },
-      { $sort: { date: 1 } },
+      { $sort: { date: 1, createdTS: 1 } },
     ])
     .toArray();
 }
