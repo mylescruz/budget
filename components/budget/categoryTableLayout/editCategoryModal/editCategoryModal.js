@@ -19,7 +19,7 @@ const EditCategoryModal = ({
   modal,
   setModal,
 }) => {
-  const { categories, getCategories, putCategory } =
+  const { getCategories, putCategory, categoryNames } =
     useContext(CategoriesContext);
   const { getTransactions } = useContext(TransactionsContext);
 
@@ -29,17 +29,6 @@ const EditCategoryModal = ({
   const [fieldChanges, setFieldChanges] = useState({
     name: false,
     budget: false,
-  });
-
-  // Create a set of the user's categories so a user cannot create a category with the same name
-  const categoryNames = new Set();
-
-  categories.forEach((category) => {
-    categoryNames.add(category.name);
-
-    category.subcategories.forEach((subcategory) => {
-      categoryNames.add(subcategory.name);
-    });
   });
 
   const handleInput = (e) => {

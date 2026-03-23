@@ -1,8 +1,7 @@
 import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
-import { Button, Col, Modal, Row } from "react-bootstrap";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { Button, Modal, Row } from "react-bootstrap";
 import centsToDollars from "@/helpers/centsToDollars";
 import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
@@ -21,26 +20,14 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     subcategories: [],
   };
 
-  const { categories, postCategory, getCategories } =
+  const { postCategory, getCategories, categoryNames } =
     useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [formMeta, setFormMeta] = useState({
     status: "idle",
     error: null,
   });
-  const [status, setStatus] = useState("inputting");
   const [modalPage, setModalPage] = useState("question");
-
-  // Create a set of the user's categories so a user cannot create a category with the same name
-  const categoryNames = new Set();
-
-  categories.forEach((category) => {
-    categoryNames.add(category.name);
-
-    category.subcategories.forEach((subcategory) => {
-      categoryNames.add(subcategory.name);
-    });
-  });
 
   // Validate whether the inputted category name has been taken or not
   const validateCategoryName = (categoryName) => {

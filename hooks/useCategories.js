@@ -224,10 +224,10 @@ const useCategories = (month, year) => {
     const names = new Set();
 
     categories.forEach((category) => {
-      categories.add(category.name);
+      names.add(category.name);
 
       category.subcategories.forEach((subcategory) => {
-        categories.add(subcategory.name);
+        names.add(subcategory.name);
       });
     });
 
