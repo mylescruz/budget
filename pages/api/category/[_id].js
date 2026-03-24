@@ -247,7 +247,10 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             // Automatically increment variable actual values
             categoryActual += subcategory.actual;
 
-            return subcategory;
+            return {
+              ...subcategory,
+              actual: centsToDollars(subcategory.actual),
+            };
           }
         },
       );

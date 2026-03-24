@@ -31,6 +31,10 @@ const EditCategoryModal = ({
     budget: false,
   });
 
+  // Create a new set to filter out current category's name in case a change is made to it other than its name
+  const filteredNames = new Set(categoryNames);
+  filteredNames.delete(editedCategory.currentName);
+
   const handleInput = (e) => {
     const id = e.target.id;
 
@@ -60,7 +64,7 @@ const EditCategoryModal = ({
   const validateCategoryName = (categoryName) => {
     let isValid = true;
 
-    if (categoryNames.has(categoryName)) {
+    if (filteredNames.has(categoryName)) {
       setFormMeta({
         status: "idle",
         error: `There is already a category named ${categoryName}`,
@@ -68,8 +72,6 @@ const EditCategoryModal = ({
 
       isValid = false;
     } else {
-      categoryNames.add(categoryName);
-
       setFormMeta({
         status: "idle",
         error: null,
