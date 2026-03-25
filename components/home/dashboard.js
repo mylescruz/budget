@@ -130,10 +130,11 @@ const InnerDashboard = ({ dateInfo }) => {
                     <p>Add a transaction for the current month</p>
                     <Button
                       variant="primary"
+                      className="w-100"
                       onClick={openAddTransaction}
                       disabled={!categories}
                     >
-                      Add
+                      Add Transaction
                     </Button>
                   </Card.Body>
                 </Card>
@@ -152,8 +153,13 @@ const InnerDashboard = ({ dateInfo }) => {
                       )}
                     </h4>
                     <p>View your sources of income</p>
-                    <Button as={Link} href="/income" variant="primary">
-                      Income
+                    <Button
+                      as={Link}
+                      href="/income"
+                      variant="primary"
+                      className="w-100"
+                    >
+                      View Income
                     </Button>
                   </Card.Body>
                 </Card>
@@ -163,8 +169,13 @@ const InnerDashboard = ({ dateInfo }) => {
                   <Card.Body>
                     <h4>{dateInfo.year} Summary</h4>
                     <p>View your total spending for the year</p>
-                    <Button as={Link} href={"/summary"} variant="primary">
-                      Summary
+                    <Button
+                      as={Link}
+                      href={"/summary"}
+                      variant="primary"
+                      className="w-100"
+                    >
+                      View Summary
                     </Button>
                   </Card.Body>
                 </Card>
