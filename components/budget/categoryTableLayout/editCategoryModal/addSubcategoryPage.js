@@ -9,6 +9,7 @@ const AddSubcategoryPage = ({
   setEditedCategory,
   backToDetails,
   setPage,
+  validateCategoryName,
 }) => {
   const emptySubcategory = {
     name: "",
