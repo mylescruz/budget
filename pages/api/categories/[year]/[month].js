@@ -81,11 +81,15 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
 
     const newSubcategories = [];
 
-    // Format each subcategory to be added to the database
     if (newCategory.subcategories.length === 0) {
       // Convert the budget value to cents
       categoryBudget = dollarsToCents(newCategory.budget);
     } else {
+      if (!newCategory.fixed) {
+        categoryBudget = dollarsToCents(newCategory.budget);
+      }
+
+      // Format each subcategory to be added to the database
       newCategory.subcategories.forEach((subcategory) => {
         const formattedSubcategory = {
           username,
