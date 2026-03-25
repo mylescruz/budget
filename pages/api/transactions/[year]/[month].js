@@ -164,7 +164,9 @@ async function addTransactions(
               );
           }
 
+          // Update the transaction with the proper categoryId and name
           newTransaction.categoryId = transactionCategory._id;
+          newTransaction.category = transactionCategory.name;
         } else if (transactionType === "Transfer") {
           newTransaction.fromAccount = transaction.fromAccount;
           newTransaction.toAccount = transaction.toAccount;

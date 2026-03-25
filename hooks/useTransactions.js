@@ -37,7 +37,7 @@ const useTransactions = (month, year) => {
   const postTransactions = useCallback(
     async (newTransactions) => {
       try {
-        const rsp = await fetch(`/api/transactions/${year}/${month}`, {
+        const response = await fetch(`/api/transactions/${year}/${month}`, {
           method: "POST",
           headers: {
             Accept: "application.json",
@@ -46,11 +46,13 @@ const useTransactions = (month, year) => {
           body: JSON.stringify(newTransactions),
         });
 
-        if (rsp.ok) {
-          const addedTransactions = await rsp.json();
-          setTransactions([...transactions, ...addedTransactions]);
+        if (response.ok) {
+          const addedTransactions = await response.json();
+          setTransactions((prev) => [...prev, ...addedTransactions]);
+
+          return addedTransactions;
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {

@@ -13,7 +13,8 @@ import AddTransferForm from "./addTransferForm";
 import styles from "@/styles/transactions/addTransactionsModal.module.css";
 
 const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
-  const { categories, getCategories } = useContext(CategoriesContext);
+  const { categories, updateCategoriesFromTransaction } =
+    useContext(CategoriesContext);
   const { postTransactions } = useContext(TransactionsContext);
 
   // Get a list of all the variable category names
@@ -185,10 +186,17 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
 
     try {
       // Adds the new transaction and updates the correlating category in MongoDB
-      await postTransactions(newTransactions);
+      const addedTransactions = await postTransactions(newTransactions);
 
-      // Fetch the categories to update the state for the categories table
-      await getCategories(dateInfo.month, dateInfo.year);
+      // Update the correlating category's state in the categories table
+      addedTransactions.forEach((transaction) => {
+        if (transaction.type === "Expense") {
+          updateCategoriesFromTransaction({
+            oldTransaction: null,
+            newTransaction: transaction,
+          });
+        }
+      });
 
       closeAddModal();
     } catch (error) {
