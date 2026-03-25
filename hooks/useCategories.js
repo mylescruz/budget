@@ -3,6 +3,7 @@ import useMonthIncome from "./useMonthIncome";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import addDecimalValues from "@/helpers/addDecimalValues";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
@@ -137,6 +138,42 @@ const useCategories = (month, year) => {
     [categories],
   );
 
+  const updateCategoriesFromTransaction = useCallback(
+    ({ oldTransaction, newTransaction }) => {
+      setCategories((prev) => {
+        return [...prev].map((category) => {
+          if (newTransaction && category._id === newTransaction.categoryId) {
+            const updatedActual = addDecimalValues(
+              category.actual,
+              newTransaction.amount,
+            );
+
+            return {
+              ...category,
+              actual: updatedActual,
+            };
+          } else if (
+            oldTransaction &&
+            category._id === oldTransaction.categoryId
+          ) {
+            const updatedActual = subtractDecimalValues(
+              category.actual,
+              oldTransaction.amount,
+            );
+
+            return {
+              ...category,
+              actual: updatedActual,
+            };
+          } else {
+            return category;
+          }
+        });
+      });
+    },
+    [],
+  );
+
   // Get the total budget, actual and remaining values for both fixed and variable categories
   const categoryTotals = useMemo(() => {
     if (!categories) {
@@ -241,6 +278,7 @@ const useCategories = (month, year) => {
     postCategory,
     putCategory,
     deleteCategory,
+    updateCategoriesFromTransaction,
     categoryTotals,
     categoryColors,
     categoryNames,
