@@ -70,17 +70,20 @@ const useTransactions = (month, year) => {
   const putTransaction = useCallback(
     async (edittedTransaction) => {
       try {
-        const rsp = await fetch(`/api/transaction/${edittedTransaction._id}`, {
-          method: "PUT",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `/api/transaction/${edittedTransaction._id}`,
+          {
+            method: "PUT",
+            headers: {
+              Accept: "application.json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(edittedTransaction),
           },
-          body: JSON.stringify(edittedTransaction),
-        });
+        );
 
-        if (rsp.ok) {
-          const updatedTransaction = await rsp.json();
+        if (response.ok) {
+          const updatedTransaction = await response.json();
 
           const updatedTransactions = transactions.map((transaction) => {
             if (transaction._id === updatedTransaction._id) {
@@ -91,8 +94,10 @@ const useTransactions = (month, year) => {
           });
 
           setTransactions(updatedTransactions);
+
+          return updatedTransaction;
         } else {
-          const message = await rsp.text();
+          const message = await response.text();
           throw new Error(message);
         }
       } catch (error) {

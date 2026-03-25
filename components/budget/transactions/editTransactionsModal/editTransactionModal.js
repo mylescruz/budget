@@ -13,7 +13,7 @@ const EditTransactionModal = ({
   modal,
   setModal,
 }) => {
-  const { getCategories } = useContext(CategoriesContext);
+  const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
 
   const [transaction, setTransaction] = useState(chosenTransaction);
@@ -42,13 +42,19 @@ const EditTransactionModal = ({
         throw new Error("Invalid amount entered");
       }
 
-      await putTransaction({
+      // Update the transaction in the backend and return the updated transaction
+      const updatedTransaction = await putTransaction({
         ...transaction,
         amount: formattedAmount,
       });
 
-      // Fetch the categories to update the state for the categories table
-      await getCategories(dateInfo.month, dateInfo.year);
+      // Update the correlating category's state in the categories table
+      if (updatedTransaction.type === "Expense") {
+        updateCategoriesFromTransaction({
+          oldTransaction: chosenTransaction,
+          newTransaction: updatedTransaction,
+        });
+      }
 
       setModal("none");
 

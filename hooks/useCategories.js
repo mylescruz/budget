@@ -138,33 +138,113 @@ const useCategories = (month, year) => {
     [categories],
   );
 
+  // Update the state of the categories with the added, edited or deleted transaction
   const updateCategoriesFromTransaction = useCallback(
     ({ oldTransaction, newTransaction }) => {
+      let oldAmount = oldTransaction.amount;
+      let newAmount = newTransaction.amount;
+
+      if (oldTransaction.categoryId === newTransaction.categoryId) {
+        newAmount = subtractDecimalValues(
+          newTransaction.amount,
+          oldTransaction.amount,
+        );
+
+        oldTransaction = null;
+      }
+
       setCategories((prev) => {
         return [...prev].map((category) => {
-          if (newTransaction && category._id === newTransaction.categoryId) {
-            const updatedActual = addDecimalValues(
-              category.actual,
-              newTransaction.amount,
-            );
+          if (!category.fixed) {
+            if (category.subcategories.length > 0) {
+              let categoryActual = category.actual;
 
-            return {
-              ...category,
-              actual: updatedActual,
-            };
-          } else if (
-            oldTransaction &&
-            category._id === oldTransaction.categoryId
-          ) {
-            const updatedActual = subtractDecimalValues(
-              category.actual,
-              oldTransaction.amount,
-            );
+              const updatedSubcategories = category.subcategories.map(
+                (subcategory) => {
+                  if (
+                    newTransaction &&
+                    subcategory._id === newTransaction.categoryId
+                  ) {
+                    // Update the subcategory's actual value with the new transaction amount
+                    const updatedActual = addDecimalValues(
+                      subcategory.actual,
+                      newAmount,
+                    );
 
-            return {
-              ...category,
-              actual: updatedActual,
-            };
+                    // Update the parent category's actual value with the new transaction amount
+                    categoryActual = addDecimalValues(
+                      categoryActual,
+                      newAmount,
+                    );
+
+                    return {
+                      ...subcategory,
+                      actual: updatedActual,
+                    };
+                  } else if (
+                    oldTransaction &&
+                    subcategory._id === oldTransaction.categoryId
+                  ) {
+                    // Update the subcategory's actual value with the old transaction amount
+                    const updatedActual = subtractDecimalValues(
+                      subcategory.actual,
+                      oldAmount,
+                    );
+
+                    // Update the parent category's actual value with the old transaction amount
+                    categoryActual = subtractDecimalValues(
+                      categoryActual,
+                      newAmount,
+                    );
+
+                    return {
+                      ...subcategory,
+                      actual: updatedActual,
+                    };
+                  } else {
+                    return subcategory;
+                  }
+                },
+              );
+
+              return {
+                ...category,
+                actual: categoryActual,
+                subcategories: updatedSubcategories,
+              };
+            } else {
+              if (
+                newTransaction &&
+                category._id === newTransaction.categoryId
+              ) {
+                // Update the category's actual value with the new transaction amount
+                const updatedActual = addDecimalValues(
+                  category.actual,
+                  newAmount,
+                );
+
+                return {
+                  ...category,
+                  actual: updatedActual,
+                };
+              } else if (
+                oldTransaction &&
+                category._id === oldTransaction.categoryId
+              ) {
+                // Update the category's actual value with the old transaction amount
+                const updatedActual = subtractDecimalValues(
+                  category.actual,
+                  oldAmount,
+                );
+
+                return {
+                  ...category,
+                  actual: updatedActual,
+                };
+              } else {
+                return category;
+              }
+            }
           } else {
             return category;
           }
