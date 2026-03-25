@@ -16,7 +16,15 @@ const EditTransactionModal = ({
   const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
   const { putTransaction } = useContext(TransactionsContext);
 
-  const [transaction, setTransaction] = useState(chosenTransaction);
+  // Format the transaction's date to match the date input format
+  const formattedDate = new Date(chosenTransaction.date)
+    .toISOString()
+    .split("T")[0];
+
+  const [transaction, setTransaction] = useState({
+    ...chosenTransaction,
+    date: formattedDate,
+  });
   const [status, setStatus] = useState("editing");
 
   const closeEditModal = () => {
