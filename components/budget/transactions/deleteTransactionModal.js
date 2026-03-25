@@ -11,7 +11,7 @@ const DeleteTransactionModal = ({
   modal,
   setModal,
 }) => {
-  const { getCategories } = useContext(CategoriesContext);
+  const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
   const { deleteTransaction } = useContext(TransactionsContext);
   const [deletingTransaction, setDeletingTransaction] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -27,8 +27,11 @@ const DeleteTransactionModal = ({
       // Deletes a transaction from the transactions array by sending a DELETE request to the API
       await deleteTransaction(chosenTransaction._id);
 
-      // Fetch the categories to update the state for the categories table
-      await getCategories(dateInfo.month, dateInfo.year);
+      // Update the correlating category's state in the categories table
+      updateCategoriesFromTransaction({
+        oldTransaction: chosenTransaction,
+        newTransaction: null,
+      });
 
       setErrorOccurred(false);
 

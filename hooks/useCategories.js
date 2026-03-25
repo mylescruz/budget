@@ -141,10 +141,14 @@ const useCategories = (month, year) => {
   // Update the state of the categories with the added, edited or deleted transaction
   const updateCategoriesFromTransaction = useCallback(
     ({ oldTransaction, newTransaction }) => {
-      let oldAmount = oldTransaction.amount;
-      let newAmount = newTransaction.amount;
+      let oldAmount = oldTransaction && oldTransaction.amount;
+      let newAmount = newTransaction && newTransaction.amount;
 
-      if (oldTransaction.categoryId === newTransaction.categoryId) {
+      if (
+        oldTransaction &&
+        newTransaction &&
+        oldTransaction.categoryId === newTransaction.categoryId
+      ) {
         newAmount = subtractDecimalValues(
           newTransaction.amount,
           oldTransaction.amount,
