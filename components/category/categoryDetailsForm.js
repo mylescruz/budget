@@ -1,9 +1,8 @@
+import { FIXED_FREQUENCIES_LIST } from "@/lib/constants/categories";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
 const formGroupStyle = "my-2";
 const inputStyle = "h-100";
-
-const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
 const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
   const handleInput = (e) => {
@@ -167,7 +166,7 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
                 onChange={handleInput}
                 required
               >
-                {categoryFrequencies.map((frequency) => (
+                {FIXED_FREQUENCIES_LIST.map((frequency) => (
                   <option key={frequency} value={frequency}>
                     {frequency}
                   </option>

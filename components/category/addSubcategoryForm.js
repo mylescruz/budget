@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import AddedSubcategories from "./addedSubcategories";
+import {
+  FIXED_FREQUENCIES,
+  FIXED_FREQUENCIES_LIST,
+} from "@/lib/constants/categories";
 
 const groupFormStyle = "my-2";
 const inputFormStyle = "h-100";
-
-const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
 const AddSubcategoryForm = ({
   newCategory,
@@ -15,7 +17,7 @@ const AddSubcategoryForm = ({
   const emptySubcategory = {
     name: "",
     budget: "",
-    frequency: "Monthly",
+    frequency: FIXED_FREQUENCIES.MONTHLY,
     dueDate: "",
   };
 
@@ -136,7 +138,7 @@ const AddSubcategoryForm = ({
                     onChange={handleInput}
                     required
                   >
-                    {categoryFrequencies.map((frequency) => (
+                    {FIXED_FREQUENCIES_LIST.map((frequency) => (
                       <option key={frequency} value={frequency}>
                         {frequency}
                       </option>

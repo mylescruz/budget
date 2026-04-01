@@ -1,9 +1,11 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import {
+  FIXED_FREQUENCIES,
+  FIXED_FREQUENCIES_LIST,
+} from "@/lib/constants/categories";
 import { Button, Col, Form } from "react-bootstrap";
-
-const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
 const EditSubcategoryPage = ({
   editedCategory,
@@ -111,7 +113,7 @@ const EditSubcategoryPage = ({
 
     if (updatedCategory.subcategories.length === 0) {
       updatedCategory.budget = "";
-      updatedCategory.frequency = "Monthly";
+      updatedCategory.frequency = FIXED_FREQUENCIES.MONTHLY;
       updatedCategory.dueDate = "";
     }
 
@@ -157,7 +159,7 @@ const EditSubcategoryPage = ({
                 onChange={handleInput}
                 required
               >
-                {categoryFrequencies.map((frequency) => (
+                {FIXED_FREQUENCIES_LIST.map((frequency) => (
                   <option key={frequency} value={frequency}>
                     {frequency}
                   </option>

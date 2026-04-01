@@ -7,6 +7,7 @@ import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
 import CategoryBadge from "@/components/category/categoryBadge";
+import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
 
 const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const emptyCategory = {
@@ -14,7 +15,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
     color: "#000000",
     budget: "",
     dueDate: "",
-    frequency: "Monthly",
+    frequency: FIXED_FREQUENCIES.MONTHLY,
     fixed: false,
     hasSubcategory: false,
     subcategories: [],

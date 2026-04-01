@@ -1,4 +1,5 @@
 import usePreviousCategories from "@/hooks/usePreviousCategories";
+import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
 import { useEffect, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 
@@ -38,7 +39,7 @@ const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
       actual: foundCategory.actual,
       fixed: foundCategory.fixed,
       dueDate: "",
-      frequency: "Monthly",
+      frequency: FIXED_FREQUENCIES.MONTHLY,
       hasSubcategory: foundCategory.subcategories.length > 0,
       subcategories: foundCategory.subcategories,
     };

@@ -1,8 +1,10 @@
 import addDecimalValues from "@/helpers/addDecimalValues";
+import {
+  FIXED_FREQUENCIES,
+  FIXED_FREQUENCIES_LIST,
+} from "@/lib/constants/categories";
 import { useState } from "react";
 import { Button, Col, Form } from "react-bootstrap";
-
-const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
 
 const AddSubcategoryPage = ({
   editedCategory,
@@ -14,7 +16,7 @@ const AddSubcategoryPage = ({
   const emptySubcategory = {
     name: "",
     actual: "",
-    frequency: "Monthly",
+    frequency: FIXED_FREQUENCIES.MONTHLY,
     dueDate: "",
     added: true,
   };
@@ -125,7 +127,7 @@ const AddSubcategoryPage = ({
                 onChange={handleInput}
                 required
               >
-                {categoryFrequencies.map((frequency) => (
+                {FIXED_FREQUENCIES_LIST.map((frequency) => (
                   <option key={frequency} value={frequency}>
                     {frequency}
                   </option>

@@ -1,4 +1,3 @@
-import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
@@ -9,8 +8,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import dayFormatter from "@/helpers/dayFormatter";
 import PopUp from "@/components/ui/popUp";
-
-const categoryFrequencies = ["Monthly", "Semi-Annually", "Annually"];
+import { FIXED_FREQUENCIES_LIST } from "@/lib/constants/categories";
 
 const EditCategoryModal = ({
   editedCategory,
@@ -242,7 +240,7 @@ const EditCategoryModal = ({
                             onChange={handleInput}
                             required
                           >
-                            {categoryFrequencies.map((frequency) => (
+                            {FIXED_FREQUENCIES_LIST.map((frequency) => (
                               <option key={frequency} value={frequency}>
                                 {frequency}
                               </option>

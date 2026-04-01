@@ -7,6 +7,7 @@ import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
 import PreviousCategoryForm from "./previousCategoryForm";
+import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
 
 const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const emptyCategory = {
@@ -14,7 +15,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     color: "#000000",
     budget: "",
     dueDate: "",
-    frequency: "Monthly",
+    frequency: FIXED_FREQUENCIES.MONTHLY,
     fixed: false,
     hasSubcategory: false,
     subcategories: [],
