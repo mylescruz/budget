@@ -9,6 +9,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import dayFormatter from "@/helpers/dayFormatter";
 import PopUp from "@/components/ui/popUp";
 import { FIXED_FREQUENCIES_LIST } from "@/lib/constants/categories";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const EditCategoryModal = ({
   editedCategory,
@@ -42,7 +43,7 @@ const EditCategoryModal = ({
       setFieldChanges((prev) => ({ ...prev, budget: true }));
     }
 
-    setEditedCategory({ ...editedCategory, [id]: e.target.value });
+    handleObjectInput({ e, setObject: setEditedSubcategory });
   };
 
   const openAddSubcategoryPage = () => {

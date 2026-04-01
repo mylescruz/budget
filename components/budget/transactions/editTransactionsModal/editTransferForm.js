@@ -1,10 +1,11 @@
+import handleObjectInput from "@/helpers/handleObjectInput";
 import {
   TRANSFER_ACCOUNTS,
   TRANSFER_ACCOUNTS_LIST,
 } from "@/lib/constants/transactions";
 import { Form } from "react-bootstrap";
 
-const EditTransferForm = ({ dateInfo, transaction, handleInput }) => {
+const EditTransferForm = ({ dateInfo, transaction, setTransaction }) => {
   return (
     <>
       <Form.Group controlId="date" className="my-3">
@@ -15,7 +16,7 @@ const EditTransferForm = ({ dateInfo, transaction, handleInput }) => {
           min={dateInfo.startOfMonth}
           max={dateInfo.endOfMonth}
           value={transaction.date}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         />
       </Form.Group>
@@ -24,7 +25,7 @@ const EditTransferForm = ({ dateInfo, transaction, handleInput }) => {
         <Form.Select
           className="h-100"
           value={transaction.fromAccount}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         >
           {TRANSFER_ACCOUNTS_LIST.map((account) => (
@@ -39,7 +40,7 @@ const EditTransferForm = ({ dateInfo, transaction, handleInput }) => {
         <Form.Select
           className="h-100"
           value={transaction.toAccount}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         >
           {TRANSFER_ACCOUNTS_LIST.filter(
@@ -58,7 +59,7 @@ const EditTransferForm = ({ dateInfo, transaction, handleInput }) => {
           type="number"
           step="0.01"
           value={transaction.amount}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         />
       </Form.Group>
@@ -68,7 +69,7 @@ const EditTransferForm = ({ dateInfo, transaction, handleInput }) => {
           className="h-100"
           type="text"
           value={transaction.description}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
         />
       </Form.Group>
     </>

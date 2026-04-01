@@ -1,5 +1,6 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import handleObjectInput from "@/helpers/handleObjectInput";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import {
   FIXED_FREQUENCIES,
@@ -20,18 +21,8 @@ const EditSubcategoryPage = ({
     const id = e.target.id;
 
     if (id === "name") {
-      setEditedSubcategory({
-        ...editedSubcategory,
-        [id]: e.target.value,
-      });
-
       setFieldChanges((prev) => ({ ...prev, name: true }));
     } else {
-      setEditedSubcategory({
-        ...editedSubcategory,
-        [id]: e.target.value,
-      });
-
       if (id === "budget" && editedCategory.fixed) {
         setFieldChanges((prev) => ({
           ...prev,
@@ -39,6 +30,8 @@ const EditSubcategoryPage = ({
         }));
       }
     }
+
+    handleObjectInput({ e, setObject: setEditedSubcategory });
   };
 
   const saveSubcategory = () => {

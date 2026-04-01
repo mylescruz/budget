@@ -1,4 +1,5 @@
 import addDecimalValues from "@/helpers/addDecimalValues";
+import handleObjectInput from "@/helpers/handleObjectInput";
 import {
   FIXED_FREQUENCIES,
   FIXED_FREQUENCIES_LIST,
@@ -22,10 +23,6 @@ const AddSubcategoryPage = ({
   };
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
-
-  const handleInput = (e) => {
-    setNewSubcategory({ ...newSubcategory, [e.target.id]: e.target.value });
-  };
 
   const addSubcategory = () => {
     // Validate whether the inputted subcategory name has been taken or not
@@ -100,7 +97,9 @@ const AddSubcategoryPage = ({
           type="text"
           placeholder="Name"
           value={newSubcategory.name}
-          onChange={handleInput}
+          onChange={(e) =>
+            handleObjectInput({ e, setObject: setNewSubcategory })
+          }
           required
         />
       </Form.Group>
@@ -114,7 +113,9 @@ const AddSubcategoryPage = ({
                 type="number"
                 placeholder="Amount"
                 value={newSubcategory.budget}
-                onChange={handleInput}
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewSubcategory })
+                }
               />
             </Form.Group>
           </Col>
@@ -124,7 +125,9 @@ const AddSubcategoryPage = ({
               <Form.Select
                 className="h-100"
                 value={newSubcategory.frequency}
-                onChange={handleInput}
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewSubcategory })
+                }
                 required
               >
                 {FIXED_FREQUENCIES_LIST.map((frequency) => (
@@ -144,7 +147,9 @@ const AddSubcategoryPage = ({
                 min={1}
                 max={31}
                 value={newSubcategory.dueDate}
-                onChange={handleInput}
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewSubcategory })
+                }
               />
             </Form.Group>
           </Col>

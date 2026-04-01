@@ -12,6 +12,7 @@ import {
   INCOME_TYPES_LIST,
   PAYCHECK_FREQUENCIES,
 } from "@/lib/constants/income";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
@@ -36,7 +37,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
     if (e.target.id === "type") {
       setSource({ ...emptySource, type: e.target.value });
     } else {
-      setSource({ ...source, [e.target.id]: e.target.value });
+      handleObjectInput({ e, setObject: setSource });
     }
   };
 

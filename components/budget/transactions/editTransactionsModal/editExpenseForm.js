@@ -2,8 +2,9 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext } from "react";
 import { Form } from "react-bootstrap";
 import SelectCategoryOption from "../selectCategoryOption";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
-const EditExpenseForm = ({ dateInfo, transaction, handleInput }) => {
+const EditExpenseForm = ({ dateInfo, transaction, setTransaction }) => {
   const { categories } = useContext(CategoriesContext);
 
   return (
@@ -16,7 +17,7 @@ const EditExpenseForm = ({ dateInfo, transaction, handleInput }) => {
           min={dateInfo.startOfMonth}
           max={dateInfo.endOfMonth}
           value={transaction.date}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         />
       </Form.Group>
@@ -26,7 +27,7 @@ const EditExpenseForm = ({ dateInfo, transaction, handleInput }) => {
           className="h-100"
           type="text"
           value={transaction.store}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         />
       </Form.Group>
@@ -36,7 +37,7 @@ const EditExpenseForm = ({ dateInfo, transaction, handleInput }) => {
           className="h-100"
           type="text"
           value={transaction.items}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         />
       </Form.Group>
@@ -45,7 +46,7 @@ const EditExpenseForm = ({ dateInfo, transaction, handleInput }) => {
         <Form.Select
           className="h-100"
           value={transaction.category}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         >
           {categories.map(
@@ -63,7 +64,7 @@ const EditExpenseForm = ({ dateInfo, transaction, handleInput }) => {
           type="number"
           step="0.01"
           value={transaction.amount}
-          onChange={handleInput}
+          onChange={(e) => handleObjectInput({ e, setObject: setTransaction })}
           required
         />
       </Form.Group>

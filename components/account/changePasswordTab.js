@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
 import ErrorModal from "../ui/errorModal";
 import LoadingMessage from "../ui/loadingMessage";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const ChangePasswordTab = ({ user, putUser }) => {
   const oldUser = {
@@ -25,10 +26,6 @@ const ChangePasswordTab = ({ user, putUser }) => {
   const [validMatch, setValidMatch] = useState(validated);
   const [updatingUser, setUpdatingUser] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
-
-  const handleInput = (e) => {
-    setUpdatedUser({ ...updatedUser, [e.target.id]: e.target.value });
-  };
 
   // Checks if the given password matches the required format
   const checkPassword = (password) => {
@@ -92,7 +89,9 @@ const ChangePasswordTab = ({ user, putUser }) => {
             <Form.Control
               type="password"
               value={updatedUser.currentPassword}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setUpdatedUser })
+              }
               required
             />
           </Form.Group>
@@ -101,7 +100,9 @@ const ChangePasswordTab = ({ user, putUser }) => {
             <Form.Control
               type="password"
               value={updatedUser.newPassword}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setUpdatedUser })
+              }
               required
               isInvalid={validPassword.error && !validPassword.valid}
             />
@@ -114,7 +115,9 @@ const ChangePasswordTab = ({ user, putUser }) => {
             <Form.Control
               type="password"
               value={updatedUser.confirmPassword}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setUpdatedUser })
+              }
               required
               isInvalid={validMatch.error && !validMatch.valid}
             />

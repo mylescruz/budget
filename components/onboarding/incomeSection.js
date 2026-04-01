@@ -18,6 +18,7 @@ import {
   INCOME_TYPES_LIST,
   PAYCHECK_FREQUENCIES,
 } from "@/lib/constants/income";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const emptySource = {
@@ -39,7 +40,7 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
     if (e.target.id === "type") {
       setSource({ ...emptySource, type: e.target.value });
     } else {
-      setSource({ ...source, [e.target.id]: e.target.value });
+      handleObjectInput({ e, setObject: setSource });
     }
   };
 

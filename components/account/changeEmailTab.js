@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
 import ErrorModal from "../ui/errorModal";
 import LoadingMessage from "../ui/loadingMessage";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const ChangeEmailTab = ({ user, putUser }) => {
   const oldUser = {
@@ -23,10 +24,6 @@ const ChangeEmailTab = ({ user, putUser }) => {
   const [validEmail, setValidEmail] = useState(validated);
   const [updatingUser, setUpdatingUser] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
-
-  const handleInput = (e) => {
-    setUpdatedUser({ ...updatedUser, [e.target.id]: e.target.value });
-  };
 
   const checkEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
@@ -80,7 +77,9 @@ const ChangeEmailTab = ({ user, putUser }) => {
             <Form.Control
               type="text"
               value={updatedUser.newEmail}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setUpdatedUser })
+              }
               required
               isInvalid={validEmail.error && !validEmail.valid}
             />
@@ -93,7 +92,9 @@ const ChangeEmailTab = ({ user, putUser }) => {
             <Form.Control
               type="password"
               value={updatedUser.currentPassword}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setUpdatedUser })
+              }
               required
             />
           </Form.Group>

@@ -7,6 +7,7 @@ import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 import { INCOME_TYPES } from "@/lib/constants/income";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const EditIncomeModal = ({
   chosenSource,
@@ -19,7 +20,7 @@ const EditIncomeModal = ({
   const [status, setStatus] = useState("editing");
 
   const handleInput = (e) => {
-    setChosenSource({ ...chosenSource, [e.target.id]: e.target.value });
+    handleObjectInput({ e, setObject: setChosenSource });
   };
 
   const closeEditModal = () => {

@@ -1,3 +1,4 @@
+import handleObjectInput from "@/helpers/handleObjectInput";
 import { FIXED_FREQUENCIES_LIST } from "@/lib/constants/categories";
 import { Button, Col, Form, Row } from "react-bootstrap";
 
@@ -69,7 +70,9 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
               type="text"
               placeholder="Name"
               value={newCategory.name}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setNewCategory })
+              }
             />
           </Form.Group>
         </Col>
@@ -80,7 +83,9 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
               type="color"
               className="form-control-color"
               value={newCategory.color}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setNewCategory })
+              }
             />
           </Form.Group>
         </Col>
@@ -150,7 +155,9 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
               step={0.01}
               placeholder="Amount"
               value={newCategory.budget}
-              onChange={handleInput}
+              onChange={(e) =>
+                handleObjectInput({ e, setObject: setNewCategory })
+              }
             />
           </Form.Group>
         </Col>
@@ -163,7 +170,9 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
               <Form.Select
                 className={inputStyle}
                 value={newCategory.frequency}
-                onChange={handleInput}
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewCategory })
+                }
                 required
               >
                 {FIXED_FREQUENCIES_LIST.map((frequency) => (
@@ -183,7 +192,9 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
                 min={1}
                 max={31}
                 value={newCategory.dueDate}
-                onChange={handleInput}
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewCategory })
+                }
               />
             </Form.Group>
           </Col>

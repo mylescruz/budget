@@ -5,6 +5,7 @@ import {
   FIXED_FREQUENCIES,
   FIXED_FREQUENCIES_LIST,
 } from "@/lib/constants/categories";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const groupFormStyle = "my-2";
 const inputFormStyle = "h-100";
@@ -29,10 +30,6 @@ const AddSubcategoryForm = ({
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
   const [validation, setValidation] = useState(subcategoryValidation);
-
-  const handleInput = (e) => {
-    setNewSubcategory({ ...newSubcategory, [e.target.id]: e.target.value });
-  };
 
   const addNewSubcategory = () => {
     const errors = { ...subcategoryValidation };
@@ -119,7 +116,9 @@ const AddSubcategoryForm = ({
                 className={inputFormStyle}
                 type="text"
                 value={newSubcategory.name}
-                onChange={handleInput}
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewSubcategory })
+                }
                 isInvalid={!validation.name.valid}
               />
               <Form.Control.Feedback type="invalid">
@@ -135,7 +134,9 @@ const AddSubcategoryForm = ({
                   <Form.Select
                     className={inputFormStyle}
                     value={newSubcategory.frequency}
-                    onChange={handleInput}
+                    onChange={(e) =>
+                      handleObjectInput({ e, setObject: setNewSubcategory })
+                    }
                     required
                   >
                     {FIXED_FREQUENCIES_LIST.map((frequency) => (
@@ -154,7 +155,9 @@ const AddSubcategoryForm = ({
                     type="number"
                     step={0.01}
                     value={newSubcategory.budget}
-                    onChange={handleInput}
+                    onChange={(e) =>
+                      handleObjectInput({ e, setObject: setNewSubcategory })
+                    }
                     isInvalid={!validation.budget.valid}
                   />
                   <Form.Control.Feedback type="invalid">
@@ -172,7 +175,9 @@ const AddSubcategoryForm = ({
                     type="number"
                     step={1}
                     value={newSubcategory.dueDate}
-                    onChange={handleInput}
+                    onChange={(e) =>
+                      handleObjectInput({ e, setObject: setNewSubcategory })
+                    }
                     isInvalid={!validation.dueDate.valid}
                   />
                   <Form.Control.Feedback type="invalid">

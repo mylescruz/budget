@@ -5,6 +5,7 @@ import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
 import styles from "@/styles/user/loginPage.module.css";
 import Link from "next/link";
 import Image from "next/image";
+import handleObjectInput from "@/helpers/handleObjectInput";
 
 const LoginPageForm = ({ csrfToken }) => {
   const [user, setUser] = useState({
@@ -17,10 +18,6 @@ const LoginPageForm = ({ csrfToken }) => {
   });
   const [loggingIn, setLoggingIn] = useState(false);
   const router = useRouter();
-
-  const handleInput = (e) => {
-    setUser({ ...user, [e.target.id]: e.target.value });
-  };
 
   const loginUser = async (e) => {
     e.preventDefault();
@@ -71,7 +68,7 @@ const LoginPageForm = ({ csrfToken }) => {
                 type="text"
                 value={user.username}
                 placeholder="Username"
-                onChange={handleInput}
+                onChange={(e) => handleObjectInput({ e, setObject: setUser })}
                 required
               />
             </Form.Group>
@@ -80,7 +77,7 @@ const LoginPageForm = ({ csrfToken }) => {
                 type="password"
                 value={user.password}
                 placeholder="Password"
-                onChange={handleInput}
+                onChange={(e) => handleObjectInput({ e, setObject: setUser })}
                 required
               />
             </Form.Group>

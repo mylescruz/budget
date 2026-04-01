@@ -88,14 +88,14 @@ const EditTransactionModal = ({
                 <EditExpenseForm
                   dateInfo={dateInfo}
                   transaction={transaction}
-                  handleInput={handleInput}
+                  setTransaction={setTransaction}
                 />
               )}
               {transaction.type === TRANSACTION_TYPES.TRANSFER && (
                 <EditTransferForm
                   dateInfo={dateInfo}
                   transaction={transaction}
-                  handleInput={handleInput}
+                  setTransaction={setTransaction}
                 />
               )}
               {status === "error" && <ErrorMessage />}

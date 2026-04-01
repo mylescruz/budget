@@ -1,3 +1,4 @@
+import handleObjectInput from "@/helpers/handleObjectInput";
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 
@@ -10,10 +11,6 @@ const inputValidation = {
 
 const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
   const [validInput, setValidInput] = useState(inputValidation);
-
-  const handleInput = (e) => {
-    setNewUser({ ...newUser, [e.target.id]: e.target.value });
-  };
 
   const checkUsernameLength = (username) => {
     const regex = /^[a-zA-Z0-9]{4,}$/;
@@ -110,7 +107,7 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               type="text"
               value={newUser.name}
               placeholder="Name"
-              onChange={handleInput}
+              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
               required
             />
           </Form.Group>
@@ -119,7 +116,7 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               type="text"
               value={newUser.email}
               placeholder="Email"
-              onChange={handleInput}
+              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
               isInvalid={!validInput.email.valid}
               required
             />
@@ -132,7 +129,7 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               type="text"
               value={newUser.username}
               placeholder="Username"
-              onChange={handleInput}
+              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
               isInvalid={!validInput.username.valid}
               required
             />
@@ -145,7 +142,7 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               type="password"
               value={newUser.password}
               placeholder="Password"
-              onChange={handleInput}
+              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
               isInvalid={!validInput.password.valid}
               required
             />
@@ -158,7 +155,7 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               type="password"
               value={newUser.confirmPassword}
               placeholder="Confirm Password"
-              onChange={handleInput}
+              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
               isInvalid={!validInput.passwordMatch.valid}
               required
             />
