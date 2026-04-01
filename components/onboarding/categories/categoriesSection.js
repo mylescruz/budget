@@ -2,10 +2,11 @@ import { Container } from "react-bootstrap";
 import CustomCategoriesSection from "./customCategoriesSection";
 import { useState } from "react";
 import ChooseCategoriesType from "./chooseCategoriesType";
+import { FUN_MONEY } from "@/lib/constants/categories";
 
 const CategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const funMoneyCategory = {
-    name: "Fun Money",
+    name: FUN_MONEY,
     color: "#6cc17a",
     budget: 500,
     fixed: false,

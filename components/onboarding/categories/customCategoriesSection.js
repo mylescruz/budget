@@ -7,7 +7,7 @@ import CategoryDetailsForm from "@/components/category/categoryDetailsForm";
 import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
 import CategoryBadge from "@/components/category/categoryBadge";
-import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
+import { FIXED_FREQUENCIES, FUN_MONEY } from "@/lib/constants/categories";
 
 const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
   const emptyCategory = {
@@ -185,7 +185,7 @@ const CustomCategoriesSection = ({ newUser, setNewUser, moveToIncome }) => {
                         name={category.name}
                         color={category.color}
                       />
-                      {category.name === "Fun Money" && (
+                      {category.name === FUN_MONEY && (
                         <PopUp
                           title="The money you can spend on whatever you want after all other expenses have been covered. Includes food, entertainment, travel, etc."
                           id="fun-money-info"

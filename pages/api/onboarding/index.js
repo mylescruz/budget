@@ -1,11 +1,10 @@
 // API endpoint to add a new user to the system
 
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { FUN_MONEY } from "@/lib/constants/categories";
 import { INCOME_TYPES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
-
-const funMoney = "Fun Money";
 
 export default async function handler(req, res) {
   // Configure MongoDB
@@ -312,7 +311,7 @@ async function createUserCategories({
     }
 
     // Give the no delete flag for the Fun Money category
-    if (category.name === funMoney) {
+    if (category.name === FUN_MONEY) {
       formattedCategory.noDelete = true;
     }
 

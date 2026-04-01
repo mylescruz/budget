@@ -2,6 +2,7 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { FUN_MONEY } from "@/lib/constants/categories";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -335,7 +336,7 @@ async function getCurrentCategories(
     }
 
     // Add the noDelete flag to the Fun Money category
-    if (formattedCategory.name === "Fun Money") {
+    if (formattedCategory.name === FUN_MONEY) {
       formattedCategory.noDelete = true;
     }
 
