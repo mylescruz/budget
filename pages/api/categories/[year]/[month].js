@@ -644,7 +644,7 @@ async function generateMissingMonths({
             name: category.name,
             color: category.color,
             fixed: category.fixed,
-            actual: category.fixed ? category.actual : 0,
+            budget: category.fixed ? category.budget : 0,
           };
 
           if (formattedSubcategory.fixed) {
