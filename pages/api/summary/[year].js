@@ -5,7 +5,10 @@ import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { INCOME_TYPES } from "@/lib/constants/income";
-import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import {
+  TRANSACTION_TYPES,
+  TRANSFER_ACCOUNTS,
+} from "@/lib/constants/transactions";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -474,7 +477,7 @@ async function getMonthsSummaries(
     }
 
     if (month.type === TRANSACTION_TYPES.TRANSFER) {
-      if (month.toAccount === "Savings") {
+      if (month.toAccount === TRANSFER_ACCOUNTS.SAVINGS) {
         foundMonth.transfers.out += month.amount;
       } else {
         foundMonth.transfers.in += month.amount;
