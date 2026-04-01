@@ -6,7 +6,7 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import {
   transactionTypes,
-  transferAccounts,
+  TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
 import AddExpenseForm from "./addExpenseForm";
 import AddTransferForm from "./addTransferForm";
@@ -55,8 +55,8 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
     active: true,
     type: "Transfer",
     date: transactionDate,
-    fromAccount: transferAccounts[0],
-    toAccount: transferAccounts[1],
+    fromAccount: TRANSFER_ACCOUNTS.CHECKING,
+    toAccount: TRANSFER_ACCOUNTS.SAVINGS,
     amount: "",
     description: "",
   };

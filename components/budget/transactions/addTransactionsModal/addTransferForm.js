@@ -1,4 +1,7 @@
-import { transferAccounts } from "@/lib/constants/transactions";
+import {
+  TRANSFER_ACCOUNTS,
+  TRANSFER_ACCOUNTS_LIST,
+} from "@/lib/constants/transactions";
 import { Form } from "react-bootstrap";
 
 const AddTransferForm = ({ dateInfo, transaction, handleInput, index }) => {
@@ -28,7 +31,7 @@ const AddTransferForm = ({ dateInfo, transaction, handleInput, index }) => {
           onChange={(e) => handleInput(e, index)}
           required
         >
-          {transferAccounts.map((account) => (
+          {TRANSFER_ACCOUNTS_LIST.map((account) => (
             <option key={account} value={account}>
               {account}
             </option>
@@ -45,13 +48,13 @@ const AddTransferForm = ({ dateInfo, transaction, handleInput, index }) => {
           onChange={(e) => handleInput(e, index)}
           required
         >
-          {transferAccounts
-            .filter((account) => account !== "Loan")
-            .map((account) => (
-              <option key={account} value={account}>
-                {account}
-              </option>
-            ))}
+          {TRANSFER_ACCOUNTS_LIST.filter(
+            (account) => account !== TRANSFER_ACCOUNTS.LOAN,
+          ).map((account) => (
+            <option key={account} value={account}>
+              {account}
+            </option>
+          ))}
         </Form.Select>
       </Form.Group>
       <Form.Group controlId="amount" className="my-2">
