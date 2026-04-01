@@ -6,6 +6,7 @@ import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import centsToDollars from "@/helpers/centsToDollars";
+import { INCOME_SOURCES } from "@/lib/constants/income";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -48,7 +49,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
       amount: parseFloat(req.body.amount) * 100,
     };
 
-    if (updatedSource.type === "Paycheck") {
+    if (updatedSource.type === INCOME_SOURCES.PAYCHECK) {
       updatedSource.gross = parseFloat(req.body.gross) * 100;
       updatedSource.deductions =
         parseFloat(req.body.gross) * 100 - parseFloat(req.body.amount) * 100;
@@ -61,7 +62,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
 
     await mongoSession.withTransaction(async (session) => {
       // Update the edited source in MongoDB
-      if (updatedSource.type === "Paycheck") {
+      if (updatedSource.type === INCOME_SOURCES.PAYCHECK) {
         await incomeCol.updateOne(
           { _id: new ObjectId(sourceId), username },
           {
@@ -76,7 +77,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
               amount: updatedSource.amount,
             },
           },
-          { session }
+          { session },
         );
       } else {
         await incomeCol.updateOne(
@@ -91,7 +92,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
               amount: updatedSource.amount,
             },
           },
-          { session }
+          { session },
         );
       }
 
@@ -120,7 +121,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
     });
 
     // Send the updated source back to the client
-    if (updatedSource.type === "Paycheck") {
+    if (updatedSource.type === INCOME_SOURCES.PAYCHECK) {
       updatedSource.gross = centsToDollars(updatedSource.gross);
       updatedSource.deductions = centsToDollars(updatedSource.deductions);
     }

@@ -13,13 +13,15 @@ import PaycheckForm from "@/components/income/incomeTypeForms/paycheckForm";
 import SaleForm from "@/components/income/incomeTypeForms/saleForm";
 import GiftForm from "@/components/income/incomeTypeForms/giftForm";
 import UnemploymentForm from "@/components/income/incomeTypeForms/unemploymentForm";
-import { PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
-
-const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment"];
+import {
+  INCOME_SOURCES,
+  INCOME_SOURCES_LIST,
+  PAYCHECK_FREQUENCIES,
+} from "@/lib/constants/income";
 
 const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const emptySource = {
-    type: "Paycheck",
+    type: INCOME_SOURCES.PAYCHECK,
     date: dateInfo.date,
     name: "",
     description: "",
@@ -52,7 +54,7 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const addSource = (e) => {
     e.preventDefault();
 
-    if (source.type === "Unemployment") {
+    if (source.type === INCOME_SOURCES.UNEMPLOYMENT) {
       source.name = "EDD";
     }
 
@@ -98,22 +100,26 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
                   onChange={handleInput}
                   required
                 >
-                  {incomeTypes.map((type, index) => (
+                  {INCOME_SOURCES_LIST.map((type, index) => (
                     <option key={index} value={type}>
                       {type}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
-              {source.type === "Paycheck" && (
+              {source.type === INCOME_SOURCES.PAYCHECK && (
                 <PaycheckForm
                   setRepeating={setRepeating}
                   {...incomeFormProps}
                 />
               )}
-              {source.type === "Sale" && <SaleForm {...incomeFormProps} />}
-              {source.type === "Gift" && <GiftForm {...incomeFormProps} />}
-              {source.type === "Unemployment" && (
+              {source.type === INCOME_SOURCES.SALE && (
+                <SaleForm {...incomeFormProps} />
+              )}
+              {source.type === INCOME_SOURCES.GIFT && (
+                <GiftForm {...incomeFormProps} />
+              )}
+              {source.type === INCOME_SOURCES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               <Button type="submit" className="w-100 my-2">

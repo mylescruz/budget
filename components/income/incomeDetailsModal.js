@@ -1,5 +1,6 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import { INCOME_SOURCES } from "@/lib/constants/income";
 import { Button, Modal, Row } from "react-bootstrap";
 
 const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
@@ -22,7 +23,7 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
       </Modal.Header>
       <Modal.Body>
         <Row className="m-2">Date: {dateFormatter(chosenSource.date)}</Row>
-        {chosenSource.type === "Paycheck" && (
+        {chosenSource.type === INCOME_SOURCES.PAYCHECK && (
           <>
             <Row className="m-2">Company: {chosenSource.name}</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>
@@ -37,7 +38,7 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
             </Row>
           </>
         )}
-        {chosenSource.type === "Sale" && (
+        {chosenSource.type === INCOME_SOURCES.SALE && (
           <>
             <Row className="m-2">Item Sold: {chosenSource.name}</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>
@@ -46,7 +47,7 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
             </Row>
           </>
         )}
-        {chosenSource.type === "Gift" && (
+        {chosenSource.type === INCOME_SOURCES.GIFT && (
           <>
             <Row className="m-2">Received Gift From: {chosenSource.name}</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>
@@ -55,7 +56,7 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
             </Row>
           </>
         )}
-        {chosenSource.type === "Unemployment" && (
+        {chosenSource.type === INCOME_SOURCES.UNEMPLOYMENT && (
           <>
             <Row className="m-2">Received Unemployment from EDD</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>

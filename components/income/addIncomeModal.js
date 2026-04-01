@@ -7,15 +7,17 @@ import PaycheckForm from "./incomeTypeForms/paycheckForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
-import { PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
-
-const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment"];
+import {
+  INCOME_SOURCES,
+  INCOME_SOURCES_LIST,
+  PAYCHECK_FREQUENCIES,
+} from "@/lib/constants/income";
 
 const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
 
   const emptySource = {
-    type: "Paycheck",
+    type: INCOME_SOURCES.PAYCHECK,
     date: sourceDate,
     name: "",
     description: "",
@@ -92,22 +94,26 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
                   onChange={handleInput}
                   required
                 >
-                  {incomeTypes.map((type, index) => (
+                  {INCOME_SOURCES_LIST.map((type, index) => (
                     <option key={index} value={type}>
                       {type}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
-              {source.type === "Paycheck" && (
+              {source.type === INCOME_SOURCES.PAYCHECK && (
                 <PaycheckForm
                   setRepeating={setRepeating}
                   {...incomeFormProps}
                 />
               )}
-              {source.type === "Sale" && <SaleForm {...incomeFormProps} />}
-              {source.type === "Gift" && <GiftForm {...incomeFormProps} />}
-              {source.type === "Unemployment" && (
+              {source.type === INCOME_SOURCES.SALE && (
+                <SaleForm {...incomeFormProps} />
+              )}
+              {source.type === INCOME_SOURCES.GIFT && (
+                <GiftForm {...incomeFormProps} />
+              )}
+              {source.type === INCOME_SOURCES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               {status === "error" && <ErrorMessage />}
@@ -120,7 +126,8 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
                 variant="primary"
                 type="submit"
                 disabled={
-                  source.type === "Paycheck" && source.amount > source.gross
+                  source.type === INCOME_SOURCES.PAYCHECK &&
+                  source.amount > source.gross
                 }
               >
                 Add

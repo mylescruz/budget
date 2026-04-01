@@ -1,5 +1,6 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { INCOME_SOURCES } from "@/lib/constants/income";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useIncome = (year) => {
@@ -154,7 +155,7 @@ const useIncome = (year) => {
 
       totalAmount += sourceAmount;
 
-      if (source.type === "Paycheck") {
+      if (source.type === INCOME_SOURCES.PAYCHECK) {
         totalGross += dollarsToCents(source.gross);
         totalDeductions += dollarsToCents(source.deductions);
       }
@@ -167,7 +168,7 @@ const useIncome = (year) => {
           amount: centsToDollars(value),
         };
 
-        if (key === "Paycheck") {
+        if (key === INCOME_SOURCES.PAYCHECK) {
           type.gross = centsToDollars(totalGross);
           type.deductions = centsToDollars(totalDeductions);
         }

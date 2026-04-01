@@ -6,6 +6,7 @@ import PaycheckForm from "./incomeTypeForms/paycheckForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
+import { INCOME_SOURCES } from "@/lib/constants/income";
 
 const EditIncomeModal = ({
   chosenSource,
@@ -61,16 +62,16 @@ const EditIncomeModal = ({
           </Modal.Header>
           <Form onSubmit={updatePaycheck}>
             <Modal.Body>
-              {chosenSource.type === "Paycheck" && (
+              {chosenSource.type === INCOME_SOURCES.PAYCHECK && (
                 <PaycheckForm {...incomeFormProps} />
               )}
-              {chosenSource.type === "Sale" && (
+              {chosenSource.type === INCOME_SOURCES.SALE && (
                 <SaleForm {...incomeFormProps} />
               )}
-              {chosenSource.type === "Gift" && (
+              {chosenSource.type === INCOME_SOURCES.GIFT && (
                 <GiftForm {...incomeFormProps} />
               )}
-              {chosenSource.type === "Unemployment" && (
+              {chosenSource.type === INCOME_SOURCES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               {status === "error" && <ErrorMessage />}

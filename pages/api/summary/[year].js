@@ -4,6 +4,7 @@ import clientPromise from "@/lib/mongodb";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import { INCOME_SOURCES } from "@/lib/constants/income";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -302,7 +303,7 @@ async function getIncomeSummary(incomeCol, username, month, year) {
   const types = incomeTypes.map((type) => {
     totalIncome.amount += type.amount;
 
-    if (type.name === "Paycheck") {
+    if (type.name === INCOME_SOURCES.PAYCHECK) {
       totalIncome.gross = type.gross;
       totalIncome.deductions = type.deductions;
 
