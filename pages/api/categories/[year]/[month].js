@@ -321,7 +321,7 @@ async function getCurrentCategories(
 
         if (categoryDate <= today) {
           // Charge a fixed parent's actual value to the total if their charge date already passed
-          formattedCategory.actual = category.actual;
+          formattedCategory.actual = category.budget;
         } else {
           // Apply no charge if their charge date hasn't passed
           formattedCategory.actual = 0;
