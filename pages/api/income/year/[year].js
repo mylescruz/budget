@@ -5,6 +5,7 @@ import { authOptions } from "../../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import centsToDollars from "@/helpers/centsToDollars";
+import { PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -118,15 +119,15 @@ async function addIncome(req, res, { client, incomeCol, username }) {
         incomeSources.push(paycheckSource);
 
         switch (sourceInfo.frequency) {
-          case "Weekly":
+          case PAYCHECK_FREQUENCIES.WEEKLY:
             date.setDate(date.getDate() + 7);
             dateIndex = date.toLocaleDateString("en-CA");
             break;
-          case "Bi-Weekly":
+          case PAYCHECK_FREQUENCIES.BI_WEEKLY:
             date.setDate(date.getDate() + 14);
             dateIndex = date.toLocaleDateString("en-CA");
             break;
-          case "Monthly":
+          case PAYCHECK_FREQUENCIES.MONTHLY:
             const nextDate = new Date(
               date.getFullYear(),
               date.getMonth() + 1,

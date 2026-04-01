@@ -7,6 +7,7 @@ import PaycheckForm from "./incomeTypeForms/paycheckForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
+import { PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 
 const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment"];
 
@@ -22,7 +23,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
     deductions: "",
     amount: "",
     repeating: false,
-    frequency: "Weekly",
+    frequency: PAYCHECK_FREQUENCIES.WEEKLY,
     endRepeatDate: sourceDate,
   };
 

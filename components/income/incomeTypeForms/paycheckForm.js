@@ -1,8 +1,7 @@
 import PopUp from "@/components/ui/popUp";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import { PAYCHECK_FREQUENCIES_LIST } from "@/lib/constants/income";
 import { Button, Form } from "react-bootstrap";
-
-const repeatOptions = ["Weekly", "Bi-Weekly", "Monthly"];
 
 const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
   return (
@@ -140,7 +139,7 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
               onChange={handleInput}
               required
             >
-              {repeatOptions.map((option, index) => (
+              {PAYCHECK_FREQUENCIES_LIST.map((option, index) => (
                 <option key={index} value={option}>
                   {option}
                 </option>

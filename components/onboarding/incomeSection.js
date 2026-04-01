@@ -13,6 +13,7 @@ import PaycheckForm from "@/components/income/incomeTypeForms/paycheckForm";
 import SaleForm from "@/components/income/incomeTypeForms/saleForm";
 import GiftForm from "@/components/income/incomeTypeForms/giftForm";
 import UnemploymentForm from "@/components/income/incomeTypeForms/unemploymentForm";
+import { PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 
 const incomeTypes = ["Paycheck", "Sale", "Gift", "Unemployment"];
 
@@ -26,7 +27,7 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
     deductions: "",
     amount: "",
     repeating: false,
-    frequency: "Weekly",
+    frequency: PAYCHECK_FREQUENCIES.WEEKLY,
     endRepeatDate: dateInfo.date,
   };
 

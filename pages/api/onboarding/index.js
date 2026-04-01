@@ -1,6 +1,7 @@
 // API endpoint to add a new user to the system
 
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 
@@ -89,15 +90,15 @@ async function createAccount(
             incomeSources.push(paycheckSource);
 
             switch (sourceInfo.frequency) {
-              case "Weekly":
+              case PAYCHECK_FREQUENCIES.WEEKLY:
                 date.setDate(date.getDate() + 7);
                 dateIndex = date.toLocaleDateString("en-CA");
                 break;
-              case "Bi-Weekly":
+              case PAYCHECK_FREQUENCIES.BI_WEEKLY:
                 date.setDate(date.getDate() + 14);
                 dateIndex = date.toLocaleDateString("en-CA");
                 break;
-              case "Monthly":
+              case PAYCHECK_FREQUENCIES.MONTHLY:
                 const nextDate = new Date(
                   date.getFullYear(),
                   date.getMonth() + 1,
