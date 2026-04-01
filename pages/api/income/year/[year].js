@@ -5,7 +5,7 @@ import { authOptions } from "../../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import centsToDollars from "@/helpers/centsToDollars";
-import { INCOME_SOURCES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
+import { INCOME_TYPES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -53,7 +53,7 @@ async function getIncome(req, res, { incomeCol, username }) {
         amount: centsToDollars(source.amount),
       };
 
-      if (source.type === INCOME_SOURCES.PAYCHECK) {
+      if (source.type === INCOME_TYPES.PAYCHECK) {
         formattedSource.gross = centsToDollars(source.gross);
         formattedSource.deductions = centsToDollars(source.deductions);
       }
@@ -94,20 +94,20 @@ async function addIncome(req, res, { client, incomeCol, username }) {
       year: sourceYear,
     };
 
-    if (newSource.type === INCOME_SOURCES.PAYCHECK) {
+    if (newSource.type === INCOME_TYPES.PAYCHECK) {
       newSource.gross = parseFloat(sourceInfo.gross) * 100;
       newSource.deductions =
         parseFloat(sourceInfo.gross) * 100 -
         parseFloat(sourceInfo.amount) * 100;
     }
 
-    if (newSource.type === INCOME_SOURCES.UNEMPLOYMENT) {
+    if (newSource.type === INCOME_TYPES.UNEMPLOYMENT) {
       newSource.name = "EDD";
     }
 
     const incomeSources = [];
 
-    if (newSource.type === INCOME_SOURCES.PAYCHECK && sourceInfo.repeating) {
+    if (newSource.type === INCOME_TYPES.PAYCHECK && sourceInfo.repeating) {
       let dateIndex = newSource.date;
 
       while (dateIndex <= sourceInfo.endRepeatDate) {
@@ -180,7 +180,7 @@ async function addIncome(req, res, { client, incomeCol, username }) {
         amount: centsToDollars(sourceDetails.amount),
       };
 
-      if (addedSource.type === INCOME_SOURCES.PAYCHECK) {
+      if (addedSource.type === INCOME_TYPES.PAYCHECK) {
         addedSource.gross = centsToDollars(addedSource.gross);
         addedSource.deductions = centsToDollars(addedSource.deductions);
       }

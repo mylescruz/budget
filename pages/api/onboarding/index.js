@@ -1,7 +1,7 @@
 // API endpoint to add a new user to the system
 
 import dollarsToCents from "@/helpers/dollarsToCents";
-import { INCOME_SOURCES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
+import { INCOME_TYPES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 
@@ -64,18 +64,18 @@ async function createAccount(
           amount: parseFloat(source.amount) * 100,
         };
 
-        if (formattedSource.type === INCOME_SOURCES.PAYCHECK) {
+        if (formattedSource.type === INCOME_TYPES.PAYCHECK) {
           formattedSource.gross = parseFloat(source.gross) * 100;
           formattedSource.deductions =
             formattedSource.gross - formattedSource.amount;
         }
 
-        if (formattedSource.type === INCOME_SOURCES.UNEMPLOYMENT) {
+        if (formattedSource.type === INCOME_TYPES.UNEMPLOYMENT) {
           formattedSource.name = "EDD";
         }
 
         if (
-          formattedSource.type === INCOME_SOURCES.PAYCHECK &&
+          formattedSource.type === INCOME_TYPES.PAYCHECK &&
           sourceInfo.repeating
         ) {
           let dateIndex = formattedSource.date;

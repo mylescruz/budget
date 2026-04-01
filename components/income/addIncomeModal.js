@@ -8,8 +8,8 @@ import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 import {
-  INCOME_SOURCES,
-  INCOME_SOURCES_LIST,
+  INCOME_TYPES,
+  INCOME_TYPES_LIST,
   PAYCHECK_FREQUENCIES,
 } from "@/lib/constants/income";
 
@@ -17,7 +17,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
 
   const emptySource = {
-    type: INCOME_SOURCES.PAYCHECK,
+    type: INCOME_TYPES.PAYCHECK,
     date: sourceDate,
     name: "",
     description: "",
@@ -94,26 +94,26 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
                   onChange={handleInput}
                   required
                 >
-                  {INCOME_SOURCES_LIST.map((type, index) => (
+                  {INCOME_TYPES_LIST.map((type, index) => (
                     <option key={index} value={type}>
                       {type}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
-              {source.type === INCOME_SOURCES.PAYCHECK && (
+              {source.type === INCOME_TYPES.PAYCHECK && (
                 <PaycheckForm
                   setRepeating={setRepeating}
                   {...incomeFormProps}
                 />
               )}
-              {source.type === INCOME_SOURCES.SALE && (
+              {source.type === INCOME_TYPES.SALE && (
                 <SaleForm {...incomeFormProps} />
               )}
-              {source.type === INCOME_SOURCES.GIFT && (
+              {source.type === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
               )}
-              {source.type === INCOME_SOURCES.UNEMPLOYMENT && (
+              {source.type === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               {status === "error" && <ErrorMessage />}
@@ -126,7 +126,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
                 variant="primary"
                 type="submit"
                 disabled={
-                  source.type === INCOME_SOURCES.PAYCHECK &&
+                  source.type === INCOME_TYPES.PAYCHECK &&
                   source.amount > source.gross
                 }
               >
