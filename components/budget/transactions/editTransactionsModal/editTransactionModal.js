@@ -6,6 +6,7 @@ import LoadingMessage from "@/components/ui/loadingMessage";
 import ErrorMessage from "@/components/ui/errorMessage";
 import EditExpenseForm from "./editExpenseForm";
 import EditTransferForm from "./editTransferForm";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const EditTransactionModal = ({
   chosenTransaction,
@@ -57,7 +58,7 @@ const EditTransactionModal = ({
       });
 
       // Update the correlating category's state in the categories table
-      if (updatedTransaction.type === "Expense") {
+      if (updatedTransaction.type === TRANSACTION_TYPES.EXPENSE) {
         updateCategoriesFromTransaction({
           oldTransaction: chosenTransaction,
           newTransaction: updatedTransaction,
@@ -83,14 +84,14 @@ const EditTransactionModal = ({
           </Modal.Header>
           <Form onSubmit={editTheTransaction}>
             <Modal.Body>
-              {transaction.type === "Expense" && (
+              {transaction.type === TRANSACTION_TYPES.EXPENSE && (
                 <EditExpenseForm
                   dateInfo={dateInfo}
                   transaction={transaction}
                   handleInput={handleInput}
                 />
               )}
-              {transaction.type === "Transfer" && (
+              {transaction.type === TRANSACTION_TYPES.TRANSFER && (
                 <EditTransferForm
                   dateInfo={dateInfo}
                   transaction={transaction}

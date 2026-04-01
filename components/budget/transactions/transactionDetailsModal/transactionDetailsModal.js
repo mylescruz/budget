@@ -2,6 +2,7 @@ import { Button, Modal } from "react-bootstrap";
 import ExpenseDetails from "./expenseDetails";
 import TransferDetails from "./transferDetails";
 import CategoryDetails from "./categoryDetails";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
   const closeDetailsModal = () => {
@@ -26,10 +27,10 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
         <Modal.Title>{`${chosenTransaction.type} Details`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {chosenTransaction.type === "Expense" && (
+        {chosenTransaction.type === TRANSACTION_TYPES.EXPENSE && (
           <ExpenseDetails chosenTransaction={chosenTransaction} />
         )}
-        {chosenTransaction.type === "Transfer" && (
+        {chosenTransaction.type === TRANSACTION_TYPES.TRANSFER && (
           <TransferDetails chosenTransaction={chosenTransaction} />
         )}
         {(chosenTransaction.type === "Category" ||
@@ -37,8 +38,8 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
           <CategoryDetails chosenTransaction={chosenTransaction} />
         )}
       </Modal.Body>
-      {(chosenTransaction.type === "Expense" ||
-        chosenTransaction.type === "Transfer") && (
+      {(chosenTransaction.type === TRANSACTION_TYPES.EXPENSE ||
+        chosenTransaction.type === TRANSACTION_TYPES.TRANSFER) && (
         <Modal.Footer className="d-flex flex-row justify-content-between">
           <Button variant="danger" onClick={openDeleteModal}>
             Delete

@@ -5,6 +5,7 @@ import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { INCOME_TYPES } from "@/lib/constants/income";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -468,11 +469,11 @@ async function getMonthsSummaries(
   expensesPerMonth.forEach((month) => {
     const foundMonth = monthsMap.get(month.number);
 
-    if (month.type === "Expense") {
+    if (month.type === TRANSACTION_TYPES.EXPENSE) {
       foundMonth.actual += month.amount;
     }
 
-    if (month.type === "Transfer") {
+    if (month.type === TRANSACTION_TYPES.TRANSFER) {
       if (month.toAccount === "Savings") {
         foundMonth.transfers.out += month.amount;
       } else {

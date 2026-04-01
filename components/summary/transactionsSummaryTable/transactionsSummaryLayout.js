@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import TransactionSummaryModal from "./transactionSummaryModal";
 import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const TransactionsSummaryLayout = ({ transactions }) => {
   const [chosenTransaction, setChosenTransaction] = useState(null);
@@ -8,7 +9,7 @@ const TransactionsSummaryLayout = ({ transactions }) => {
 
   const formattedTransactions = useMemo(() => {
     return transactions.map((transaction) => {
-      if (transaction.type === "Expense") {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         return {
           _id: transaction._id,
           type: transaction.type,
@@ -25,7 +26,7 @@ const TransactionsSummaryLayout = ({ transactions }) => {
           date: transaction.date,
           name: `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`,
           description: transaction.description,
-          type: "Transfer",
+          type: TRANSACTION_TYPES.TRANSFER,
           amount: transaction.amount,
         };
       }

@@ -1,5 +1,6 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useTransactions = (month, year) => {
@@ -152,7 +153,7 @@ const useTransactions = (month, year) => {
       (sum, transaction) => {
         const amount = dollarsToCents(transaction.amount);
 
-        if (transaction.type === "Expense") {
+        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
           sum.expenses += amount;
         } else {
           if (transaction.toAccount === "Checking") {

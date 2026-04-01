@@ -1,6 +1,7 @@
 // API Endpoint for a user's transaction data
 
 import centsToDollars from "@/helpers/centsToDollars";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
@@ -62,7 +63,7 @@ async function updateTransaction(
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      if (transaction.type === "Expense") {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         transaction.store = req.body.store;
         transaction.items = req.body.items;
 
@@ -88,7 +89,7 @@ async function updateTransaction(
         transaction.color = transactionCategory.color;
         transaction.fixed = transactionCategory.fixed;
         transaction.parentCategoryId = transactionCategory.parentCategoryId;
-      } else if (transaction.type === "Transfer") {
+      } else if (transaction.type === TRANSACTION_TYPES.TRANSFER) {
         transaction.fromAccount = req.body.fromAccount;
         transaction.toAccount = req.body.toAccount;
         transaction.description = req.body.description;
@@ -99,7 +100,7 @@ async function updateTransaction(
       }
 
       // Update an expense transaction and the correlating category's actual values
-      if (transaction.type === "Expense") {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         await transactionsCol.updateOne(
           {
             _id: new ObjectId(transactionId),
@@ -118,7 +119,7 @@ async function updateTransaction(
       }
 
       // Update a transfer transaction
-      if (transaction.type === "Transfer") {
+      if (transaction.type === TRANSACTION_TYPES.TRANSFER) {
         await transactionsCol.updateOne(
           {
             _id: new ObjectId(transactionId),

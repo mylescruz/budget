@@ -7,6 +7,7 @@ import TransactionDetailsModal from "./transactionDetailsModal/transactionDetail
 import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(TransactionsContext);
@@ -19,7 +20,7 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   const formattedTransactions = useMemo(() => {
     return transactions.map((transaction) => {
-      if (transaction.type === "Expense") {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         return {
           _id: transaction._id,
           date: transaction.date,
@@ -28,7 +29,7 @@ const TransactionsLayout = ({ dateInfo }) => {
           type: transaction.category,
           amount: transaction.amount,
         };
-      } else if (transaction.type === "Transfer") {
+      } else if (transaction.type === TRANSACTION_TYPES.TRANSFER) {
         return {
           _id: transaction._id,
           date: transaction.date,

@@ -1,10 +1,10 @@
 import { TransactionsContext } from "@/contexts/TransactionsContext";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
-import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import todayInfo from "@/helpers/todayInfo";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const WEEK_LENGTH = 7;
@@ -51,7 +51,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
         date: transaction.date,
       };
 
-      if (transaction.type === "Expense") {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         transactionObject.store = transaction.store;
         transactionObject.items = transaction.items;
         transactionObject.category = transaction.category;

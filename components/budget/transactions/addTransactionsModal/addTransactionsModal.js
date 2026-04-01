@@ -5,7 +5,8 @@ import todayInfo from "@/helpers/todayInfo";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import {
-  transactionTypes,
+  TRANSACTION_TYPES,
+  TRANSACTION_TYPES_LIST,
   TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
 import AddExpenseForm from "./addExpenseForm";
@@ -43,7 +44,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
 
   const newExpense = {
     active: true,
-    type: "Expense",
+    type: TRANSACTION_TYPES.EXPENSE,
     date: transactionDate,
     store: "",
     items: "",
@@ -53,7 +54,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
 
   const newTransfer = {
     active: true,
-    type: "Transfer",
+    type: TRANSACTION_TYPES.TRANSFER,
     date: transactionDate,
     fromAccount: TRANSFER_ACCOUNTS.CHECKING,
     toAccount: TRANSFER_ACCOUNTS.SAVINGS,
@@ -74,7 +75,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
     setNewTransactions((prev) => {
       return prev.map((transaction, transactionIndex) => {
         if (index === transactionIndex) {
-          if (type === "Expense") {
+          if (type === TRANSACTION_TYPES.EXPENSE) {
             return { ...newExpense };
           } else {
             return { ...newTransfer };
@@ -190,7 +191,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
 
       // Update the correlating category's state in the categories table
       addedTransactions.forEach((transaction) => {
-        if (transaction.type === "Expense") {
+        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
           updateCategoriesFromTransaction({
             oldTransaction: null,
             newTransaction: transaction,
@@ -256,14 +257,14 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
                           onChange={(e) => handleType(e, index)}
                           required
                         >
-                          {transactionTypes.map((type) => (
+                          {TRANSACTION_TYPES_LIST.map((type) => (
                             <option key={type} value={type}>
                               {type}
                             </option>
                           ))}
                         </Form.Select>
                       </Form.Group>
-                      {newTransaction.type === "Expense" && (
+                      {newTransaction.type === TRANSACTION_TYPES.EXPENSE && (
                         <AddExpenseForm
                           dateInfo={dateInfo}
                           transaction={newTransaction}
@@ -271,7 +272,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
                           index={index}
                         />
                       )}
-                      {newTransaction.type === "Transfer" && (
+                      {newTransaction.type === TRANSACTION_TYPES.TRANSFER && (
                         <AddTransferForm
                           dateInfo={dateInfo}
                           transaction={newTransaction}

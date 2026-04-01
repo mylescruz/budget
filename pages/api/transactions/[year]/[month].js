@@ -1,6 +1,7 @@
 // API Endpoint for a user's transactions data
 
 import centsToDollars from "@/helpers/centsToDollars";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
@@ -141,7 +142,7 @@ async function addTransactions(
         };
 
         // Define the transaction body based on the transaction type
-        if (transactionType === "Expense") {
+        if (transactionType === TRANSACTION_TYPES.EXPENSE) {
           newTransaction.store = transaction.store.trim();
           newTransaction.items = transaction.items.trim();
 
@@ -167,7 +168,7 @@ async function addTransactions(
           // Update the transaction with the proper categoryId and name
           newTransaction.categoryId = transactionCategory._id;
           newTransaction.category = transactionCategory.name;
-        } else if (transactionType === "Transfer") {
+        } else if (transactionType === TRANSACTION_TYPES.TRANSFER) {
           newTransaction.fromAccount = transaction.fromAccount;
           newTransaction.toAccount = transaction.toAccount;
           newTransaction.description = transaction.description;

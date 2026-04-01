@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import InsightCard from "./insightCard";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import addDecimalValues from "@/helpers/addDecimalValues";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const SpendingInsightsLayout = ({ months, categories, transactions }) => {
   const insights = useMemo(() => {
@@ -86,7 +87,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
 
     // Top transactions of the year
     const topTransactions = [...transactions]
-      .filter((transaction) => transaction.type === "Expense")
+      .filter((transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE)
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 10)
       .map((transaction) => {
@@ -100,7 +101,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const storesMap = new Map();
 
     transactions.forEach((transaction) => {
-      if (transaction.type === "Expense") {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         const store = storesMap.get(transaction.store);
 
         if (!store) {
