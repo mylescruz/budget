@@ -30,9 +30,16 @@ const EditCategoryModal = ({
     budget: false,
   });
 
-  // Create a new set to filter out current category's name in case a change is made to it other than its name
+  // Create a new set to filter out the current category and subcategories' names in case a change is made to it other than its name
   const filteredNames = new Set(categoryNames);
+
   filteredNames.delete(editedCategory.currentName);
+
+  if (editedCategory.subcategories.length > 0) {
+    editedCategory.subcategories.forEach((subcategory) =>
+      filteredNames.delete(subcategory.name),
+    );
+  }
 
   const handleInput = (e) => {
     const id = e.target.id;
