@@ -178,7 +178,7 @@ const EditSubcategoryPage = ({
       <div className="w-100 d-flex justify-content-between mt-4">
         <Button
           variant="danger"
-          disabled={!editedCategory.fixed && editedSubcategory.budget !== 0}
+          disabled={!editedCategory.fixed && editedSubcategory.actual !== 0}
           onClick={deleteSubcategory}
         >
           Delete
