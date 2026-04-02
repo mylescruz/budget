@@ -16,7 +16,7 @@ const AddSubcategoryPage = ({
 }) => {
   const emptySubcategory = {
     name: "",
-    actual: "",
+    budget: "",
     frequency: FIXED_FREQUENCIES.MONTHLY,
     dueDate: "",
     added: true,

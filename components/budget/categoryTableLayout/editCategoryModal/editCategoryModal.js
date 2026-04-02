@@ -305,7 +305,7 @@ const EditCategoryModal = ({
                           <tr key={subcategory._id}>
                             <td>{subcategory.name}</td>
                             <td>
-                              {subcategory.fixed
+                              {editedCategory.fixed
                                 ? dollarFormatter(subcategory.budget)
                                 : dollarFormatter(subcategory.actual)}
                             </td>
