@@ -50,7 +50,7 @@ const EditCategoryModal = ({
       setFieldChanges((prev) => ({ ...prev, budget: true }));
     }
 
-    handleObjectInput({ e, setObject: setEditedSubcategory });
+    handleObjectInput({ e, setObject: setEditedCategory });
   };
 
   const openAddSubcategoryPage = () => {
