@@ -58,12 +58,10 @@ const EditTransactionModal = ({
       });
 
       // Update the correlating category's state in the categories table
-      if (updatedTransaction.type === TRANSACTION_TYPES.EXPENSE) {
-        updateCategoriesFromTransaction({
-          oldTransaction: chosenTransaction,
-          newTransaction: updatedTransaction,
-        });
-      }
+      updateCategoriesFromTransaction({
+        oldTransaction: chosenTransaction,
+        newTransaction: updatedTransaction,
+      });
 
       setModal("none");
 

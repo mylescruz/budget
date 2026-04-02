@@ -191,12 +191,10 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
 
       // Update the correlating category's state in the categories table
       addedTransactions.forEach((transaction) => {
-        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
-          updateCategoriesFromTransaction({
-            oldTransaction: null,
-            newTransaction: transaction,
-          });
-        }
+        updateCategoriesFromTransaction({
+          oldTransaction: null,
+          newTransaction: transaction,
+        });
       });
 
       closeAddModal();

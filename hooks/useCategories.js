@@ -4,6 +4,8 @@ import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import addDecimalValues from "@/helpers/addDecimalValues";
+import { FUN_MONEY } from "@/lib/constants/categories";
+import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
@@ -141,119 +143,169 @@ const useCategories = (month, year) => {
   // Update the state of the categories with the added, edited or deleted transaction
   const updateCategoriesFromTransaction = useCallback(
     ({ oldTransaction, newTransaction }) => {
-      let oldAmount = oldTransaction && oldTransaction.amount;
-      let newAmount = newTransaction && newTransaction.amount;
-
       if (
-        oldTransaction &&
-        newTransaction &&
-        oldTransaction.categoryId === newTransaction.categoryId
+        (newTransaction && newTransaction.type === "Expense") ||
+        (oldTransaction && oldTransaction.type === "Expense")
       ) {
-        newAmount = subtractDecimalValues(
-          newTransaction.amount,
-          oldTransaction.amount,
-        );
+        let oldAmount = oldTransaction && oldTransaction.amount;
+        let newAmount = newTransaction && newTransaction.amount;
 
-        oldTransaction = null;
-      }
+        if (
+          oldTransaction &&
+          newTransaction &&
+          oldTransaction.categoryId === newTransaction.categoryId
+        ) {
+          newAmount = subtractDecimalValues(
+            newTransaction.amount,
+            oldTransaction.amount,
+          );
 
-      setCategories((prev) => {
-        return [...prev].map((category) => {
-          if (!category.fixed) {
-            if (category.subcategories.length > 0) {
-              let categoryActual = category.actual;
+          oldTransaction = null;
+        }
 
-              const updatedSubcategories = category.subcategories.map(
-                (subcategory) => {
-                  if (
-                    newTransaction &&
-                    subcategory._id === newTransaction.categoryId
-                  ) {
-                    // Update the subcategory's actual value with the new transaction amount
-                    const updatedActual = addDecimalValues(
-                      subcategory.actual,
-                      newAmount,
-                    );
+        setCategories((prev) => {
+          return [...prev].map((category) => {
+            if (!category.fixed) {
+              if (category.subcategories.length > 0) {
+                let categoryActual = category.actual;
 
-                    // Update the parent category's actual value with the new transaction amount
-                    categoryActual = addDecimalValues(
-                      categoryActual,
-                      newAmount,
-                    );
+                const updatedSubcategories = category.subcategories.map(
+                  (subcategory) => {
+                    if (
+                      newTransaction &&
+                      subcategory._id === newTransaction.categoryId
+                    ) {
+                      // Update the subcategory's actual value with the new transaction amount
+                      const updatedActual = addDecimalValues(
+                        subcategory.actual,
+                        newAmount,
+                      );
 
-                    return {
-                      ...subcategory,
-                      actual: updatedActual,
-                    };
-                  } else if (
-                    oldTransaction &&
-                    subcategory._id === oldTransaction.categoryId
-                  ) {
-                    // Update the subcategory's actual value with the old transaction amount
-                    const updatedActual = subtractDecimalValues(
-                      subcategory.actual,
-                      oldAmount,
-                    );
+                      // Update the parent category's actual value with the new transaction amount
+                      categoryActual = addDecimalValues(
+                        categoryActual,
+                        newAmount,
+                      );
 
-                    // Update the parent category's actual value with the old transaction amount
-                    categoryActual = subtractDecimalValues(
-                      categoryActual,
-                      newAmount,
-                    );
+                      return {
+                        ...subcategory,
+                        actual: updatedActual,
+                      };
+                    } else if (
+                      oldTransaction &&
+                      subcategory._id === oldTransaction.categoryId
+                    ) {
+                      // Update the subcategory's actual value with the old transaction amount
+                      const updatedActual = subtractDecimalValues(
+                        subcategory.actual,
+                        oldAmount,
+                      );
 
-                    return {
-                      ...subcategory,
-                      actual: updatedActual,
-                    };
-                  } else {
-                    return subcategory;
-                  }
-                },
-              );
+                      // Update the parent category's actual value with the old transaction amount
+                      categoryActual = subtractDecimalValues(
+                        categoryActual,
+                        newAmount,
+                      );
 
-              return {
-                ...category,
-                actual: categoryActual,
-                subcategories: updatedSubcategories,
-              };
-            } else {
-              if (
-                newTransaction &&
-                category._id === newTransaction.categoryId
-              ) {
-                // Update the category's actual value with the new transaction amount
-                const updatedActual = addDecimalValues(
-                  category.actual,
-                  newAmount,
+                      return {
+                        ...subcategory,
+                        actual: updatedActual,
+                      };
+                    } else {
+                      return subcategory;
+                    }
+                  },
                 );
 
                 return {
                   ...category,
-                  actual: updatedActual,
-                };
-              } else if (
-                oldTransaction &&
-                category._id === oldTransaction.categoryId
-              ) {
-                // Update the category's actual value with the old transaction amount
-                const updatedActual = subtractDecimalValues(
-                  category.actual,
-                  oldAmount,
-                );
-
-                return {
-                  ...category,
-                  actual: updatedActual,
+                  actual: categoryActual,
+                  subcategories: updatedSubcategories,
                 };
               } else {
-                return category;
+                if (
+                  newTransaction &&
+                  category._id === newTransaction.categoryId
+                ) {
+                  // Update the category's actual value with the new transaction amount
+                  const updatedActual = addDecimalValues(
+                    category.actual,
+                    newAmount,
+                  );
+
+                  return {
+                    ...category,
+                    actual: updatedActual,
+                  };
+                } else if (
+                  oldTransaction &&
+                  category._id === oldTransaction.categoryId
+                ) {
+                  // Update the category's actual value with the old transaction amount
+                  const updatedActual = subtractDecimalValues(
+                    category.actual,
+                    oldAmount,
+                  );
+
+                  return {
+                    ...category,
+                    actual: updatedActual,
+                  };
+                } else {
+                  return category;
+                }
               }
+            } else {
+              return category;
             }
-          } else {
-            return category;
-          }
+          });
         });
-      });
+      } else {
+        // Update the Fun Money budget for any transfers that occur
+        let oldAmount = oldTransaction && oldTransaction.amount;
+        let newAmount = newTransaction && newTransaction.amount;
+
+        // If transferring to their savings, reduce the Fun Money budget
+        if (
+          newTransaction &&
+          newTransaction.toAccount === TRANSFER_ACCOUNTS.SAVINGS
+        ) {
+          newAmount *= -1;
+        }
+
+        // If transfering to their checking, add to the Fun Money budget
+        if (
+          oldTransaction &&
+          oldTransaction.toAccount === TRANSFER_ACCOUNTS.CHECKING
+        ) {
+          oldAmount *= -1;
+        }
+
+        // Finalize the increment amount based on adding, editing or deleting a transfer
+        let updateAmount = 0;
+
+        if (oldTransaction && newTransaction) {
+          updateAmount = addDecimalValues(newAmount, oldAmount);
+        } else if (!oldTransaction && newTransaction) {
+          updateAmount = newAmount;
+        } else {
+          updateAmount = oldAmount;
+        }
+
+        // Increment the Fun Money's budget with the new transfer amount
+        setCategories((prev) => {
+          return [...prev].map((category) => {
+            if (category.name === FUN_MONEY) {
+              return {
+                ...category,
+                budget: addDecimalValues(category.budget, updateAmount),
+              };
+            } else {
+              return category;
+            }
+          });
+        });
+      }
     },
     [],
   );
