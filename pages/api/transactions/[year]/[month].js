@@ -3,6 +3,7 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import clientPromise from "@/lib/mongodb";
+import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
@@ -188,6 +189,15 @@ async function addTransactions(
           session,
         },
       );
+
+      // Update the current month's Fun Money budget if any transfers occur
+      if (
+        formattedTransactions.some(
+          (transaction) => transaction.type === TRANSACTION_TYPES.TRANSFER,
+        )
+      ) {
+        await updateFunMoney({ username, month, year, session });
+      }
 
       // Send the new transactions back to the client with their inserted MongoDB _id and the formatted dollar amount
       addedTransactions = formattedTransactions.map((transaction, index) => {
