@@ -10,37 +10,57 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesMeta, setCategoriesMeta] = useState({
+    status: "idle", // idle | loading | success | error
+    message: "",
+  });
 
   // Get monthly income to compute category totals
   const { monthIncome } = useMonthIncome(month, year);
 
+  useEffect(() => {
+    getCategories(month, year);
+  }, [month, year]);
+
   const getCategories = useCallback(async (month, year) => {
     setCategoriesLoading(true);
+
+    setCategoriesMeta({
+      status: "loading",
+      message: "Getting your categories",
+    });
 
     try {
       const response = await fetch(`/api/categories/${year}/${month}`);
 
-      if (response.ok) {
-        const fetchedCategories = await response.json();
-        setCategories(fetchedCategories);
-      } else {
+      if (!response.ok) {
         const message = await response.text();
         throw new Error(message);
       }
+
+      const fetchedCategories = await response.json();
+
+      setCategories(fetchedCategories);
+
+      setCategoriesMeta({ status: "success", message: null });
     } catch (error) {
       console.error(error);
+
+      setCategoriesMeta({ status: "error", message: error.message });
+
       setCategories(null);
     } finally {
       setCategoriesLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    getCategories(month, year);
-  }, [month, year, getCategories]);
-
   const postCategory = useCallback(
     async (newCategory) => {
+      setCategoriesMeta({
+        status: "loading",
+        message: "Adding the new category",
+      });
+
       try {
         const response = await fetch(`/api/categories/${year}/${month}`, {
           method: "POST",
@@ -51,15 +71,19 @@ const useCategories = (month, year) => {
           body: JSON.stringify(newCategory),
         });
 
-        if (response.ok) {
-          const addedCategory = await response.json();
-
-          setCategories([...categories, addedCategory]);
-        } else {
+        if (!response.ok) {
           const message = await response.text();
           throw new Error(message);
         }
+
+        const addedCategory = await response.json();
+
+        setCategories((prev) => [...prev, addedCategory]);
+
+        setCategoriesMeta({ status: "success", message: null });
       } catch (error) {
+        setCategoriesMeta({ status: "error", message: error.message });
+
         throw new Error(error);
       } finally {
         setCategoriesLoading(false);
@@ -69,39 +93,44 @@ const useCategories = (month, year) => {
   );
 
   const putCategory = useCallback(
-    async (updatedCategory) => {
+    async (editedCategory) => {
+      setCategoriesMeta({
+        status: "loading",
+        message: "Updating the category's details",
+      });
+
       try {
-        const response = await fetch(`/api/category/${updatedCategory._id}`, {
+        const response = await fetch(`/api/category/${editedCategory._id}`, {
           method: "PUT",
           headers: {
             Accept: "application.json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(updatedCategory),
+          body: JSON.stringify(editedCategory),
         });
 
-        if (response.ok) {
-          const updatedCategory = await response.json();
-
-          // Replace old category with new new category in array
-          const updatedCategories = [...categories];
-
-          const categoryIndex = updatedCategories.findIndex(
-            (cat) => cat._id === updatedCategory._id,
-          );
-
-          updatedCategories[categoryIndex] = updatedCategory;
-
-          if (categoryIndex !== -1) {
-            setCategories(updatedCategories);
-          } else {
-            throw new Error(`Could not find category ${updatedCategory.name}`);
-          }
-        } else {
+        if (!response.ok) {
           const message = await response.text();
           throw new Error(message);
         }
+
+        // Replace old category with the new category
+        const updatedCategory = await response.json();
+
+        setCategories((prev) =>
+          prev.map((category) => {
+            if (category._id === updatedCategory._id) {
+              return updatedCategory;
+            } else {
+              return category;
+            }
+          }),
+        );
+
+        setCategoriesMeta({ status: "success", message: null });
       } catch (error) {
+        setCategoriesMeta({ status: "error", message: error.message });
+
         throw new Error(error);
       } finally {
         setCategoriesLoading(false);
@@ -112,6 +141,11 @@ const useCategories = (month, year) => {
 
   const deleteCategory = useCallback(
     async (categoryId) => {
+      setCategoriesMeta({
+        status: "loading",
+        message: "Deleting the category",
+      });
+
       try {
         const response = await fetch(`/api/category/${categoryId}`, {
           method: "DELETE",
@@ -121,17 +155,21 @@ const useCategories = (month, year) => {
           },
         });
 
-        if (response.ok) {
-          const updatedCategories = categories.filter((category) => {
-            return category._id !== categoryId;
-          });
-
-          setCategories(updatedCategories);
-        } else {
+        if (!response.ok) {
           const message = await response.text();
           throw new Error(message);
         }
+
+        setCategories((prev) =>
+          prev.filter((category) => {
+            return category._id !== categoryId;
+          }),
+        );
+
+        setCategoriesMeta({ status: "success", message: null });
       } catch (error) {
+        setCategoriesMeta({ status: "error", message: error.message });
+
         throw new Error(error);
       } finally {
         setCategoriesLoading(false);
@@ -410,6 +448,7 @@ const useCategories = (month, year) => {
   return {
     categories,
     categoriesLoading,
+    categoriesMeta,
     getCategories,
     postCategory,
     putCategory,
