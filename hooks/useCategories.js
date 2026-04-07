@@ -10,7 +10,7 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [categoriesMeta, setCategoriesMeta] = useState({
+  const [requestState, setRequestState] = useState({
     status: "idle", // idle | loading | success | error
     message: "",
   });
@@ -25,7 +25,7 @@ const useCategories = (month, year) => {
   const getCategories = useCallback(async (month, year) => {
     setCategoriesLoading(true);
 
-    setCategoriesMeta({
+    setRequestState({
       status: "loading",
       message: "Getting your categories",
     });
@@ -42,11 +42,11 @@ const useCategories = (month, year) => {
 
       setCategories(fetchedCategories);
 
-      setCategoriesMeta({ status: "success", message: null });
+      setRequestState({ status: "success", message: null });
     } catch (error) {
       console.error(error);
 
-      setCategoriesMeta({ status: "error", message: error.message });
+      setRequestState({ status: "error", message: error.message });
 
       setCategories(null);
     } finally {
@@ -56,7 +56,7 @@ const useCategories = (month, year) => {
 
   const postCategory = useCallback(
     async (newCategory) => {
-      setCategoriesMeta({
+      setRequestState({
         status: "loading",
         message: "Adding the new category",
       });
@@ -80,9 +80,9 @@ const useCategories = (month, year) => {
 
         setCategories((prev) => [...prev, addedCategory]);
 
-        setCategoriesMeta({ status: "success", message: null });
+        setRequestState({ status: "success", message: null });
       } catch (error) {
-        setCategoriesMeta({ status: "error", message: error.message });
+        setRequestState({ status: "error", message: error.message });
 
         throw new Error(error);
       } finally {
@@ -94,7 +94,7 @@ const useCategories = (month, year) => {
 
   const putCategory = useCallback(
     async (editedCategory) => {
-      setCategoriesMeta({
+      setRequestState({
         status: "loading",
         message: "Updating the category's details",
       });
@@ -127,9 +127,9 @@ const useCategories = (month, year) => {
           }),
         );
 
-        setCategoriesMeta({ status: "success", message: null });
+        setRequestState({ status: "success", message: null });
       } catch (error) {
-        setCategoriesMeta({ status: "error", message: error.message });
+        setRequestState({ status: "error", message: error.message });
 
         throw new Error(error);
       } finally {
@@ -141,7 +141,7 @@ const useCategories = (month, year) => {
 
   const deleteCategory = useCallback(
     async (categoryId) => {
-      setCategoriesMeta({
+      setRequestState({
         status: "loading",
         message: "Deleting the category",
       });
@@ -166,9 +166,9 @@ const useCategories = (month, year) => {
           }),
         );
 
-        setCategoriesMeta({ status: "success", message: null });
+        setRequestState({ status: "success", message: null });
       } catch (error) {
-        setCategoriesMeta({ status: "error", message: error.message });
+        setRequestState({ status: "error", message: error.message });
 
         throw new Error(error);
       } finally {
@@ -448,7 +448,7 @@ const useCategories = (month, year) => {
   return {
     categories,
     categoriesLoading,
-    categoriesMeta,
+    requestState,
     getCategories,
     postCategory,
     putCategory,
