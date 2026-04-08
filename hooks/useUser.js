@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns the current user's basic profile information.
 //
@@ -23,9 +23,9 @@ const useUser = () => {
 
   useEffect(() => {
     getUser();
-  }, [getUser]);
+  }, []);
 
-  const getUser = useCallback(async () => {
+  const getUser = async () => {
     setUserRequest({
       action: "get",
       status: "loading",
@@ -61,9 +61,9 @@ const useUser = () => {
     } finally {
       setUserLoading(false);
     }
-  }, []);
+  };
 
-  const putUser = useCallback(async (editedUser) => {
+  const putUser = async (editedUser) => {
     setUserRequest({
       action: "update",
       status: "loading",
@@ -105,10 +105,10 @@ const useUser = () => {
     } finally {
       setUserLoading(false);
     }
-  }, []);
+  };
 
   // DELETE request that deletes a user based on their id
-  const deleteUser = useCallback(async (deletedUser) => {
+  const deleteUser = async (deletedUser) => {
     setUserRequest({
       action: "delete",
       status: "loading",
@@ -149,7 +149,7 @@ const useUser = () => {
     } finally {
       setUserLoading(false);
     }
-  }, []);
+  };
 
   return { user, userLoading, userRequest, putUser, deleteUser };
 };

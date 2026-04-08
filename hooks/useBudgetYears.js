@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns all budget years associated with the user.
 // Also provides the current year and the range of available years.
@@ -24,7 +24,7 @@ const useBudgetYears = () => {
     getYears();
   }, []);
 
-  const getYears = useCallback(async () => {
+  const getYears = async () => {
     setBudgetYearsRequest({
       action: "get",
       status: "loading",
@@ -60,7 +60,7 @@ const useBudgetYears = () => {
     } finally {
       setBudgetYearsLoading(false);
     }
-  }, []);
+  };
 
   return { budgetYears, budgetYearsLoading, budgetYearsRequest };
 };

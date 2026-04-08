@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns the user's previous categories that are not in the current budget.
 // Each category includes its budget, actual spending, and any nested subcategories.
@@ -41,10 +41,10 @@ const usePreviousCategories = (month, year) => {
   });
 
   useEffect(() => {
-    getPreviousCategories(month, year);
-  }, [month, year]);
+    getPreviousCategories();
+  }, []);
 
-  const getPreviousCategories = useCallback(async (month, year) => {
+  const getPreviousCategories = async () => {
     setPreviousCategoriesRequest({
       action: "get",
       status: "loading",
@@ -82,7 +82,7 @@ const usePreviousCategories = (month, year) => {
     } finally {
       setPreviousCategoriesLoading(false);
     }
-  }, []);
+  };
 
   return {
     previousCategories,

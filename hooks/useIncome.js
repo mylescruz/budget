@@ -1,7 +1,7 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { INCOME_TYPES } from "@/lib/constants/income";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // Fetches and returns the user's income sources for a given month and year.
 // Each income source includes its amount in USD. Paycheck sources include additional fields.
@@ -30,10 +30,10 @@ const useIncome = (year) => {
   });
 
   useEffect(() => {
-    getIncome(year);
-  }, [year]);
+    getIncome();
+  }, []);
 
-  const getIncome = useCallback(async (year) => {
+  const getIncome = async () => {
     setIncomeLoading(true);
 
     setIncomeRequest({
@@ -71,158 +71,149 @@ const useIncome = (year) => {
     } finally {
       setIncomeLoading(false);
     }
-  }, []);
+  };
 
-  const postIncome = useCallback(
-    async (source) => {
+  const postIncome = async (source) => {
+    setIncomeRequest({
+      action: "create",
+      status: "loading",
+      message: "Adding your new source of income",
+    });
+
+    try {
+      const response = await fetch(`/api/income/year/${year}`, {
+        method: "POST",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(source),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const addedSources = await response.json();
+
+      setIncome((prev) => [...prev, ...addedSources]);
+
       setIncomeRequest({
         action: "create",
-        status: "loading",
-        message: "Adding your new source of income",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setIncomeRequest({
+        action: "create",
+        status: "error",
+        message: error.message,
       });
 
-      try {
-        const response = await fetch(`/api/income/year/${year}`, {
-          method: "POST",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(source),
-        });
+      throw new Error(error);
+    } finally {
+      setIncomeLoading(false);
+    }
+  };
 
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
+  const putIncome = async (source) => {
+    setIncomeRequest({
+      action: "update",
+      status: "loading",
+      message: "Updating this source of income",
+    });
 
-        const addedSources = await response.json();
+    try {
+      const response = await fetch(`/api/income/${source._id}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(source),
+      });
 
-        setIncome((prev) => [...prev, ...addedSources]);
-
-        setIncomeRequest({
-          action: "create",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setIncomeRequest({
-          action: "create",
-          status: "error",
-          message: error.message,
-        });
-
-        throw new Error(error);
-      } finally {
-        setIncomeLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [income, year],
-  );
 
-  const putIncome = useCallback(
-    async (source) => {
+      const updatedSource = await response.json();
+
+      setIncome((prev) =>
+        prev.map((source) => {
+          if (source._id === updatedSource._id) {
+            return updatedSource;
+          } else {
+            return source;
+          }
+        }),
+      );
+
       setIncomeRequest({
         action: "update",
-        status: "loading",
-        message: "Updating this source of income",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setIncomeRequest({
+        action: "update",
+        status: "error",
+        message: error.message,
       });
 
-      try {
-        const response = await fetch(`/api/income/${source._id}`, {
-          method: "PUT",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(source),
-        });
+      throw new Error(error);
+    } finally {
+      setIncomeLoading(false);
+    }
+  };
 
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
+  const deleteIncome = async (source) => {
+    setIncomeRequest({
+      action: "delete",
+      status: "loading",
+      message: "Deleting this source of income",
+    });
 
-        const updatedSource = await response.json();
+    try {
+      const response = await fetch(`/api/income/${source._id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(source),
+      });
 
-        setIncome((prev) =>
-          prev.map((source) => {
-            if (source._id === updatedSource._id) {
-              return updatedSource;
-            } else {
-              return source;
-            }
-          }),
-        );
-
-        setIncomeRequest({
-          action: "update",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setIncomeRequest({
-          action: "update",
-          status: "error",
-          message: error.message,
-        });
-
-        throw new Error(error);
-      } finally {
-        setIncomeLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [income],
-  );
 
-  const deleteIncome = useCallback(
-    async (source) => {
+      const deletedSource = await response.json();
+
+      setIncome((prev) =>
+        prev.filter((source) => source._id !== deletedSource._id),
+      );
+
       setIncomeRequest({
         action: "delete",
-        status: "loading",
-        message: "Deleting this source of income",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setIncomeRequest({
+        action: "delete",
+        status: "error",
+        message: error.message,
       });
 
-      try {
-        const response = await fetch(`/api/income/${source._id}`, {
-          method: "DELETE",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(source),
-        });
-
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
-
-        const deletedSource = await response.json();
-
-        setIncome((prev) =>
-          prev.filter((source) => source._id !== deletedSource._id),
-        );
-
-        setIncomeRequest({
-          action: "delete",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setIncomeRequest({
-          action: "delete",
-          status: "error",
-          message: error.message,
-        });
-
-        throw new Error(error);
-      } finally {
-        setIncomeLoading(false);
-      }
-    },
-    [income],
-  );
+      throw new Error(error);
+    } finally {
+      setIncomeLoading(false);
+    }
+  };
 
   const incomeTotals = useMemo(() => {
     if (!income) {

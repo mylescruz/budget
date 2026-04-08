@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useMonthIncome from "./useMonthIncome";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
@@ -51,10 +51,10 @@ const useCategories = (month, year) => {
   const { monthIncome } = useMonthIncome(month, year);
 
   useEffect(() => {
-    getCategories(month, year);
-  }, [month, year]);
+    getCategories();
+  }, []);
 
-  const getCategories = useCallback(async (month, year) => {
+  const getCategories = async () => {
     setCategoriesLoading(true);
 
     setCategoriesRequest({
@@ -89,328 +89,319 @@ const useCategories = (month, year) => {
     } finally {
       setCategoriesLoading(false);
     }
-  }, []);
+  };
 
-  const postCategory = useCallback(
-    async (newCategory) => {
+  const postCategory = async (newCategory) => {
+    setCategoriesRequest({
+      action: "create",
+      status: "loading",
+      message: "Adding the new category",
+    });
+
+    try {
+      const response = await fetch(`/api/categories/${year}/${month}`, {
+        method: "POST",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newCategory),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const addedCategory = await response.json();
+
+      setCategories((prev) => [...prev, addedCategory]);
+
       setCategoriesRequest({
         action: "create",
-        status: "loading",
-        message: "Adding the new category",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setCategoriesRequest({
+        action: "create",
+        status: "error",
+        message: error.message,
       });
 
-      try {
-        const response = await fetch(`/api/categories/${year}/${month}`, {
-          method: "POST",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newCategory),
-        });
+      throw new Error(error);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
 
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
+  const putCategory = async (editedCategory) => {
+    setCategoriesRequest({
+      action: "update",
+      status: "loading",
+      message: "Updating the category's details",
+    });
 
-        const addedCategory = await response.json();
+    try {
+      const response = await fetch(`/api/category/${editedCategory._id}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedCategory),
+      });
 
-        setCategories((prev) => [...prev, addedCategory]);
-
-        setCategoriesRequest({
-          action: "create",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setCategoriesRequest({
-          action: "create",
-          status: "error",
-          message: error.message,
-        });
-
-        throw new Error(error);
-      } finally {
-        setCategoriesLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [categories, year, month],
-  );
 
-  const putCategory = useCallback(
-    async (editedCategory) => {
+      // Replace old category with the new category
+      const updatedCategory = await response.json();
+
+      setCategories((prev) =>
+        prev.map((category) => {
+          if (category._id === updatedCategory._id) {
+            return updatedCategory;
+          } else {
+            return category;
+          }
+        }),
+      );
+
       setCategoriesRequest({
         action: "update",
-        status: "loading",
-        message: "Updating the category's details",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setCategoriesRequest({
+        action: "update",
+        status: "error",
+        message: error.message,
       });
 
-      try {
-        const response = await fetch(`/api/category/${editedCategory._id}`, {
-          method: "PUT",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editedCategory),
-        });
+      throw new Error(error);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
 
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
+  const deleteCategory = async (categoryId) => {
+    setCategoriesRequest({
+      action: "delete",
+      status: "loading",
+      message: "Deleting the category",
+    });
 
-        // Replace old category with the new category
-        const updatedCategory = await response.json();
+    try {
+      const response = await fetch(`/api/category/${categoryId}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+      });
 
-        setCategories((prev) =>
-          prev.map((category) => {
-            if (category._id === updatedCategory._id) {
-              return updatedCategory;
-            } else {
-              return category;
-            }
-          }),
-        );
-
-        setCategoriesRequest({
-          action: "update",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setCategoriesRequest({
-          action: "update",
-          status: "error",
-          message: error.message,
-        });
-
-        throw new Error(error);
-      } finally {
-        setCategoriesLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [categories],
-  );
 
-  const deleteCategory = useCallback(
-    async (categoryId) => {
+      setCategories((prev) =>
+        prev.filter((category) => {
+          return category._id !== categoryId;
+        }),
+      );
+
       setCategoriesRequest({
         action: "delete",
-        status: "loading",
-        message: "Deleting the category",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setCategoriesRequest({
+        action: "delete",
+        status: "error",
+        message: error.message,
       });
 
-      try {
-        const response = await fetch(`/api/category/${categoryId}`, {
-          method: "DELETE",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
-
-        setCategories((prev) =>
-          prev.filter((category) => {
-            return category._id !== categoryId;
-          }),
-        );
-
-        setCategoriesRequest({
-          action: "delete",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setCategoriesRequest({
-          action: "delete",
-          status: "error",
-          message: error.message,
-        });
-
-        throw new Error(error);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    },
-    [categories],
-  );
+      throw new Error(error);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
 
   // Update the state of the categories with the added, edited or deleted transaction
-  const updateCategoriesFromTransaction = useCallback(
-    ({ oldTransaction, newTransaction }) => {
+  const updateCategoriesFromTransaction = ({
+    oldTransaction,
+    newTransaction,
+  }) => {
+    if (
+      (newTransaction && newTransaction.type === "Expense") ||
+      (oldTransaction && oldTransaction.type === "Expense")
+    ) {
+      let oldAmount = oldTransaction && oldTransaction.amount;
+      let newAmount = newTransaction && newTransaction.amount;
+
       if (
-        (newTransaction && newTransaction.type === "Expense") ||
-        (oldTransaction && oldTransaction.type === "Expense")
+        oldTransaction &&
+        newTransaction &&
+        oldTransaction.categoryId === newTransaction.categoryId
       ) {
-        let oldAmount = oldTransaction && oldTransaction.amount;
-        let newAmount = newTransaction && newTransaction.amount;
+        newAmount = subtractDecimalValues(
+          newTransaction.amount,
+          oldTransaction.amount,
+        );
 
-        if (
-          oldTransaction &&
-          newTransaction &&
-          oldTransaction.categoryId === newTransaction.categoryId
-        ) {
-          newAmount = subtractDecimalValues(
-            newTransaction.amount,
-            oldTransaction.amount,
-          );
+        oldTransaction = null;
+      }
 
-          oldTransaction = null;
-        }
+      setCategories((prev) => {
+        return [...prev].map((category) => {
+          if (!category.fixed) {
+            if (category.subcategories.length > 0) {
+              let categoryActual = category.actual;
 
-        setCategories((prev) => {
-          return [...prev].map((category) => {
-            if (!category.fixed) {
-              if (category.subcategories.length > 0) {
-                let categoryActual = category.actual;
+              const updatedSubcategories = category.subcategories.map(
+                (subcategory) => {
+                  if (
+                    newTransaction &&
+                    subcategory._id === newTransaction.categoryId
+                  ) {
+                    // Update the subcategory's actual value with the new transaction amount
+                    const updatedActual = addDecimalValues(
+                      subcategory.actual,
+                      newAmount,
+                    );
 
-                const updatedSubcategories = category.subcategories.map(
-                  (subcategory) => {
-                    if (
-                      newTransaction &&
-                      subcategory._id === newTransaction.categoryId
-                    ) {
-                      // Update the subcategory's actual value with the new transaction amount
-                      const updatedActual = addDecimalValues(
-                        subcategory.actual,
-                        newAmount,
-                      );
+                    // Update the parent category's actual value with the new transaction amount
+                    categoryActual = addDecimalValues(
+                      categoryActual,
+                      newAmount,
+                    );
 
-                      // Update the parent category's actual value with the new transaction amount
-                      categoryActual = addDecimalValues(
-                        categoryActual,
-                        newAmount,
-                      );
+                    return {
+                      ...subcategory,
+                      actual: updatedActual,
+                    };
+                  } else if (
+                    oldTransaction &&
+                    subcategory._id === oldTransaction.categoryId
+                  ) {
+                    // Update the subcategory's actual value with the old transaction amount
+                    const updatedActual = subtractDecimalValues(
+                      subcategory.actual,
+                      oldAmount,
+                    );
 
-                      return {
-                        ...subcategory,
-                        actual: updatedActual,
-                      };
-                    } else if (
-                      oldTransaction &&
-                      subcategory._id === oldTransaction.categoryId
-                    ) {
-                      // Update the subcategory's actual value with the old transaction amount
-                      const updatedActual = subtractDecimalValues(
-                        subcategory.actual,
-                        oldAmount,
-                      );
+                    // Update the parent category's actual value with the old transaction amount
+                    categoryActual = subtractDecimalValues(
+                      categoryActual,
+                      newAmount,
+                    );
 
-                      // Update the parent category's actual value with the old transaction amount
-                      categoryActual = subtractDecimalValues(
-                        categoryActual,
-                        newAmount,
-                      );
+                    return {
+                      ...subcategory,
+                      actual: updatedActual,
+                    };
+                  } else {
+                    return subcategory;
+                  }
+                },
+              );
 
-                      return {
-                        ...subcategory,
-                        actual: updatedActual,
-                      };
-                    } else {
-                      return subcategory;
-                    }
-                  },
+              return {
+                ...category,
+                actual: categoryActual,
+                subcategories: updatedSubcategories,
+              };
+            } else {
+              if (
+                newTransaction &&
+                category._id === newTransaction.categoryId
+              ) {
+                // Update the category's actual value with the new transaction amount
+                const updatedActual = addDecimalValues(
+                  category.actual,
+                  newAmount,
                 );
 
                 return {
                   ...category,
-                  actual: categoryActual,
-                  subcategories: updatedSubcategories,
+                  actual: updatedActual,
+                };
+              } else if (
+                oldTransaction &&
+                category._id === oldTransaction.categoryId
+              ) {
+                // Update the category's actual value with the old transaction amount
+                const updatedActual = subtractDecimalValues(
+                  category.actual,
+                  oldAmount,
+                );
+
+                return {
+                  ...category,
+                  actual: updatedActual,
                 };
               } else {
-                if (
-                  newTransaction &&
-                  category._id === newTransaction.categoryId
-                ) {
-                  // Update the category's actual value with the new transaction amount
-                  const updatedActual = addDecimalValues(
-                    category.actual,
-                    newAmount,
-                  );
-
-                  return {
-                    ...category,
-                    actual: updatedActual,
-                  };
-                } else if (
-                  oldTransaction &&
-                  category._id === oldTransaction.categoryId
-                ) {
-                  // Update the category's actual value with the old transaction amount
-                  const updatedActual = subtractDecimalValues(
-                    category.actual,
-                    oldAmount,
-                  );
-
-                  return {
-                    ...category,
-                    actual: updatedActual,
-                  };
-                } else {
-                  return category;
-                }
+                return category;
               }
-            } else {
-              return category;
             }
-          });
+          } else {
+            return category;
+          }
         });
-      } else {
-        // Update the Fun Money budget for any transfers that occur
-        let oldAmount = oldTransaction && oldTransaction.amount;
-        let newAmount = newTransaction && newTransaction.amount;
+      });
+    } else {
+      // Update the Fun Money budget for any transfers that occur
+      let oldAmount = oldTransaction && oldTransaction.amount;
+      let newAmount = newTransaction && newTransaction.amount;
 
-        // If transferring to their savings, reduce the Fun Money budget
-        if (
-          newTransaction &&
-          newTransaction.toAccount === TRANSFER_ACCOUNTS.SAVINGS
-        ) {
-          newAmount *= -1;
-        }
-
-        // If transfering to their checking, add to the Fun Money budget
-        if (
-          oldTransaction &&
-          oldTransaction.toAccount === TRANSFER_ACCOUNTS.CHECKING
-        ) {
-          oldAmount *= -1;
-        }
-
-        // Finalize the increment amount based on adding, editing or deleting a transfer
-        let updateAmount = 0;
-
-        if (oldTransaction && newTransaction) {
-          updateAmount = addDecimalValues(newAmount, oldAmount);
-        } else if (!oldTransaction && newTransaction) {
-          updateAmount = newAmount;
-        } else {
-          updateAmount = oldAmount;
-        }
-
-        // Increment the Fun Money's budget with the new transfer amount
-        setCategories((prev) => {
-          return [...prev].map((category) => {
-            if (category.name === FUN_MONEY) {
-              return {
-                ...category,
-                budget: addDecimalValues(category.budget, updateAmount),
-              };
-            } else {
-              return category;
-            }
-          });
-        });
+      // If transferring to their savings, reduce the Fun Money budget
+      if (
+        newTransaction &&
+        newTransaction.toAccount === TRANSFER_ACCOUNTS.SAVINGS
+      ) {
+        newAmount *= -1;
       }
-    },
-    [],
-  );
+
+      // If transfering to their checking, add to the Fun Money budget
+      if (
+        oldTransaction &&
+        oldTransaction.toAccount === TRANSFER_ACCOUNTS.CHECKING
+      ) {
+        oldAmount *= -1;
+      }
+
+      // Finalize the increment amount based on adding, editing or deleting a transfer
+      let updateAmount = 0;
+
+      if (oldTransaction && newTransaction) {
+        updateAmount = addDecimalValues(newAmount, oldAmount);
+      } else if (!oldTransaction && newTransaction) {
+        updateAmount = newAmount;
+      } else {
+        updateAmount = oldAmount;
+      }
+
+      // Increment the Fun Money's budget with the new transfer amount
+      setCategories((prev) => {
+        return [...prev].map((category) => {
+          if (category.name === FUN_MONEY) {
+            return {
+              ...category,
+              budget: addDecimalValues(category.budget, updateAmount),
+            };
+          } else {
+            return category;
+          }
+        });
+      });
+    }
+  };
 
   // Get the total budget, actual and remaining values for both fixed and variable categories
   const categoryTotals = useMemo(() => {

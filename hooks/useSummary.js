@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns a yearly summary for the user, including categories, income, transactions, and monthly breakdowns.
 // Each part includes totals and derived values in USD.
@@ -84,10 +84,10 @@ const useSummary = (year) => {
   });
 
   useEffect(() => {
-    getSummary(year);
-  }, [year]);
+    getSummary();
+  }, []);
 
-  const getSummary = useCallback(async (year) => {
+  const getSummary = async () => {
     setSummaryLoading(true);
     setSummaryRequest({
       action: "get",
@@ -124,7 +124,7 @@ const useSummary = (year) => {
     } finally {
       setSummaryLoading(false);
     }
-  }, []);
+  };
 
   return { summary, summaryLoading, summaryRequest };
 };

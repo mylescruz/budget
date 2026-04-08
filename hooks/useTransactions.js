@@ -4,7 +4,7 @@ import {
   TRANSACTION_TYPES,
   TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // Fetches and returns all transactions for the user for a given month and year.
 // Each transaction includes its amount in USD and optional category information.
@@ -39,10 +39,10 @@ const useTransactions = (month, year) => {
   });
 
   useEffect(() => {
-    getTransactions(month, year);
-  }, [month, year, getTransactions]);
+    getTransactions();
+  }, []);
 
-  const getTransactions = useCallback(async (month, year) => {
+  const getTransactions = async () => {
     setTransactionsLoading(true);
     setTransactionsRequest({
       action: "get",
@@ -79,61 +79,58 @@ const useTransactions = (month, year) => {
     } finally {
       setTransactionsLoading(false);
     }
-  }, []);
+  };
 
   // Add the new transactions to the database
-  const postTransactions = useCallback(
-    async (newTransactions) => {
-      setTransactionsRequest({
-        action: "create",
-        status: "loading",
-        message: "Adding your transaction(s) to your budget",
+  const postTransactions = async (newTransactions) => {
+    setTransactionsRequest({
+      action: "create",
+      status: "loading",
+      message: "Adding your transaction(s) to your budget",
+    });
+
+    try {
+      const response = await fetch(`/api/transactions/${year}/${month}`, {
+        method: "POST",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTransactions),
       });
 
-      try {
-        const response = await fetch(`/api/transactions/${year}/${month}`, {
-          method: "POST",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newTransactions),
-        });
-
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
-
-        const addedTransactions = await response.json();
-        setTransactions((prev) => [...prev, ...addedTransactions]);
-
-        setTransactionsRequest({
-          action: "create",
-          status: "success",
-          message: null,
-        });
-
-        return addedTransactions;
-      } catch (error) {
-        setTransactionsRequest({
-          action: "create",
-          status: "error",
-          message: error.message,
-        });
-
-        // Send the error back to the component to show the user
-        throw new Error(error);
-      } finally {
-        setTransactionsLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [year, month],
-  );
+
+      const addedTransactions = await response.json();
+      setTransactions((prev) => [...prev, ...addedTransactions]);
+
+      setTransactionsRequest({
+        action: "create",
+        status: "success",
+        message: null,
+      });
+
+      return addedTransactions;
+    } catch (error) {
+      setTransactionsRequest({
+        action: "create",
+        status: "error",
+        message: error.message,
+      });
+
+      // Send the error back to the component to show the user
+      throw new Error(error);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  };
 
   // PUT request that updates a transaction based on the transaction's id
   // Then it sets the transactions array to the array returned by the response
-  const putTransaction = useCallback(async (edittedTransaction) => {
+  const putTransaction = async (edittedTransaction) => {
     setTransactionsRequest({
       action: "update",
       status: "loading",
@@ -189,11 +186,11 @@ const useTransactions = (month, year) => {
     } finally {
       setTransactionsLoading(false);
     }
-  }, []);
+  };
 
   // DELETE request that deletes a transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
-  const deleteTransaction = useCallback(async (transactionId) => {
+  const deleteTransaction = async (transactionId) => {
     setTransactionsRequest({
       action: "delete",
       status: "loading",
@@ -237,7 +234,7 @@ const useTransactions = (month, year) => {
     } finally {
       setTransactionsLoading(false);
     }
-  }, []);
+  };
 
   const transactionTotals = useMemo(() => {
     if (!transactions) {

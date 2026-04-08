@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns all users in the system.
 //
@@ -25,47 +25,47 @@ const useUsers = () => {
   });
 
   useEffect(() => {
-    const getUsers = async () => {
-      setUsersRequest({
-        action: "get",
-        status: "loading",
-        message: "Getting all the Type-A Budget users",
-      });
-
-      try {
-        const response = await fetch("/api/admin/users");
-
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
-
-        const fetchedUsers = await response.json();
-
-        setUsers(fetchedUsers);
-
-        setUsersRequest({
-          action: "get",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setUsersRequest({
-          action: "get",
-          status: "error",
-          message: error.message,
-        });
-
-        console.error(error);
-      } finally {
-        setUsersLoading(false);
-      }
-    };
-
     getUsers();
   }, []);
 
-  const putUser = useCallback(async (editedUser) => {
+  const getUsers = async () => {
+    setUsersRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting all the Type-A Budget users",
+    });
+
+    try {
+      const response = await fetch("/api/admin/users");
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const fetchedUsers = await response.json();
+
+      setUsers(fetchedUsers);
+
+      setUsersRequest({
+        action: "get",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setUsersRequest({
+        action: "get",
+        status: "error",
+        message: error.message,
+      });
+
+      console.error(error);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  const putUser = async (editedUser) => {
     setUsersRequest({
       action: "update",
       status: "loading",
@@ -115,9 +115,9 @@ const useUsers = () => {
     } finally {
       setUsersLoading(false);
     }
-  }, []);
+  };
 
-  const deleteUser = useCallback(async (userToDelete) => {
+  const deleteUser = async (userToDelete) => {
     setUsersRequest({
       action: "delete",
       status: "loading",
@@ -163,7 +163,7 @@ const useUsers = () => {
     } finally {
       setUsersLoading(false);
     }
-  }, []);
+  };
 
   return { users, usersLoading, usersRequest, putUser, deleteUser };
 };

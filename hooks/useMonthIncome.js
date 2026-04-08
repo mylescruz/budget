@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns the user's total income for a given month and year.
 // Returns 0 if no income sources exist for the month.
@@ -16,10 +16,10 @@ const useMonthIncome = (month, year) => {
   });
 
   useEffect(() => {
-    getMonthIncome(month, year);
-  }, [month, year]);
+    getMonthIncome();
+  }, []);
 
-  const getMonthIncome = useCallback(async (month, year) => {
+  const getMonthIncome = async () => {
     setMonthIncomeRequest({
       action: "get",
       status: "loading",
@@ -55,7 +55,7 @@ const useMonthIncome = (month, year) => {
     } finally {
       setMonthIncomeLoading(false);
     }
-  }, []);
+  };
 
   return { monthIncome, monthIncomeLoading, monthIncomeRequest };
 };

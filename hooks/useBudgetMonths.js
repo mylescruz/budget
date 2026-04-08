@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Fetches and returns all months in which the user has stored budgets.
 // Also provides the current month and the range of available months.
@@ -24,7 +24,7 @@ const useBudgetMonths = () => {
     getBudgetMonths();
   }, []);
 
-  const getBudgetMonths = useCallback(async () => {
+  const getBudgetMonths = async () => {
     setBudgetMonthsLoading(true);
     setBudgetMonthsRequest({
       action: "get",
@@ -63,7 +63,7 @@ const useBudgetMonths = () => {
     } finally {
       setBudgetMonthsLoading(false);
     }
-  }, []);
+  };
 
   return { budgetMonths, budgetMonthsLoading, budgetMonthsRequest };
 };
