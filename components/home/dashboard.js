@@ -23,8 +23,7 @@ const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { categories, categoriesLoading } = useContext(CategoriesContext);
-  const { transactionsLoading } = useContext(TransactionsContext);
+  const { categories, categoriesRequest } = useContext(CategoriesContext);
   const { monthIncome, monthIncomeRequest } = useMonthIncome(
     dateInfo.month,
     dateInfo.year,
@@ -35,7 +34,7 @@ const InnerDashboard = ({ dateInfo }) => {
   // Get the top 5 categories to display on the dashboard
   const topCategories = useMemo(() => {
     if (!categories) {
-      return [];
+      return null;
     }
 
     return categories
@@ -62,8 +61,7 @@ const InnerDashboard = ({ dateInfo }) => {
   };
 
   if (
-    categoriesLoading ||
-    transactionsLoading ||
+    categoriesRequest.status === "loading" ||
     monthIncomeRequest.status === "loading"
   ) {
     return <LoadingIndicator />;
@@ -109,8 +107,7 @@ const InnerDashboard = ({ dateInfo }) => {
                     </>
                   ) : (
                     <p className="text-danger fw-bold text-center">
-                      &#9432; There was an error loading your budget. Please try
-                      again later!
+                      &#9432; {categoriesRequest.message}
                     </p>
                   )}
                   <Button
@@ -188,11 +185,13 @@ const InnerDashboard = ({ dateInfo }) => {
           </Col>
         </Row>
 
-        <AddTransactionsModal
-          dateInfo={dateInfo}
-          modal={modal}
-          setModal={setModal}
-        />
+        {categories && (
+          <AddTransactionsModal
+            dateInfo={dateInfo}
+            modal={modal}
+            setModal={setModal}
+          />
+        )}
       </Container>
     );
   }
