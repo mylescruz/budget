@@ -10,9 +10,10 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [requestState, setRequestState] = useState({
+  const [categoriesRequest, setCategoriesRequest] = useState({
+    action: null, //  get | create | update | delete | null
     status: "idle", // idle | loading | success | error
-    message: "",
+    message: null,
   });
 
   // Get monthly income to compute category totals
@@ -25,7 +26,8 @@ const useCategories = (month, year) => {
   const getCategories = useCallback(async (month, year) => {
     setCategoriesLoading(true);
 
-    setRequestState({
+    setCategoriesRequest({
+      action: "get",
       status: "loading",
       message: "Getting your categories",
     });
@@ -42,11 +44,15 @@ const useCategories = (month, year) => {
 
       setCategories(fetchedCategories);
 
-      setRequestState({ status: "success", message: null });
+      setCategoriesRequest({ action: "get", status: "success", message: null });
     } catch (error) {
       console.error(error);
 
-      setRequestState({ status: "error", message: error.message });
+      setCategoriesRequest({
+        action: "get",
+        status: "error",
+        message: error.message,
+      });
 
       setCategories(null);
     } finally {
@@ -56,7 +62,8 @@ const useCategories = (month, year) => {
 
   const postCategory = useCallback(
     async (newCategory) => {
-      setRequestState({
+      setCategoriesRequest({
+        action: "create",
         status: "loading",
         message: "Adding the new category",
       });
@@ -80,9 +87,17 @@ const useCategories = (month, year) => {
 
         setCategories((prev) => [...prev, addedCategory]);
 
-        setRequestState({ status: "success", message: null });
+        setCategoriesRequest({
+          action: "create",
+          status: "success",
+          message: null,
+        });
       } catch (error) {
-        setRequestState({ status: "error", message: error.message });
+        setCategoriesRequest({
+          action: "create",
+          status: "error",
+          message: error.message,
+        });
 
         throw new Error(error);
       } finally {
@@ -94,7 +109,8 @@ const useCategories = (month, year) => {
 
   const putCategory = useCallback(
     async (editedCategory) => {
-      setRequestState({
+      setCategoriesRequest({
+        action: "update",
         status: "loading",
         message: "Updating the category's details",
       });
@@ -127,9 +143,17 @@ const useCategories = (month, year) => {
           }),
         );
 
-        setRequestState({ status: "success", message: null });
+        setCategoriesRequest({
+          action: "update",
+          status: "success",
+          message: null,
+        });
       } catch (error) {
-        setRequestState({ status: "error", message: error.message });
+        setCategoriesRequest({
+          action: "update",
+          status: "error",
+          message: error.message,
+        });
 
         throw new Error(error);
       } finally {
@@ -141,7 +165,8 @@ const useCategories = (month, year) => {
 
   const deleteCategory = useCallback(
     async (categoryId) => {
-      setRequestState({
+      setCategoriesRequest({
+        action: "delete",
         status: "loading",
         message: "Deleting the category",
       });
@@ -166,9 +191,17 @@ const useCategories = (month, year) => {
           }),
         );
 
-        setRequestState({ status: "success", message: null });
+        setCategoriesRequest({
+          action: "delete",
+          status: "success",
+          message: null,
+        });
       } catch (error) {
-        setRequestState({ status: "error", message: error.message });
+        setCategoriesRequest({
+          action: "delete",
+          status: "error",
+          message: error.message,
+        });
 
         throw new Error(error);
       } finally {
@@ -448,7 +481,7 @@ const useCategories = (month, year) => {
   return {
     categories,
     categoriesLoading,
-    requestState,
+    categoriesRequest,
     getCategories,
     postCategory,
     putCategory,
