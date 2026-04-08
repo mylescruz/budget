@@ -14,12 +14,21 @@ import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
 import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
+import useMonthIncome from "@/hooks/useMonthIncome";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
+  const { monthIncome, monthIncomeRequest } = useMonthIncome(
+    dateInfo.month,
+    dateInfo.year,
+  );
 
-  if (categoriesLoading || transactionsLoading) {
+  if (
+    categoriesLoading ||
+    transactionsLoading ||
+    monthIncomeRequest.status === "loading"
+  ) {
     return <LoadingIndicator />;
   } else if (!categories) {
     return (
@@ -35,7 +44,10 @@ const InnerBudgetLayout = ({ dateInfo }) => {
       <Container>
         <Row className="d-flex justify-content-center">
           <Col className="col-12 col-xl-10">
-            <TotalsLayout />
+            <TotalsLayout
+              monthIncome={monthIncome}
+              monthIncomeRequest={monthIncomeRequest}
+            />
 
             <CategoryPieChart categories={categories} />
 

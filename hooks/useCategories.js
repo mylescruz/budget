@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import useMonthIncome from "./useMonthIncome";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
@@ -46,9 +45,6 @@ const useCategories = (month, year) => {
     status: "idle", // idle | loading | success | error
     message: null,
   });
-
-  // Get monthly income to compute category totals
-  const { monthIncome } = useMonthIncome(month, year);
 
   useEffect(() => {
     getCategories();
@@ -419,16 +415,19 @@ const useCategories = (month, year) => {
             const subcategoryActual = dollarsToCents(subcategory.actual);
             const subcategoryBudget = dollarsToCents(subcategory.budget);
 
+            sum.categoryBudget += subcategoryBudget;
             sum.categoryActuals += subcategoryActual;
             sum.fixedActual += subcategoryActual;
             sum.fixedBudget += subcategoryBudget;
           });
         } else if (category.fixed && category.subcategories.length === 0) {
+          sum.categoryBudget += categoryBudget;
           sum.fixedBudget += categoryBudget;
 
           sum.categoryActuals += categoryActual;
           sum.fixedActual += categoryActual;
         } else {
+          sum.categoryBudget += categoryBudget;
           sum.variableBudget += categoryBudget;
           sum.categoryActuals += categoryActual;
           sum.variableActual += categoryActual;
@@ -437,6 +436,7 @@ const useCategories = (month, year) => {
         return sum;
       },
       {
+        categoryBudget: 0,
         categoryActuals: 0,
         fixedBudget: 0,
         fixedActual: 0,
@@ -445,20 +445,18 @@ const useCategories = (month, year) => {
       },
     );
 
-    const totalRemaining = dollarsToCents(monthIncome) - totals.categoryActuals;
     const variableRemaining = totals.variableBudget - totals.variableActual;
 
     return {
-      income: monthIncome,
+      budget: centsToDollars(totals.categoryBudget),
       actual: centsToDollars(totals.categoryActuals),
-      remaining: centsToDollars(totalRemaining),
       fixedBudget: centsToDollars(totals.fixedBudget),
       fixedActual: centsToDollars(totals.fixedActual),
       variableBudget: centsToDollars(totals.variableBudget),
       variableActual: centsToDollars(totals.variableActual),
       variableRemaining: centsToDollars(variableRemaining),
     };
-  }, [categories, monthIncome, month, year]);
+  }, [categories]);
 
   // Define all the category and subcategory's correlating colors
   const categoryColors = useMemo(() => {
