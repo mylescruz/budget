@@ -10,6 +10,7 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
   const {
     categories,
     categoriesLoading,
+    categoriesRequest,
     getCategories,
     postCategory,
     putCategory,
@@ -25,6 +26,7 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
       value={{
         categories,
         categoriesLoading,
+        categoriesRequest,
         getCategories,
         postCategory,
         putCategory,
