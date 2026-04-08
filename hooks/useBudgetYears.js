@@ -14,7 +14,8 @@ import { useCallback, useEffect, useState } from "react";
 const useBudgetYears = () => {
   const [budgetYears, setBudgetYears] = useState([]);
   const [budgetYearsLoading, setBudgetYearsLoading] = useState(true);
-  const [budgetYearsReq, setBudgetYearsReq] = useState({
+  const [budgetYearsRequest, setBudgetYearsRequest] = useState({
+    action: null, //  get | create | update | delete | null
     status: "idle", // idle | loading | success | error
     message: null,
   });
@@ -24,7 +25,8 @@ const useBudgetYears = () => {
   }, []);
 
   const getYears = useCallback(async () => {
-    setBudgetYearsReq({
+    setBudgetYearsRequest({
+      action: "get",
       status: "loading",
       message: "Getting the years in your budget",
     });
@@ -41,14 +43,16 @@ const useBudgetYears = () => {
 
       setBudgetYears(fetchedYears);
 
-      setBudgetYearsReq({
+      setBudgetYearsRequest({
+        action: "get",
         status: "success",
         message: null,
       });
     } catch (error) {
       setBudgetYears(null);
 
-      setBudgetYearsReq({
+      setBudgetYearsRequest({
+        action: "get",
         status: "error",
         message: error.message,
       });
@@ -58,7 +62,7 @@ const useBudgetYears = () => {
     }
   }, []);
 
-  return { budgetYears, budgetYearsLoading, budgetYearsReq };
+  return { budgetYears, budgetYearsLoading, budgetYearsRequest };
 };
 
 export default useBudgetYears;
