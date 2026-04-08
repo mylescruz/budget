@@ -1,38 +1,64 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const usePreviousCategories = (month, year) => {
   const [previousCategories, setPreviousCategories] = useState([]);
   const [previousCategoriesLoading, setPreviousCategoriesLoading] =
     useState(true);
+  const [previousCategoriesRequest, setPreviousCategoriesRequest] = useState({
+    action: null, //  get | null
+    status: "idle", // idle | loading | success | error
+    message: null,
+  });
 
   useEffect(() => {
-    const getPreviousCategories = async () => {
-      try {
-        const response = await fetch(
-          `/api/categories/previous/${year}/${month}`,
-        );
+    getPreviousCategories(month, year);
+  }, [month, year]);
 
-        if (response.ok) {
-          const fetchedPreviousCategories = await response.json();
-          setPreviousCategories(fetchedPreviousCategories);
-        } else {
-          const message = await response.text();
+  const getPreviousCategories = useCallback(async (month, year) => {
+    setPreviousCategoriesRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your previously created categories",
+    });
 
-          throw new Error(message);
-        }
-      } catch (error) {
-        setPreviousCategories(null);
+    try {
+      const response = await fetch(`/api/categories/previous/${year}/${month}`);
 
-        console.error(error);
-      } finally {
-        setPreviousCategoriesLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+
+        throw new Error(message);
       }
-    };
 
-    getPreviousCategories();
+      const fetchedPreviousCategories = await response.json();
+
+      setPreviousCategories(fetchedPreviousCategories);
+
+      setPreviousCategoriesRequest({
+        action: "get",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setPreviousCategories(null);
+
+      setPreviousCategoriesRequest({
+        action: "get",
+        status: "error",
+        message: error.message,
+      });
+
+      console.error(error);
+    } finally {
+      setPreviousCategoriesLoading(false);
+    }
   }, []);
 
-  return { previousCategories, previousCategoriesLoading };
+  return {
+    previousCategories,
+    previousCategoriesLoading,
+    previousCategoriesRequest,
+  };
 };
 
 export default usePreviousCategories;
