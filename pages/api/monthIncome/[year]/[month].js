@@ -30,6 +30,7 @@ export default async function handler(req, res) {
       if (income.length === 0) {
         return res.status(200).send(0);
       }
+
       // Get the total income for the given month
       const monthIncome = centsToDollars(
         income.reduce((sum, current) => sum + current.amount, 0),
@@ -38,11 +39,7 @@ export default async function handler(req, res) {
       // Send the income for the month back to the client
       return res.status(200).send(monthIncome);
     } catch (error) {
-      return res
-        .status(500)
-        .send(
-          "There was a problem getting your income for the month. Please try again later!",
-        );
+      return res.status(500).send("This month's income is not available");
     }
   } else {
     console.error(`${method} method is not allowed`);
