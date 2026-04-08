@@ -3,32 +3,61 @@ import { useCallback, useEffect, useState } from "react";
 const useUser = () => {
   const [user, setUser] = useState({});
   const [userLoading, setUserLoading] = useState(false);
+  const [userRequest, setUserRequest] = useState({
+    action: null, //  get | update | delete | null
+    status: "idle", // idle | loading | success | error
+    message: null,
+  });
 
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        setUserLoading(true);
-        const response = await fetch("/api/user");
-
-        if (response.ok) {
-          const fetchedUser = await response.json();
-          setUser(fetchedUser);
-        } else {
-          const result = await response.text();
-          throw new Error(result);
-        }
-      } catch (error) {
-        setUser(null);
-        console.error(error);
-      } finally {
-        setUserLoading(false);
-      }
-    };
-
     getUser();
+  }, [getUser]);
+
+  const getUser = useCallback(async () => {
+    setUserRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your account details",
+    });
+
+    try {
+      setUserLoading(true);
+      const response = await fetch("/api/user");
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const fetchedUser = await response.json();
+      setUser(fetchedUser);
+
+      setUserRequest({
+        action: "get",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setUserRequest({
+        action: "get",
+        status: "error",
+        message: error.message,
+      });
+
+      setUser(null);
+      console.error(error);
+    } finally {
+      setUserLoading(false);
+    }
   }, []);
 
-  const putUser = useCallback(async (updatedUser) => {
+  const putUser = useCallback(async (editedUser) => {
+    setUserRequest({
+      action: "update",
+      status: "loading",
+      message: "Updating your account details",
+    });
+
     try {
       const response = await fetch("/api/user", {
         method: "PUT",
@@ -36,17 +65,29 @@ const useUser = () => {
           Accept: "application.json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedUser),
+        body: JSON.stringify(editedUser),
       });
 
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-      } else {
+      if (!response.ok) {
         const message = await response.text();
         throw new Error(message);
       }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+
+      setUserRequest({
+        action: "update",
+        status: "success",
+        message: null,
+      });
     } catch (error) {
+      setUserRequest({
+        action: "update",
+        status: "error",
+        message: error.message,
+      });
+
       // Send the error back to the component to show the user
       throw new Error(error.message);
     } finally {
@@ -56,6 +97,12 @@ const useUser = () => {
 
   // DELETE request that deletes a user based on their id
   const deleteUser = useCallback(async (deletedUser) => {
+    setUserRequest({
+      action: "delete",
+      status: "loading",
+      message: "Deleting your account and all your data",
+    });
+
     try {
       const response = await fetch("/api/user", {
         method: "DELETE",
@@ -66,13 +113,25 @@ const useUser = () => {
         body: JSON.stringify(deletedUser),
       });
 
-      if (response.ok) {
-        setUser(null);
-      } else {
-        const result = await response.text();
-        throw new Error(result);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
+
+      setUser(null);
+
+      setUserRequest({
+        action: "delete",
+        status: "success",
+        message: "You have successfully deleted your account",
+      });
     } catch (error) {
+      setUserRequest({
+        action: "delete",
+        status: "error",
+        message: error.message,
+      });
+
       // Send the error back to the component to show the user
       throw new Error(error.message);
     } finally {
@@ -80,7 +139,7 @@ const useUser = () => {
     }
   }, []);
 
-  return { user, userLoading, putUser, deleteUser };
+  return { user, userLoading, userRequest, putUser, deleteUser };
 };
 
 export default useUser;
