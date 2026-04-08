@@ -9,22 +9,48 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState([]);
   const [transactionsLoading, setTransactionsLoading] = useState(true);
+  const [transactionsRequest, setTransactionsRequest] = useState({
+    action: null, //  get | create | update | delete | null
+    status: "idle", // idle | loading | success | error
+    message: null,
+  });
 
-  // Function to retrieve transactions from the server
+  useEffect(() => {
+    getTransactions(month, year);
+  }, [month, year, getTransactions]);
+
   const getTransactions = useCallback(async (month, year) => {
     setTransactionsLoading(true);
+    setTransactionsRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your transactions for the month",
+    });
 
     try {
-      const rsp = await fetch(`/api/transactions/${year}/${month}`);
+      const response = await fetch(`/api/transactions/${year}/${month}`);
 
-      if (rsp.ok) {
-        const fetchedTransactions = await rsp.json();
-        setTransactions(fetchedTransactions);
-      } else {
-        const message = await rsp.text();
+      if (!response.ok) {
+        const message = await response.text();
         throw new Error(message);
       }
+
+      const fetchedTransactions = await response.json();
+
+      setTransactions(fetchedTransactions);
+
+      setTransactionsRequest({
+        action: "get",
+        status: "success",
+        message: null,
+      });
     } catch (error) {
+      setTransactionsRequest({
+        action: "get",
+        status: "error",
+        message: error.message,
+      });
+
       setTransactions(null);
       console.error(error);
     } finally {
@@ -32,14 +58,15 @@ const useTransactions = (month, year) => {
     }
   }, []);
 
-  // GET request that returns the user's transaction based on the month and year
-  useEffect(() => {
-    getTransactions(month, year);
-  }, [month, year, getTransactions]);
-
   // Add the new transactions to the database
   const postTransactions = useCallback(
     async (newTransactions) => {
+      setTransactionsRequest({
+        action: "create",
+        status: "loading",
+        message: "Adding your transaction(s) to your budget",
+      });
+
       try {
         const response = await fetch(`/api/transactions/${year}/${month}`, {
           method: "POST",
@@ -50,76 +77,109 @@ const useTransactions = (month, year) => {
           body: JSON.stringify(newTransactions),
         });
 
-        if (response.ok) {
-          const addedTransactions = await response.json();
-          setTransactions((prev) => [...prev, ...addedTransactions]);
-
-          return addedTransactions;
-        } else {
+        if (!response.ok) {
           const message = await response.text();
           throw new Error(message);
         }
+
+        const addedTransactions = await response.json();
+        setTransactions((prev) => [...prev, ...addedTransactions]);
+
+        setTransactionsRequest({
+          action: "create",
+          status: "success",
+          message: null,
+        });
+
+        return addedTransactions;
       } catch (error) {
+        setTransactionsRequest({
+          action: "create",
+          status: "error",
+          message: error.message,
+        });
+
         // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
         setTransactionsLoading(false);
       }
     },
-    [transactions, year, month],
+    [year, month],
   );
 
   // PUT request that updates a transaction based on the transaction's id
   // Then it sets the transactions array to the array returned by the response
-  const putTransaction = useCallback(
-    async (edittedTransaction) => {
-      try {
-        const response = await fetch(
-          `/api/transaction/${edittedTransaction._id}`,
-          {
-            method: "PUT",
-            headers: {
-              Accept: "application.json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(edittedTransaction),
+  const putTransaction = useCallback(async (edittedTransaction) => {
+    setTransactionsRequest({
+      action: "update",
+      status: "loading",
+      message: "Updating this transaction",
+    });
+
+    try {
+      const response = await fetch(
+        `/api/transaction/${edittedTransaction._id}`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application.json",
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify(edittedTransaction),
+        },
+      );
 
-        if (response.ok) {
-          const updatedTransaction = await response.json();
-
-          const updatedTransactions = transactions.map((transaction) => {
-            if (transaction._id === updatedTransaction._id) {
-              return updatedTransaction;
-            } else {
-              return transaction;
-            }
-          });
-
-          setTransactions(updatedTransactions);
-
-          return updatedTransaction;
-        } else {
-          const message = await response.text();
-          throw new Error(message);
-        }
-      } catch (error) {
-        // Send the error back to the component to show the user
-        throw new Error(error);
-      } finally {
-        setTransactionsLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [transactions],
-  );
+
+      const updatedTransaction = await response.json();
+
+      setTransactions((prev) =>
+        prev.map((transaction) => {
+          if (transaction._id === updatedTransaction._id) {
+            return updatedTransaction;
+          } else {
+            return transaction;
+          }
+        }),
+      );
+
+      setTransactionsRequest({
+        action: "update",
+        status: "success",
+        message: null,
+      });
+
+      return updatedTransaction;
+    } catch (error) {
+      setTransactionsRequest({
+        action: "update",
+        status: "error",
+        message: error.message,
+      });
+
+      // Send the error back to the component to show the user
+      throw new Error(error);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  }, []);
 
   // DELETE request that deletes a transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
   const deleteTransaction = useCallback(
     async (transactionId) => {
+      setTransactionsRequest({
+        action: "delete",
+        status: "loading",
+        message: "Deleting this transaction",
+      });
+
       try {
-        const rsp = await fetch(`/api/transaction/${transactionId}`, {
+        const response = await fetch(`/api/transaction/${transactionId}`, {
           method: "DELETE",
           headers: {
             Accept: "application.json",
@@ -127,17 +187,29 @@ const useTransactions = (month, year) => {
           },
         });
 
-        if (rsp.ok) {
-          const updatedTransactions = transactions.filter((transaction) => {
-            return transaction._id !== transactionId;
-          });
-
-          setTransactions(updatedTransactions);
-        } else {
-          const message = await rsp.text();
+        if (!response.ok) {
+          const message = await response.text();
           throw new Error(message);
         }
+
+        setTransactions((prev) =>
+          prev.filter((transaction) => {
+            return transaction._id !== transactionId;
+          }),
+        );
+
+        setTransactionsRequest({
+          action: "delete",
+          status: "success",
+          message: null,
+        });
       } catch (error) {
+        setTransactionsRequest({
+          action: "delete",
+          status: "error",
+          message: error.message,
+        });
+
         // Send the error back to the component to show the user
         throw new Error(error);
       } finally {
@@ -185,6 +257,7 @@ const useTransactions = (month, year) => {
   return {
     transactions,
     transactionsLoading,
+    transactionsRequest,
     getTransactions,
     postTransactions,
     putTransaction,
