@@ -170,54 +170,51 @@ const useTransactions = (month, year) => {
 
   // DELETE request that deletes a transaction based on the username, year and month
   // Then it sets the transactions array to the array returned by the response
-  const deleteTransaction = useCallback(
-    async (transactionId) => {
-      setTransactionsRequest({
-        action: "delete",
-        status: "loading",
-        message: "Deleting this transaction",
+  const deleteTransaction = useCallback(async (transactionId) => {
+    setTransactionsRequest({
+      action: "delete",
+      status: "loading",
+      message: "Deleting this transaction",
+    });
+
+    try {
+      const response = await fetch(`/api/transaction/${transactionId}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
       });
 
-      try {
-        const response = await fetch(`/api/transaction/${transactionId}`, {
-          method: "DELETE",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message);
-        }
-
-        setTransactions((prev) =>
-          prev.filter((transaction) => {
-            return transaction._id !== transactionId;
-          }),
-        );
-
-        setTransactionsRequest({
-          action: "delete",
-          status: "success",
-          message: null,
-        });
-      } catch (error) {
-        setTransactionsRequest({
-          action: "delete",
-          status: "error",
-          message: error.message,
-        });
-
-        // Send the error back to the component to show the user
-        throw new Error(error);
-      } finally {
-        setTransactionsLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [transactions],
-  );
+
+      setTransactions((prev) =>
+        prev.filter((transaction) => {
+          return transaction._id !== transactionId;
+        }),
+      );
+
+      setTransactionsRequest({
+        action: "delete",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setTransactionsRequest({
+        action: "delete",
+        status: "error",
+        message: error.message,
+      });
+
+      // Send the error back to the component to show the user
+      throw new Error(error);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  }, []);
 
   const transactionTotals = useMemo(() => {
     if (!transactions) {
