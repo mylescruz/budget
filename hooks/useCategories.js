@@ -38,7 +38,7 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 // ]
 
 const useCategories = (month, year) => {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(null);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesRequest, setCategoriesRequest] = useState({
     action: null, //  get | create | update | delete | null
@@ -80,8 +80,6 @@ const useCategories = (month, year) => {
         status: "error",
         message: error.message,
       });
-
-      setCategories(null);
     } finally {
       setCategoriesLoading(false);
     }

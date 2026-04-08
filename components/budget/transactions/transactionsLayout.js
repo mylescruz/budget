@@ -8,8 +8,10 @@ import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 const TransactionsLayout = ({ dateInfo }) => {
+  const { categoriesRequest } = useContext(CategoriesContext);
   const { transactions } = useContext(TransactionsContext);
   const [view, setView] = useState({
     display: "Table",
@@ -100,6 +102,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             variant="secondary"
             onClick={toggleTransactions}
             className="text-nowrap"
+            disabled={categoriesRequest.status === "error"}
           >
             {view.text}
           </Button>
@@ -107,6 +110,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             variant="primary"
             onClick={openAddTransaction}
             className="text-nowrap"
+            disabled={categoriesRequest.status === "error"}
           >
             Add Transactions
           </Button>

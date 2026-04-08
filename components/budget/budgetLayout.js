@@ -17,7 +17,7 @@ import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 import useMonthIncome from "@/hooks/useMonthIncome";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
-  const { categories, categoriesLoading } = useContext(CategoriesContext);
+  const { categories, categoriesRequest } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
   const { monthIncome, monthIncomeRequest } = useMonthIncome(
     dateInfo.month,
@@ -25,20 +25,11 @@ const InnerBudgetLayout = ({ dateInfo }) => {
   );
 
   if (
-    categoriesLoading ||
+    categoriesRequest.status === "loading" ||
     transactionsLoading ||
     monthIncomeRequest.status === "loading"
   ) {
     return <LoadingIndicator />;
-  } else if (!categories) {
-    return (
-      <Row className="mt-4 text-center">
-        <p className="fw-bold text-danger">
-          &#9432; There was an error loading your budget. Please try again
-          later!
-        </p>
-      </Row>
-    );
   } else {
     return (
       <Container>
@@ -49,9 +40,17 @@ const InnerBudgetLayout = ({ dateInfo }) => {
               monthIncomeRequest={monthIncomeRequest}
             />
 
-            <CategoryPieChart categories={categories} />
+            {categories ? (
+              <>
+                <CategoryPieChart categories={categories} />
 
-            <CategoryTableLayout dateInfo={dateInfo} />
+                <CategoryTableLayout dateInfo={dateInfo} />
+              </>
+            ) : (
+              <p className="mt-4 text-center fs-5 fw-bold text-danger">
+                &#9432; {categoriesRequest.message}
+              </p>
+            )}
 
             <TransactionsLayout dateInfo={dateInfo} />
           </Col>
