@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState([]);
   const [budgetMonthsLoading, setBudgetMonthsLoading] = useState(true);
-  const [requestState, setRequestState] = useState({
+  const [budgetMonthsReq, setBudgetMonthsReq] = useState({
     status: "idle", // idle | loading | success | error
     message: null,
   });
@@ -25,7 +25,7 @@ const useBudgetMonths = () => {
 
   const getBudgetMonths = useCallback(async () => {
     setBudgetMonthsLoading(true);
-    setRequestState({
+    setBudgetMonthsReq({
       status: "loading",
       message: "Getting your budget months",
     });
@@ -43,11 +43,11 @@ const useBudgetMonths = () => {
 
       setBudgetMonths(fetchedMonths);
 
-      setRequestState({ status: "success", message: null });
+      setBudgetMonthsReq({ status: "success", message: null });
     } catch (error) {
       console.error(error);
 
-      setRequestState({ status: "error", message: error.message });
+      setBudgetMonthsReq({ status: "error", message: error.message });
 
       setBudgetMonths(null);
     } finally {
@@ -55,7 +55,7 @@ const useBudgetMonths = () => {
     }
   }, []);
 
-  return { budgetMonths, budgetMonthsLoading, requestState };
+  return { budgetMonths, budgetMonthsLoading, budgetMonthsReq };
 };
 
 export default useBudgetMonths;
