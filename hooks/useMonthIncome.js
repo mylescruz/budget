@@ -7,8 +7,7 @@ import { useEffect, useState } from "react";
 // number  // total income in USD
 
 const useMonthIncome = (month, year) => {
-  const [monthIncome, setMonthIncome] = useState(0);
-  const [monthIncomeLoading, setMonthIncomeLoading] = useState(true);
+  const [monthIncome, setMonthIncome] = useState(null);
   const [monthIncomeRequest, setMonthIncomeRequest] = useState({
     action: null, //  get | null
     status: "idle", // idle | loading | success | error
@@ -36,6 +35,7 @@ const useMonthIncome = (month, year) => {
       }
 
       const fetchedIncome = await response.text();
+
       setMonthIncome(Number(fetchedIncome));
 
       setMonthIncomeRequest({
@@ -44,7 +44,6 @@ const useMonthIncome = (month, year) => {
         message: null,
       });
     } catch (error) {
-      setMonthIncome(null);
       console.error(error);
 
       setMonthIncomeRequest({
@@ -52,12 +51,10 @@ const useMonthIncome = (month, year) => {
         status: "error",
         message: error.message,
       });
-    } finally {
-      setMonthIncomeLoading(false);
     }
   };
 
-  return { monthIncome, monthIncomeLoading, monthIncomeRequest };
+  return { monthIncome, monthIncomeRequest };
 };
 
 export default useMonthIncome;

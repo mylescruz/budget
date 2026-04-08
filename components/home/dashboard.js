@@ -25,7 +25,7 @@ const InnerDashboard = ({ dateInfo }) => {
 
   const { categories, categoriesLoading } = useContext(CategoriesContext);
   const { transactionsLoading } = useContext(TransactionsContext);
-  const { monthIncome, monthIncomeLoading } = useMonthIncome(
+  const { monthIncome, monthIncomeRequest } = useMonthIncome(
     dateInfo.month,
     dateInfo.year,
   );
@@ -61,7 +61,11 @@ const InnerDashboard = ({ dateInfo }) => {
     setModal("addTransaction");
   };
 
-  if (categoriesLoading || transactionsLoading || monthIncomeLoading) {
+  if (
+    categoriesLoading ||
+    transactionsLoading ||
+    monthIncomeRequest.status === "loading"
+  ) {
     return <LoadingIndicator />;
   } else {
     return (
@@ -144,12 +148,12 @@ const InnerDashboard = ({ dateInfo }) => {
                   <Card.Body>
                     <h4>
                       {dateInfo.monthName} Income:{" "}
-                      {monthIncome !== null ? (
-                        <p>{dollarFormatter(monthIncome)} </p>
-                      ) : (
-                        <p className="text-danger fw-bold">
-                          Income Unavailable
+                      {monthIncomeRequest.status === "error" ? (
+                        <p className="text-danger fs-6 fw-bold">
+                          {monthIncomeRequest.message}
                         </p>
+                      ) : (
+                        <p>{dollarFormatter(monthIncome)} </p>
                       )}
                     </h4>
                     <p>View your sources of income</p>

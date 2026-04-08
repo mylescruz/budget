@@ -21,21 +21,29 @@ export default async function handler(req, res) {
   const incomeCol = db.collection("income");
 
   if (method === "GET") {
-    // Get all the sources of income for the given month
-    const income = await incomeCol
-      .find({ username: username, month: month, year: year })
-      .toArray();
+    try {
+      // Get all the sources of income for the given month
+      const income = await incomeCol
+        .find({ username: username, month: month, year: year })
+        .toArray();
 
-    if (income.length === 0) {
-      return res.status(200).send(0);
+      if (income.length === 0) {
+        return res.status(200).send(0);
+      }
+      // Get the total income for the given month
+      const monthIncome = centsToDollars(
+        income.reduce((sum, current) => sum + current.amount, 0),
+      );
+
+      // Send the income for the month back to the client
+      return res.status(200).send(monthIncome);
+    } catch (error) {
+      return res
+        .status(500)
+        .send(
+          "There was a problem getting your income for the month. Please try again later!",
+        );
     }
-    // Get the total income for the given month
-    const monthIncome = centsToDollars(
-      income.reduce((sum, current) => sum + current.amount, 0)
-    );
-
-    // Send the income for the month back to the client
-    return res.status(200).send(monthIncome);
   } else {
     console.error(`${method} method is not allowed`);
     return res.status(405).send(`${method} method is not allowed`);
