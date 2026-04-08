@@ -21,10 +21,16 @@ const useMonthIncome = (month, year) => {
     });
 
     try {
-      const rsp = await fetch(`/api/monthIncome/${year}/${month}`);
+      const response = await fetch(`/api/monthIncome/${year}/${month}`);
 
-      const result = await rsp.text();
-      setMonthIncome(Number(result));
+      if (!response.ok) {
+        const message = await response.text();
+
+        throw new Error(message);
+      }
+
+      const fetchedIncome = await response.text();
+      setMonthIncome(Number(fetchedIncome));
 
       setMonthIncomeRequest({
         action: "get",
