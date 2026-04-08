@@ -42,7 +42,7 @@ const usePreviousCategories = (month, year) => {
 
   useEffect(() => {
     getPreviousCategories();
-  }, []);
+  }, [month, year]);
 
   const getPreviousCategories = async () => {
     setPreviousCategoriesRequest({

@@ -85,7 +85,7 @@ const useSummary = (year) => {
 
   useEffect(() => {
     getSummary();
-  }, []);
+  }, [year]);
 
   const getSummary = async () => {
     setSummaryLoading(true);

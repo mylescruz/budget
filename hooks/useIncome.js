@@ -31,7 +31,7 @@ const useIncome = (year) => {
 
   useEffect(() => {
     getIncome();
-  }, []);
+  }, [year]);
 
   const getIncome = async () => {
     setIncomeLoading(true);

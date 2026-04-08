@@ -40,7 +40,7 @@ const useTransactions = (month, year) => {
 
   useEffect(() => {
     getTransactions();
-  }, []);
+  }, [month, year]);
 
   const getTransactions = async () => {
     setTransactionsLoading(true);

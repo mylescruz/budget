@@ -16,7 +16,7 @@ const useMonthIncome = (month, year) => {
 
   useEffect(() => {
     getMonthIncome();
-  }, []);
+  }, [month, year]);
 
   const getMonthIncome = async () => {
     setMonthIncomeRequest({

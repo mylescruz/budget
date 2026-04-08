@@ -48,7 +48,7 @@ const useCategories = (month, year) => {
 
   useEffect(() => {
     getCategories();
-  }, []);
+  }, [month, year]);
 
   const getCategories = async () => {
     setCategoriesLoading(true);
