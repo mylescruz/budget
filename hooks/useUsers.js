@@ -3,20 +3,44 @@ import { useCallback, useEffect, useState } from "react";
 const useUsers = () => {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
+  const [usersRequest, setUsersRequest] = useState({
+    action: null, //  get | update | delete | null
+    status: "idle", // idle | loading | success | error
+    message: null,
+  });
 
   useEffect(() => {
     const getUsers = async () => {
+      setUsersRequest({
+        action: "get",
+        status: "loading",
+        message: "Getting all the Type-A Budget users",
+      });
+
       try {
         const response = await fetch("/api/admin/users");
 
-        if (response.ok) {
-          const result = await response.json();
-          setUsers(result);
-        } else {
-          const result = await response.text();
-          throw new Error(result);
+        if (!response.ok) {
+          const message = await response.text();
+          throw new Error(message);
         }
+
+        const fetchedUsers = await response.json();
+
+        setUsers(fetchedUsers);
+
+        setUsersRequest({
+          action: "get",
+          status: "success",
+          message: null,
+        });
       } catch (error) {
+        setUsersRequest({
+          action: "get",
+          status: "error",
+          message: error.message,
+        });
+
         console.error(error);
       } finally {
         setUsersLoading(false);
@@ -26,78 +50,107 @@ const useUsers = () => {
     getUsers();
   }, []);
 
-  const putUser = useCallback(
-    async (edittedUser) => {
-      try {
-        const response = await fetch("/api/admin/users", {
-          method: "PUT",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(edittedUser),
-        });
+  const putUser = useCallback(async (editedUser) => {
+    setUsersRequest({
+      action: "update",
+      status: "loading",
+      message: "Updating this user's details",
+    });
 
-        if (response.ok) {
-          const updatedUser = await response.json();
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedUser),
+      });
 
-          const updatedUsers = users.map((user) => {
-            if (user.id === updatedUser.id) {
-              return updatedUser;
-            }
-
-            return user;
-          });
-
-          setUsers(updatedUsers);
-        } else {
-          const result = await response.text();
-          throw new Error(result);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setUsersLoading(false);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [users]
-  );
 
-  const deleteUser = useCallback(
-    async (deletedUser) => {
-      try {
-        const response = await fetch("/api/admin/users", {
-          method: "DELETE",
-          headers: {
-            Accept: "application.json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(deletedUser),
-        });
+      const updatedUser = await response.json();
 
-        if (response.ok) {
-          const deletedUser = await response.json();
+      setUsers((prev) =>
+        prev.map((user) => {
+          if (user.id === updatedUser.id) {
+            return updatedUser;
+          }
 
-          const updatedUsers = users.filter((user) => {
-            return user.id !== deletedUser.id;
-          });
+          return user;
+        }),
+      );
 
-          setUsers(updatedUsers);
-          setUsersLoading(false);
-        } else {
-          const result = await response.text();
-          throw new Error(result);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setUsersLoading(false);
+      setUsersRequest({
+        action: "update",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setUsersRequest({
+        action: "update",
+        status: "error",
+        message: error.message,
+      });
+
+      console.error(error);
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
+  const deleteUser = useCallback(async (userToDelete) => {
+    setUsersRequest({
+      action: "delete",
+      status: "loading",
+      message: "Deleting this user's account from Type-A Budget",
+    });
+
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "DELETE",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userToDelete),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
       }
-    },
-    [users]
-  );
 
-  return { users, usersLoading, putUser, deleteUser };
+      const deletedUser = await response.json();
+
+      setUsers((prev) =>
+        prev.filter((user) => {
+          return user.id !== deletedUser.id;
+        }),
+      );
+
+      setUsersRequest({
+        action: "delete",
+        status: "success",
+        message: null,
+      });
+    } catch (error) {
+      setUsersRequest({
+        action: "delete",
+        status: "error",
+        message: error.message,
+      });
+
+      console.error(error);
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
+  return { users, usersLoading, usersRequest, putUser, deleteUser };
 };
 
 export default useUsers;
