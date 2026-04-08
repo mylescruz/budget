@@ -14,7 +14,8 @@ import { useCallback, useEffect, useState } from "react";
 const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState([]);
   const [budgetMonthsLoading, setBudgetMonthsLoading] = useState(true);
-  const [budgetMonthsReq, setBudgetMonthsReq] = useState({
+  const [budgetMonthsRequest, setBudgetMonthsRequest] = useState({
+    action: null, //  get | create | update | delete | null
     status: "idle", // idle | loading | success | error
     message: null,
   });
@@ -25,7 +26,8 @@ const useBudgetMonths = () => {
 
   const getBudgetMonths = useCallback(async () => {
     setBudgetMonthsLoading(true);
-    setBudgetMonthsReq({
+    setBudgetMonthsRequest({
+      action: "get",
       status: "loading",
       message: "Getting your budget months",
     });
@@ -43,11 +45,19 @@ const useBudgetMonths = () => {
 
       setBudgetMonths(fetchedMonths);
 
-      setBudgetMonthsReq({ status: "success", message: null });
+      setBudgetMonthsRequest({
+        action: "get",
+        status: "success",
+        message: null,
+      });
     } catch (error) {
       console.error(error);
 
-      setBudgetMonthsReq({ status: "error", message: error.message });
+      setBudgetMonthsRequest({
+        action: "get",
+        status: "error",
+        message: error.message,
+      });
 
       setBudgetMonths(null);
     } finally {
@@ -55,7 +65,7 @@ const useBudgetMonths = () => {
     }
   }, []);
 
-  return { budgetMonths, budgetMonthsLoading, budgetMonthsReq };
+  return { budgetMonths, budgetMonthsLoading, budgetMonthsRequest };
 };
 
 export default useBudgetMonths;
