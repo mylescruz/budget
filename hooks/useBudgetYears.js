@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 
-// Fetches each year a user has had a budget stored in the app
-// GET response
-/*
-  {
-    years: [year],
-    current,
-    max,
-    min
-  };
-*/
+// Fetches and returns all budget years associated with the user.
+// Also provides the current year and the range of available years.
+//
+// Return value:
+// {
+//   years: number[],   // all years with stored budgets
+//   current: number,   // currently selected or active year
+//   min: number,       // earliest available year
+//   max: number        // latest available year
+// }
 
 const useBudgetYears = () => {
   const [budgetYears, setBudgetYears] = useState([]);

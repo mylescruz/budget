@@ -1,5 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 
+// Fetches and returns all users in the system.
+//
+// Return value:
+// [
+//   {
+//     id: string,               // unique identifier for the user
+//     name: string,             // full name of the user
+//     username: string,         // unique username
+//     email: string,            // email address
+//     role: string,             // "Admin", "User")
+//     created_date: string,     // account creation date
+//     onboarded: boolean        // true if user has completed onboarding
+//   }
+// ]
+
 const useUsers = () => {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);

@@ -3,6 +3,23 @@ import dollarsToCents from "@/helpers/dollarsToCents";
 import { INCOME_TYPES } from "@/lib/constants/income";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+// Fetches and returns the user's income sources for a given month and year.
+// Each income source includes its amount in USD. Paycheck sources include additional fields.
+//
+// Return value:
+// [
+//   {
+//     _id: string,
+//     date: string,              // date the income source was received
+//     type: string,              // "Paycheck" | "Gift" | "Sale" | "Unemployment"
+//     name: string,
+//     description: string,
+//     amount: number,            // in USD
+//     gross?: number,            // in USD, only for type "Paycheck"
+//     deductions?: number        // in USD, only for type "Paycheck"
+//   }
+// ]
+
 const useIncome = (year) => {
   const [income, setIncome] = useState([]);
   const [incomeLoading, setIncomeLoading] = useState(true);

@@ -1,5 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 
+// Fetches and returns the current user's basic profile information.
+//
+// Return value:
+// {
+//   name: string,             // full name of the user
+//   username: string,         // unique username
+//   email: string,            // email address
+//   role: string,             // "Admin" | "User"
+//   created_date: string,     // account creation date
+//   onboarded: boolean        // true if user has completed onboarding
+// }
+
 const useUser = () => {
   const [user, setUser] = useState({});
   const [userLoading, setUserLoading] = useState(false);

@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
+// Fetches and returns the user's total income for a given month and year.
+// Returns 0 if no income sources exist for the month.
+//
+// Return value:
+// number  // total income in USD
+
 const useMonthIncome = (month, year) => {
   const [monthIncome, setMonthIncome] = useState(0);
   const [monthIncomeLoading, setMonthIncomeLoading] = useState(true);

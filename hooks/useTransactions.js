@@ -6,6 +6,29 @@ import {
 } from "@/lib/constants/transactions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+// Fetches and returns all transactions for the user for a given month and year.
+// Each transaction includes its amount in USD and optional category information.
+//
+// Return value:
+// [
+//   {
+//      type: string,
+//      date: string,
+//      createdTS: number,
+//      store?: string,              // only if type "Expense"
+//      items?: string,              // only if type "Expense"
+//      categoryId?: string,         // only if type "Expense"
+//      fromAccount?: string,        // only if type "Transfer"
+//      toAccount?: string,          // only if type "Transfer"
+//      description: string,         // only if type "Transfer"
+//      amount: number,              // in USD
+//      category?: string,           // only if type "Expense"
+//      color?: string,              // only if type "Expense"
+//      fixed?: boolean,             // only if type "Expense"
+//      parentCategoryId?: string    // only if type "Expense" and if transaction is correlated to a subcategory
+//   }
+// ]
+
 const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState([]);
   const [transactionsLoading, setTransactionsLoading] = useState(true);

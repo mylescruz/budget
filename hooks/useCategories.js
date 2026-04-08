@@ -7,6 +7,37 @@ import addDecimalValues from "@/helpers/addDecimalValues";
 import { FUN_MONEY } from "@/lib/constants/categories";
 import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 
+// Fetches and returns the user's categories for a given month and year.
+// Each category includes its budget, actual spending, and any nested subcategories.
+// Fixed categories may include additional scheduling fields.
+//
+// Return value:
+// [
+//   {
+//     _id: string,
+//     name: string,
+//     color: string,
+//     fixed: boolean,
+//     budget: number,              // in USD
+//     actual: number,              // in USD (includes subcategories)
+//     subcategories: [
+//       {
+//         _id: string,
+//         name: string,
+//         fixed: boolean,
+//         parentCategoryId: string,
+//         budget?: number,         // in USD, only if fixed
+//         actual: number,          // in USD
+//         frequency?: string,      // "Monthly" | "Semi-Annually" | "Annually", only if fixed
+//         dueDate?: number         // only if fixed
+//       }
+//     ],
+//     frequency?: string,          // "Monthly" | "Semi-Annually" | "Annually", only if fixed with no subcategories:
+//     dueDate?: number,            // only if fixed with no subcategories
+//     noDelete?: boolean           // present for protected category: Fun Money
+//   }
+// ]
+
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);

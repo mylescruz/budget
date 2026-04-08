@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 
-// Fetches each month a user has had a budget stored in the app
-// GET response
-/*
-  {
-    months: [{ month, year }],
-    current: { month, year },
-    max: { month, year },
-    min: { month, year },
-  };
-*/
+// Fetches and returns all months in which the user has stored budgets.
+// Also provides the current month and the range of available months.
+//
+// Return value:
+// {
+//   months: { month: number, year: number }[], // all available budget months
+//   current: { month: number, year: number },  // active/selected month
+//   min: { month: number, year: number },      // earliest available month
+//   max: { month: number, year: number }       // latest available month
+// }
 
 const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState([]);
