@@ -39,7 +39,6 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState(null);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesRequest, setCategoriesRequest] = useState({
     action: null, //  get | create | update | delete | null
     status: "idle", // idle | loading | success | error
@@ -51,8 +50,6 @@ const useCategories = (month, year) => {
   }, [month, year]);
 
   const getCategories = async () => {
-    setCategoriesLoading(true);
-
     setCategoriesRequest({
       action: "get",
       status: "loading",
@@ -80,8 +77,6 @@ const useCategories = (month, year) => {
         status: "error",
         message: error.message,
       });
-    } finally {
-      setCategoriesLoading(false);
     }
   };
 
@@ -124,8 +119,6 @@ const useCategories = (month, year) => {
       });
 
       throw new Error(error);
-    } finally {
-      setCategoriesLoading(false);
     }
   };
 
@@ -177,8 +170,6 @@ const useCategories = (month, year) => {
       });
 
       throw new Error(error);
-    } finally {
-      setCategoriesLoading(false);
     }
   };
 
@@ -222,8 +213,6 @@ const useCategories = (month, year) => {
       });
 
       throw new Error(error);
-    } finally {
-      setCategoriesLoading(false);
     }
   };
 
@@ -498,7 +487,6 @@ const useCategories = (month, year) => {
 
   return {
     categories,
-    categoriesLoading,
     categoriesRequest,
     getCategories,
     postCategory,

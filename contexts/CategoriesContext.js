@@ -9,7 +9,6 @@ export const CategoriesContext = createContext({});
 export const CategoriesProvider = ({ children, dateInfo }) => {
   const {
     categories,
-    categoriesLoading,
     categoriesRequest,
     getCategories,
     postCategory,
@@ -25,7 +24,6 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
     <CategoriesContext.Provider
       value={{
         categories,
-        categoriesLoading,
         categoriesRequest,
         getCategories,
         postCategory,
