@@ -32,8 +32,6 @@ import { useEffect, useState } from "react";
 
 const usePreviousCategories = (month, year) => {
   const [previousCategories, setPreviousCategories] = useState(null);
-  const [previousCategoriesLoading, setPreviousCategoriesLoading] =
-    useState(true);
   const [previousCategoriesRequest, setPreviousCategoriesRequest] = useState({
     action: null, //  get | null
     status: "idle", // idle | loading | success | error
@@ -77,14 +75,11 @@ const usePreviousCategories = (month, year) => {
       });
 
       console.error(error);
-    } finally {
-      setPreviousCategoriesLoading(false);
     }
   };
 
   return {
     previousCategories,
-    previousCategoriesLoading,
     previousCategoriesRequest,
   };
 };
