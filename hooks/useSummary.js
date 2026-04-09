@@ -75,7 +75,7 @@ import { useEffect, useState } from "react";
 // }
 
 const useSummary = (year) => {
-  const [summary, setSummary] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryRequest, setSummaryRequest] = useState({
     action: null, //  get | null
@@ -119,7 +119,6 @@ const useSummary = (year) => {
         message: error.message,
       });
 
-      setSummary(null);
       console.error(error);
     } finally {
       setSummaryLoading(false);

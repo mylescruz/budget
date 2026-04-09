@@ -10,51 +10,48 @@ import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSu
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 
 const InnerSummaryLayout = ({ year }) => {
-  const { summary, summaryLoading } = useSummary(year);
+  const { summary, summaryRequest } = useSummary(year);
 
-  if (summaryLoading) {
-    return <LoadingIndicator />;
-  } else if (summary.categories.length === 0 || !summary) {
-    return (
-      <Row className="text-danger fw-bold text-center">
-        <p>
-          &#9432; There was an error loading your summary for the year. Please
-          try again later!
-        </p>
-      </Row>
-    );
+  if (summaryRequest.action === "get" && summaryRequest.status === "loading") {
+    return <LoadingIndicator message={summaryRequest.message} />;
   } else {
     return (
       <Container>
-        <Row className="mx-auto d-flex justify-content-center align-items-center col-12 col-xl-10">
-          <div className="my-4 text-center">
-            <h3>Year Totals</h3>
-            <TotalsCards summary={summary} />
-          </div>
+        {summary ? (
+          <Row className="mx-auto d-flex justify-content-center align-items-center col-12 col-xl-10">
+            <div className="my-4 text-center">
+              <h3>Year Totals</h3>
+              <TotalsCards summary={summary} />
+            </div>
 
-          <div className="my-4">
-            <SpendingInsightsLayout
-              categories={summary.categories}
-              months={summary.months}
-              transactions={summary.transactions}
-            />
-          </div>
+            <div className="my-4">
+              <SpendingInsightsLayout
+                categories={summary.categories}
+                months={summary.months}
+                transactions={summary.transactions}
+              />
+            </div>
 
-          <div className="my-4">
-            <h3 className="text-center">Categories Breakdown</h3>
-            <CategoryPieChart categories={summary.categories} />
-            <CategorySummaryTable
-              categories={summary.categories}
-              year={year}
-              monthsLength={summary.monthsLength}
-            />
-          </div>
+            <div className="my-4">
+              <h3 className="text-center">Categories Breakdown</h3>
+              <CategoryPieChart categories={summary.categories} />
+              <CategorySummaryTable
+                categories={summary.categories}
+                year={year}
+                monthsLength={summary.monthsLength}
+              />
+            </div>
 
-          <div className="my-4">
-            <h3 className="text-center">{year} Transactions</h3>
-            <TransactionsSummaryLayout transactions={summary.transactions} />
-          </div>
-        </Row>
+            <div className="my-4">
+              <h3 className="text-center">{year} Transactions</h3>
+              <TransactionsSummaryLayout transactions={summary.transactions} />
+            </div>
+          </Row>
+        ) : (
+          <p className="mt-4 text-danger fw-bold text-center">
+            &#9432; {summaryRequest.message}
+          </p>
+        )}
       </Container>
     );
   }
