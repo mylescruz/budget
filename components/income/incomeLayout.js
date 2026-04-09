@@ -13,7 +13,7 @@ import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
 const InnerIncomeLayout = ({ year }) => {
   const {
     income,
-    incomeLoading,
+    incomeRequest,
     postIncome,
     putIncome,
     deleteIncome,
@@ -25,6 +25,10 @@ const InnerIncomeLayout = ({ year }) => {
   const [chosenSource, setChosenSource] = useState(null);
 
   const formattedIncome = useMemo(() => {
+    if (!income) {
+      return null;
+    }
+
     return income.map((source) => {
       return {
         _id: source._id,
@@ -56,18 +60,12 @@ const InnerIncomeLayout = ({ year }) => {
     setModal("incomeDetails");
   };
 
-  if (incomeLoading) {
-    return <LoadingIndicator />;
-  } else if (!income) {
-    return (
-      <div className="text-danger fw-bold text-center">
-        &#9432; There was an error loading your income. Please try again later!
-      </div>
-    );
+  if (incomeRequest.action === "get" && incomeRequest.status === "loading") {
+    return <LoadingIndicator message={incomeRequest.message} />;
   } else {
     return (
       <Container>
-        <IncomeTotalsLayout incomeTotals={incomeTotals} />
+        {income && <IncomeTotalsLayout incomeTotals={incomeTotals} />}
 
         <Container className="text-center mt-2">
           <Button variant="primary" onClick={openAddModal}>
@@ -75,11 +73,7 @@ const InnerIncomeLayout = ({ year }) => {
           </Button>
         </Container>
 
-        {income.length === 0 ? (
-          <div className="mt-4 fw-bold text-center">
-            &#9432; You don't have any income yet! Enter a new source above.
-          </div>
-        ) : (
+        {income ? (
           <Row className="d-flex align-items-center col-12 col-xl-10 mt-2 mb-4 mx-auto">
             <DataTableLayout
               data={formattedIncome}
@@ -88,6 +82,10 @@ const InnerIncomeLayout = ({ year }) => {
               openDetails={openIncomeDetails}
             />
           </Row>
+        ) : (
+          <p className="mt-4 text-danger fw-bold text-center">
+            &#9432; {incomeRequest.message}
+          </p>
         )}
 
         {modal === "addIncome" && (
@@ -131,7 +129,7 @@ const InnerIncomeLayout = ({ year }) => {
   }
 };
 
-const IncomeLayout = ({ dateInfo }) => {
+const IncomeLayout = () => {
   const today = new Date();
 
   const [year, setYear] = useState(today.getFullYear());

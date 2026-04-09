@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     case "POST":
       return addIncome(req, res, incomeContext);
     default:
-      es.status(405).send(`${req.method} method not allowed`);
+      return res.status(405).send(`${req.method} method not allowed`);
   }
 }
 

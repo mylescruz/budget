@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from "react";
 // ]
 
 const useIncome = (year) => {
-  const [income, setIncome] = useState([]);
+  const [income, setIncome] = useState(null);
   const [incomeLoading, setIncomeLoading] = useState(true);
   const [incomeRequest, setIncomeRequest] = useState({
     action: null, //  get | create | update | delete | null
@@ -60,7 +60,6 @@ const useIncome = (year) => {
         message: null,
       });
     } catch (error) {
-      setIncome(null);
       console.error(error);
 
       setIncomeRequest({
