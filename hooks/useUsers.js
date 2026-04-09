@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 
 const useUsers = () => {
   const [users, setUsers] = useState(null);
-  const [usersLoading, setUsersLoading] = useState(true);
   const [usersRequest, setUsersRequest] = useState({
     action: null, //  get | update | delete | null
     status: "idle", // idle | loading | success | error
@@ -60,8 +59,6 @@ const useUsers = () => {
       });
 
       console.error(error);
-    } finally {
-      setUsersLoading(false);
     }
   };
 
@@ -112,8 +109,6 @@ const useUsers = () => {
       });
 
       console.error(error);
-    } finally {
-      setUsersLoading(false);
     }
   };
 
@@ -160,12 +155,10 @@ const useUsers = () => {
       });
 
       console.error(error);
-    } finally {
-      setUsersLoading(false);
     }
   };
 
-  return { users, usersLoading, usersRequest, putUser, deleteUser };
+  return { users, usersRequest, putUser, deleteUser };
 };
 
 export default useUsers;

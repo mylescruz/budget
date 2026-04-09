@@ -4,7 +4,7 @@ import UsersTableRow from "./usersTableRow";
 import LoadingIndicator from "@/components/ui/loadingIndicator";
 
 const UsersLayout = () => {
-  const { users, usersLoading, usersRequest, putUser, deleteUser } = useUsers();
+  const { users, usersRequest, putUser, deleteUser } = useUsers();
 
   if (usersRequest.action === "get" && usersRequest.status === "loading") {
     return <LoadingIndicator message={usersRequest.message} />;
