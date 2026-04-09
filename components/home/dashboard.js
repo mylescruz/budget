@@ -8,10 +8,7 @@ import {
 } from "@/contexts/CategoriesContext";
 import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
-import {
-  TransactionsContext,
-  TransactionsProvider,
-} from "@/contexts/TransactionsContext";
+import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../ui/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
@@ -61,10 +58,12 @@ const InnerDashboard = ({ dateInfo }) => {
   };
 
   if (
-    categoriesRequest.status === "loading" ||
-    monthIncomeRequest.status === "loading"
+    (categoriesRequest.action === "get" &&
+      categoriesRequest.status === "loading") ||
+    (monthIncomeRequest.action === "get" &&
+      monthIncomeRequest.status === "loading")
   ) {
-    return <LoadingIndicator />;
+    return <LoadingIndicator message={"Loading your budget details"} />;
   } else {
     return (
       <Container>
