@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 
 const useUser = () => {
   const [user, setUser] = useState({});
-  const [userLoading, setUserLoading] = useState(false);
   const [userRequest, setUserRequest] = useState({
     action: null, //  get | update | delete | null
     status: "idle", // idle | loading | success | error
@@ -33,7 +32,6 @@ const useUser = () => {
     });
 
     try {
-      setUserLoading(true);
       const response = await fetch("/api/user");
 
       if (!response.ok) {
@@ -58,8 +56,6 @@ const useUser = () => {
 
       setUser(null);
       console.error(error);
-    } finally {
-      setUserLoading(false);
     }
   };
 
@@ -102,8 +98,6 @@ const useUser = () => {
 
       // Send the error back to the component to show the user
       throw new Error(error.message);
-    } finally {
-      setUserLoading(false);
     }
   };
 
@@ -146,12 +140,10 @@ const useUser = () => {
 
       // Send the error back to the component to show the user
       throw new Error(error.message);
-    } finally {
-      setUserLoading(false);
     }
   };
 
-  return { user, userLoading, userRequest, putUser, deleteUser };
+  return { user, userRequest, putUser, deleteUser };
 };
 
 export default useUser;
