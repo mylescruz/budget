@@ -1,17 +1,24 @@
 import handleObjectInput from "@/helpers/handleObjectInput";
+import Link from "next/link";
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 
-const inputValidation = {
-  username: { valid: true, error: "" },
-  email: { valid: true, error: "" },
-  password: { valid: true, error: "" },
-  passwordMatch: { valid: true, error: "" },
+const errorFields = {
+  message: null,
+  username: null,
+  email: null,
+  password: null,
+  passwordMatch: null,
 };
 
-const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
-  const [validInput, setValidInput] = useState(inputValidation);
-
+const CreateUserForm = ({
+  newUser,
+  setNewUser,
+  formErrors,
+  setFormErrors,
+  setModal,
+  createUser,
+}) => {
   const checkUsernameLength = (username) => {
     const regex = /^[a-zA-Z0-9]{4,}$/;
     return regex.test(username);
@@ -40,61 +47,66 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
 
     setModal("loading");
 
-    let validUser = true;
-    const errors = { ...inputValidation };
+    let validInput = true;
+    const errors = { ...errorFields };
 
     // Check if entered email is valid
     if (!checkEmail(newUser.email)) {
-      errors.email = { valid: false, error: "Not a valid email address" };
+      errors.email = "Not a valid email address";
 
-      validUser = false;
+      validInput = false;
     }
 
     // Check if the username is a valid length
     const validLength = checkUsernameLength(newUser.username);
     if (!validLength) {
-      errors.username = {
-        valid: false,
-        error: "A username must have a minimum four alphanumeric characters",
-      };
+      errors.username =
+        "A username must have a minimum four alphanumeric characters";
 
-      validUser = false;
+      validInput = false;
     }
 
     // Check if the username is already taken
     const userExists = await checkUsername(newUser.username);
     if (userExists) {
-      errors.username = { valid: false, error: "Username is already taken" };
+      errors.username = `${newUser.username} is already taken`;
 
-      validUser = false;
+      validInput = false;
     }
 
     // Check if entered password is valid
     if (!checkPassword(newUser.password)) {
-      errors.password = {
-        valid: false,
-        error: "This password doesn't fit the requirements",
-      };
+      errors.password = "This password doesn't fit the requirements";
 
-      validUser = false;
+      validInput = false;
     }
 
     // Check if entered password and password confirmation match
     if (newUser.password !== newUser.confirmPassword) {
-      errors.passwordMatch = { valid: false, error: "Passwords do not match" };
+      errors.passwordMatch = "Passwords do not match";
 
-      validUser = false;
+      validInput = false;
     }
 
-    if (!validUser) {
+    if (!validInput) {
       setModal("none");
 
-      setValidInput(errors);
+      setFormErrors({
+        ...errors,
+        message:
+          "Some of the information you entered needs to be fixed. Please update it to continue.",
+      });
 
       return;
+    } else {
+      setFormErrors({ ...errorFields });
     }
 
-    await createUser();
+    try {
+      await createUser();
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (
@@ -117,11 +129,11 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               value={newUser.email}
               placeholder="Email"
               onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={!validInput.email.valid}
+              isInvalid={formErrors.email}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validInput.email.error}
+              {formErrors.email}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="username" className="h-100 my-2">
@@ -130,11 +142,11 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               value={newUser.username}
               placeholder="Username"
               onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={!validInput.username.valid}
+              isInvalid={formErrors.username}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validInput.username.error}
+              {formErrors.username}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="password" className="h-100 my-2">
@@ -143,11 +155,11 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               value={newUser.password}
               placeholder="Password"
               onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={!validInput.password.valid}
+              isInvalid={formErrors.password}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validInput.password.error}
+              {formErrors.password}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="confirmPassword" className="h-100 my-2">
@@ -156,11 +168,11 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               value={newUser.confirmPassword}
               placeholder="Confirm Password"
               onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={!validInput.passwordMatch.valid}
+              isInvalid={formErrors.passwordMatch}
               required
             />
             <Form.Control.Feedback type="invalid">
-              {validInput.passwordMatch.error}
+              {formErrors.passwordMatch}
             </Form.Control.Feedback>
             <Form.Text>
               Your password must include:
@@ -173,10 +185,19 @@ const CreateUserForm = ({ newUser, setNewUser, setModal, createUser }) => {
               </ul>
             </Form.Text>
           </Form.Group>
+          {formErrors.message && (
+            <p className="text-center text-danger small">
+              {formErrors.message}
+            </p>
+          )}
           <Button className="w-100" type="submit">
             Sign Up
           </Button>
         </Form>
+        <Link href="/auth/signIn" className="mt-2 text-center small">
+          Already have an account?{" "}
+          <span className="text-primary text-decoration-underline">Login</span>
+        </Link>
       </Card>
     </Container>
   );

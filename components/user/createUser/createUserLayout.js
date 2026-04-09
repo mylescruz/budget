@@ -4,6 +4,14 @@ import { useRouter } from "next/router";
 import { Button, Modal, Spinner } from "react-bootstrap";
 import { signIn } from "next-auth/react";
 
+const errorFields = {
+  message: null,
+  username: null,
+  email: null,
+  password: null,
+  passwordMatch: null,
+};
+
 const CreateUserLayout = ({ csrfToken }) => {
   const router = useRouter();
 
@@ -14,40 +22,14 @@ const CreateUserLayout = ({ csrfToken }) => {
     password: "",
     confirmPassword: "",
   });
+  const [formErrors, setFormErrors] = useState(errorFields);
   const [modal, setModal] = useState("none");
 
   const closeLoadingModal = () => {
     setModal("none");
   };
 
-  const closeErrorModal = () => {
-    setModal("none");
-  };
-
-  const closeLoginModal = () => {
-    router.push("/auth/signIn");
-
-    setModal("none");
-  };
-
-  // Complete the user creation by adding the user's details to the database
-  const createUser = async () => {
-    // Add all the users information in the onboarding API endpoint
-    try {
-      await fetch("/api/createUser", {
-        method: "POST",
-        headers: {
-          Accept: "application.json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-    } catch (error) {
-      setModal("error");
-      return;
-    }
-
-    // Once the user is created, log the user in with the new credentials
+  const autoLogin = async () => {
     try {
       const response = await signIn("credentials", {
         username: newUser.username,
@@ -56,16 +38,43 @@ const CreateUserLayout = ({ csrfToken }) => {
         csrfToken,
       });
 
-      // Take user to the home page after signing in
-      if (response.ok) {
-        router.push("/onboarding");
-      } else {
-        throw new Error();
+      if (!response.ok) {
+        throw new Error(
+          "There was an error logging you into your new account. Try logging in directly using our login page",
+        );
       }
 
-      closeLoadingModal();
+      // Take user to the home page after signing in
+      router.push("/onboarding");
     } catch (error) {
-      setModal("login");
+      throw error;
+    }
+  };
+
+  // Complete the user creation by adding the user's details to the database
+  const createUser = async () => {
+    // Add all the users information in the onboarding API endpoint
+    try {
+      const response = await fetch("/api/createUser", {
+        method: "POST",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+
+        throw new Error(message);
+      }
+
+      await autoLogin();
+    } catch (error) {
+      setFormErrors((prev) => ({ ...prev, message: error.message }));
+    } finally {
+      closeLoadingModal();
     }
   };
 
@@ -74,6 +83,8 @@ const CreateUserLayout = ({ csrfToken }) => {
       <CreateUserForm
         newUser={newUser}
         setNewUser={setNewUser}
+        formErrors={formErrors}
+        setFormErrors={setFormErrors}
         setModal={setModal}
         createUser={createUser}
       />
@@ -84,31 +95,6 @@ const CreateUserLayout = ({ csrfToken }) => {
           <div className="d-flex justify-content-center align-items-center">
             <Spinner animation="border" variant="primary" />
           </div>
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={modal === "error"} onHide={closeErrorModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="text-danger fw-bold">
-            Error Occurred
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center fw-bold text-danger">
-          <p>An error occurred while creating your account.</p>
-          <p>Please try again later!</p>
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={modal === "login"} onHide={closeLoginModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="fw-bold">Login Error</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center fw-bold">
-          <p>There was an issue with direct login.</p>
-          <p>Please sign in using your new credentials below.</p>
-          <Button variant="primary" onClick={closeLoginModal}>
-            Login
-          </Button>
         </Modal.Body>
       </Modal>
     </>
