@@ -76,7 +76,6 @@ import { useEffect, useState } from "react";
 
 const useSummary = (year) => {
   const [summary, setSummary] = useState(null);
-  const [summaryLoading, setSummaryLoading] = useState(true);
   const [summaryRequest, setSummaryRequest] = useState({
     action: null, //  get | null
     status: "idle", // idle | loading | success | error
@@ -88,7 +87,6 @@ const useSummary = (year) => {
   }, [year]);
 
   const getSummary = async () => {
-    setSummaryLoading(true);
     setSummaryRequest({
       action: "get",
       status: "loading",
@@ -120,8 +118,6 @@ const useSummary = (year) => {
       });
 
       console.error(error);
-    } finally {
-      setSummaryLoading(false);
     }
   };
 
