@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 
 const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
   const [screen, setScreen] = useState("categories");
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [onboardingError, setOnboardingError] = useState(null);
   const [modal, setModal] = useState("none");
 
   const router = useRouter();
@@ -41,7 +41,7 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
 
     // Add all the users information in the onboarding API endpoint
     try {
-      await fetch("/api/onboarding", {
+      const response = await fetch("/api/onboarding", {
         method: "POST",
         headers: {
           Accept: "application.json",
@@ -50,15 +50,19 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
         body: JSON.stringify(newUser),
       });
 
-      setErrorOccurred(false);
+      if (!response.ok) {
+        const message = await response.text();
+
+        throw new Error(message);
+      }
+
+      setOnboardingError(null);
 
       await update({ onboarded: true });
 
       router.push("/");
     } catch (error) {
-      setErrorOccurred(true);
-      console.error(error);
-      return;
+      setOnboardingError(error.message);
     } finally {
       setModal("none");
     }
@@ -87,7 +91,10 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
         )}
         {screen === "income" && <IncomeSection {...incomeSectionProps} />}
         {screen === "complete" && (
-          <CompleteSection finishOnboarding={finishOnboarding} />
+          <CompleteSection
+            finishOnboarding={finishOnboarding}
+            onboardingError={onboardingError}
+          />
         )}
 
         <Row className="col-6 mx-auto text-center my-2">
@@ -119,11 +126,6 @@ const InnerOnboardingLayout = ({ newUser, setNewUser, update }) => {
           </div>
         </Modal.Body>
       </Modal>
-
-      <ErrorModal
-        errorOccurred={errorOccurred}
-        setErrorOccurred={setErrorOccurred}
-      />
     </>
   );
 };
