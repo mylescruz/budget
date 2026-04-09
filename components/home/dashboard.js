@@ -18,7 +18,7 @@ import AddTransactionsModal from "../budget/transactions/addTransactionsModal/ad
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
 
   const { categories, categoriesRequest } = useContext(CategoriesContext);
   const { monthIncome, monthIncomeRequest } = useMonthIncome(
@@ -58,6 +58,7 @@ const InnerDashboard = ({ dateInfo }) => {
   };
 
   if (
+    sessionStatus === "loading" ||
     (categoriesRequest.action === "get" &&
       categoriesRequest.status === "loading") ||
     (monthIncomeRequest.action === "get" &&
@@ -68,7 +69,7 @@ const InnerDashboard = ({ dateInfo }) => {
     return (
       <Container>
         <Row className="d-flex mx-auto">
-          <h2>Welcome {session.user.name}!</h2>
+          <h2>{session ? `Welcome ${session.user.name}!` : "Welcome!"}</h2>
           <Col className="col-12 col-xl-8">
             <Card className="my-2 card-background">
               <Card.Body>
