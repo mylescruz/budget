@@ -74,7 +74,7 @@ async function getBudgetMonths(res, { categoriesCol, username }) {
     return res
       .status(500)
       .send(
-        "There was a problem getting past budget months. Please try again later!",
+        "There was a problem getting past budget data. Please try again later!",
       );
   }
 }
