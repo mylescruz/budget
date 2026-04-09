@@ -154,7 +154,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
     return res
       .status(500)
       .send(
-        `An error occurred while getting the previous categories for ${username}`,
+        "We're unable to load your previous categories at the moment. Please try again later!",
       );
   }
 }

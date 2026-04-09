@@ -105,7 +105,9 @@ async function getTransactions(
     console.error(`GET transactions request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while getting transactions for ${username}`);
+      .send(
+        "We're unable to load your transactions at the moment. Please try again later!",
+      );
   }
 }
 
@@ -214,7 +216,9 @@ async function addTransactions(
     console.error(`POST transactions request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while adding a transaction for ${username}`);
+      .send(
+        "We're unable to add this new transaction at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

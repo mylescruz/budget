@@ -267,7 +267,9 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     console.error(`PUT categories request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while deleting a category for ${username}`);
+      .send(
+        "We're unable to update this category at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }
@@ -322,7 +324,9 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
     console.error(`DELETE category request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while deleting a category for ${username}`);
+      .send(
+        "We're unable to delete this category at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(
-          "An error occurred while retrieving the users. Please try again later!",
+          "We're unable to load the users at the moment. Please try again later!",
         );
     }
   } else if (method === "PUT") {
@@ -88,7 +88,7 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(
-          "An error occurred while editting the user. Please try again later!",
+          "We're unable to edit this user at the moment. Please try again later!",
         );
     }
   } else if (method === "DELETE") {
@@ -119,7 +119,7 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(
-          "An error occurred while deleting the user. Please try again later!",
+          "We're unable to delete this user at the moment. Please try again later!",
         );
     }
   } else {

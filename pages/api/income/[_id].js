@@ -133,7 +133,9 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
     console.error(`PUT income request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while editting a source of income for ${username}`);
+      .send(
+        "We're unable to edit this source of income at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }
@@ -167,7 +169,9 @@ async function deleteIncome(req, res, { client, incomeCol, username }) {
     console.error(`DELETE income request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while deleting a source of income for ${username}`);
+      .send(
+        "We're unable to delete this source of income at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

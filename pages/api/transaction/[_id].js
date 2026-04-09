@@ -149,7 +149,9 @@ async function updateTransaction(
     console.error(`PUT transaction request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while editing a transaction for ${username}`);
+      .send(
+        "We're unable to update this transaction at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }
@@ -175,7 +177,9 @@ async function deleteTransaction(
     );
     return res
       .status(500)
-      .send(`Error occurred while deleting a transaction for ${username}`);
+      .send(
+        "We're unable to delete this transaction at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

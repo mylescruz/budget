@@ -91,7 +91,9 @@ async function getYearSummary(
     console.error(`GET summary request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while getting the summary for ${username}`);
+      .send(
+        `We're unable to load your budget's summary for ${year}. Please try again later!`,
+      );
   }
 }
 

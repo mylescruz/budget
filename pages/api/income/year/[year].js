@@ -66,7 +66,9 @@ async function getIncome(req, res, { incomeCol, username }) {
     console.error(`GET income request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while getting the income for ${username}`);
+      .send(
+        "We're unable to load your income at the moment. Please try again later!",
+      );
   }
 }
 
@@ -193,7 +195,9 @@ async function addIncome(req, res, { client, incomeCol, username }) {
     console.error(`POST income request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occured while adding a source of income for ${username}`);
+      .send(
+        "We're unable to add this source of income at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

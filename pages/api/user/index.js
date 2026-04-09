@@ -57,7 +57,7 @@ async function getUser(res, { usersCol, username }) {
     return res
       .status(500)
       .send(
-        "An error occurred while getting your account info. Please try again later!",
+        "We're unable to load your account details at the moment. Please try again later!",
       );
   }
 }
@@ -117,7 +117,7 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
     return res
       .status(500)
       .send(
-        "An error occurred while updating your account. Please try again later!",
+        "We're unable to update your account at the moment. Please try again later!",
       );
   } finally {
     await mongoSession.endSession();
@@ -165,7 +165,7 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
     return res
       .status(500)
       .send(
-        "An error occurred while deleting your account. Please try again later!",
+        "Sorry! We're unable to delete your account at the moment. Please try again later!",
       );
   } finally {
     await mongoSession.endSession();

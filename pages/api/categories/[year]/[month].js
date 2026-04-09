@@ -62,7 +62,9 @@ async function getCategories(req, res, { client, categoriesCol, username }) {
     console.error(`GET categories request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while getting categories for ${username}`);
+      .send(
+        "We're unable to load your categories at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }
@@ -224,7 +226,9 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     console.error(`POST categories request failed for ${username}: ${error}`);
     return res
       .status(500)
-      .send(`Error occurred while adding a category for ${username}`);
+      .send(
+        "We're unable to add this category at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

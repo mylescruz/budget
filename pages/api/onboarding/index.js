@@ -164,7 +164,11 @@ async function createAccount(
     res.status(200).json(insertedUser);
   } catch (error) {
     console.error(`POST onboarding request failed: ${error}`);
-    res.status(500).send(`Error occured while onboarding this new user`);
+    res
+      .status(500)
+      .send(
+        "Sorry! We're unable to onboard you at the moment. Please try again later!",
+      );
   } finally {
     await mongoSession.endSession();
   }

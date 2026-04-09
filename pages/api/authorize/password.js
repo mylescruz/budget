@@ -76,7 +76,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
     return res
       .status(500)
       .send(
-        "An error occurred while authorizing this user's credentials. Please try again later!",
+        "We're unable to edit verify your credentials at the moment. Please try again later!",
       );
   }
 }

@@ -39,7 +39,11 @@ export default async function handler(req, res) {
       // Send the income for the month back to the client
       return res.status(200).send(monthIncome);
     } catch (error) {
-      return res.status(500).send("This month's income is not available");
+      return res
+        .status(500)
+        .send(
+          "We're unable to load this month's income at the moment. Please try again later!",
+        );
     }
   } else {
     console.error(`${method} method is not allowed`);

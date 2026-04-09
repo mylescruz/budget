@@ -37,7 +37,11 @@ async function createNewUser(req, res, usersCol) {
     res.status(200).json(insertedUser);
   } catch (error) {
     console.error(`POST createUser request failed: ${error}`);
-    res.status(500).send(`Error occured while creating this new user`);
+    res
+      .status(500)
+      .send(
+        "Sorry! We're unable to create your new account at the moment. Please try again later!",
+      );
   }
 }
 

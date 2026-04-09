@@ -34,7 +34,7 @@ async function checkUsername(req, res, usersCol) {
     return res
       .status(500)
       .send(
-        "An error occurred while checking if this username exists. Please try again later!"
+        "We're unable to check if this username is taken at the moment. Please try again later!",
       );
   }
 }
