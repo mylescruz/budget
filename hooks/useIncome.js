@@ -23,8 +23,8 @@ import { useEffect, useMemo, useState } from "react";
 const useIncome = (year) => {
   const [income, setIncome] = useState(null);
   const [incomeRequest, setIncomeRequest] = useState({
-    action: null, //  get | create | update | delete | null
-    status: "idle", // idle | loading | success | error
+    action: null, // get | create | update | delete | null
+    status: "loading", // loading | success | error
     message: null,
   });
 

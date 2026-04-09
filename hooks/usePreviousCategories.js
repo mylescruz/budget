@@ -33,8 +33,8 @@ import { useEffect, useState } from "react";
 const usePreviousCategories = (month, year) => {
   const [previousCategories, setPreviousCategories] = useState(null);
   const [previousCategoriesRequest, setPreviousCategoriesRequest] = useState({
-    action: null, //  get | null
-    status: "idle", // idle | loading | success | error
+    action: null, // get | null
+    status: "loading", // loading | success | error
     message: null,
   });
 

@@ -15,8 +15,8 @@ import { useEffect, useState } from "react";
 const useUser = () => {
   const [user, setUser] = useState(null);
   const [userRequest, setUserRequest] = useState({
-    action: null, //  get | update | delete | null
-    status: "idle", // idle | loading | success | error
+    action: null, // get | update | delete | null
+    status: "loading", // loading | success | error
     message: null,
   });
 

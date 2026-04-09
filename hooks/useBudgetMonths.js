@@ -15,8 +15,8 @@ const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState([]);
   const [budgetMonthsLoading, setBudgetMonthsLoading] = useState(true);
   const [budgetMonthsRequest, setBudgetMonthsRequest] = useState({
-    action: null, //  get | create | update | delete | null
-    status: "idle", // idle | loading | success | error
+    action: null, // get | null
+    status: "loading", // loading | success | error
     message: null,
   });
 

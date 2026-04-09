@@ -40,8 +40,8 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState(null);
   const [categoriesRequest, setCategoriesRequest] = useState({
-    action: null, //  get | create | update | delete | null
-    status: "idle", // idle | loading | success | error
+    action: null, // get | create | update | delete | null
+    status: "loading", // loading | success | error
     message: null,
   });
 
