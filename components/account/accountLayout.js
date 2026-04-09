@@ -11,25 +11,18 @@ import LoadingIndicator from "../ui/loadingIndicator";
 const AccountLayout = () => {
   const [section, setSection] = useState("account");
 
-  const { user, userLoading, putUser, deleteUser } = useUser();
+  const { user, userRequest, putUser, deleteUser } = useUser();
 
-  if (userLoading) {
-    return <LoadingIndicator />;
-  } else if (!user) {
-    return (
-      <Row className="mt-4 text-center">
-        <p className="fw-bold text-danger">
-          &#9432; There was an error loading your information. Please try again
-          later!
-        </p>
-      </Row>
-    );
+  if (userRequest.action === "get" && userRequest.status === "loading") {
+    return <LoadingIndicator message={userRequest.message} />;
   } else {
     return (
       <Container>
         <Row>
           <OptionsTab section={section} setSection={setSection} />
-          {section === "account" && <AccountInfoTab user={user} />}
+          {section === "account" && (
+            <AccountInfoTab user={user} userRequest={userRequest} />
+          )}
           {section === "password" && (
             <ChangePasswordTab user={user} putUser={putUser} />
           )}
