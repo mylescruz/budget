@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(
-          "An error occurred while retrieving the users. Please try again later!"
+          "An error occurred while retrieving the users. Please try again later!",
         );
     }
   } else if (method === "PUT") {
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
             email: edittedUser.email,
             role: edittedUser.role,
           },
-        }
+        },
       );
 
       if (result.modifiedCount === 1) {
@@ -88,7 +88,7 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(
-          "An error occurred while editting the user. Please try again later!"
+          "An error occurred while editting the user. Please try again later!",
         );
     }
   } else if (method === "DELETE") {
@@ -119,7 +119,7 @@ export default async function handler(req, res) {
       res
         .status(500)
         .send(
-          "An error occurred while deleting the user. Please try again later!"
+          "An error occurred while deleting the user. Please try again later!",
         );
     }
   } else {

@@ -4,10 +4,10 @@ import UsersTableRow from "./usersTableRow";
 import LoadingIndicator from "@/components/ui/loadingIndicator";
 
 const UsersLayout = () => {
-  const { users, usersLoading, putUser, deleteUser } = useUsers();
+  const { users, usersLoading, usersRequest, putUser, deleteUser } = useUsers();
 
-  if (usersLoading || !users) {
-    return <LoadingIndicator />;
+  if (usersRequest.action === "get" && usersRequest.status === "loading") {
+    return <LoadingIndicator message={usersRequest.message} />;
   } else {
     return (
       <>
@@ -29,14 +29,22 @@ const UsersLayout = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <UsersTableRow
-                    key={user.id}
-                    user={user}
-                    putUser={putUser}
-                    deleteUser={deleteUser}
-                  />
-                ))}
+                {users ? (
+                  users.map((user) => (
+                    <UsersTableRow
+                      key={user.id}
+                      user={user}
+                      putUser={putUser}
+                      deleteUser={deleteUser}
+                    />
+                  ))
+                ) : (
+                  <tr className="text-center">
+                    <td colSpan={1} className="py-4 text-danger fw-bold">
+                      {usersRequest.message}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </Table>
           </Col>

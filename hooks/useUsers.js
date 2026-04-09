@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 // ]
 
 const useUsers = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(null);
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersRequest, setUsersRequest] = useState({
     action: null, //  get | update | delete | null
