@@ -2,7 +2,6 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
-import styles from "@/styles/user/loginPage.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import handleObjectInput from "@/helpers/handleObjectInput";
@@ -12,10 +11,7 @@ const LoginPageForm = ({ csrfToken }) => {
     username: "",
     password: "",
   });
-  const [loginError, setLoginError] = useState({
-    error: false,
-    message: "",
-  });
+  const [loginError, setLoginError] = useState(null);
   const [loggingIn, setLoggingIn] = useState(false);
   const router = useRouter();
 
@@ -32,13 +28,14 @@ const LoginPageForm = ({ csrfToken }) => {
         csrfToken,
       });
 
-      if (response.ok) {
-        router.push("/");
-      } else {
+      if (!response.ok) {
         throw new Error("Invalid user credentials. Please try again!");
       }
+
+      // Take user to the dashboard page
+      router.push("/");
     } catch (error) {
-      setLoginError({ error: true, message: error.message });
+      setLoginError(error.message);
     } finally {
       setLoggingIn(false);
     }
@@ -81,15 +78,18 @@ const LoginPageForm = ({ csrfToken }) => {
                 required
               />
             </Form.Group>
-            {loginError.error && (
-              <p className={styles.error}>{loginError.message}</p>
+            {loginError && (
+              <p className="text-center text-danger small">{loginError}</p>
             )}
             <Button className="btn btn-primary w-100" type="submit">
               Login
             </Button>
           </Form>
-          <Link href="/auth/createAccount" className={styles.message}>
-            New user? <span className={styles.create}>Create account</span>
+          <Link href="/auth/createAccount" className="mt-2 text-center small">
+            New user?{" "}
+            <span className="text-primary text-decoration-underline">
+              Create account
+            </span>
           </Link>
         </Card>
       </Container>
