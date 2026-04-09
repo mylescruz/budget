@@ -31,7 +31,6 @@ import { useEffect, useMemo, useState } from "react";
 
 const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState(null);
-  const [transactionsLoading, setTransactionsLoading] = useState(true);
   const [transactionsRequest, setTransactionsRequest] = useState({
     action: null, //  get | create | update | delete | null
     status: "idle", // idle | loading | success | error
@@ -43,7 +42,6 @@ const useTransactions = (month, year) => {
   }, [month, year]);
 
   const getTransactions = async () => {
-    setTransactionsLoading(true);
     setTransactionsRequest({
       action: "get",
       status: "loading",
@@ -75,8 +73,6 @@ const useTransactions = (month, year) => {
       });
 
       console.error(error);
-    } finally {
-      setTransactionsLoading(false);
     }
   };
 
@@ -122,8 +118,6 @@ const useTransactions = (month, year) => {
 
       // Send the error back to the component to show the user
       throw new Error(error);
-    } finally {
-      setTransactionsLoading(false);
     }
   };
 
@@ -182,8 +176,6 @@ const useTransactions = (month, year) => {
 
       // Send the error back to the component to show the user
       throw new Error(error);
-    } finally {
-      setTransactionsLoading(false);
     }
   };
 
@@ -230,8 +222,6 @@ const useTransactions = (month, year) => {
 
       // Send the error back to the component to show the user
       throw new Error(error);
-    } finally {
-      setTransactionsLoading(false);
     }
   };
 
@@ -272,7 +262,6 @@ const useTransactions = (month, year) => {
 
   return {
     transactions,
-    transactionsLoading,
     transactionsRequest,
     getTransactions,
     postTransactions,

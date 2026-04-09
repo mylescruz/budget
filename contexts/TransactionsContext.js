@@ -9,7 +9,6 @@ export const TransactionsContext = createContext({});
 export const TransactionsProvider = ({ children, dateInfo }) => {
   const {
     transactions,
-    transactionsLoading,
     transactionsRequest,
     getTransactions,
     postTransactions,
@@ -22,7 +21,6 @@ export const TransactionsProvider = ({ children, dateInfo }) => {
     <TransactionsContext.Provider
       value={{
         transactions,
-        transactionsLoading,
         transactionsRequest,
         getTransactions,
         postTransactions,
