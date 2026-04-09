@@ -71,6 +71,10 @@ async function getBudgetMonths(res, { categoriesCol, username }) {
     return res.status(200).json(budgetMonths);
   } catch (error) {
     console.error(`GET budget months request failed for ${username}: ${error}`);
-    return res.status(500).send(`Error getting budget months for ${username}`);
+    return res
+      .status(500)
+      .send(
+        "There was a problem getting past budget months. Please try again later!",
+      );
   }
 }

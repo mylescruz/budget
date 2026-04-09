@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 // }
 
 const useBudgetMonths = () => {
-  const [budgetMonths, setBudgetMonths] = useState([]);
+  const [budgetMonths, setBudgetMonths] = useState(null);
   const [budgetMonthsLoading, setBudgetMonthsLoading] = useState(true);
   const [budgetMonthsRequest, setBudgetMonthsRequest] = useState({
     action: null, // get | null
@@ -58,8 +58,6 @@ const useBudgetMonths = () => {
         status: "error",
         message: error.message,
       });
-
-      setBudgetMonths(null);
     } finally {
       setBudgetMonthsLoading(false);
     }

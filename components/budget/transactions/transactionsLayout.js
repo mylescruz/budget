@@ -21,6 +21,10 @@ const TransactionsLayout = ({ dateInfo }) => {
   const [chosenTransaction, setChosenTransaction] = useState(null);
 
   const formattedTransactions = useMemo(() => {
+    if (!transactions) {
+      return null;
+    }
+
     return transactions.map((transaction) => {
       if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         return {
