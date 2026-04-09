@@ -30,7 +30,7 @@ import { useEffect, useMemo, useState } from "react";
 // ]
 
 const useTransactions = (month, year) => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState(null);
   const [transactionsLoading, setTransactionsLoading] = useState(true);
   const [transactionsRequest, setTransactionsRequest] = useState({
     action: null, //  get | create | update | delete | null
@@ -74,7 +74,6 @@ const useTransactions = (month, year) => {
         message: error.message,
       });
 
-      setTransactions(null);
       console.error(error);
     } finally {
       setTransactionsLoading(false);

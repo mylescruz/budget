@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import {
   CategoriesContext,
@@ -18,18 +18,31 @@ import useMonthIncome from "@/hooks/useMonthIncome";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesRequest } = useContext(CategoriesContext);
-  const { transactionsLoading } = useContext(TransactionsContext);
+  const { transactionsRequest } = useContext(TransactionsContext);
   const { monthIncome, monthIncomeRequest } = useMonthIncome(
     dateInfo.month,
     dateInfo.year,
   );
 
-  if (
-    categoriesRequest.status === "loading" ||
-    transactionsLoading ||
-    monthIncomeRequest.status === "loading"
-  ) {
-    return <LoadingIndicator />;
+  const budgetStatus = useMemo(
+    () => ({
+      isInitialLoad:
+        (categoriesRequest.action === "get" &&
+          categoriesRequest.status === "loading") ||
+        (transactionsRequest.action === "get" &&
+          transactionsRequest.status === "loading") ||
+        (monthIncomeRequest.action === "get" &&
+          monthIncomeRequest.status === "loading"),
+    }),
+    [categoriesRequest, transactionsRequest, monthIncomeRequest],
+  );
+
+  if (budgetStatus.isInitialLoad) {
+    return (
+      <LoadingIndicator
+        message={`Loading your budget for ${dateInfo.monthName} ${dateInfo.year}`}
+      />
+    );
   } else {
     return (
       <Container>
