@@ -22,7 +22,6 @@ import { useEffect, useMemo, useState } from "react";
 
 const useIncome = (year) => {
   const [income, setIncome] = useState(null);
-  const [incomeLoading, setIncomeLoading] = useState(true);
   const [incomeRequest, setIncomeRequest] = useState({
     action: null, //  get | create | update | delete | null
     status: "idle", // idle | loading | success | error
@@ -34,8 +33,6 @@ const useIncome = (year) => {
   }, [year]);
 
   const getIncome = async () => {
-    setIncomeLoading(true);
-
     setIncomeRequest({
       action: "get",
       status: "loading",
@@ -67,8 +64,6 @@ const useIncome = (year) => {
         status: "error",
         message: error.message,
       });
-    } finally {
-      setIncomeLoading(false);
     }
   };
 
@@ -111,8 +106,6 @@ const useIncome = (year) => {
       });
 
       throw new Error(error);
-    } finally {
-      setIncomeLoading(false);
     }
   };
 
@@ -163,8 +156,6 @@ const useIncome = (year) => {
       });
 
       throw new Error(error);
-    } finally {
-      setIncomeLoading(false);
     }
   };
 
@@ -209,8 +200,6 @@ const useIncome = (year) => {
       });
 
       throw new Error(error);
-    } finally {
-      setIncomeLoading(false);
     }
   };
 
@@ -271,7 +260,6 @@ const useIncome = (year) => {
 
   return {
     income,
-    incomeLoading,
     incomeRequest,
     postIncome,
     putIncome,
