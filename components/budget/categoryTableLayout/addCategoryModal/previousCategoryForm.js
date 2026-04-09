@@ -4,16 +4,19 @@ import { useEffect, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 
 const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
-  const { previousCategories, previousCategoriesLoading } =
+  const { previousCategories, previousCategoriesRequest } =
     usePreviousCategories(dateInfo.month, dateInfo.year);
 
   const [chosenCategory, setChosenCategory] = useState("");
 
   useEffect(() => {
-    if (!previousCategoriesLoading && previousCategories) {
+    if (
+      previousCategoriesRequest.status === "success" &&
+      previousCategories.length > 0
+    ) {
       setChosenCategory(previousCategories[0].name);
     }
-  }, [previousCategories, previousCategoriesLoading]);
+  }, [previousCategories, previousCategoriesRequest]);
 
   const handleInput = (e) => {
     setChosenCategory(e.target.value);
@@ -54,44 +57,75 @@ const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
     setModalPage("details");
   };
 
-  if (previousCategoriesLoading) {
+  if (
+    previousCategoriesRequest.action === "get" &&
+    previousCategoriesRequest.status === "loading"
+  ) {
     return (
-      <div className="d-flex justify-content-center align-items-center">
-        <Spinner variant="primary" />
-      </div>
-    );
-  } else if (!previousCategories) {
-    return (
-      <div className="text-center">
-        <h5>Sorry we couldn't get your previous categories right now!</h5>
-        <p>You can recreate the category here</p>
-        <Button variant="primary" className="my-2" onClick={openDetailsPage}>
-          Create New
-        </Button>
+      <div className="d-flex flex-column justify-content-center align-items-center">
+        <Spinner animation="border" variant="primary" />
+        <p className="text-center mt-4 fs-6">
+          {previousCategoriesRequest.message}
+        </p>
       </div>
     );
   } else {
     return (
-      <div>
-        <Form.Group controlId="chosenCategory" className="mb-3">
-          <Form.Label>Select a previous category</Form.Label>
-          <Form.Select value={chosenCategory} onChange={handleInput}>
-            {previousCategories.map((category) => (
-              <option key={category.name} value={category.name}>
-                {category.name}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-        <div className="mt-4 d-flex flex-row justify-content-between">
-          <Button variant="secondary" onClick={backToQuestion}>
-            Back
-          </Button>
-          <Button variant="primary" onClick={updateDetails}>
-            Continue
-          </Button>
-        </div>
-      </div>
+      <>
+        {previousCategories ? (
+          previousCategories.length > 0 ? (
+            <div>
+              <Form.Group controlId="chosenCategory" className="mb-3">
+                <Form.Label>Select a previous category</Form.Label>
+                <Form.Select value={chosenCategory} onChange={handleInput}>
+                  {previousCategories.map((category) => (
+                    <option key={category.name} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <div className="mt-4 d-flex flex-row justify-content-between">
+                <Button variant="secondary" onClick={backToQuestion}>
+                  Back
+                </Button>
+                <Button variant="primary" onClick={updateDetails}>
+                  Continue
+                </Button>
+              </div>
+            </div>
+          ) : (
+            // No previous categories created that aren't in this budget
+            <div className="text-center">
+              <p className="mx-2">
+                You don't have any previously created categories that are not in
+                this month's budget
+              </p>
+              <Button
+                variant="primary"
+                className="my-2"
+                onClick={openDetailsPage}
+              >
+                Create New Category
+              </Button>
+            </div>
+          )
+        ) : (
+          // Displayed when an error occurs fetching the previous categories
+          <div className="text-center">
+            <p className="text-danger fw-bold">
+              {previousCategoriesRequest.message}
+            </p>
+            <Button
+              variant="primary"
+              className="my-2"
+              onClick={openDetailsPage}
+            >
+              Create New Category
+            </Button>
+          </div>
+        )}
+      </>
     );
   }
 };

@@ -31,7 +31,7 @@ import { useEffect, useState } from "react";
 // ]
 
 const usePreviousCategories = (month, year) => {
-  const [previousCategories, setPreviousCategories] = useState([]);
+  const [previousCategories, setPreviousCategories] = useState(null);
   const [previousCategoriesLoading, setPreviousCategoriesLoading] =
     useState(true);
   const [previousCategoriesRequest, setPreviousCategoriesRequest] = useState({
@@ -70,8 +70,6 @@ const usePreviousCategories = (month, year) => {
         message: null,
       });
     } catch (error) {
-      setPreviousCategories(null);
-
       setPreviousCategoriesRequest({
         action: "get",
         status: "error",
