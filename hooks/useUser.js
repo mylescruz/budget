@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 // }
 
 const useUser = () => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [userRequest, setUserRequest] = useState({
     action: null, //  get | update | delete | null
     status: "idle", // idle | loading | success | error
@@ -54,7 +54,6 @@ const useUser = () => {
         message: error.message,
       });
 
-      setUser(null);
       console.error(error);
     }
   };
