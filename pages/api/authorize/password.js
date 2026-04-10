@@ -48,13 +48,13 @@ async function verifyLogin(req, res, { client, usersCol }) {
     }
 
     // Update the user's last login date
-    const lastLogin = new Date();
+    const currentTS = new Date();
 
     await usersCol.updateOne(
       { _id: new ObjectId(user._id) },
       {
         $set: {
-          lastLoginDate: lastLogin,
+          lastLoginTS: currentTS,
         },
       },
     );
@@ -66,7 +66,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
       username: user.username,
       role: user.role,
       onboarded: user.onboarded,
-      lastLoginDate: lastLogin,
+      lastLoginTS: currentTS,
     };
 
     // Send back verified user to NextAuth

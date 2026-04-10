@@ -55,7 +55,7 @@ export const authOptions = {
         token.email = user.email;
         token.role = user.role;
         token.onboarded = user.onboarded;
-        token.lastLogin = user.lastLogin;
+        token.lastLoginTS = user.lastLoginTS;
       }
 
       if (trigger === "update") {
@@ -77,7 +77,7 @@ export const authOptions = {
       session.user.email = token.email;
       session.user.role = token.role;
       session.user.onboarded = token.onboarded;
-      session.user.lastLogin = token.lastLogin;
+      session.user.lastLoginTS = token.lastLoginTS;
 
       return session;
     },
