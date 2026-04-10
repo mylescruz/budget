@@ -65,8 +65,8 @@ const InnerIncomeLayout = ({ year }) => {
   } else {
     return (
       <Container>
-        <Container className="d-flex align-items-center justify-content-between col-12 col-xl-10 mx-auto">
-          <h4>Income Sources</h4>
+        <Container className="d-flex align-items-center justify-content-between col-12 col-xl-10 mx-auto mt-2">
+          <h4 className="my-0">Income</h4>
           <Button variant="primary" onClick={openAddModal}>
             + Add Income
           </Button>
@@ -136,8 +136,7 @@ const IncomeLayout = () => {
   const [year, setYear] = useState(today.getFullYear());
 
   const pageInfo = {
-    title: "Income",
-    description: "View and add all your income for the current year.",
+    description: "Keep track of all your income for the year.",
   };
 
   return (
