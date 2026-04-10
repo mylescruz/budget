@@ -128,7 +128,7 @@ const UserModal = ({
               <Col className="col-12 col-sm-10">
                 <Form.Control
                   type="text"
-                  value={edittedUser.created_date}
+                  value={edittedUser.createdTS}
                   disabled
                 />
               </Col>

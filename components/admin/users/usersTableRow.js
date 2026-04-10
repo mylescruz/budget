@@ -18,7 +18,7 @@ const UsersTableRow = ({ user, putUser, deleteUser }) => {
         <td className="col-5 col-md-3">{user.username}</td>
         <td className="col-5 col-md-2">{user.role}</td>
         <td className="d-none d-md-block col-md-2">
-          {dateFormatter(user.created_date)}
+          {dateFormatter(user.createdTS)}
         </td>
         <td
           className="col-2 col-md-1 text-center clicker"

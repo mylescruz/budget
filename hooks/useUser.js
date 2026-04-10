@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 //   username: string,         // unique username
 //   email: string,            // email address
 //   role: string,             // "Admin" | "User"
-//   created_date: string,     // account creation date
+//   createdTS: string,        // account creation date
 //   onboarded: boolean        // true if user has completed onboarding
 // }
 
