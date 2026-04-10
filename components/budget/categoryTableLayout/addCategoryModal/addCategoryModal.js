@@ -138,9 +138,6 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     try {
       await postCategory(newCategory);
 
-      // Fetch the updated categories to show changes to the Fun Money category's budget
-      await getCategories(dateInfo.month, dateInfo.year);
-
       closeModal();
     } catch (error) {
       setFormMeta({ status: "idle", error: error.message });

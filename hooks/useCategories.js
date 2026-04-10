@@ -104,7 +104,25 @@ const useCategories = (month, year) => {
 
       const addedCategory = await response.json();
 
-      setCategories((prev) => [...prev, addedCategory]);
+      setCategories((prev) => {
+        // Add the new category to the user's categories
+        const updatedCategories = [...prev, addedCategory];
+
+        // Update the Fun Money's budget based on the new category's budget
+        return updatedCategories.map((category) => {
+          if (category.name === FUN_MONEY) {
+            return {
+              ...category,
+              budget: subtractDecimalValues(
+                category.budget,
+                addedCategory.budget,
+              ),
+            };
+          } else {
+            return category;
+          }
+        });
+      });
 
       setCategoriesRequest({
         action: "create",
