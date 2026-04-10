@@ -9,27 +9,26 @@ export default async function handler(req, res) {
   // Configure MongoDB
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
-
-  const usersContext = {
-    client: client,
-    usersCol: db.collection("users"),
-  };
+  const usersCol = db.collection("users");
 
   switch (req.method) {
     case "POST":
-      return verifyLogin(req, res, usersContext);
+      return verifyLogin(req, res, usersCol);
     default:
       res.status(405).send(`${req.method} method not allowed`);
   }
 }
 
 // Verify given credentials with the credentials stored in MongoDB
-async function verifyLogin(req, res, { client, usersCol }) {
+async function verifyLogin(req, res, usersCol) {
   try {
     const credentials = req.body;
 
     // Get the user from MongoDB
-    const user = await usersCol.findOne({ username: credentials.username });
+    const user = await usersCol.findOne(
+      { username: credentials.username },
+      { maxTimeMS: 5000 },
+    );
 
     if (!user) {
       // Send an error status for an invalid username
@@ -57,6 +56,7 @@ async function verifyLogin(req, res, { client, usersCol }) {
           lastLoginTS: currentTS,
         },
       },
+      { maxTimeMS: 5000 },
     );
 
     const verifiedUser = {
