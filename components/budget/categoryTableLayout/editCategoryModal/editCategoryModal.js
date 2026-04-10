@@ -18,8 +18,7 @@ const EditCategoryModal = ({
   modal,
   setModal,
 }) => {
-  const { getCategories, putCategory, categoryNames } =
-    useContext(CategoriesContext);
+  const { putCategory, categoryNames } = useContext(CategoriesContext);
   const { getTransactions } = useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);

@@ -4,13 +4,8 @@ import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const ConfirmDeleteCategoryModal = ({
-  editedCategory,
-  dateInfo,
-  modal,
-  setModal,
-}) => {
-  const { getCategories, deleteCategory } = useContext(CategoriesContext);
+const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
+  const { deleteCategory } = useContext(CategoriesContext);
 
   const [status, setStatus] = useState("confirming");
 

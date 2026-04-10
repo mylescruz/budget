@@ -536,7 +536,6 @@ const useCategories = (month, year) => {
   return {
     categories,
     categoriesRequest,
-    getCategories,
     postCategory,
     putCategory,
     deleteCategory,

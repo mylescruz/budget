@@ -21,8 +21,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     subcategories: [],
   };
 
-  const { postCategory, getCategories, categoryNames } =
-    useContext(CategoriesContext);
+  const { postCategory, categoryNames } = useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [formMeta, setFormMeta] = useState({
     status: "idle",

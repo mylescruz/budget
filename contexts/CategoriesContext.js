@@ -10,7 +10,6 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
   const {
     categories,
     categoriesRequest,
-    getCategories,
     postCategory,
     putCategory,
     deleteCategory,
@@ -25,7 +24,6 @@ export const CategoriesProvider = ({ children, dateInfo }) => {
       value={{
         categories,
         categoriesRequest,
-        getCategories,
         postCategory,
         putCategory,
         deleteCategory,

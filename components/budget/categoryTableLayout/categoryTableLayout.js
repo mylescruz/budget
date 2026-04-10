@@ -37,7 +37,6 @@ const CategoryTableLayout = ({ dateInfo }) => {
       {modal === "delete" && (
         <ConfirmDeleteCategoryModal
           editedCategory={editedCategory}
-          dateInfo={dateInfo}
           modal={modal}
           setModal={setModal}
         />
