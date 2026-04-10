@@ -75,7 +75,7 @@ async function updateTransaction(
             year,
             name: req.body.category,
           },
-          { session },
+          { session, maxTimeMS: 5000 },
         );
 
         if (!transactionCategory) {
@@ -114,7 +114,7 @@ async function updateTransaction(
               amount: transaction.amount,
             },
           },
-          { session },
+          { session, maxTimeMS: 5000 },
         );
       }
 
@@ -133,7 +133,7 @@ async function updateTransaction(
               amount: transaction.amount,
             },
           },
-          { session },
+          { session, maxTimeMS: 5000 },
         );
       }
     });
@@ -167,7 +167,10 @@ async function deleteTransaction(
   try {
     const transactionId = req.query._id;
 
-    await transactionsCol.deleteOne({ _id: new ObjectId(transactionId) });
+    await transactionsCol.deleteOne(
+      { _id: new ObjectId(transactionId) },
+      { maxTimeMS: 5000 },
+    );
 
     // Send a success message back to the client
     return res.status(200).send("Transaction was deleted successfully");
