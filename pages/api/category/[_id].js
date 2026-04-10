@@ -55,6 +55,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       color: category.color,
       fixed: category.fixed,
       budget: dollarsToCents(category.budget),
+      actual: dollarsToCents(category.actual),
     };
 
     if (editedCategory.fixed && category.subcategories.length === 0) {
@@ -217,6 +218,22 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     if (filteredSubcategories.length === 0) {
       categoryBudget = editedCategory.budget;
       updatedCategory.subcategories = filteredSubcategories;
+
+      if (updatedCategory.fixed) {
+        updatedCategory.dueDate = editedCategory.dueDate;
+        updatedCategory.frequency = editedCategory.frequency;
+
+        const categoryDate = new Date(
+          `${editedCategory.month}/${updatedCategory.dueDate}/${editedCategory.year}`,
+        );
+
+        // Increment the fixed category actual if the charge date passed
+        if (categoryDate <= today) {
+          categoryActual = categoryBudget;
+        }
+      } else {
+        categoryActual = editedCategory.actual;
+      }
     } else {
       // Return and with the formatted budget and actual values
       updatedCategory.subcategories = filteredSubcategories.map(
