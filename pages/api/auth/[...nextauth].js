@@ -55,6 +55,7 @@ export const authOptions = {
         token.email = user.email;
         token.role = user.role;
         token.onboarded = user.onboarded;
+        token.createdTS = user.createdTS;
         token.lastLoginTS = user.lastLoginTS;
       }
 
@@ -77,6 +78,7 @@ export const authOptions = {
       session.user.email = token.email;
       session.user.role = token.role;
       session.user.onboarded = token.onboarded;
+      session.user.createdTS = token.createdTS;
       session.user.lastLoginTS = token.lastLoginTS;
 
       return session;

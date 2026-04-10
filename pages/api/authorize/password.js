@@ -66,6 +66,7 @@ async function verifyLogin(req, res, usersCol) {
       username: user.username,
       role: user.role,
       onboarded: user.onboarded,
+      createdTS: user.createdTS,
       lastLoginTS: currentTS,
     };
 
