@@ -215,7 +215,8 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
     );
 
     if (filteredSubcategories.length === 0) {
-      categoryBudget = centsToDollars(editedCategory.budget);
+      categoryBudget = editedCategory.budget;
+      updatedCategory.subcategories = filteredSubcategories;
     } else {
       // Return and with the formatted budget and actual values
       updatedCategory.subcategories = filteredSubcategories.map(
