@@ -45,7 +45,7 @@ export default async function handler(req, res) {
 // Function to get a user's information from MongoDB
 async function getUser(res, { usersCol, username }) {
   try {
-    const user = await usersCol.findOne({ username });
+    const user = await usersCol.findOne({ username }, { maxTimeMS: 5000 });
 
     // Return the user without their password
     const { password_hash, ...userInfo } = user;
@@ -70,7 +70,10 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      const storedUser = await usersCol.findOne({ username }, { session });
+      const storedUser = await usersCol.findOne(
+        { username },
+        { session, maxTimeMS: 5000 },
+      );
 
       // Check if the given password matches the stored password
       const passwordsMatch = await checkHashedPassword(
@@ -103,7 +106,7 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
             password_hash: userPassword,
           },
         },
-        { session },
+        { session, maxTimeMS: 5000 },
       );
     });
 
@@ -131,7 +134,10 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      const storedUser = await usersCol.findOne({ username }, { session });
+      const storedUser = await usersCol.findOne(
+        { username },
+        { session, maxTimeMS: 5000 },
+      );
 
       // Check if the given password matches the stored password
       const passwordsMatch = await checkHashedPassword(
