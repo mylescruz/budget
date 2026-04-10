@@ -241,7 +241,7 @@ const EditCategoryModal = ({
                     <div>
                       <Col className="col-12 col-md-8">
                         <Form.Group controlId="frequency" className="mb-2">
-                          <Form.Label>How often does this occur?</Form.Label>
+                          <Form.Label>How often are you charged?</Form.Label>
                           <Form.Select
                             className="h-100"
                             value={editedCategory.frequency}
@@ -278,11 +278,11 @@ const EditCategoryModal = ({
                   (!editedCategory.fixed && editedCategory.actual === 0) ||
                   (!editedCategory.fixed &&
                     editedCategory.subcategories.length > 0)) && (
-                  <div className="my-2">
+                  <div className="my-2 d-flex justify-content-between align-items-center">
                     <p className="fw-bold my-0">Subcategories</p>
                     <div className="mt-1">
                       <Button size="sm" onClick={openAddSubcategoryPage}>
-                        Add New
+                        + Add New
                       </Button>
                     </div>
                   </div>
@@ -351,6 +351,7 @@ const EditCategoryModal = ({
                   setFieldChanges={setFieldChanges}
                   setPage={setPage}
                   validateCategoryName={validateCategoryName}
+                  backToDetails={backToDetails}
                 />
               </div>
             )}

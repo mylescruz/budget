@@ -130,7 +130,7 @@ const AddSubcategoryForm = ({
             <div>
               <Col className="col-12">
                 <Form.Group controlId="frequency" className={groupFormStyle}>
-                  <Form.Label>How often does this occur?</Form.Label>
+                  <Form.Label>How often are you charged?</Form.Label>
                   <Form.Select
                     className={inputFormStyle}
                     value={newSubcategory.frequency}

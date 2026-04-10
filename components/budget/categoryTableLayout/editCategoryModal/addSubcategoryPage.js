@@ -95,7 +95,6 @@ const AddSubcategoryPage = ({
         <Form.Control
           className="h-100"
           type="text"
-          placeholder="Name"
           value={newSubcategory.name}
           onChange={(e) =>
             handleObjectInput({ e, setObject: setNewSubcategory })
@@ -105,13 +104,12 @@ const AddSubcategoryPage = ({
       </Form.Group>
       {editedCategory.fixed && (
         <div>
-          <Col className="col-12 col-md-8">
+          <Col>
             <Form.Group controlId="budget" className="my-2">
               <Form.Label>How much are you charged?</Form.Label>
               <Form.Control
-                className="add-subcategory"
+                className="h-100"
                 type="number"
-                placeholder="Amount"
                 value={newSubcategory.budget}
                 onChange={(e) =>
                   handleObjectInput({ e, setObject: setNewSubcategory })
@@ -119,9 +117,9 @@ const AddSubcategoryPage = ({
               />
             </Form.Group>
           </Col>
-          <Col className="col-12 col-md-8">
+          <Col>
             <Form.Group controlId="frequency" className="mb-2">
-              <Form.Label>How often does this occur?</Form.Label>
+              <Form.Label>How often are you charged?</Form.Label>
               <Form.Select
                 className="h-100"
                 value={newSubcategory.frequency}
@@ -138,7 +136,7 @@ const AddSubcategoryPage = ({
               </Form.Select>
             </Form.Group>
           </Col>
-          <Col className="col-12 col-md-8">
+          <Col>
             <Form.Group controlId="dueDate" className="my-2">
               <Form.Label>What day of the month are you charged?</Form.Label>
               <Form.Control

@@ -16,6 +16,7 @@ const EditSubcategoryPage = ({
   setFieldChanges,
   setPage,
   validateCategoryName,
+  backToDetails,
 }) => {
   const handleInput = (e) => {
     const id = e.target.id;
@@ -117,13 +118,12 @@ const EditSubcategoryPage = ({
 
   return (
     <div>
-      <Col className="col-12 col-md-8">
+      <Col>
         <Form.Group controlId="name" className="mb-2">
           <Form.Label>Subcategory Name</Form.Label>
           <Form.Control
             className="h-100"
             type="text"
-            placeholder="Name"
             value={editedSubcategory.name}
             onChange={handleInput}
             required
@@ -132,20 +132,19 @@ const EditSubcategoryPage = ({
       </Col>
       {editedCategory.fixed && (
         <div>
-          <Col className="col-12 col-md-8">
+          <Col>
             <Form.Group controlId="budget" className="my-2">
               <Form.Label>Amount Charged</Form.Label>
               <Form.Control
                 type="number"
-                placeholder="Amount"
                 value={editedSubcategory.budget}
                 onChange={handleInput}
               />
             </Form.Group>
           </Col>
-          <Col className="col-12 col-md-8">
+          <Col>
             <Form.Group controlId="frequency" className="mb-2">
-              <Form.Label>How often does this occur?</Form.Label>
+              <Form.Label>How often are you charged?</Form.Label>
               <Form.Select
                 className="h-100"
                 value={editedSubcategory.frequency}
@@ -160,7 +159,7 @@ const EditSubcategoryPage = ({
               </Form.Select>
             </Form.Group>
           </Col>
-          <Col className="col-12 col-md-8">
+          <Col>
             <Form.Group controlId="dueDate" className="my-2">
               <Form.Label>What day of the month are you charged?</Form.Label>
               <Form.Control
@@ -176,6 +175,9 @@ const EditSubcategoryPage = ({
         </div>
       )}
       <div className="w-100 d-flex justify-content-between mt-4">
+        <Button variant="secondary" onClick={backToDetails}>
+          Cancel
+        </Button>
         <Button
           variant="danger"
           disabled={!editedCategory.fixed && editedSubcategory.actual !== 0}

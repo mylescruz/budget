@@ -68,7 +68,6 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
             <Form.Control
               className={inputStyle}
               type="text"
-              placeholder="Name"
               value={newCategory.name}
               onChange={(e) =>
                 handleObjectInput({ e, setObject: setNewCategory })
@@ -153,7 +152,6 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
               type="number"
               min={0.01}
               step={0.01}
-              placeholder="Amount"
               value={newCategory.budget}
               onChange={(e) =>
                 handleObjectInput({ e, setObject: setNewCategory })
@@ -166,7 +164,7 @@ const CategoryDetailsForm = ({ newCategory, setNewCategory }) => {
         <div className="d-flex flex-column">
           <Col className="col-12 col-md-8">
             <Form.Group controlId="frequency" className={formGroupStyle}>
-              <Form.Label>How often does this occur?</Form.Label>
+              <Form.Label>How often are you charged?</Form.Label>
               <Form.Select
                 className={inputStyle}
                 value={newCategory.frequency}
