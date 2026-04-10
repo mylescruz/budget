@@ -103,11 +103,6 @@ const EditCategoryModal = ({
         year: dateInfo.year,
       });
 
-      // Fetch the updated categories to show changes to the Fun Money category's budget
-      if (fieldChanges.budget) {
-        await getCategories(dateInfo.month, dateInfo.year);
-      }
-
       // Fetch the updated transactions to show any category names changes
       if (fieldChanges.name && !editedCategory.fixed) {
         await getTransactions(dateInfo.month, dateInfo.year);

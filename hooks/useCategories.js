@@ -162,18 +162,31 @@ const useCategories = (month, year) => {
         throw new Error(message);
       }
 
-      // Replace old category with the new category
       const updatedCategory = await response.json();
 
-      setCategories((prev) =>
-        prev.map((category) => {
-          if (category._id === updatedCategory._id) {
-            return updatedCategory;
-          } else {
-            return category;
-          }
-        }),
-      );
+      setCategories((prev) => {
+        return prev
+          .map((category) => {
+            if (category._id === updatedCategory._id) {
+              // Replace old category with the new category
+              return updatedCategory;
+            } else if (category.name === FUN_MONEY) {
+              // Update the Fun Money's budget based on the edited category's new and old budget
+              const updateAmount = subtractDecimalValues(
+                updatedCategory.budget,
+                editedCategory.currentBudget,
+              );
+
+              return {
+                ...category,
+                budget: subtractDecimalValues(category.budget, updateAmount),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => b.budget - a.budget);
+      });
 
       setCategoriesRequest({
         action: "update",
