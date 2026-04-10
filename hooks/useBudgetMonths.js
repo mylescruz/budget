@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 
 const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState(null);
-  const [budgetMonthsLoading, setBudgetMonthsLoading] = useState(true);
   const [budgetMonthsRequest, setBudgetMonthsRequest] = useState({
     action: null, // get | null
     status: "loading", // loading | success | error
@@ -25,7 +24,6 @@ const useBudgetMonths = () => {
   }, []);
 
   const getBudgetMonths = async () => {
-    setBudgetMonthsLoading(true);
     setBudgetMonthsRequest({
       action: "get",
       status: "loading",
@@ -58,12 +56,10 @@ const useBudgetMonths = () => {
         status: "error",
         message: error.message,
       });
-    } finally {
-      setBudgetMonthsLoading(false);
     }
   };
 
-  return { budgetMonths, budgetMonthsLoading, budgetMonthsRequest };
+  return { budgetMonths, budgetMonthsRequest };
 };
 
 export default useBudgetMonths;

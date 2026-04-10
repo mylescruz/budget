@@ -25,8 +25,7 @@ const BudgetMonthSwitcher = ({
   pageInfo,
   children,
 }) => {
-  const { budgetMonths, budgetMonthsLoading, budgetMonthsRequest } =
-    useBudgetMonths();
+  const { budgetMonths, budgetMonthsRequest } = useBudgetMonths();
 
   // Allow a user to choose a month from the dropdown
   const chooseBudget = (monthNum, monthYear) => {
