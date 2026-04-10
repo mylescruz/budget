@@ -25,34 +25,15 @@ export default async function handler(req, res) {
   const db = (await clientPromise).db(process.env.MONGO_DB);
   const usersCol = db.collection("users");
 
-  // Gets all the users in the system from MongoDB
-  const getUsers = async () => {
-    const docs = await usersCol.find({}).sort({ created_date: -1 }).toArray();
-
-    const users = docs.map((record) => {
-      return {
-        id: record._id,
-        name: record.name,
-        username: record.username,
-        email: record.email,
-        role: record.role,
-        created_date: record.created_date,
-        onboarded: record.onboarded,
-      };
-    });
-
-    return users;
-  };
-
   if (method === "GET") {
     try {
-      const users = await getUsers();
+      const users = await getUsers(usersCol);
 
       // Send the users array back to the client
-      res.status(200).json(users);
+      return res.status(200).json(users);
     } catch (error) {
       console.error(`${method} users request failed: ${error}`);
-      res
+      return res
         .status(500)
         .send(
           "We're unable to load the users at the moment. Please try again later!",
@@ -125,4 +106,31 @@ export default async function handler(req, res) {
   } else {
     res.status(405).send(`${method} method not allowed`);
   }
+}
+
+// Gets all the users in the system from MongoDB
+async function getUsers(usersCol) {
+  const users = await usersCol
+    .aggregate(
+      [
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            username: 1,
+            email: 1,
+            role: 1,
+            created_date: 1,
+            onboarded: 1,
+          },
+        },
+        {
+          $sort: { created_date: -1 },
+        },
+      ],
+      { maxTimeMS: 5000 },
+    )
+    .toArray();
+
+  return users;
 }
