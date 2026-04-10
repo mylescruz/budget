@@ -251,6 +251,7 @@ const useIncome = (year) => {
       .filter((type) => type.amount > 0);
 
     return {
+      numSources: income.length,
       gross: centsToDollars(totalGross),
       deductions: centsToDollars(totalDeductions),
       amount: centsToDollars(totalAmount),

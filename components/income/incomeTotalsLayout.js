@@ -1,41 +1,43 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
-import { useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import IncomeTotalsModal from "./incomeTotalsModal";
 
-const cardColumn = "col-12 col-md-6 col-lg-4 mb-2";
+const cardColumn = "col-12 col-md-6 col-xl-3";
 
 const IncomeTotalsLayout = ({ incomeTotals }) => {
-  const [totalsModal, setTotalsModal] = useState(false);
-
-  const showModal = () => {
-    setTotalsModal(true);
-  };
-
   return (
-    <Row className="text-center w-full my-2 mx-auto d-flex justify-content-center">
+    <Row className="text-center col-12 col-xl-10 my-2 mx-auto d-flex justify-content-center">
       <Col className={cardColumn}>
-        <Card className="my-2 bg-dark text-white">
+        <Card className="my-2 card-background">
           <Card.Body>
-            <h4 className="fw-bold">Total Income</h4>
-            <h5>{dollarFormatter(incomeTotals.amount)}</h5>
-            {incomeTotals.amount !== 0 && (
-              <p
-                className="text-center text-decoration-underline clicker m-0"
-                onClick={showModal}
-              >
-                Details
-              </p>
-            )}
+            <h6 className="fw-bold">Total Gross</h6>
+            <h4>{dollarFormatter(incomeTotals.gross)}</h4>
           </Card.Body>
         </Card>
       </Col>
-
-      <IncomeTotalsModal
-        incomeTotals={incomeTotals}
-        totalsModal={totalsModal}
-        setTotalsModal={setTotalsModal}
-      />
+      <Col className={cardColumn}>
+        <Card className="my-2 card-background">
+          <Card.Body>
+            <h6 className="fw-bold">Total Net</h6>
+            <h4>{dollarFormatter(incomeTotals.amount)}</h4>
+          </Card.Body>
+        </Card>
+      </Col>
+      <Col className={cardColumn}>
+        <Card className="my-2 card-background">
+          <Card.Body>
+            <h6 className="fw-bold">Total Deductions</h6>
+            <h4>{dollarFormatter(incomeTotals.deductions)}</h4>
+          </Card.Body>
+        </Card>
+      </Col>
+      <Col className={cardColumn}>
+        <Card className="my-2 card-background">
+          <Card.Body>
+            <h6 className="fw-bold"># of Sources</h6>
+            <h4>{incomeTotals.numSources}</h4>
+          </Card.Body>
+        </Card>
+      </Col>
     </Row>
   );
 };
