@@ -99,7 +99,7 @@ const useUsers = () => {
       setUsersRequest({
         action: "update",
         status: "success",
-        message: null,
+        message: "Successfully updated this user!",
       });
     } catch (error) {
       setUsersRequest({

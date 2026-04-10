@@ -96,7 +96,7 @@ const useIncome = (year) => {
       setIncomeRequest({
         action: "create",
         status: "success",
-        message: null,
+        message: "Successfully added your new source of income!",
       });
     } catch (error) {
       setIncomeRequest({
@@ -146,7 +146,7 @@ const useIncome = (year) => {
       setIncomeRequest({
         action: "update",
         status: "success",
-        message: null,
+        message: "Successfully updated your source of income!",
       });
     } catch (error) {
       setIncomeRequest({
@@ -190,7 +190,7 @@ const useIncome = (year) => {
       setIncomeRequest({
         action: "delete",
         status: "success",
-        message: null,
+        message: "Successfully deleted your source of income!",
       });
     } catch (error) {
       setIncomeRequest({

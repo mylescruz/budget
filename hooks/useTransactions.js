@@ -105,7 +105,7 @@ const useTransactions = (month, year) => {
       setTransactionsRequest({
         action: "create",
         status: "success",
-        message: null,
+        message: "Successfully added your new transaction(s)!",
       });
 
       return addedTransactions;
@@ -163,7 +163,7 @@ const useTransactions = (month, year) => {
       setTransactionsRequest({
         action: "update",
         status: "success",
-        message: null,
+        message: "Successfully updated this transaction!",
       });
 
       return updatedTransaction;
@@ -211,7 +211,7 @@ const useTransactions = (month, year) => {
       setTransactionsRequest({
         action: "delete",
         status: "success",
-        message: null,
+        message: "Successfully deleted this transaction!",
       });
     } catch (error) {
       setTransactionsRequest({

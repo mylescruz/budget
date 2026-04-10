@@ -86,7 +86,7 @@ const useUser = () => {
       setUserRequest({
         action: "update",
         status: "success",
-        message: null,
+        message: "Successfully updated your account!",
       });
     } catch (error) {
       setUserRequest({
@@ -128,7 +128,7 @@ const useUser = () => {
       setUserRequest({
         action: "delete",
         status: "success",
-        message: "You have successfully deleted your account",
+        message: "You have successfully deleted your account!",
       });
     } catch (error) {
       setUserRequest({

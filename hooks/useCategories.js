@@ -109,7 +109,7 @@ const useCategories = (month, year) => {
       setCategoriesRequest({
         action: "create",
         status: "success",
-        message: `Successfully created the new category: ${newCategory.name}`,
+        message: `Successfully created the new category: ${newCategory.name}!`,
       });
     } catch (error) {
       setCategoriesRequest({
@@ -160,7 +160,7 @@ const useCategories = (month, year) => {
       setCategoriesRequest({
         action: "update",
         status: "success",
-        message: `Successfully updated the category: ${editedCategory.name}`,
+        message: `Successfully updated the category: ${editedCategory.name}!`,
       });
     } catch (error) {
       setCategoriesRequest({
@@ -203,7 +203,7 @@ const useCategories = (month, year) => {
       setCategoriesRequest({
         action: "delete",
         status: "success",
-        message: "Successfully deleted the category",
+        message: "Successfully deleted this category!",
       });
     } catch (error) {
       setCategoriesRequest({
