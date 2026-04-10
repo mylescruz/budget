@@ -1,3 +1,4 @@
+import dateFormatter from "@/helpers/dateFormatter";
 import handleObjectInput from "@/helpers/handleObjectInput";
 import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
@@ -64,10 +65,10 @@ const UserModal = ({
         <Modal.Body>
           <Form.Group controlId="username" className="my-2">
             <Row className="d-flex align-items-center">
-              <Col className="col-12 col-sm-2">
+              <Col className="col-12 col-sm-3">
                 <Form.Label>Username</Form.Label>
               </Col>
-              <Col className="col-12 col-sm-10">
+              <Col className="col-12 col-sm-9">
                 <Form.Control
                   type="text"
                   value={edittedUser.username}
@@ -81,10 +82,10 @@ const UserModal = ({
           </Form.Group>
           <Form.Group controlId="email" className="my-2">
             <Row className="d-flex align-items-center">
-              <Col className="col-12 col-sm-2">
+              <Col className="col-12 col-sm-3">
                 <Form.Label>Email</Form.Label>
               </Col>
-              <Col className="col-12 col-sm-10">
+              <Col className="col-12 col-sm-9">
                 <Form.Control
                   type="text"
                   value={edittedUser.email}
@@ -102,10 +103,10 @@ const UserModal = ({
           </Form.Group>
           <Form.Group controlId="role" className="my-2">
             <Row className="d-flex align-items-center">
-              <Col className="col-12 col-sm-2">
+              <Col className="col-12 col-sm-3">
                 <Form.Label>Role</Form.Label>
               </Col>
-              <Col className="col-12 col-sm-10">
+              <Col className="col-12 col-sm-9">
                 <Form.Select
                   type="text"
                   value={edittedUser.role}
@@ -122,10 +123,10 @@ const UserModal = ({
           </Form.Group>
           <Form.Group controlId="created-date" className="my-2">
             <Row className="d-flex align-items-center">
-              <Col className="col-12 col-sm-2">
+              <Col className="col-12 col-sm-3">
                 <Form.Label>Created</Form.Label>
               </Col>
-              <Col className="col-12 col-sm-10">
+              <Col className="col-12 col-sm-9">
                 <Form.Control
                   type="text"
                   value={edittedUser.createdTS}
@@ -136,10 +137,10 @@ const UserModal = ({
           </Form.Group>
           <Form.Group controlId="created-date" className="my-2">
             <Row className="d-flex align-items-center">
-              <Col className="col-12 col-sm-2">
+              <Col className="col-12 col-sm-3">
                 <Form.Label>Last Login</Form.Label>
               </Col>
-              <Col className="col-12 col-sm-10">
+              <Col className="col-12 col-sm-9">
                 <Form.Control
                   type="text"
                   value={edittedUser.lastLoginTS}
