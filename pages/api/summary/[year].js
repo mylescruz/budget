@@ -101,56 +101,59 @@ async function getYearSummary(
 async function getCategoriesSummary(categoriesCol, username, month, year) {
   // Get all the user's categories for the year from MongoDB
   const allCategories = await categoriesCol
-    .aggregate([
-      { $match: { username, year, month: { $lte: month } } },
-      // Grab all transactions associated with each category
-      {
-        $lookup: {
-          from: "transactions",
-          localField: "_id",
-          foreignField: "categoryId",
-          pipeline: [
-            { $match: { username, year } },
-            {
-              $group: {
-                _id: { categoryId: "$categoryId", month: "$month" },
-                totalAmount: { $sum: "$amount" },
+    .aggregate(
+      [
+        { $match: { username, year, month: { $lte: month } } },
+        // Grab all transactions associated with each category
+        {
+          $lookup: {
+            from: "transactions",
+            localField: "_id",
+            foreignField: "categoryId",
+            pipeline: [
+              { $match: { username, year } },
+              {
+                $group: {
+                  _id: { categoryId: "$categoryId", month: "$month" },
+                  totalAmount: { $sum: "$amount" },
+                },
               },
-            },
-            {
-              $project: {
-                categoryId: "$_id.categoryId",
-                month: "$_id.month",
-                totalAmount: 1,
+              {
+                $project: {
+                  categoryId: "$_id.categoryId",
+                  month: "$_id.month",
+                  totalAmount: 1,
+                },
               },
-            },
-          ],
-          as: "transactions",
+            ],
+            as: "transactions",
+          },
         },
-      },
-      // Add the transactions' total to each category
-      {
-        $addFields: {
-          transactionsAmount: { $sum: "$transactions.totalAmount" },
+        // Add the transactions' total to each category
+        {
+          $addFields: {
+            transactionsAmount: { $sum: "$transactions.totalAmount" },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 1,
-          month: 1,
-          year: 1,
-          name: 1,
-          color: 1,
-          fixed: 1,
-          budget: 1,
-          actual: "$transactionsAmount",
-          parentCategoryId: 1,
-          noDelete: 1,
-          dueDate: 1,
-          frequency: 1,
+        {
+          $project: {
+            _id: 1,
+            month: 1,
+            year: 1,
+            name: 1,
+            color: 1,
+            fixed: 1,
+            budget: 1,
+            actual: "$transactionsAmount",
+            parentCategoryId: 1,
+            noDelete: 1,
+            dueDate: 1,
+            frequency: 1,
+          },
         },
-      },
-    ])
+      ],
+      { maxTimeMS: 10000 },
+    )
     .toArray();
 
   // Separate the different categories
@@ -277,27 +280,30 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
 // Get the total sum of each type of income
 async function getIncomeSummary(incomeCol, username, month, year) {
   const incomeTypes = await incomeCol
-    .aggregate([
-      { $match: { username, year, month: { $lte: month } } },
-      {
-        $group: {
-          _id: "$type",
-          totalGross: { $sum: "$gross" },
-          totalDeductions: { $sum: "$deductions" },
-          totalAmount: { $sum: "$amount" },
+    .aggregate(
+      [
+        { $match: { username, year, month: { $lte: month } } },
+        {
+          $group: {
+            _id: "$type",
+            totalGross: { $sum: "$gross" },
+            totalDeductions: { $sum: "$deductions" },
+            totalAmount: { $sum: "$amount" },
+          },
         },
-      },
-      {
-        $project: {
-          name: "$_id",
-          gross: "$totalGross",
-          deductions: "$totalDeductions",
-          amount: "$totalAmount",
-          _id: 0,
+        {
+          $project: {
+            name: "$_id",
+            gross: "$totalGross",
+            deductions: "$totalDeductions",
+            amount: "$totalAmount",
+            _id: 0,
+          },
         },
-      },
-      { $sort: { amount: -1 } },
-    ])
+        { $sort: { amount: -1 } },
+      ],
+      { maxTimeMS: 10000 },
+    )
     .toArray();
 
   const totalIncome = {
@@ -348,18 +354,21 @@ async function getMonthsSummaries(
 ) {
   // Get the total fixed expenses for each month
   const allFixedCategories = await categoriesCol
-    .aggregate([
-      { $match: { username, year, month: { $lte: month }, fixed: true } },
-      {
-        $project: {
-          _id: 1,
-          month: 1,
-          name: 1,
-          actual: 1,
-          parentCategoryId: 1,
+    .aggregate(
+      [
+        { $match: { username, year, month: { $lte: month }, fixed: true } },
+        {
+          $project: {
+            _id: 1,
+            month: 1,
+            name: 1,
+            actual: 1,
+            parentCategoryId: 1,
+          },
         },
-      },
-    ])
+      ],
+      { maxTimeMS: 5000 },
+    )
     .toArray();
 
   // Separate the parent and subcategories
@@ -408,44 +417,50 @@ async function getMonthsSummaries(
 
   // Get the total expenses per month based on type and transfers based on the account
   const expensesPerMonth = await transactionsCol
-    .aggregate([
-      { $match: { username, year, month: { $lte: month } } },
-      {
-        $group: {
-          _id: { month: "$month", type: "$type", toAccount: "$toAccount" },
-          totalAmount: { $sum: "$amount" },
+    .aggregate(
+      [
+        { $match: { username, year, month: { $lte: month } } },
+        {
+          $group: {
+            _id: { month: "$month", type: "$type", toAccount: "$toAccount" },
+            totalAmount: { $sum: "$amount" },
+          },
         },
-      },
-      {
-        $project: {
-          number: "$_id.month",
-          type: "$_id.type",
-          toAccount: "$_id.toAccount",
-          amount: "$totalAmount",
-          _id: 0,
+        {
+          $project: {
+            number: "$_id.month",
+            type: "$_id.type",
+            toAccount: "$_id.toAccount",
+            amount: "$totalAmount",
+            _id: 0,
+          },
         },
-      },
-    ])
+      ],
+      { maxTimeMS: 10000 },
+    )
     .toArray();
 
   // Get the total income per month
   const incomePerMonth = await incomeCol
-    .aggregate([
-      { $match: { username, year, month: { $lte: month } } },
-      {
-        $group: {
-          _id: "$month",
-          totalAmount: { $sum: "$amount" },
+    .aggregate(
+      [
+        { $match: { username, year, month: { $lte: month } } },
+        {
+          $group: {
+            _id: "$month",
+            totalAmount: { $sum: "$amount" },
+          },
         },
-      },
-      {
-        $project: {
-          number: "$_id",
-          amount: "$totalAmount",
-          _id: 0,
+        {
+          $project: {
+            number: "$_id",
+            amount: "$totalAmount",
+            _id: 0,
+          },
         },
-      },
-    ])
+      ],
+      { maxTimeMS: 10000 },
+    )
     .toArray();
 
   // Create a map to store each month's total income and expenses
@@ -520,44 +535,47 @@ async function getMonthsSummaries(
 // Get all the user's transactions for a given year
 async function getTransactions(transactionsCol, username, month, year) {
   return await transactionsCol
-    .aggregate([
-      { $match: { username, year, month: { $lte: month } } },
-      {
-        $project: {
-          type: 1,
-          date: 1,
-          createdTS: 1,
-          store: 1,
-          items: 1,
-          categoryId: 1,
-          fromAccount: 1,
-          toAccount: 1,
-          description: 1,
-          amount: { $divide: ["$amount", 100] },
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "transactionCategory",
-        },
-      },
-      {
-        $addFields: {
-          category: { $arrayElemAt: ["$transactionCategory.name", 0] },
-          color: { $arrayElemAt: ["$transactionCategory.color", 0] },
-          fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
-          parentCategoryId: {
-            $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+    .aggregate(
+      [
+        { $match: { username, year, month: { $lte: month } } },
+        {
+          $project: {
+            type: 1,
+            date: 1,
+            createdTS: 1,
+            store: 1,
+            items: 1,
+            categoryId: 1,
+            fromAccount: 1,
+            toAccount: 1,
+            description: 1,
+            amount: { $divide: ["$amount", 100] },
           },
         },
-      },
-      {
-        $project: { transactionCategory: 0 },
-      },
-      { $sort: { date: 1, createdTS: 1 } },
-    ])
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "transactionCategory",
+          },
+        },
+        {
+          $addFields: {
+            category: { $arrayElemAt: ["$transactionCategory.name", 0] },
+            color: { $arrayElemAt: ["$transactionCategory.color", 0] },
+            fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
+            parentCategoryId: {
+              $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+            },
+          },
+        },
+        {
+          $project: { transactionCategory: 0 },
+        },
+        { $sort: { date: 1, createdTS: 1 } },
+      ],
+      { maxTimeMS: 10000 },
+    )
     .toArray();
 }
