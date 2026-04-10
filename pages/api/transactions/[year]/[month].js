@@ -44,45 +44,48 @@ export default async function handler(req, res) {
 // Fetch the user's transactions for the given month and year
 async function fetchTransactions(transactionsCol, username, month, year) {
   return await transactionsCol
-    .aggregate([
-      { $match: { username, month, year } },
-      {
-        $project: {
-          type: 1,
-          date: 1,
-          createdTS: 1,
-          store: 1,
-          items: 1,
-          categoryId: 1,
-          fromAccount: 1,
-          toAccount: 1,
-          description: 1,
-          amount: { $divide: ["$amount", 100] },
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "transactionCategory",
-        },
-      },
-      {
-        $addFields: {
-          category: { $arrayElemAt: ["$transactionCategory.name", 0] },
-          color: { $arrayElemAt: ["$transactionCategory.color", 0] },
-          fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
-          parentCategoryId: {
-            $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+    .aggregate(
+      [
+        { $match: { username, month, year } },
+        {
+          $project: {
+            type: 1,
+            date: 1,
+            createdTS: 1,
+            store: 1,
+            items: 1,
+            categoryId: 1,
+            fromAccount: 1,
+            toAccount: 1,
+            description: 1,
+            amount: { $divide: ["$amount", 100] },
           },
         },
-      },
-      {
-        $project: { transactionCategory: 0 },
-      },
-      { $sort: { date: 1, createdTS: 1 } },
-    ])
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "transactionCategory",
+          },
+        },
+        {
+          $addFields: {
+            category: { $arrayElemAt: ["$transactionCategory.name", 0] },
+            color: { $arrayElemAt: ["$transactionCategory.color", 0] },
+            fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
+            parentCategoryId: {
+              $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+            },
+          },
+        },
+        {
+          $project: { transactionCategory: 0 },
+        },
+        { $sort: { date: 1, createdTS: 1 } },
+      ],
+      { maxTimeMS: 10000 },
+    )
     .toArray();
 }
 
@@ -157,7 +160,7 @@ async function addTransactions(
               year,
               name: transaction.category,
             },
-            { session },
+            { session, maxTimeMS: 5000 },
           );
 
           if (!transactionCategory) {
@@ -189,6 +192,7 @@ async function addTransactions(
         formattedTransactions,
         {
           session,
+          maxTimeMS: 5000,
         },
       );
 
