@@ -37,7 +37,7 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
     const currentParentDocs = await categoriesCol
       .find(
         { username, month, year, parentCategoryId: { $exists: false } },
-        { name: 1, _id: 0 },
+        { projection: { name: 1, _id: 0 }, maxTimeMS: 5000 },
       )
       .toArray();
 
@@ -48,11 +48,14 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
 
     // Get all the user's parent categories that aren't in the current month
     const previousParentCategories = await categoriesCol
-      .find({
-        username,
-        parentCategoryId: { $exists: false },
-        name: { $nin: currentParentNames },
-      })
+      .find(
+        {
+          username,
+          parentCategoryId: { $exists: false },
+          name: { $nin: currentParentNames },
+        },
+        { maxTimeMS: 5000 },
+      )
       .toArray();
 
     // Map their ids
@@ -62,10 +65,13 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
 
     // Fetch all the previous subcategories that aren't in the current month
     const previousSubcategories = await categoriesCol
-      .find({
-        username,
-        parentCategoryId: { $in: previousParentIds },
-      })
+      .find(
+        {
+          username,
+          parentCategoryId: { $in: previousParentIds },
+        },
+        { maxTimeMS: 5000 },
+      )
       .toArray();
 
     // Map the previous subcategories to their relating parentCategoryIds
