@@ -30,22 +30,25 @@ export default async function handler(req, res) {
 async function getBudgetMonths(res, { categoriesCol, username }) {
   try {
     const months = await categoriesCol
-      .aggregate([
-        { $match: { username } },
-        {
-          $group: {
-            _id: { month: "$month", year: "$year" },
+      .aggregate(
+        [
+          { $match: { username } },
+          {
+            $group: {
+              _id: { month: "$month", year: "$year" },
+            },
           },
-        },
-        {
-          $project: {
-            month: "$_id.month",
-            year: "$_id.year",
-            _id: 0,
+          {
+            $project: {
+              month: "$_id.month",
+              year: "$_id.year",
+              _id: 0,
+            },
           },
-        },
-        { $sort: { year: 1, month: 1 } },
-      ])
+          { $sort: { year: 1, month: 1 } },
+        ],
+        { maxTimeMS: 5000 },
+      )
       .toArray();
 
     const date = new Date();
