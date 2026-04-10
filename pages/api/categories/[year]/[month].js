@@ -213,7 +213,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
       color: formattedCategory.color,
       fixed: formattedCategory.fixed,
       budget: centsToDollars(formattedCategory.budget),
-      actual: centsToDollars(categoryActual),
+      actual: formattedCategory.fixed ? centsToDollars(categoryActual) : 0,
       subcategories: addedSubcategories,
     };
 
