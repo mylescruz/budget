@@ -19,118 +19,128 @@ export default async function handler(req, res) {
     return res.status(403).send("You do not have access to this information");
   }
 
-  const method = req?.method;
-
   // Configure MongoDB
-  const db = (await clientPromise).db(process.env.MONGO_DB);
-  const usersCol = db.collection("users");
+  const client = await clientPromise;
+  const db = client.db(process.env.MONGO_DB);
 
-  if (method === "GET") {
-    try {
-      const users = await getUsers(usersCol);
+  const usersContext = {
+    client,
+    usersCol: db.collection("users"),
+    categoriesCol: db.collection("categories"),
+    incomeCol: db.collection("income"),
+    transactionsCol: db.collection("transactions"),
+  };
 
-      // Send the users array back to the client
-      return res.status(200).json(users);
-    } catch (error) {
-      console.error(`${method} users request failed: ${error}`);
-      return res
-        .status(500)
-        .send(
-          "We're unable to load the users at the moment. Please try again later!",
-        );
-    }
-  } else if (method === "PUT") {
-    try {
-      const edittedUser = req?.body;
-
-      const result = await usersCol.updateOne(
-        { _id: new ObjectId(edittedUser.id) },
-        {
-          $set: {
-            email: edittedUser.email,
-            role: edittedUser.role,
-          },
-        },
-      );
-
-      if (result.modifiedCount === 1) {
-        // Send the updated user back to the client
-        const updatedUser = await usersCol.findOne({
-          _id: new ObjectId(edittedUser.id),
-        });
-
-        res.status(200).json(updatedUser);
-      } else {
-        // Send an error message back to the client
-        return res.status(404).send("User not found");
-      }
-    } catch (error) {
-      console.error(`${method} users request failed: ${error}`);
-      res
-        .status(500)
-        .send(
-          "We're unable to edit this user at the moment. Please try again later!",
-        );
-    }
-  } else if (method === "DELETE") {
-    try {
-      const deletedUser = req?.body;
-
-      await usersCol.deleteOne({ _id: new ObjectId(deletedUser.id) });
-
-      // Delete the users documents from the categories collection
-      await db
-        .collection("categories")
-        .deleteMany({ username: deletedUser.username });
-
-      // Delete the users documents from the transactions collection
-      await db
-        .collection("transactions")
-        .deleteMany({ username: deletedUser.username });
-
-      // Delete the users documents from the income collection
-      await db
-        .collection("income")
-        .deleteMany({ username: deletedUser.username });
-
-      // Send back the deleted user to the client
-      res.status(200).json({ id: deletedUser.id });
-    } catch (error) {
-      console.error(`${method} users request failed: ${error}`);
-      res
-        .status(500)
-        .send(
-          "We're unable to delete this user at the moment. Please try again later!",
-        );
-    }
-  } else {
-    res.status(405).send(`${method} method not allowed`);
+  switch (req.method) {
+    case "GET":
+      return getUsers(res, usersContext);
+    case "PUT":
+      return updateUser(req, res, usersContext);
+    case "DELETE":
+      return deleteUser(req, res, usersContext);
+    default:
+      return res.status(405).send(`${req.method} method not allowed`);
   }
 }
 
 // Gets all the users in the system from MongoDB
-async function getUsers(usersCol) {
-  const users = await usersCol
-    .aggregate(
-      [
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            username: 1,
-            email: 1,
-            role: 1,
-            created_date: 1,
-            onboarded: 1,
+async function getUsers(res, { usersCol }) {
+  try {
+    const users = await usersCol
+      .aggregate(
+        [
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              username: 1,
+              email: 1,
+              role: 1,
+              created_date: 1,
+              onboarded: 1,
+            },
           },
-        },
-        {
-          $sort: { created_date: -1 },
-        },
-      ],
-      { maxTimeMS: 5000 },
-    )
-    .toArray();
+          {
+            $sort: { created_date: -1 },
+          },
+        ],
+        { maxTimeMS: 5000 },
+      )
+      .toArray();
 
-  return users;
+    // Send the users array back to the client
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error(`GET admin/users request failed: ${error}`);
+
+    return res
+      .status(500)
+      .send(
+        "We're unable to load the users at the moment. Please try again later!",
+      );
+  }
+}
+
+async function updateUser(req, res, { usersCol }) {
+  try {
+    const editedUser = req.body;
+
+    await usersCol.updateOne(
+      { _id: new ObjectId(editedUser._id) },
+      {
+        $set: {
+          email: editedUser.email,
+          role: editedUser.role,
+        },
+      },
+    );
+
+    return res.status(200).json(editedUser);
+  } catch (error) {
+    console.error(`PUT admin/users request failed: ${error}`);
+
+    return res
+      .status(500)
+      .send(
+        "We're unable to edit this user at the moment. Please try again later!",
+      );
+  }
+}
+
+async function deleteUser(
+  req,
+  res,
+  { client, usersCol, categoriesCol, incomeCol, transactionsCol },
+) {
+  const mongoSession = client.startSession();
+
+  try {
+    const deletedId = req.body._id;
+    const username = req.body.username;
+
+    await mongoSession.withTransaction(async (session) => {
+      // Delete the user's account from the database
+      await usersCol.deleteOne({ _id: new ObjectId(deletedId) }, { session });
+
+      // Delete the users documents from the categories collection
+      await categoriesCol.deleteMany({ username }, { session });
+
+      // Delete the users documents from the transactions collection
+      await transactionsCol.deleteMany({ username }, { session });
+
+      // Delete the users documents from the income collection
+      await incomeCol.deleteMany({ username }, { session });
+    });
+
+    // Send back the deleted user to the client
+    return res.status(200).send("The user was deleted successfully!");
+  } catch (error) {
+    console.error(`DELETE admin/users request failed: ${error}`);
+
+    return res
+      .status(500)
+      .send(
+        "We're unable to delete this user at the moment. Please try again later!",
+      );
+  }
 }

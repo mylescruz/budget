@@ -32,7 +32,7 @@ const UsersLayout = () => {
                 {users ? (
                   users.map((user) => (
                     <UsersTableRow
-                      key={user.id}
+                      key={user._id}
                       user={user}
                       putUser={putUser}
                       deleteUser={deleteUser}

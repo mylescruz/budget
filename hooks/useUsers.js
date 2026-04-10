@@ -88,7 +88,7 @@ const useUsers = () => {
 
       setUsers((prev) =>
         prev.map((user) => {
-          if (user.id === updatedUser.id) {
+          if (user._id === updatedUser._id) {
             return updatedUser;
           }
 
@@ -112,7 +112,7 @@ const useUsers = () => {
     }
   };
 
-  const deleteUser = async (userToDelete) => {
+  const deleteUser = async (deletedUser) => {
     setUsersRequest({
       action: "delete",
       status: "loading",
@@ -126,7 +126,7 @@ const useUsers = () => {
           Accept: "application.json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(userToDelete),
+        body: JSON.stringify(deletedUser),
       });
 
       if (!response.ok) {
@@ -134,18 +134,18 @@ const useUsers = () => {
         throw new Error(message);
       }
 
-      const deletedUser = await response.json();
+      const message = await response.text();
 
       setUsers((prev) =>
         prev.filter((user) => {
-          return user.id !== deletedUser.id;
+          return user._id !== deletedUser._id;
         }),
       );
 
       setUsersRequest({
         action: "delete",
         status: "success",
-        message: null,
+        message: message,
       });
     } catch (error) {
       setUsersRequest({
