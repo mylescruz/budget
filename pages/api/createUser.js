@@ -62,7 +62,7 @@ async function addUser(newUser, usersCol) {
   };
 
   // Add the new user to MongoDB
-  const insertedUser = await usersCol.insertOne(userInfo);
+  const insertedUser = await usersCol.insertOne(userInfo, { maxTimeMS: 5000 });
 
   // Remove the password from the user object
   const { password_hash, ...user } = userInfo;
