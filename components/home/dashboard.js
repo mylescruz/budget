@@ -8,19 +8,24 @@ import {
 } from "@/contexts/CategoriesContext";
 import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
-import { TransactionsProvider } from "@/contexts/TransactionsContext";
+import {
+  TransactionsContext,
+  TransactionsProvider,
+} from "@/contexts/TransactionsContext";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../ui/loadingIndicator";
 import useMonthIncome from "@/hooks/useMonthIncome";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../category/categoryBadge";
 import AddTransactionsModal from "../budget/transactions/addTransactionsModal/addTransactionsModal";
+import SuccessMessage from "../ui/successMessage";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
   const { categories, categoriesRequest } = useContext(CategoriesContext);
+  const { transactionsRequest } = useContext(TransactionsContext);
   const { monthIncome, monthIncomeRequest } = useMonthIncome(
     dateInfo.month,
     dateInfo.year,
@@ -60,6 +65,8 @@ const InnerDashboard = ({ dateInfo }) => {
   if (
     (categoriesRequest.action === "get" &&
       categoriesRequest.status === "loading") ||
+    (transactionsRequest.action === "get" &&
+      transactionsRequest.status === "loading") ||
     (monthIncomeRequest.action === "get" &&
       monthIncomeRequest.status === "loading")
   ) {
@@ -191,6 +198,14 @@ const InnerDashboard = ({ dateInfo }) => {
             setModal={setModal}
           />
         )}
+
+        <SuccessMessage
+          show={
+            transactionsRequest.action === "create" &&
+            transactionsRequest.status === "success"
+          }
+          message={transactionsRequest.message}
+        />
       </Container>
     );
   }
