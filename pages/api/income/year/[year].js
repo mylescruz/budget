@@ -153,6 +153,7 @@ async function addIncome(req, res, { client, incomeCol, username }) {
       // Add the new sources to the income collection in MongoDB
       insertedResult = await incomeCol.insertMany(incomeSources, {
         session,
+        maxTimeMS: 5000,
       });
 
       // Update the Fun Money category for each month that a paycheck was added to
