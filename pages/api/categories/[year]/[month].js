@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
 // Get the user's categories from MongoDB
 async function getCategories(req, res, { client, categoriesCol, username }) {
-  const mongoSession = await client.startSession();
+  const mongoSession = client.startSession();
 
   try {
     const month = parseInt(req.query.month);
@@ -72,7 +72,7 @@ async function getCategories(req, res, { client, categoriesCol, username }) {
 
 // Add a new category for the user in MongoDB
 async function addCategory(req, res, { client, categoriesCol, username }) {
-  const mongoSession = await client.startSession();
+  const mongoSession = client.startSession();
 
   try {
     const month = parseInt(req.query.month);
@@ -145,6 +145,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
     await mongoSession.withTransaction(async (session) => {
       insertedCategory = await categoriesCol.insertOne(formattedCategory, {
         session,
+        maxTimeMS: 10000,
       });
 
       if (newSubcategories.length > 0) {
@@ -158,7 +159,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
 
         insertedSubcategories = await categoriesCol.insertMany(
           formattedSubcategories,
-          { session },
+          { session, maxTimeMS: 10000 },
         );
       }
 
@@ -269,7 +270,7 @@ async function getCurrentCategories(
           },
         },
       ],
-      { session },
+      { session, maxTimeMS: 10000 },
     )
     .toArray();
 
@@ -423,16 +424,23 @@ async function getPreviousCategories(
   session,
 ) {
   const latestCategories = await categoriesCol
-    .find(
-      {
-        username: username,
-        $or: [{ year: { $lt: year } }, { year: year, month: { $lt: month } }],
-      },
-      { projection: { month: 1, year: 1, _id: 0 } },
-      { session },
+    .aggregate(
+      [
+        {
+          $match: {
+            username: username,
+            $or: [
+              { year: { $lt: year } },
+              { year: year, month: { $lt: month } },
+            ],
+          },
+        },
+        { $project: { month: 1, year: 1, _id: 0 } },
+        { $sort: { year: -1, month: -1 } },
+        { $limit: 1 },
+      ],
+      { session, maxTimeMS: 10000 },
     )
-    .sort({ year: -1, month: -1 })
-    .limit(1)
     .toArray();
 
   if (latestCategories.length === 0) {
@@ -543,7 +551,7 @@ async function generateMissingMonths({
           },
           { $sort: { year: 1, month: 1 } },
         ],
-        { session },
+        { session, maxTimeMS: 10000 },
       )
       .toArray();
 
@@ -579,7 +587,7 @@ async function generateMissingMonths({
               ),
             },
           },
-          { session },
+          { session, maxTimeMS: 10000 },
         )
         .toArray();
 
@@ -614,7 +622,7 @@ async function generateMissingMonths({
       // Insert the new parent categories without the old _id
       const insertedParentCategories = await categoriesCol.insertMany(
         formattedParentCategories.map(({ oldId, ...category }) => category),
-        { session },
+        { session, maxTimeMS: 10000 },
       );
 
       const parentIdMap = new Map();
@@ -660,7 +668,10 @@ async function generateMissingMonths({
         }
       });
 
-      await categoriesCol.insertMany(subcategories, { session });
+      await categoriesCol.insertMany(subcategories, {
+        session,
+        maxTimeMS: 10000,
+      });
 
       // Update user's Fun Money category for the missing month
       await updateFunMoney({
