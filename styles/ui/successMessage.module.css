@@ -1,0 +1,25 @@
+.messageContainer {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #4caf50;
+  color: white;
+  height: 50px;
+  width: 75%;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.showMessage {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Medium screens (≥768px) */
+@media (min-width: 768px) {
+  .messageContainer {
+    width: 50%;
+  }
+}
