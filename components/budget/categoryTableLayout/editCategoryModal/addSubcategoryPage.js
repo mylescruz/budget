@@ -34,7 +34,7 @@ const AddSubcategoryPage = ({
 
     // Set the budget value to cents or 0 if it is a new not fixed subcategory
     if (!editedCategory.fixed) {
-      newSubcategory.budget = 0;
+      newSubcategory.actual = 0;
     } else {
       newSubcategory.budget = Number(newSubcategory.budget);
     }
