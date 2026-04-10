@@ -28,6 +28,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
     repeating: false,
     frequency: PAYCHECK_FREQUENCIES.WEEKLY,
     endRepeatDate: sourceDate,
+    new: true,
   };
 
   const [source, setSource] = useState(emptySource);

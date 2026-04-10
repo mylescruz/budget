@@ -104,61 +104,65 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
           onChange={handleInput}
         />
       </Form.Group>
-      <Form.Group controlId="repeating" className="my-3">
-        <Form.Label>Is this a repeating paycheck?</Form.Label>
-        <div>
-          <Button
-            className={`${
-              source.repeating
-                ? "bg-primary border border-primary"
-                : "bg-secondary border border-secondary"
-            }`}
-            onClick={setRepeating}
-          >
-            Yes
-          </Button>
-          <Button
-            className={`mx-2 ${
-              !source.repeating
-                ? "bg-primary border border-primary"
-                : "bg-secondary border border-secondary"
-            }`}
-            onClick={setRepeating}
-          >
-            No
-          </Button>
-        </div>
-      </Form.Group>
-      {source.repeating && (
-        <div>
-          <Form.Group controlId="frequency" className="mb-3">
-            <Form.Label>How often do you get paid?</Form.Label>
-            <Form.Select
-              className="h-100"
-              value={source.frequency}
-              onChange={handleInput}
-              required
-            >
-              {PAYCHECK_FREQUENCIES_LIST.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </Form.Select>
+      {source.new && (
+        <>
+          <Form.Group controlId="repeating" className="my-3">
+            <Form.Label>Is this a repeating paycheck?</Form.Label>
+            <div>
+              <Button
+                className={`${
+                  source.repeating
+                    ? "bg-primary border border-primary"
+                    : "bg-secondary border border-secondary"
+                }`}
+                onClick={setRepeating}
+              >
+                Yes
+              </Button>
+              <Button
+                className={`mx-2 ${
+                  !source.repeating
+                    ? "bg-primary border border-primary"
+                    : "bg-secondary border border-secondary"
+                }`}
+                onClick={setRepeating}
+              >
+                No
+              </Button>
+            </div>
           </Form.Group>
-          <Form.Group controlId="endRepeatDate" className="my-3">
-            <Form.Label>Repeat until?</Form.Label>
-            <Form.Control
-              className="h-100"
-              type="date"
-              min={source.date}
-              max={`${year}-12-31`}
-              value={source.endRepeatDate}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-        </div>
+          {source.repeating && (
+            <div>
+              <Form.Group controlId="frequency" className="mb-3">
+                <Form.Label>How often do you get paid?</Form.Label>
+                <Form.Select
+                  className="h-100"
+                  value={source.frequency}
+                  onChange={handleInput}
+                  required
+                >
+                  {PAYCHECK_FREQUENCIES_LIST.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group controlId="endRepeatDate" className="my-3">
+                <Form.Label>Repeat until?</Form.Label>
+                <Form.Control
+                  className="h-100"
+                  type="date"
+                  min={source.date}
+                  max={`${year}-12-31`}
+                  value={source.endRepeatDate}
+                  onChange={handleInput}
+                  required
+                />
+              </Form.Group>
+            </div>
+          )}
+        </>
       )}
     </>
   );

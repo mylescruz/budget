@@ -55,7 +55,7 @@ const InnerIncomeLayout = ({ year }) => {
   const openIncomeDetails = (sourceId) => {
     const foundSource = income.find((source) => source._id === sourceId);
 
-    setChosenSource(foundSource);
+    setChosenSource({ ...foundSource, new: false });
 
     setModal("incomeDetails");
   };
