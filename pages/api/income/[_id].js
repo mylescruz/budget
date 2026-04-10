@@ -77,7 +77,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
               amount: updatedSource.amount,
             },
           },
-          { session },
+          { session, maxTimeMS: 5000 },
         );
       } else {
         await incomeCol.updateOne(
@@ -92,7 +92,7 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
               amount: updatedSource.amount,
             },
           },
-          { session },
+          { session, maxTimeMS },
         );
       }
 
@@ -151,7 +151,10 @@ async function deleteIncome(req, res, { client, incomeCol, username }) {
 
     await mongoSession.withTransaction(async (session) => {
       // Delete the given source from MongoDB
-      await incomeCol.deleteOne({ _id: new ObjectId(sourceId) }, { session });
+      await incomeCol.deleteOne(
+        { _id: new ObjectId(sourceId) },
+        { session, maxTimeMS: 5000 },
+      );
 
       // Define the source's date identifiers
       const sourceDate = new Date(`${source.date}T00:00:00Z`);
