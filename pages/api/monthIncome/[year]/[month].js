@@ -24,7 +24,10 @@ export default async function handler(req, res) {
     try {
       // Get all the sources of income for the given month
       const income = await incomeCol
-        .find({ username: username, month: month, year: year })
+        .find(
+          { username: username, month: month, year: year },
+          { maxTimeMS: 5000 },
+        )
         .toArray();
 
       if (income.length === 0) {
