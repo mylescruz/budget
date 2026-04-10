@@ -204,7 +204,7 @@ const useCategories = (month, year) => {
     }
   };
 
-  const deleteCategory = async (categoryId) => {
+  const deleteCategory = async (deletedCategory) => {
     setCategoriesRequest({
       action: "delete",
       status: "loading",
@@ -212,7 +212,7 @@ const useCategories = (month, year) => {
     });
 
     try {
-      const response = await fetch(`/api/category/${categoryId}`, {
+      const response = await fetch(`/api/category/${deletedCategory._id}`, {
         method: "DELETE",
         headers: {
           Accept: "application.json",
@@ -225,16 +225,33 @@ const useCategories = (month, year) => {
         throw new Error(message);
       }
 
-      setCategories((prev) =>
-        prev.filter((category) => {
-          return category._id !== categoryId;
-        }),
-      );
+      setCategories((prev) => {
+        return prev
+          .filter((category) => {
+            // Remove the deleted category from the budget
+            return category._id !== deletedCategory._id;
+          })
+          .map((category) => {
+            // Update the Fun Money's budget based on the new category's budget
+            if (category.name === FUN_MONEY) {
+              return {
+                ...category,
+                budget: addDecimalValues(
+                  category.budget,
+                  deletedCategory.budget,
+                ),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => b.budget - a.budget);
+      });
 
       setCategoriesRequest({
         action: "delete",
         status: "success",
-        message: "Successfully deleted this category!",
+        message: `Successfully deleted the category: ${deletedCategory.name}`,
       });
     } catch (error) {
       setCategoriesRequest({

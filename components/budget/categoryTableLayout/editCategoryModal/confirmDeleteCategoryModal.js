@@ -22,10 +22,7 @@ const ConfirmDeleteCategoryModal = ({
     setStatus("deleting");
 
     try {
-      await deleteCategory(editedCategory._id);
-
-      // Fetch the updated categories to show changes to the Fun Money category's budget
-      await getCategories(dateInfo.month, dateInfo.year);
+      await deleteCategory(editedCategory);
 
       setModal("none");
     } catch (error) {
