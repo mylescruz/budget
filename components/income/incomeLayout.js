@@ -9,6 +9,7 @@ import EditIncomeModal from "./editIncomeModal";
 import IncomeDetailsModal from "./incomeDetailsModal";
 import DeleteIncomeModal from "./deleteIncomeModal";
 import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
+import SuccessMessage from "../ui/successMessage";
 
 const InnerIncomeLayout = ({ year }) => {
   const {
@@ -125,6 +126,13 @@ const InnerIncomeLayout = ({ year }) => {
             setModal={setModal}
           />
         )}
+
+        <SuccessMessage
+          show={
+            incomeRequest.action !== "get" && incomeRequest.status === "success"
+          }
+          message={incomeRequest.message}
+        />
       </Container>
     );
   }
