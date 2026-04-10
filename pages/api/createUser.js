@@ -24,20 +24,16 @@ export default async function handler(req, res) {
 
 async function createNewUser(req, res, usersCol) {
   try {
-    const newUser = {
-      ...req.body,
-      name: req.body.name.trim(),
-      username: req.body.username.toLowerCase().trim(),
-    };
+    const newUser = req.body;
 
     // Add the user to MongoDB
     const insertedUser = await addUser(newUser, usersCol);
 
     // Return the new user
-    res.status(200).json(insertedUser);
+    return res.status(200).json(insertedUser);
   } catch (error) {
     console.error(`POST createUser request failed: ${error}`);
-    res
+    return res
       .status(500)
       .send(
         "Sorry! We're unable to create your new account at the moment. Please try again later!",
@@ -49,16 +45,17 @@ async function addUser(newUser, usersCol) {
   // Encrypt the user's entered password by using bcrypt
   const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
 
-  const createdDate = new Date().toUTCString();
+  const currentTS = new Date();
 
   const userInfo = {
     name: newUser.name.trim(),
     email: newUser.email.trim(),
-    username: newUser.username,
+    username: newUser.username.toLowerCase().trim(),
     password_hash: hashedPassword,
     role: USER_ROLE,
+    active: true,
     onboarded: false,
-    created_date: createdDate,
+    createdTS: currentTS,
   };
 
   // Add the new user to MongoDB

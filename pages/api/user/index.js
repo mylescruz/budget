@@ -151,8 +151,16 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
           .send("Passwords do not match. Cannot delete the user.");
       }
 
-      // Delete the user from the users collection
-      await usersCol.deleteOne({ _id: new ObjectId(_id) }, { session });
+      // Archive the user instead of deleting their account details
+      await usersCol.updateOne(
+        { _id: new ObjectId(_id) },
+        {
+          $set: {
+            active: false,
+          },
+        },
+        { session },
+      );
 
       // Delete the user's documents from the categories collection
       await db.collection("categories").deleteMany({ username }, { session });
