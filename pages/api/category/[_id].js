@@ -112,7 +112,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             // Delete the flagged subcategories
             await categoriesCol.deleteOne(
               { _id: new ObjectId(subcategory._id) },
-              { session },
+              { session, maxTimeMS: 5000 },
             );
           } else if (subcategory.added) {
             // Add the new subcategory to the budget
@@ -135,7 +135,10 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
               editedCategory.budget += dollarsToCents(subcategory.budget);
             }
 
-            await categoriesCol.insertOne(formattedSubcategory);
+            await categoriesCol.insertOne(formattedSubcategory, {
+              session,
+              maxTimeMS: 5000,
+            });
           } else {
             const subcategoryQuery = {
               name: subcategory.name,
@@ -150,7 +153,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             await categoriesCol.updateOne(
               { _id: new ObjectId(subcategory._id) },
               { $set: subcategoryQuery },
-              { session },
+              { session, maxTimeMS: 5000 },
             );
           }
         }
@@ -169,7 +172,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       await categoriesCol.updateOne(
         { _id: new ObjectId(categoryId) },
         { $set: categoryQuery },
-        { session },
+        { session, maxTimeMS: 5000 },
       );
 
       // Update the name and color for all the categories with that name
@@ -181,7 +184,7 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
             color: editedCategory.color,
           },
         },
-        { session },
+        { session, maxTimeMS: 5000 },
       );
 
       // Update the Fun Money category for the category's month
@@ -289,7 +292,7 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
         {
           _id: new ObjectId(categoryId),
         },
-        { session },
+        { session, maxTimeMS: 5000 },
       );
 
       if (!category) {
@@ -304,7 +307,7 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
             { parentCategoryId: new ObjectId(categoryId) },
           ],
         },
-        { session },
+        { session, maxTimeMS: 5000 },
       );
 
       // Update the Fun Money category for the category's month
