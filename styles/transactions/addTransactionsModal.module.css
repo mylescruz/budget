@@ -10,6 +10,13 @@
   }
 }
 
+.addMultipleButton {
+  border: dashed;
+  border-color: var(--bs-primary);
+  background-color: white;
+  color: var(--bs-primary);
+}
+
 .edit {
   &:hover {
     cursor: pointer;

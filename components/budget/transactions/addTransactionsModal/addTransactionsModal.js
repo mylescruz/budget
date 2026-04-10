@@ -282,8 +282,11 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
                     <hr />
                   </div>
                 ))}
-                <Button onClick={addNewTransaction}>
-                  Add Another Transaction
+                <Button
+                  className={styles.addMultipleButton}
+                  onClick={addNewTransaction}
+                >
+                  + Add Another Transaction
                 </Button>
               </div>
               {formMeta.error && (
