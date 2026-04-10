@@ -65,13 +65,14 @@ const InnerIncomeLayout = ({ year }) => {
   } else {
     return (
       <Container>
-        {income && <IncomeTotalsLayout incomeTotals={incomeTotals} />}
-
-        <Container className="text-center mt-2">
+        <Container className="d-flex align-items-center justify-content-between col-12 col-xl-10 mx-auto">
+          <h4>Income Sources</h4>
           <Button variant="primary" onClick={openAddModal}>
-            Add Income
+            + Add Income
           </Button>
         </Container>
+
+        {income && <IncomeTotalsLayout incomeTotals={incomeTotals} />}
 
         {income ? (
           <Row className="d-flex align-items-center col-12 col-xl-10 mt-2 mb-4 mx-auto">
