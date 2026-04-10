@@ -117,7 +117,7 @@ async function createAccount(
         }
       });
 
-      await incomeCol.insertMany(incomeSources, { session });
+      await incomeCol.insertMany(incomeSources, { session, maxTimeMS: 5000 });
 
       if (!newUser.customCategories) {
         // Assign the default categories to the user
@@ -156,7 +156,7 @@ async function createAccount(
             onboarded: true,
           },
         },
-        { session },
+        { session, maxTimeMS: 5000 },
       );
     });
 
@@ -189,7 +189,7 @@ async function addUserDefaultCategories({
         { $match: { defaultCategory: true } },
         { $project: { defaultCategory: 0 } },
       ],
-      { session },
+      { session, maxTimeMS: 5000 },
     )
     .toArray();
 
@@ -217,6 +217,7 @@ async function addUserDefaultCategories({
     parentCategories.map(({ _id, ...category }) => category),
     {
       session,
+      maxTimeMS: 5000,
     },
   );
 
@@ -247,6 +248,7 @@ async function addUserDefaultCategories({
   // Insert the parent categories to get their _id
   await categoriesCol.insertMany(formattedSubcategories, {
     session,
+    maxTimeMS: 5000,
   });
 }
 
@@ -321,6 +323,7 @@ async function createUserCategories({
 
     const insertedCategory = await categoriesCol.insertOne(formattedCategory, {
       session,
+      maxTimeMS: 5000,
     });
 
     // If there are subcategories, assign the category's _id to all the subcategories' parentCategoryId
@@ -332,7 +335,10 @@ async function createUserCategories({
         };
       });
 
-      await categoriesCol.insertMany(formattedSubcategories, { session });
+      await categoriesCol.insertMany(formattedSubcategories, {
+        session,
+        maxTimeMS: 5000,
+      });
     }
   }
 }
