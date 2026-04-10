@@ -134,6 +134,20 @@ const UserModal = ({
               </Col>
             </Row>
           </Form.Group>
+          <Form.Group controlId="created-date" className="my-2">
+            <Row className="d-flex align-items-center">
+              <Col className="col-12 col-sm-2">
+                <Form.Label>Last Login</Form.Label>
+              </Col>
+              <Col className="col-12 col-sm-10">
+                <Form.Control
+                  type="text"
+                  value={edittedUser.lastLoginTS}
+                  disabled
+                />
+              </Col>
+            </Row>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer className="">
           <Row className="d-flex w-100">

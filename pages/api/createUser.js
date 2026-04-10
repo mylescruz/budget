@@ -56,6 +56,7 @@ async function addUser(newUser, usersCol) {
     active: true,
     onboarded: false,
     createdTS: currentTS,
+    lastLoginTS: currentTS,
   };
 
   // Add the new user to MongoDB

@@ -58,6 +58,7 @@ async function getUsers(res, { usersCol }) {
               role: 1,
               active: 1,
               createdTS: 1,
+              lastLoginTS: 1,
               onboarded: 1,
             },
           },
