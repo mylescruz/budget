@@ -1,8 +1,8 @@
 .messageContainer {
   position: fixed;
-  bottom: 20px;
+  bottom: 100px;
   left: 50%;
-  transform: translateX(-50%) translateY(100px);
+  transform: translateX(-50%) translateY(150px);
   background: #4caf50;
   color: white;
   height: 50px;

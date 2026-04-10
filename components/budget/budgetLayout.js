@@ -15,6 +15,7 @@ import TotalsLayout from "./totals/totalsLayout";
 import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 import useMonthIncome from "@/hooks/useMonthIncome";
+import SuccessMessage from "../ui/successMessage";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesRequest } = useContext(CategoriesContext);
@@ -33,6 +34,14 @@ const InnerBudgetLayout = ({ dateInfo }) => {
           transactionsRequest.status === "loading") ||
         (monthIncomeRequest.action === "get" &&
           monthIncomeRequest.status === "loading"),
+      categorySuccess:
+        categoriesRequest.action !== "get" &&
+        categoriesRequest.status === "success",
+      transactionSuccess:
+        transactionsRequest.action !== "get" &&
+        transactionsRequest.status === "success",
+      categoryMessage: categoriesRequest.message,
+      transactionMessage: transactionsRequest.message,
     }),
     [categoriesRequest, transactionsRequest, monthIncomeRequest],
   );
@@ -68,6 +77,15 @@ const InnerBudgetLayout = ({ dateInfo }) => {
             <TransactionsLayout dateInfo={dateInfo} />
           </Col>
         </Row>
+
+        <SuccessMessage
+          show={budgetStatus.categorySuccess || budgetStatus.transactionSuccess}
+          message={
+            budgetStatus.categorySuccess
+              ? budgetStatus.categoryMessage
+              : transactionsRequest.message
+          }
+        />
       </Container>
     );
   }
