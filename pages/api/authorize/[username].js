@@ -18,9 +18,12 @@ export default async function handler(req, res) {
 // Check if the username is already used in the app
 async function checkUsername(req, res, usersCol) {
   try {
-    const user = await usersCol.findOne({
-      username: req.query.username.toLowerCase(),
-    });
+    const user = await usersCol.findOne(
+      {
+        username: req.query.username.toLowerCase(),
+      },
+      { maxTimeMS: 5000 },
+    );
 
     if (user) {
       // Send a response showing the username exists
