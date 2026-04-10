@@ -41,25 +41,26 @@ async function getIncome(req, res, { incomeCol, username }) {
   const year = parseInt(req.query.year);
 
   try {
-    const incomeDocs = await incomeCol.find({ username, year }).toArray();
-
-    const income = incomeDocs.map((source) => {
-      const formattedSource = {
-        _id: source._id,
-        date: source.date,
-        type: source.type,
-        name: source.name,
-        description: source.description,
-        amount: centsToDollars(source.amount),
-      };
-
-      if (source.type === INCOME_TYPES.PAYCHECK) {
-        formattedSource.gross = centsToDollars(source.gross);
-        formattedSource.deductions = centsToDollars(source.deductions);
-      }
-
-      return formattedSource;
-    });
+    const income = await incomeCol
+      .aggregate(
+        [
+          { $match: { username, year } },
+          {
+            $project: {
+              _id: 1,
+              date: 1,
+              type: 1,
+              name: 1,
+              description: 1,
+              gross: { $divide: ["$gross", 100] },
+              deductions: { $divide: ["$deductions", 100] },
+              amount: { $divide: ["$amount", 100] },
+            },
+          },
+        ],
+        { maxTimeMS: 5000 },
+      )
+      .toArray();
 
     return res.status(200).json(income);
   } catch (error) {
