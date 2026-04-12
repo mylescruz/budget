@@ -9,9 +9,9 @@ import { useEffect, useState } from "react";
 const useMonthIncome = (month, year) => {
   const [monthIncome, setMonthIncome] = useState(null);
   const [monthIncomeRequest, setMonthIncomeRequest] = useState({
-    action: "get", // get | null
+    action: "get", // get
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting your income for the month",
   });
 
   useEffect(() => {
@@ -19,12 +19,6 @@ const useMonthIncome = (month, year) => {
   }, [month, year]);
 
   const getMonthIncome = async () => {
-    setMonthIncomeRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your income for the month",
-    });
-
     try {
       const response = await fetch(`/api/monthIncome/${year}/${month}`);
 

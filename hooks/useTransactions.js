@@ -32,9 +32,9 @@ import { useEffect, useMemo, useState } from "react";
 const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState(null);
   const [transactionsRequest, setTransactionsRequest] = useState({
-    action: "get", // get | create | update | delete | null
+    action: "get", // get | create | update | delete
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting your transactions for the month",
   });
 
   useEffect(() => {
@@ -42,12 +42,6 @@ const useTransactions = (month, year) => {
   }, [month, year]);
 
   const getTransactions = async () => {
-    setTransactionsRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your transactions for the month",
-    });
-
     try {
       const response = await fetch(`/api/transactions/${year}/${month}`);
 

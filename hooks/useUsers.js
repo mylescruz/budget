@@ -18,9 +18,9 @@ import { useEffect, useState } from "react";
 const useUsers = () => {
   const [users, setUsers] = useState(null);
   const [usersRequest, setUsersRequest] = useState({
-    action: "get", // get | update | delete | null
+    action: "get", // get | update | delete
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting all the Type-A Budget users",
   });
 
   useEffect(() => {
@@ -28,12 +28,6 @@ const useUsers = () => {
   }, []);
 
   const getUsers = async () => {
-    setUsersRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting all the Type-A Budget users",
-    });
-
     try {
       const response = await fetch("/api/admin/users");
 

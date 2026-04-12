@@ -77,9 +77,9 @@ import { useEffect, useState } from "react";
 const useSummary = (year) => {
   const [summary, setSummary] = useState(null);
   const [summaryRequest, setSummaryRequest] = useState({
-    action: "get", // get | null
+    action: "get", // get
     status: "loading", // loading | success | error
-    message: null,
+    message: `Getting your budget summary for ${year}`,
   });
 
   useEffect(() => {
@@ -87,12 +87,6 @@ const useSummary = (year) => {
   }, [year]);
 
   const getSummary = async () => {
-    setSummaryRequest({
-      action: "get",
-      status: "loading",
-      message: `Getting your budget summary for ${year}`,
-    });
-
     try {
       const response = await fetch(`/api/summary/${year}`);
 

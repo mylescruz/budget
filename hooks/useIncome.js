@@ -23,9 +23,9 @@ import { useEffect, useMemo, useState } from "react";
 const useIncome = (year) => {
   const [income, setIncome] = useState(null);
   const [incomeRequest, setIncomeRequest] = useState({
-    action: "get", // get | create | update | delete | null
+    action: "get", // get | create | update | delete
     status: "loading", // loading | success | error
-    message: null,
+    message: `Getting all your income for ${year}`,
   });
 
   useEffect(() => {
@@ -33,12 +33,6 @@ const useIncome = (year) => {
   }, [year]);
 
   const getIncome = async () => {
-    setIncomeRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your income",
-    });
-
     try {
       const response = await fetch(`/api/income/year/${year}`);
 

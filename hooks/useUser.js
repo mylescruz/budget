@@ -15,9 +15,9 @@ import { useEffect, useState } from "react";
 const useUser = () => {
   const [user, setUser] = useState(null);
   const [userRequest, setUserRequest] = useState({
-    action: "get", // get | update | delete | null
+    action: "get", // get | update | delete
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting your account details",
   });
 
   useEffect(() => {
@@ -25,12 +25,6 @@ const useUser = () => {
   }, []);
 
   const getUser = async () => {
-    setUserRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your account details",
-    });
-
     try {
       const response = await fetch("/api/user");
 

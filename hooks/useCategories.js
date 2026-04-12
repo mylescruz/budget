@@ -40,9 +40,9 @@ import { TRANSFER_ACCOUNTS } from "@/lib/constants/transactions";
 const useCategories = (month, year) => {
   const [categories, setCategories] = useState(null);
   const [categoriesRequest, setCategoriesRequest] = useState({
-    action: "get", // get | create | update | delete | null
+    action: "get", // get | create | update | delete
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting your categories for the month",
   });
 
   useEffect(() => {
@@ -50,12 +50,6 @@ const useCategories = (month, year) => {
   }, [month, year]);
 
   const getCategories = async () => {
-    setCategoriesRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your categories",
-    });
-
     try {
       const response = await fetch(`/api/categories/${year}/${month}`);
 

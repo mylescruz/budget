@@ -14,9 +14,9 @@ import { useEffect, useState } from "react";
 const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState(null);
   const [budgetMonthsRequest, setBudgetMonthsRequest] = useState({
-    action: "get", // get | null
+    action: "get", // get
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting your budget months",
   });
 
   useEffect(() => {
@@ -24,12 +24,6 @@ const useBudgetMonths = () => {
   }, []);
 
   const getBudgetMonths = async () => {
-    setBudgetMonthsRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your budget months",
-    });
-
     try {
       const response = await fetch("/api/budgetMonths");
 

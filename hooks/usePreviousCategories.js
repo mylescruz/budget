@@ -33,9 +33,9 @@ import { useEffect, useState } from "react";
 const usePreviousCategories = (month, year) => {
   const [previousCategories, setPreviousCategories] = useState(null);
   const [previousCategoriesRequest, setPreviousCategoriesRequest] = useState({
-    action: "get", // get | null
+    action: "get", // get
     status: "loading", // loading | success | error
-    message: null,
+    message: "Getting your previously created categories",
   });
 
   useEffect(() => {
@@ -43,12 +43,6 @@ const usePreviousCategories = (month, year) => {
   }, [month, year]);
 
   const getPreviousCategories = async () => {
-    setPreviousCategoriesRequest({
-      action: "get",
-      status: "loading",
-      message: "Getting your previously created categories",
-    });
-
     try {
       const response = await fetch(`/api/categories/previous/${year}/${month}`);
 
