@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const useMonthIncome = (month, year) => {
   const [monthIncome, setMonthIncome] = useState(null);
   const [monthIncomeRequest, setMonthIncomeRequest] = useState({
-    action: null, // get | null
+    action: "get", // get | null
     status: "loading", // loading | success | error
     message: null,
   });

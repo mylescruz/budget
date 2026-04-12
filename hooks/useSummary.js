@@ -77,7 +77,7 @@ import { useEffect, useState } from "react";
 const useSummary = (year) => {
   const [summary, setSummary] = useState(null);
   const [summaryRequest, setSummaryRequest] = useState({
-    action: null, // get | null
+    action: "get", // get | null
     status: "loading", // loading | success | error
     message: null,
   });

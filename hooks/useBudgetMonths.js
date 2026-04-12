@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 const useBudgetMonths = () => {
   const [budgetMonths, setBudgetMonths] = useState(null);
   const [budgetMonthsRequest, setBudgetMonthsRequest] = useState({
-    action: null, // get | null
+    action: "get", // get | null
     status: "loading", // loading | success | error
     message: null,
   });

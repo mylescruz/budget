@@ -32,7 +32,7 @@ import { useEffect, useMemo, useState } from "react";
 const useTransactions = (month, year) => {
   const [transactions, setTransactions] = useState(null);
   const [transactionsRequest, setTransactionsRequest] = useState({
-    action: null, // get | create | update | delete | null
+    action: "get", // get | create | update | delete | null
     status: "loading", // loading | success | error
     message: null,
   });
