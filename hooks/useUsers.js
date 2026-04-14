@@ -28,6 +28,12 @@ const useUsers = () => {
   }, []);
 
   const getUsers = async () => {
+    setUsersRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting all the Type-A Budget users",
+    });
+
     try {
       const response = await fetch("/api/admin/users");
 

@@ -50,6 +50,12 @@ const useCategories = (month, year) => {
   }, [month, year]);
 
   const getCategories = async () => {
+    setCategoriesRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your categories for the month",
+    });
+
     try {
       const response = await fetch(`/api/categories/${year}/${month}`);
 

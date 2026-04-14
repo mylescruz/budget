@@ -19,6 +19,12 @@ const useMonthIncome = (month, year) => {
   }, [month, year]);
 
   const getMonthIncome = async () => {
+    setMonthIncomeRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your income for the month",
+    });
+
     try {
       const response = await fetch(`/api/monthIncome/${year}/${month}`);
 

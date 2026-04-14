@@ -43,6 +43,12 @@ const usePreviousCategories = (month, year) => {
   }, [month, year]);
 
   const getPreviousCategories = async () => {
+    setPreviousCategoriesRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your previously created categories",
+    });
+
     try {
       const response = await fetch(`/api/categories/previous/${year}/${month}`);
 

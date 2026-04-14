@@ -42,6 +42,12 @@ const useTransactions = (month, year) => {
   }, [month, year]);
 
   const getTransactions = async () => {
+    setTransactionsRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your transactions for the month",
+    });
+
     try {
       const response = await fetch(`/api/transactions/${year}/${month}`);
 

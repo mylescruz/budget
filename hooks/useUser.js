@@ -25,6 +25,12 @@ const useUser = () => {
   }, []);
 
   const getUser = async () => {
+    setUserRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your account details",
+    });
+
     try {
       const response = await fetch("/api/user");
 

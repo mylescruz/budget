@@ -33,6 +33,12 @@ const useIncome = (year) => {
   }, [year]);
 
   const getIncome = async () => {
+    setIncomeRequest({
+      action: "get",
+      status: "loading",
+      message: `Getting all your income for ${year}`,
+    });
+
     try {
       const response = await fetch(`/api/income/year/${year}`);
 

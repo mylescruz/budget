@@ -24,6 +24,12 @@ const useBudgetMonths = () => {
   }, []);
 
   const getBudgetMonths = async () => {
+    setBudgetMonthsRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your budget months",
+    });
+
     try {
       const response = await fetch("/api/budgetMonths");
 

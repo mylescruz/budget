@@ -87,6 +87,12 @@ const useSummary = (year) => {
   }, [year]);
 
   const getSummary = async () => {
+    setSummaryRequest({
+      action: "get",
+      status: "loading",
+      message: `Getting your budget summary for ${year}`,
+    });
+
     try {
       const response = await fetch(`/api/summary/${year}`);
 
