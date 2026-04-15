@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
-import ErrorModal from "../ui/errorModal";
 import LoadingMessage from "../ui/loadingMessage";
 import handleObjectInput from "@/helpers/handleObjectInput";
 
@@ -24,8 +23,7 @@ const ChangePasswordTab = ({ user, putUser }) => {
   const [updatedUser, setUpdatedUser] = useState(oldUser);
   const [validPassword, setValidPassword] = useState(validated);
   const [validMatch, setValidMatch] = useState(validated);
-  const [updatingUser, setUpdatingUser] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   // Checks if the given password matches the required format
   const checkPassword = (password) => {
@@ -58,22 +56,16 @@ const ChangePasswordTab = ({ user, putUser }) => {
       setValidMatch(validated);
     }
 
-    setUpdatingUser(true);
+    setFormMeta({ status: "loading", error: null });
 
     try {
       // Update the user in the backend
       await putUser(updatedUser);
 
-      setUpdatedUser(oldUser);
-
-      setErrorOccurred(false);
-
       router.reload();
     } catch (error) {
-      setErrorOccurred(true);
+      setFormMeta({ status: "idle", error: error.message });
       return;
-    } finally {
-      setUpdatingUser(false);
     }
   };
 
@@ -134,20 +126,18 @@ const ChangePasswordTab = ({ user, putUser }) => {
               </ul>
             </Form.Text>
           </Form.Group>
+          {formMeta.error && (
+            <p className="text-center text-danger small">{formMeta.error}</p>
+          )}
           <Form.Group className="my-2 text-end">
             <Button type="submit">Change</Button>
           </Form.Group>
         </Form>
       </Col>
 
-      <Modal show={updatingUser} backdrop="static" centered>
+      <Modal show={formMeta.status === "loading"} backdrop="static" centered>
         <LoadingMessage message="Updating the user's password" />
       </Modal>
-
-      <ErrorModal
-        errorOccurred={errorOccurred}
-        setErrorOccurred={setErrorOccurred}
-      />
     </>
   );
 };
