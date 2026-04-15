@@ -1,27 +1,21 @@
-import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeleteTransactionModal = ({
-  chosenTransaction,
-  dateInfo,
-  modal,
-  setModal,
-}) => {
+const DeleteTransactionModal = ({ chosenTransaction, modal, setModal }) => {
   const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
-  const { deleteTransaction } = useContext(TransactionsContext);
-  const [deletingTransaction, setDeletingTransaction] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const { transactionsRequest, deleteTransaction } =
+    useContext(TransactionsContext);
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const closeDeleteModal = () => {
     setModal("transactionDetails");
   };
 
   const confirmDelete = async () => {
-    setDeletingTransaction(true);
+    setFormMeta({ status: "loading", error: null });
 
     try {
       // Deletes a transaction from the transactions array by sending a DELETE request to the API
@@ -33,14 +27,12 @@ const DeleteTransactionModal = ({
         newTransaction: null,
       });
 
-      setErrorOccurred(false);
-
       setModal("none");
+
+      setFormMeta({ status: "idle", error: null });
     } catch (error) {
-      setErrorOccurred(true);
+      setFormMeta({ status: "idle", error: error.message });
       return;
-    } finally {
-      setDeletingTransaction(false);
     }
   };
 
@@ -50,12 +42,14 @@ const DeleteTransactionModal = ({
       onHide={closeDeleteModal}
       centered
     >
-      {!deletingTransaction ? (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>Delete Transaction</Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to delete this transaction?</p>
-            {errorOccurred && <ErrorMessage />}
+            {formMeta.error && (
+              <p className="text-center text-danger">{formMeta.error}</p>
+            )}
           </Modal.Body>
           <Modal.Footer className="d-flex flex-row justify-content-between">
             <Button variant="secondary" onClick={closeDeleteModal}>
@@ -66,8 +60,9 @@ const DeleteTransactionModal = ({
             </Button>
           </Modal.Footer>
         </>
-      ) : (
-        <LoadingMessage message="Deleting this transaction" />
+      )}
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={transactionsRequest.message} />
       )}
     </Modal>
   );
