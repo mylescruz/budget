@@ -144,7 +144,7 @@ const TotalsLayout = ({ monthIncome, monthIncomeRequest }) => {
         </>
       ) : (
         <p className="text-center text-danger fs-5 fw-bold">
-          There was a problem getting your budget totals
+          &#9432; There was a problem getting your budget totals
         </p>
       )}
     </div>

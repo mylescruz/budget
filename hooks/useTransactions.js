@@ -115,7 +115,7 @@ const useTransactions = (month, year) => {
       });
 
       // Send the error back to the component to show the user
-      throw new Error(error);
+      throw error;
     }
   };
 

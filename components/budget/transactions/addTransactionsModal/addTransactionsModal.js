@@ -199,7 +199,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
 
       closeAddModal();
     } catch (error) {
-      setFormMeta({ status: "idle", error: true });
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
