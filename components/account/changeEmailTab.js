@@ -56,47 +56,45 @@ const ChangeEmailTab = ({ user, putUser }) => {
 
   return (
     <>
-      <Col className="col-12 col-md-8 col-lg-9">
-        <h2>Change Email</h2>
+      <h2>Change Email</h2>
 
-        <Form onSubmit={updateEmail} className="col-12 col-md-8 col-lg-6">
-          <Form.Group controlId="email" className="my-2">
-            <Form.Label>Current Email</Form.Label>
-            <Form.Control type="text" value={updatedUser.email} disabled />
-          </Form.Group>
-          <Form.Group controlId="newEmail" className="my-2">
-            <Form.Label>Enter New Email</Form.Label>
-            <Form.Control
-              type="text"
-              value={updatedUser.newEmail}
-              onChange={(e) =>
-                handleObjectInput({ e, setObject: setUpdatedUser })
-              }
-              required
-              isInvalid={validEmail.error && !validEmail.valid}
-            />
-            <Form.Control.Feedback type="invalid">
-              {validEmail.error}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group controlId="currentPassword" className="my-2">
-            <Form.Label>Enter Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={updatedUser.currentPassword}
-              onChange={(e) =>
-                handleObjectInput({ e, setObject: setUpdatedUser })
-              }
-              required
-            />
-          </Form.Group>
+      <Form onSubmit={updateEmail} className="col-12 col-md-8 col-lg-6">
+        <Form.Group controlId="email" className="my-2">
+          <Form.Label>Current Email</Form.Label>
+          <Form.Control type="text" value={updatedUser.email} disabled />
+        </Form.Group>
+        <Form.Group controlId="newEmail" className="my-2">
+          <Form.Label>Enter New Email</Form.Label>
+          <Form.Control
+            type="text"
+            value={updatedUser.newEmail}
+            onChange={(e) =>
+              handleObjectInput({ e, setObject: setUpdatedUser })
+            }
+            required
+            isInvalid={validEmail.error && !validEmail.valid}
+          />
+          <Form.Control.Feedback type="invalid">
+            {validEmail.error}
+          </Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group controlId="currentPassword" className="my-2">
+          <Form.Label>Enter Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={updatedUser.currentPassword}
+            onChange={(e) =>
+              handleObjectInput({ e, setObject: setUpdatedUser })
+            }
+            required
+          />
+        </Form.Group>
 
-          {formMeta.error && <ErrorMessage message={formMeta.error} />}
-          <Form.Group className="my-2 text-end">
-            <Button type="submit">Change</Button>
-          </Form.Group>
-        </Form>
-      </Col>
+        {formMeta.error && <ErrorMessage message={formMeta.error} />}
+        <Form.Group className="my-2 text-end">
+          <Button type="submit">Change</Button>
+        </Form.Group>
+      </Form>
 
       <Modal show={formMeta.status === "loading"} backdrop="static" centered>
         <LoadingMessage message={"Updating the user's email"} />

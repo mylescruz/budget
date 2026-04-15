@@ -72,67 +72,65 @@ const ChangePasswordTab = ({ user, putUser }) => {
 
   return (
     <>
-      <Col className="col-12 col-md-8 col-lg-9">
-        <h2>Change Password</h2>
+      <h2>Change Password</h2>
 
-        <Form onSubmit={updatePassword} className="col-12 col-md-8 col-lg-6">
-          <Form.Group controlId="currentPassword" className="my-2">
-            <Form.Label>Enter Current Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={updatedUser.currentPassword}
-              onChange={(e) =>
-                handleObjectInput({ e, setObject: setUpdatedUser })
-              }
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="newPassword" className="my-2">
-            <Form.Label>Enter New Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={updatedUser.newPassword}
-              onChange={(e) =>
-                handleObjectInput({ e, setObject: setUpdatedUser })
-              }
-              required
-              isInvalid={validPassword.error && !validPassword.valid}
-            />
-            <Form.Control.Feedback type="invalid">
-              {validPassword.error}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group controlId="confirmPassword" className="my-2">
-            <Form.Label>Confirm New Password</Form.Label>
-            <Form.Control
-              type="password"
-              value={updatedUser.confirmPassword}
-              onChange={(e) =>
-                handleObjectInput({ e, setObject: setUpdatedUser })
-              }
-              required
-              isInvalid={validMatch.error && !validMatch.valid}
-            />
-            <Form.Control.Feedback type="invalid">
-              {validMatch.error}
-            </Form.Control.Feedback>
-            <Form.Text>
-              Your password must include: <br />
-              <ul>
-                <li>An uppercase letter</li>
-                <li>A lowercase letter</li>
-                <li>A number</li>
-                <li>A special character: !@#$%&*?</li>
-                <li>Minimum 8 characters</li>
-              </ul>
-            </Form.Text>
-          </Form.Group>
-          {formMeta.error && <ErrorMessage message={formMeta.error} />}
-          <Form.Group className="my-2 text-end">
-            <Button type="submit">Change</Button>
-          </Form.Group>
-        </Form>
-      </Col>
+      <Form onSubmit={updatePassword} className="col-12 col-md-8 col-lg-6">
+        <Form.Group controlId="currentPassword" className="my-2">
+          <Form.Label>Enter Current Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={updatedUser.currentPassword}
+            onChange={(e) =>
+              handleObjectInput({ e, setObject: setUpdatedUser })
+            }
+            required
+          />
+        </Form.Group>
+        <Form.Group controlId="newPassword" className="my-2">
+          <Form.Label>Enter New Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={updatedUser.newPassword}
+            onChange={(e) =>
+              handleObjectInput({ e, setObject: setUpdatedUser })
+            }
+            required
+            isInvalid={validPassword.error && !validPassword.valid}
+          />
+          <Form.Control.Feedback type="invalid">
+            {validPassword.error}
+          </Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group controlId="confirmPassword" className="my-2">
+          <Form.Label>Confirm New Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={updatedUser.confirmPassword}
+            onChange={(e) =>
+              handleObjectInput({ e, setObject: setUpdatedUser })
+            }
+            required
+            isInvalid={validMatch.error && !validMatch.valid}
+          />
+          <Form.Control.Feedback type="invalid">
+            {validMatch.error}
+          </Form.Control.Feedback>
+          <Form.Text>
+            Your password must include: <br />
+            <ul>
+              <li>An uppercase letter</li>
+              <li>A lowercase letter</li>
+              <li>A number</li>
+              <li>A special character: !@#$%&*?</li>
+              <li>Minimum 8 characters</li>
+            </ul>
+          </Form.Text>
+        </Form.Group>
+        {formMeta.error && <ErrorMessage message={formMeta.error} />}
+        <Form.Group className="my-2 text-end">
+          <Button type="submit">Change</Button>
+        </Form.Group>
+      </Form>
 
       <Modal show={formMeta.status === "loading"} backdrop="static" centered>
         <LoadingMessage message="Updating the user's password" />

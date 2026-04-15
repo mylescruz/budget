@@ -5,7 +5,7 @@ const AccountInfoTab = ({ user, userRequest }) => {
   return (
     <>
       {user ? (
-        <Col className="col-12 col-md-8 col-lg-9">
+        <>
           <h2>{user.name}&#39;s Info</h2>
           <Form className="col-12 col-md-8 col-lg-6 text-start">
             <Form.Group className="my-2">
@@ -21,11 +21,9 @@ const AccountInfoTab = ({ user, userRequest }) => {
               <Form.Control type="email" defaultValue={user.email} disabled />
             </Form.Group>
           </Form>
-        </Col>
+        </>
       ) : (
-        <Col className="col-12 col-md-8 col-lg-9">
-          <ErrorMessage message={userRequest.message} />
-        </Col>
+        <ErrorMessage message={userRequest.message} />
       )}
     </>
   );

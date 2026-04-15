@@ -46,27 +46,25 @@ const DeleteAccountTab = ({ user, deleteUser, userRequest }) => {
 
   return (
     <>
-      <Col className="col-12 col-md-8 col-lg-9">
-        <h2>Delete Account</h2>
-        <Form onSubmit={confirmation} className="col-12 col-md-8 col-lg-6">
-          <Form.Group controlId="password" className="my-2">
-            <Form.Label>
-              In order to delete your account, you must enter your password
-            </Form.Label>
-            <Form.Control
-              type="password"
-              value={password}
-              onChange={handleInput}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="my-2 text-end">
-            <Button variant="danger" type="submit">
-              Delete
-            </Button>
-          </Form.Group>
-        </Form>
-      </Col>
+      <h2>Delete Account</h2>
+      <Form onSubmit={confirmation} className="col-12 col-md-8 col-lg-6">
+        <Form.Group controlId="password" className="my-2">
+          <Form.Label>
+            In order to delete your account, you must enter your password
+          </Form.Label>
+          <Form.Control
+            type="password"
+            value={password}
+            onChange={handleInput}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="my-2 text-end">
+          <Button variant="danger" type="submit">
+            Delete
+          </Button>
+        </Form.Group>
+      </Form>
 
       <Modal show={confirmDelete} onHide={closeConfirmDelete} centered>
         {formMeta.status === "idle" && (
