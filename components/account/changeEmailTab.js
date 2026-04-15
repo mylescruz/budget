@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
-import ErrorModal from "../ui/errorModal";
 import LoadingMessage from "../ui/loadingMessage";
 import handleObjectInput from "@/helpers/handleObjectInput";
 
@@ -22,8 +21,7 @@ const ChangeEmailTab = ({ user, putUser }) => {
 
   const [updatedUser, setUpdatedUser] = useState(oldUser);
   const [validEmail, setValidEmail] = useState(validated);
-  const [updatingUser, setUpdatingUser] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const checkEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
@@ -42,22 +40,16 @@ const ChangeEmailTab = ({ user, putUser }) => {
       setValidEmail(validated);
     }
 
-    setUpdatingUser(true);
+    setFormMeta({ status: "loading", error: null });
 
     try {
       // Update the user in the backend
       await putUser(updatedUser);
 
-      setUpdatedUser(oldUser);
-
-      setErrorOccurred(false);
-
       router.reload();
     } catch (error) {
-      setErrorOccurred(true);
+      setFormMeta({ status: "idle", error: error.message });
       return;
-    } finally {
-      setUpdatingUser(false);
     }
   };
 
@@ -98,20 +90,18 @@ const ChangeEmailTab = ({ user, putUser }) => {
             />
           </Form.Group>
 
+          {formMeta.error && (
+            <p className="text-center text-danger small">{formMeta.error}</p>
+          )}
           <Form.Group className="my-2 text-end">
             <Button type="submit">Change</Button>
           </Form.Group>
         </Form>
       </Col>
 
-      <Modal show={updatingUser} backdrop="static" centered>
-        <LoadingMessage message="Updating the user's email" />
+      <Modal show={formMeta.status === "loading"} backdrop="static" centered>
+        <LoadingMessage message={"Updating the user's email"} />
       </Modal>
-
-      <ErrorModal
-        errorOccurred={errorOccurred}
-        setErrorOccurred={setErrorOccurred}
-      />
     </>
   );
 };
