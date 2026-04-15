@@ -1,6 +1,5 @@
 import { Col, Container, Modal, Row, Spinner } from "react-bootstrap";
 import { useState } from "react";
-import ErrorModal from "@/components/ui/errorModal";
 import IncomeSection from "./incomeSection";
 import CategoriesSection from "./categories/categoriesSection";
 import CompleteSection from "./completeSection";

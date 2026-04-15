@@ -34,9 +34,9 @@ const useBudgetMonths = () => {
       const response = await fetch("/api/budgetMonths");
 
       if (!response.ok) {
-        const errorMessage = await response.text();
+        const message = await response.text();
 
-        throw new Error(errorMessage);
+        throw new Error(message);
       }
 
       const fetchedMonths = await response.json();
