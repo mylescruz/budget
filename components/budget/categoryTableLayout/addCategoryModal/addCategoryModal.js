@@ -21,7 +21,8 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     subcategories: [],
   };
 
-  const { postCategory, categoryNames } = useContext(CategoriesContext);
+  const { categoriesRequest, postCategory, categoryNames } =
+    useContext(CategoriesContext);
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [formMeta, setFormMeta] = useState({
     status: "idle",
@@ -132,7 +133,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   };
 
   const addNewCategory = async () => {
-    setFormMeta({ status: "posting", error: null });
+    setFormMeta({ status: "loading", error: null });
 
     try {
       await postCategory(newCategory);
@@ -253,8 +254,8 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
           </Modal.Footer>
         </>
       )}
-      {formMeta.status === "posting" && (
-        <LoadingMessage message="Adding the new category" />
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={categoriesRequest.message} />
       )}
     </Modal>
   );
