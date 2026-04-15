@@ -1,43 +1,47 @@
-import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
-  const { deleteCategory } = useContext(CategoriesContext);
+  const { categoriesRequest, deleteCategory } = useContext(CategoriesContext);
 
-  const [status, setStatus] = useState("confirming");
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const closeDelete = () => {
     setModal("edit");
   };
 
   const removeCategory = async () => {
-    setStatus("deleting");
+    setFormMeta({ status: "loading", error: null });
 
     try {
       await deleteCategory(editedCategory);
 
       setModal("none");
+
+      setFormMeta({ status: "idle", error: null });
     } catch (error) {
-      setStatus("error");
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
 
   return (
     <Modal show={modal === "delete"} onHide={closeDelete} centered>
-      {status === "confirming" && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>Delete {editedCategory.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
+            <p className="text-center">
               Are you sure you want to delete this category and all its
               subcategories?
             </p>
+            {formMeta.error && (
+              <p className="text-center text-danger small">{formMeta.error}</p>
+            )}
           </Modal.Body>
           <Modal.Footer className="d-flex flex-row justify-content-between">
             <Button variant="secondary" onClick={closeDelete}>
@@ -49,12 +53,9 @@ const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
           </Modal.Footer>
         </>
       )}
-      {status === "deleting" && (
-        <LoadingMessage
-          message={`Deleting the category ${editedCategory.name}`}
-        />
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={categoriesRequest.message} />
       )}
-      {status === "error" && <ErrorMessage />}
     </Modal>
   );
 };
