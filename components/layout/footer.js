@@ -6,7 +6,7 @@ const Footer = () => {
       <Container>
         <Nav className="ms-auto">
           <Nav.Link href="https://mylescruz.com/" target="_blank">
-            © 2025 Myles Cruz
+            © 2026 Myles Cruz
           </Nav.Link>
         </Nav>
       </Container>
