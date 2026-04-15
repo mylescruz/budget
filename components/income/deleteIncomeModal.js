@@ -1,34 +1,39 @@
 import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
 import LoadingMessage from "@/components/ui/loadingMessage";
-import ErrorMessage from "@/components/ui/errorMessage";
 import dateFormatter from "@/helpers/dateFormatter";
 
-const DeleteIncomeModal = ({ chosenSource, deleteIncome, modal, setModal }) => {
-  const [status, setStatus] = useState("confirming");
+const DeleteIncomeModal = ({
+  chosenSource,
+  deleteIncome,
+  incomeRequest,
+  modal,
+  setModal,
+}) => {
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const closeDeleteModal = () => {
-    setStatus("confirming");
-
     setModal("none");
+
+    setFormMeta({ status: "idle", error: null });
   };
 
   const confirmDelete = async () => {
-    setStatus("deleting");
+    setFormMeta({ status: "loading", error: null });
 
     try {
       await deleteIncome(chosenSource);
 
       closeDeleteModal();
     } catch (error) {
-      setStatus("error");
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
 
   return (
     <Modal show={modal === "deleteIncome"} onHide={closeDeleteModal} centered>
-      {status !== "deleting" && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>Delete Income</Modal.Header>
           <Modal.Body>
@@ -36,7 +41,9 @@ const DeleteIncomeModal = ({ chosenSource, deleteIncome, modal, setModal }) => {
               Are you sure you want to delete this source of income:{" "}
               {chosenSource.name} on {dateFormatter(chosenSource.date)}?
             </p>
-            {status === "error" && <ErrorMessage />}
+            {formMeta.error && (
+              <p className="text-center text-danger small">{formMeta.error}</p>
+            )}
           </Modal.Body>
           <Modal.Footer className="d-flex justify-content-between">
             <Button variant="secondary" onClick={closeDeleteModal}>
@@ -48,8 +55,8 @@ const DeleteIncomeModal = ({ chosenSource, deleteIncome, modal, setModal }) => {
           </Modal.Footer>
         </>
       )}
-      {status === "deleting" && (
-        <LoadingMessage message="Deleting this income source" />
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={incomeRequest.message} />
       )}
     </Modal>
   );

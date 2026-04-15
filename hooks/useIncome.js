@@ -197,7 +197,7 @@ const useIncome = (year) => {
         message: error.message,
       });
 
-      throw new Error(error);
+      throw error;
     }
   };
 

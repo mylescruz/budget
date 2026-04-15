@@ -124,6 +124,7 @@ const InnerIncomeLayout = ({ year }) => {
           <DeleteIncomeModal
             chosenSource={chosenSource}
             deleteIncome={deleteIncome}
+            incomeRequest={incomeRequest}
             modal={modal}
             setModal={setModal}
           />
