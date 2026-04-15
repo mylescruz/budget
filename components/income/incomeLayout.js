@@ -114,6 +114,7 @@ const InnerIncomeLayout = ({ year }) => {
             setChosenSource={setChosenSource}
             year={year}
             putIncome={putIncome}
+            incomeRequest={incomeRequest}
             modal={modal}
             setModal={setModal}
           />

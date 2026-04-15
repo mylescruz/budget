@@ -13,18 +13,19 @@ const EditIncomeModal = ({
   chosenSource,
   setChosenSource,
   putIncome,
+  incomeRequest,
   year,
   modal,
   setModal,
 }) => {
-  const [status, setStatus] = useState("editing");
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const handleInput = (e) => {
     handleObjectInput({ e, setObject: setChosenSource });
   };
 
   const closeEditModal = () => {
-    setStatus("editing");
+    setFormMeta({ status: "idle", error: null });
 
     setModal("details");
   };
@@ -32,7 +33,7 @@ const EditIncomeModal = ({
   const updatePaycheck = async (e) => {
     e.preventDefault();
 
-    setStatus("loading");
+    setFormMeta({ status: "loading", error: null });
 
     try {
       await putIncome({
@@ -42,7 +43,7 @@ const EditIncomeModal = ({
 
       closeEditModal();
     } catch (error) {
-      setStatus("error");
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
@@ -55,7 +56,7 @@ const EditIncomeModal = ({
 
   return (
     <Modal show={modal === "editIncome"} onHide={closeEditModal} centered>
-      {status !== "loading" && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>Edit Income</Modal.Title>
@@ -74,9 +75,13 @@ const EditIncomeModal = ({
               {chosenSource.type === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
-              {status === "error" && <ErrorMessage />}
+              {formMeta.error && (
+                <p className="mt-2 text-center text-danger small">
+                  {formMeta.error}
+                </p>
+              )}
             </Modal.Body>
-            <Modal.Footer className="my-2 d-flex justify-content-between">
+            <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeEditModal}>
                 Cancel
               </Button>
@@ -87,7 +92,9 @@ const EditIncomeModal = ({
           </Form>
         </>
       )}
-      {status === "loading" && <LoadingMessage message="Editting the source" />}
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={incomeRequest.message} />
+      )}
     </Modal>
   );
 };
