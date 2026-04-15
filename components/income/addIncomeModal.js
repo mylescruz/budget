@@ -12,6 +12,7 @@ import {
   PAYCHECK_FREQUENCIES,
 } from "@/lib/constants/income";
 import handleObjectInput from "@/helpers/handleObjectInput";
+import ErrorMessage from "../ui/errorMessage";
 
 const AddIncomeModal = ({
   year,
@@ -124,11 +125,7 @@ const AddIncomeModal = ({
               {source.type === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
-              {formMeta.error && (
-                <p className="text-center text-danger small">
-                  &#9432; {formMeta.error}
-                </p>
-              )}
+              {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeAddModal}>

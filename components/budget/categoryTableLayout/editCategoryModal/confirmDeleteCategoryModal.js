@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
@@ -39,9 +40,7 @@ const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
               Are you sure you want to delete this category and all its
               subcategories?
             </p>
-            {formMeta.error && (
-              <p className="text-center text-danger small">{formMeta.error}</p>
-            )}
+            {formMeta.error && <ErrorMessage message={formMeta.error} />}
           </Modal.Body>
           <Modal.Footer className="d-flex flex-row justify-content-between">
             <Button variant="secondary" onClick={closeDelete}>

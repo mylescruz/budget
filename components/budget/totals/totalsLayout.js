@@ -8,6 +8,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import PopUp from "@/components/ui/popUp";
 import ProgressBar from "@/components/ui/progressBar";
 import addDecimalValues from "@/helpers/addDecimalValues";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 const WARNING_PERCENTAGE = 10;
 
@@ -143,9 +144,9 @@ const TotalsLayout = ({ monthIncome, monthIncomeRequest }) => {
           </Row>
         </>
       ) : (
-        <p className="text-center text-danger fs-5 fw-bold">
-          &#9432; There was a problem getting your budget totals
-        </p>
+        <ErrorMessage
+          message={"There was a problem getting your budget totals"}
+        />
       )}
     </div>
   );

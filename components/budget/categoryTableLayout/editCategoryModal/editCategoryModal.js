@@ -10,6 +10,7 @@ import dayFormatter from "@/helpers/dayFormatter";
 import PopUp from "@/components/ui/popUp";
 import { FIXED_FREQUENCIES_LIST } from "@/lib/constants/categories";
 import handleObjectInput from "@/helpers/handleObjectInput";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 const EditCategoryModal = ({
   editedCategory,
@@ -350,9 +351,7 @@ const EditCategoryModal = ({
               </div>
             )}
 
-            {formMeta.error && (
-              <p className="text-danger text-center">{formMeta.error}</p>
-            )}
+            {formMeta.error && <ErrorMessage message={formMeta.error} />}
           </Modal.Body>
           {page === "details" && (
             <Modal.Footer>

@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/ui/errorMessage";
 import usePreviousCategories from "@/hooks/usePreviousCategories";
 import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
 import { useEffect, useState } from "react";
@@ -113,9 +114,7 @@ const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
         ) : (
           // Displayed when an error occurs fetching the previous categories
           <div className="text-center">
-            <p className="text-danger fw-bold">
-              {previousCategoriesRequest.message}
-            </p>
+            <ErrorMessage message={previousCategoriesRequest.message} />
             <Button
               variant="primary"
               className="my-2"

@@ -6,6 +6,7 @@ import LoadingMessage from "@/components/ui/loadingMessage";
 import EditExpenseForm from "./editExpenseForm";
 import EditTransferForm from "./editTransferForm";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 const EditTransactionModal = ({
   chosenTransaction,
@@ -91,9 +92,7 @@ const EditTransactionModal = ({
                   setTransaction={setTransaction}
                 />
               )}
-              {formMeta.error && (
-                <p className="text-center text-danger">{formMeta.error}</p>
-              )}
+              {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeEditModal}>

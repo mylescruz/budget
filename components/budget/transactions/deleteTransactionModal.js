@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
@@ -47,9 +48,7 @@ const DeleteTransactionModal = ({ chosenTransaction, modal, setModal }) => {
           <Modal.Header closeButton>Delete Transaction</Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to delete this transaction?</p>
-            {formMeta.error && (
-              <p className="text-center text-danger">{formMeta.error}</p>
-            )}
+            {formMeta.error && <ErrorMessage message={formMeta.error} />}
           </Modal.Body>
           <Modal.Footer className="d-flex flex-row justify-content-between">
             <Button variant="secondary" onClick={closeDeleteModal}>

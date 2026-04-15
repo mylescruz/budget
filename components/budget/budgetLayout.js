@@ -16,6 +16,7 @@ import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 import useMonthIncome from "@/hooks/useMonthIncome";
 import SuccessMessage from "../ui/successMessage";
+import ErrorMessage from "../ui/errorMessage";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesRequest } = useContext(CategoriesContext);
@@ -69,9 +70,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
                 <CategoryTableLayout dateInfo={dateInfo} />
               </>
             ) : (
-              <p className="mt-4 text-center fs-5 fw-bold text-danger">
-                &#9432; {categoriesRequest.message}
-              </p>
+              <ErrorMessage message={categoriesRequest.message} />
             )}
 
             <TransactionsLayout dateInfo={dateInfo} />

@@ -7,6 +7,7 @@ import GiftForm from "./incomeTypeForms/giftForm";
 import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 import { INCOME_TYPES } from "@/lib/constants/income";
 import handleObjectInput from "@/helpers/handleObjectInput";
+import ErrorMessage from "../ui/errorMessage";
 
 const EditIncomeModal = ({
   chosenSource,
@@ -74,11 +75,7 @@ const EditIncomeModal = ({
               {chosenSource.type === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
-              {formMeta.error && (
-                <p className="mt-2 text-center text-danger small">
-                  {formMeta.error}
-                </p>
-              )}
+              {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeEditModal}>

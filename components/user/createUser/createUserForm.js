@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/ui/errorMessage";
 import handleObjectInput from "@/helpers/handleObjectInput";
 import Link from "next/link";
 import { useState } from "react";
@@ -185,11 +186,7 @@ const CreateUserForm = ({
               </ul>
             </Form.Text>
           </Form.Group>
-          {formErrors.message && (
-            <p className="text-center text-danger small">
-              {formErrors.message}
-            </p>
-          )}
+          {formErrors.message && <ErrorMessage message={formErrors.message} />}
           <Button className="w-100" type="submit">
             Sign Up
           </Button>

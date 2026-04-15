@@ -2,6 +2,7 @@ import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import dateFormatter from "@/helpers/dateFormatter";
+import ErrorMessage from "../ui/errorMessage";
 
 const DeleteIncomeModal = ({
   chosenSource,
@@ -41,9 +42,7 @@ const DeleteIncomeModal = ({
               Are you sure you want to delete this source of income:{" "}
               {chosenSource.name} on {dateFormatter(chosenSource.date)}?
             </p>
-            {formMeta.error && (
-              <p className="text-center text-danger small">{formMeta.error}</p>
-            )}
+            {formMeta.error && <ErrorMessage message={formMeta.error} />}
           </Modal.Body>
           <Modal.Footer className="d-flex justify-content-between">
             <Button variant="secondary" onClick={closeDeleteModal}>

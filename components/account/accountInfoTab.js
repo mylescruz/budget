@@ -1,4 +1,5 @@
 import { Col, Form } from "react-bootstrap";
+import ErrorMessage from "../ui/errorMessage";
 
 const AccountInfoTab = ({ user, userRequest }) => {
   return (
@@ -23,7 +24,7 @@ const AccountInfoTab = ({ user, userRequest }) => {
         </Col>
       ) : (
         <Col className="col-12 col-md-8 col-lg-9">
-          <p className="mt-4 text-danger fw-bold">{userRequest.message}</p>
+          <ErrorMessage message={userRequest.message} />
         </Col>
       )}
     </>

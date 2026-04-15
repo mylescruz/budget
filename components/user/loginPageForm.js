@@ -5,6 +5,7 @@ import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
 import Link from "next/link";
 import Image from "next/image";
 import handleObjectInput from "@/helpers/handleObjectInput";
+import ErrorMessage from "../ui/errorMessage";
 
 const LoginPageForm = ({ csrfToken }) => {
   const [user, setUser] = useState({
@@ -78,9 +79,7 @@ const LoginPageForm = ({ csrfToken }) => {
                 required
               />
             </Form.Group>
-            {loginError && (
-              <p className="text-center text-danger small">{loginError}</p>
-            )}
+            {loginError && <ErrorMessage message={loginError} />}
             <Button className="btn btn-primary w-100" type="submit">
               Login
             </Button>

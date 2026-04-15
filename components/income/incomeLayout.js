@@ -10,6 +10,7 @@ import IncomeDetailsModal from "./incomeDetailsModal";
 import DeleteIncomeModal from "./deleteIncomeModal";
 import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
 import SuccessMessage from "../ui/successMessage";
+import ErrorMessage from "../ui/errorMessage";
 
 const InnerIncomeLayout = ({ year }) => {
   const {
@@ -85,9 +86,7 @@ const InnerIncomeLayout = ({ year }) => {
             />
           </Row>
         ) : (
-          <p className="mt-4 text-danger fw-bold text-center">
-            &#9432; {incomeRequest.message}
-          </p>
+          <ErrorMessage message={incomeRequest.message} />
         )}
 
         {modal === "addIncome" && (

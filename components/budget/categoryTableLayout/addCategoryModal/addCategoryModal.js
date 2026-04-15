@@ -8,6 +8,7 @@ import AddSubcategoryForm from "@/components/category/addSubcategoryForm";
 import CategoryConfirmationPage from "@/components/category/categoryConfirmationPage";
 import PreviousCategoryForm from "./previousCategoryForm";
 import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const emptyCategory = {
@@ -200,9 +201,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
             {modalPage === "confirm" && (
               <CategoryConfirmationPage newCategory={newCategory} />
             )}
-            {formMeta.error && (
-              <p className="text-danger text-center">{formMeta.error}</p>
-            )}
+            {formMeta.error && <ErrorMessage message={formMeta.error} />}
           </Modal.Body>
           <Modal.Footer>
             {modalPage === "details" && (

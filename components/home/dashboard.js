@@ -19,6 +19,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../category/categoryBadge";
 import AddTransactionsModal from "../budget/transactions/addTransactionsModal/addTransactionsModal";
 import SuccessMessage from "../ui/successMessage";
+import ErrorMessage from "../ui/errorMessage";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
@@ -112,9 +113,7 @@ const InnerDashboard = ({ dateInfo }) => {
                       </Col>
                     </>
                   ) : (
-                    <p className="text-danger fw-bold text-center">
-                      &#9432; {categoriesRequest.message}
-                    </p>
+                    <ErrorMessage message={categoriesRequest.message} />
                   )}
                   <Button
                     as={Link}
@@ -152,9 +151,7 @@ const InnerDashboard = ({ dateInfo }) => {
                     <h4>
                       {dateInfo.monthName} Income:{" "}
                       {monthIncomeRequest.status === "error" ? (
-                        <p className="text-danger fs-6 fw-bold">
-                          {monthIncomeRequest.message}
-                        </p>
+                        <ErrorMessage message={monthIncomeRequest.message} />
                       ) : (
                         <p>{dollarFormatter(monthIncome)} </p>
                       )}

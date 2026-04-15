@@ -9,10 +9,11 @@ import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { categoriesRequest } = useContext(CategoriesContext);
-  const { transactions } = useContext(TransactionsContext);
+  const { transactionsRequest, transactions } = useContext(TransactionsContext);
   const [view, setView] = useState({
     display: "Table",
     text: "View Calendar",
@@ -92,10 +93,7 @@ const TransactionsLayout = ({ dateInfo }) => {
   if (!transactions) {
     return (
       <Row className="mt-4 text-center">
-        <p className="fw-bold text-danger">
-          &#9432; There was an error loading your transactions. Please try again
-          later!
-        </p>
+        <ErrorMessage message={transactionsRequest.message} />
       </Row>
     );
   } else {

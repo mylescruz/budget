@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
 import LoadingMessage from "../ui/loadingMessage";
 import handleObjectInput from "@/helpers/handleObjectInput";
+import ErrorMessage from "../ui/errorMessage";
 
 const ChangePasswordTab = ({ user, putUser }) => {
   const oldUser = {
@@ -126,9 +127,7 @@ const ChangePasswordTab = ({ user, putUser }) => {
               </ul>
             </Form.Text>
           </Form.Group>
-          {formMeta.error && (
-            <p className="text-center text-danger small">{formMeta.error}</p>
-          )}
+          {formMeta.error && <ErrorMessage message={formMeta.error} />}
           <Form.Group className="my-2 text-end">
             <Button type="submit">Change</Button>
           </Form.Group>

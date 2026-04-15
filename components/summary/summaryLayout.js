@@ -8,6 +8,7 @@ import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
+import ErrorMessage from "../ui/errorMessage";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryRequest } = useSummary(year);
@@ -48,9 +49,7 @@ const InnerSummaryLayout = ({ year }) => {
             </div>
           </Row>
         ) : (
-          <p className="mt-4 text-danger fw-bold text-center">
-            &#9432; {summaryRequest.message}
-          </p>
+          <ErrorMessage message={summaryRequest.message} />
         )}
       </Container>
     );

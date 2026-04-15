@@ -12,6 +12,7 @@ import {
 import AddExpenseForm from "./addExpenseForm";
 import AddTransferForm from "./addTransferForm";
 import styles from "@/styles/transactions/addTransactionsModal.module.css";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
   const { categories, updateCategoriesFromTransaction } =
@@ -288,9 +289,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
                   + Add Another Transaction
                 </Button>
               </div>
-              {formMeta.error && (
-                <p className="my-2 text-center text-danger">{formMeta.error}</p>
-              )}
+              {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeAddModal}>

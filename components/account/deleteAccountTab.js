@@ -2,6 +2,7 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { Button, Col, Form, Modal } from "react-bootstrap";
 import LoadingMessage from "../ui/loadingMessage";
+import ErrorMessage from "../ui/errorMessage";
 
 const DeleteAccountTab = ({ user, deleteUser, userRequest }) => {
   const [password, setPassword] = useState("");
@@ -78,11 +79,7 @@ const DeleteAccountTab = ({ user, deleteUser, userRequest }) => {
                 Are you sure you want to delete your account and all of its
                 data?
               </p>
-              {formMeta.error && (
-                <p className="text-center text-danger small">
-                  {formMeta.error}
-                </p>
-              )}
+              {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeConfirmDelete}>

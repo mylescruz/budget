@@ -1,4 +1,5 @@
 import { Button, Card, Container } from "react-bootstrap";
+import ErrorMessage from "../ui/errorMessage";
 
 const CompleteSection = ({ finishOnboarding, onboardingError }) => {
   return (
@@ -9,11 +10,7 @@ const CompleteSection = ({ finishOnboarding, onboardingError }) => {
             Thanks for setting up your new budget! Let&#39;s see it!
           </h5>
 
-          {onboardingError && (
-            <p className="mt-2 mb-4 text-center text-danger small">
-              {onboardingError}
-            </p>
-          )}
+          {onboardingError && <ErrorMessage message={onboardingError} />}
 
           <Button
             variant="primary"

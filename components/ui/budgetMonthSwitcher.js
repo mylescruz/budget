@@ -3,6 +3,7 @@ import { Button, Col, Dropdown, Row } from "react-bootstrap";
 import LoadingIndicator from "./loadingIndicator";
 import getDateInfo from "@/helpers/getDateInfo";
 import styles from "@/styles/ui/budgetMonthSwitcher.module.css";
+import ErrorMessage from "./errorMessage";
 
 const MONTHS_MAP = {
   1: "January",
@@ -138,9 +139,7 @@ const BudgetMonthSwitcher = ({
           ) : (
             <div className="text-center">
               <h1 className={styles.title}>{pageInfo.title}</h1>
-              <p className="mt-4 text-center fw-bold text-danger">
-                &#9432; {budgetMonthsRequest.message}
-              </p>
+              <ErrorMessage message={budgetMonthsRequest.message} />
             </div>
           )}
           <p className="my-2 mx-4 text-center">{pageInfo.description}</p>

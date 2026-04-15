@@ -1,6 +1,7 @@
 import useBudgetMonths from "@/hooks/useBudgetMonths";
 import { Button, Col, Row } from "react-bootstrap";
 import LoadingIndicator from "./loadingIndicator";
+import ErrorMessage from "./errorMessage";
 
 const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
   const { budgetMonths, budgetMonthsRequest } = useBudgetMonths();
@@ -54,9 +55,7 @@ const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
             <h1 className="p-0 m-0 fw-bold">
               {year} {pageInfo.title}
             </h1>
-            <p className="mt-4 fw-bold text-danger">
-              &#9432; {budgetMonthsRequest.message}
-            </p>
+            <ErrorMessage message={budgetMonthsRequest.message} />
           </div>
         )}
         <p className="my-2 mx-4 text-center">{pageInfo.description}</p>
