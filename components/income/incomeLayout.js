@@ -94,6 +94,7 @@ const InnerIncomeLayout = ({ year }) => {
           <AddIncomeModal
             year={year}
             postIncome={postIncome}
+            incomeRequest={incomeRequest}
             modal={modal}
             setModal={setModal}
           />

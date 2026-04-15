@@ -14,7 +14,13 @@ import {
 } from "@/lib/constants/income";
 import handleObjectInput from "@/helpers/handleObjectInput";
 
-const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
+const AddIncomeModal = ({
+  year,
+  postIncome,
+  incomeRequest,
+  modal,
+  setModal,
+}) => {
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
 
   const emptySource = {
@@ -32,7 +38,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   };
 
   const [source, setSource] = useState(emptySource);
-  const [status, setStatus] = useState("inputting");
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const handleInput = (e) => {
     if (e.target.id === "type") {
@@ -52,22 +58,24 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
   const addNewMoneyIn = async (e) => {
     e.preventDefault();
 
-    setStatus("loading");
+    setFormMeta({ status: "loading", error: null });
 
     try {
       await postIncome(source);
 
       closeAddModal();
     } catch (error) {
-      setStatus("error");
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
 
   const closeAddModal = () => {
-    setStatus("inputting");
-    setSource(emptySource);
     setModal("none");
+
+    setSource(emptySource);
+
+    setFormMeta({ status: "idle", error: null });
   };
 
   const incomeFormProps = {
@@ -78,7 +86,7 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
 
   return (
     <Modal show={modal === "addIncome"} onHide={closeAddModal} centered>
-      {status !== "loading" && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>
             <Modal.Title>Enter income information</Modal.Title>
@@ -117,7 +125,11 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
               {source.type === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
-              {status === "error" && <ErrorMessage />}
+              {formMeta.error && (
+                <p className="text-center text-danger small">
+                  &#9432; {formMeta.error}
+                </p>
+              )}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeAddModal}>
@@ -137,8 +149,8 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
           </Form>
         </>
       )}
-      {status === "loading" && (
-        <LoadingMessage message="Adding the new income" />
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={incomeRequest.message} />
       )}
     </Modal>
   );
