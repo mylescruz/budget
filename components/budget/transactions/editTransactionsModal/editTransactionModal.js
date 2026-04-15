@@ -1,9 +1,8 @@
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { useContext, useState } from "react";
 import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/ui/loadingMessage";
-import ErrorMessage from "@/components/ui/errorMessage";
 import EditExpenseForm from "./editExpenseForm";
 import EditTransferForm from "./editTransferForm";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
@@ -15,7 +14,8 @@ const EditTransactionModal = ({
   setModal,
 }) => {
   const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
-  const { putTransaction } = useContext(TransactionsContext);
+  const { transactionsRequest, putTransaction } =
+    useContext(TransactionsContext);
 
   // Format the transaction's date to match the date input format
   const formattedDate = new Date(chosenTransaction.date)
@@ -26,21 +26,17 @@ const EditTransactionModal = ({
     ...chosenTransaction,
     date: formattedDate,
   });
-  const [status, setStatus] = useState("editing");
+  const [formMeta, setFormMeta] = useState({
+    status: "idle",
+    error: null,
+  });
 
   const closeEditModal = () => {
     setModal("transactionDetails");
   };
 
-  const handleInput = (e) => {
-    setTransaction({
-      ...transaction,
-      [e.target.id]: e.target.value,
-    });
-  };
-
   const editTheTransaction = async (e) => {
-    setStatus("updating");
+    setFormMeta({ status: "loading", error: null });
 
     try {
       e.preventDefault();
@@ -65,16 +61,16 @@ const EditTransactionModal = ({
 
       setModal("none");
 
-      setStatus("editing");
+      setFormMeta({ status: "idle", error: null });
     } catch (error) {
-      setStatus("error");
+      setFormMeta({ status: "idle", error: error.message });
       return;
     }
   };
 
   return (
     <Modal show={modal === "editTransaction"} onHide={closeEditModal} centered>
-      {status !== "updating" && (
+      {formMeta.status === "idle" && (
         <>
           <Modal.Header>
             <Modal.Title>Edit Transaction Details</Modal.Title>
@@ -95,7 +91,9 @@ const EditTransactionModal = ({
                   setTransaction={setTransaction}
                 />
               )}
-              {status === "error" && <ErrorMessage />}
+              {formMeta.error && (
+                <p className="text-center text-danger">{formMeta.error}</p>
+              )}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeEditModal}>
@@ -108,8 +106,8 @@ const EditTransactionModal = ({
           </Form>
         </>
       )}
-      {status === "updating" && (
-        <LoadingMessage message="Updating this transaction" />
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={transactionsRequest.message} />
       )}
     </Modal>
   );
