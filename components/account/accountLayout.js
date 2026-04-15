@@ -30,7 +30,11 @@ const AccountLayout = () => {
             <ChangeEmailTab user={user} putUser={putUser} />
           )}
           {section === "delete" && (
-            <DeleteAccountTab user={user} deleteUser={deleteUser} />
+            <DeleteAccountTab
+              user={user}
+              deleteUser={deleteUser}
+              userRequest={userRequest}
+            />
           )}
         </Row>
       </Container>

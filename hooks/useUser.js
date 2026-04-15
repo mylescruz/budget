@@ -136,7 +136,7 @@ const useUser = () => {
       });
 
       // Send the error back to the component to show the user
-      throw new Error(error.message);
+      throw error;
     }
   };
 

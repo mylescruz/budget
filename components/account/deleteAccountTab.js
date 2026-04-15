@@ -1,14 +1,13 @@
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Form, Modal } from "react-bootstrap";
 import ErrorMessage from "../ui/errorMessage";
 import LoadingMessage from "../ui/loadingMessage";
 
-const DeleteAccountTab = ({ user, deleteUser }) => {
+const DeleteAccountTab = ({ user, deleteUser, userRequest }) => {
   const [password, setPassword] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deletingUser, setDeletingUser] = useState(false);
-  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const handleInput = (e) => {
     setPassword(e.target.value);
@@ -16,6 +15,8 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
 
   const closeConfirmDelete = () => {
     setConfirmDelete(false);
+
+    setFormMeta({ status: "idle", error: null });
   };
 
   const confirmation = (e) => {
@@ -25,7 +26,7 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
   };
 
   const removeAccount = async () => {
-    setDeletingUser(true);
+    setFormMeta({ status: "loading", error: null });
 
     try {
       const userToDelete = { ...user, password: password };
@@ -34,14 +35,12 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
 
       window.alert("Your account has been deleted! Sorry to see you go!");
 
-      setErrorOccurred(false);
-
       signOut();
+
+      setFormMeta({ status: "idle", error: null });
     } catch (error) {
-      setErrorOccurred(true);
+      setFormMeta({ status: "idle", error: error.message });
       return;
-    } finally {
-      setDeletingUser(false);
     }
   };
 
@@ -70,30 +69,35 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
       </Col>
 
       <Modal show={confirmDelete} onHide={closeConfirmDelete} centered>
-        <Modal.Body>
-          <p className="mb-2">
-            Are you sure you want to delete your account and all of its data?
-          </p>
-          {errorOccurred && <ErrorMessage />}
-        </Modal.Body>
-        <Modal.Footer>
-          <Row className="text-end">
-            <Col>
+        {formMeta.status === "idle" && (
+          <>
+            <Modal.Header>
+              <Modal.Title>Confirm Account Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p className="mb-2">
+                Are you sure you want to delete your account and all of its
+                data?
+              </p>
+              {formMeta.error && (
+                <p className="text-center text-danger small">
+                  {formMeta.error}
+                </p>
+              )}
+            </Modal.Body>
+            <Modal.Footer className="d-flex justify-content-between">
               <Button variant="secondary" onClick={closeConfirmDelete}>
                 Cancel
               </Button>
-            </Col>
-            <Col>
               <Button variant="danger" onClick={removeAccount}>
                 Delete
               </Button>
-            </Col>
-          </Row>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={deletingUser} backdrop="static" centered>
-        <LoadingMessage message="Deleting your account" />
+            </Modal.Footer>
+          </>
+        )}
+        {formMeta.status === "loading" && (
+          <LoadingMessage message={userRequest.message} />
+        )}
       </Modal>
     </>
   );
