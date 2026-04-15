@@ -18,7 +18,8 @@ const EditCategoryModal = ({
   modal,
   setModal,
 }) => {
-  const { putCategory, categoryNames } = useContext(CategoriesContext);
+  const { categoriesRequest, putCategory, categoryNames } =
+    useContext(CategoriesContext);
   const { getTransactions } = useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
@@ -93,7 +94,7 @@ const EditCategoryModal = ({
       return;
     }
 
-    setFormMeta({ status: "updating", error: null });
+    setFormMeta({ status: "loading", error: null });
 
     try {
       await putCategory({
@@ -380,8 +381,8 @@ const EditCategoryModal = ({
           )}
         </>
       )}
-      {formMeta.status === "updating" && (
-        <LoadingMessage message="Updating the category's details" />
+      {formMeta.status === "loading" && (
+        <LoadingMessage message={categoriesRequest.message} />
       )}
     </Modal>
   );
