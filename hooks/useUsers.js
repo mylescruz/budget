@@ -57,8 +57,6 @@ const useUsers = () => {
         status: "error",
         message: error.message,
       });
-
-      console.error(error);
     }
   };
 
@@ -107,8 +105,6 @@ const useUsers = () => {
         status: "error",
         message: error.message,
       });
-
-      console.error(error);
     }
   };
 
@@ -153,8 +149,6 @@ const useUsers = () => {
         status: "error",
         message: error.message,
       });
-
-      console.error(error);
     }
   };
 

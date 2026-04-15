@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
+import { logError } from "@/lib/logError";
 
 export default async function handler(req, res) {
   // Configure NextAuth.js
@@ -20,14 +21,14 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET":
-      return getBudgetMonths(res, budgetMonthsContext);
+      return getBudgetMonths(req, res, budgetMonthsContext);
     default:
       res.status(405).send(`${req.method} method not allowed`);
   }
 }
 
 // Get all the months in a user's budget
-async function getBudgetMonths(res, { categoriesCol, username }) {
+async function getBudgetMonths(req, res, { categoriesCol, username }) {
   try {
     const months = await categoriesCol
       .aggregate(
@@ -73,7 +74,8 @@ async function getBudgetMonths(res, { categoriesCol, username }) {
 
     return res.status(200).json(budgetMonths);
   } catch (error) {
-    console.error(`GET budget months request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

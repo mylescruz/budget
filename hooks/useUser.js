@@ -53,8 +53,6 @@ const useUser = () => {
         status: "error",
         message: error.message,
       });
-
-      console.error(error);
     }
   };
 

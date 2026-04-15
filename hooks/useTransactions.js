@@ -71,8 +71,6 @@ const useTransactions = (month, year) => {
         status: "error",
         message: error.message,
       });
-
-      console.error(error);
     }
   };
 

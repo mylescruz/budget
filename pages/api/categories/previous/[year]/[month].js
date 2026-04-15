@@ -1,4 +1,5 @@
 import centsToDollars from "@/helpers/centsToDollars";
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
@@ -154,9 +155,8 @@ async function getPreviousCategories(req, res, { categoriesCol, username }) {
 
     return res.status(200).json(previousCategories);
   } catch (error) {
-    console.error(
-      `GET previous categories request failed for ${username}: ${error}`,
-    );
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

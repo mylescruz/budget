@@ -68,7 +68,6 @@ const EditTransactionModal = ({
       setStatus("editing");
     } catch (error) {
       setStatus("error");
-      console.error(error);
       return;
     }
   };

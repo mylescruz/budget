@@ -110,7 +110,6 @@ const EditCategoryModal = ({
       closeEditCategoryModal();
     } catch (error) {
       setFormMeta({ status: "idle", error: error.message });
-      console.error(error);
     }
   };
 

@@ -43,7 +43,6 @@ const EditIncomeModal = ({
       closeEditModal();
     } catch (error) {
       setStatus("error");
-      console.error(error);
       return;
     }
   };

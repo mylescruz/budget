@@ -73,8 +73,6 @@ const usePreviousCategories = (month, year) => {
         status: "error",
         message: error.message,
       });
-
-      console.error(error);
     }
   };
 

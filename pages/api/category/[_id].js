@@ -2,6 +2,7 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -285,7 +286,8 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
 
     return res.status(200).json(updatedCategory);
   } catch (error) {
-    console.error(`PUT categories request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -342,7 +344,8 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
       .status(200)
       .json({ _id: categoryId, message: "Category deleted successfully" });
   } catch (error) {
-    console.error(`DELETE category request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

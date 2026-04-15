@@ -9,6 +9,7 @@ import {
   TRANSACTION_TYPES,
   TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
+import { logError } from "@/lib/logError";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -88,7 +89,8 @@ async function getYearSummary(
       monthsLength: months.length,
     });
   } catch (error) {
-    console.error(`GET summary request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

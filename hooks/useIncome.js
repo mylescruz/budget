@@ -57,8 +57,6 @@ const useIncome = (year) => {
         message: null,
       });
     } catch (error) {
-      console.error(error);
-
       setIncomeRequest({
         action: "get",
         status: "error",

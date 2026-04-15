@@ -7,6 +7,7 @@ import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import centsToDollars from "@/helpers/centsToDollars";
 import { INCOME_TYPES } from "@/lib/constants/income";
+import { logError } from "@/lib/logError";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -130,7 +131,8 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
       .status(200)
       .json({ ...updatedSource, amount: centsToDollars(updatedSource.amount) });
   } catch (error) {
-    console.error(`PUT income request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -169,7 +171,8 @@ async function deleteIncome(req, res, { client, incomeCol, username }) {
       .status(200)
       .json({ _id: sourceId, message: "Income deleted successfully" });
   } catch (error) {
-    console.error(`DELETE income request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

@@ -2,10 +2,10 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 
 export default async function handler(req, res) {
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET":
-      return getTransactions(res, transactionsContext);
+      return getTransactions(req, res, transactionsContext);
     case "POST":
       return addTransactions(req, res, transactionsContext);
     default:
@@ -91,6 +91,7 @@ async function fetchTransactions(transactionsCol, username, month, year) {
 
 // Get the user's transactions in MongoDB
 async function getTransactions(
+  req,
   res,
   { transactionsCol, username, month, year },
 ) {
@@ -105,7 +106,8 @@ async function getTransactions(
     // Send the transactions array back to the client
     return res.status(200).json(transactions);
   } catch (error) {
-    console.error(`GET transactions request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -217,7 +219,8 @@ async function addTransactions(
 
     return res.status(200).json(addedTransactions);
   } catch (error) {
-    console.error(`POST transactions request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

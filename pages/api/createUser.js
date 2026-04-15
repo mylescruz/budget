@@ -1,4 +1,5 @@
 // API endpoint to add a new user to the system
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 
 // Configuring bcrypt for password encryption
@@ -32,7 +33,8 @@ async function createNewUser(req, res, usersCol) {
     // Return the new user
     return res.status(200).json(insertedUser);
   } catch (error) {
-    console.error(`POST createUser request failed: ${error}`);
+    await logError({ error, req, username: req.body.username });
+
     return res
       .status(500)
       .send(

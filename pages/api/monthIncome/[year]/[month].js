@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import centsToDollars from "@/helpers/centsToDollars";
+import { logError } from "@/lib/logError";
 
 export default async function handler(req, res) {
   // Use NextAuth.js to authenticate a user's session in the server
@@ -42,6 +43,8 @@ export default async function handler(req, res) {
       // Send the income for the month back to the client
       return res.status(200).send(monthIncome);
     } catch (error) {
+      await logError({ error, req, username });
+
       return res
         .status(500)
         .send(
@@ -49,7 +52,6 @@ export default async function handler(req, res) {
         );
     }
   } else {
-    console.error(`${method} method is not allowed`);
     return res.status(405).send(`${method} method is not allowed`);
   }
 }

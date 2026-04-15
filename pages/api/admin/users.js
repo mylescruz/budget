@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { logError } from "@/lib/logError";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -25,6 +26,7 @@ export default async function handler(req, res) {
 
   const usersContext = {
     client,
+    username: session.user.username,
     usersCol: db.collection("users"),
     categoriesCol: db.collection("categories"),
     incomeCol: db.collection("income"),
@@ -33,7 +35,7 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET":
-      return getUsers(res, usersContext);
+      return getUsers(req, res, usersContext);
     case "PUT":
       return updateUser(req, res, usersContext);
     case "DELETE":
@@ -44,7 +46,7 @@ export default async function handler(req, res) {
 }
 
 // Gets all the users in the system from MongoDB
-async function getUsers(res, { usersCol }) {
+async function getUsers(req, res, { username, usersCol }) {
   try {
     const users = await usersCol
       .aggregate(
@@ -73,7 +75,7 @@ async function getUsers(res, { usersCol }) {
     // Send the users array back to the client
     return res.status(200).json(users);
   } catch (error) {
-    console.error(`GET admin/users request failed: ${error}`);
+    await logError({ error, req, username });
 
     return res
       .status(500)
@@ -83,7 +85,7 @@ async function getUsers(res, { usersCol }) {
   }
 }
 
-async function updateUser(req, res, { usersCol }) {
+async function updateUser(req, res, { username, usersCol }) {
   try {
     const editedUser = req.body;
 
@@ -99,7 +101,7 @@ async function updateUser(req, res, { usersCol }) {
 
     return res.status(200).json(editedUser);
   } catch (error) {
-    console.error(`PUT admin/users request failed: ${error}`);
+    await logError({ error, req, username });
 
     return res
       .status(500)
@@ -112,7 +114,7 @@ async function updateUser(req, res, { usersCol }) {
 async function deleteUser(
   req,
   res,
-  { client, usersCol, categoriesCol, incomeCol, transactionsCol },
+  { client, username, usersCol, categoriesCol, incomeCol, transactionsCol },
 ) {
   const mongoSession = client.startSession();
 
@@ -137,7 +139,7 @@ async function deleteUser(
     // Send back the deleted user to the client
     return res.status(200).send("The user was deleted successfully!");
   } catch (error) {
-    console.error(`DELETE admin/users request failed: ${error}`);
+    await logError({ error, req, username });
 
     return res
       .status(500)

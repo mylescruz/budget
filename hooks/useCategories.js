@@ -70,8 +70,6 @@ const useCategories = (month, year) => {
 
       setCategoriesRequest({ action: "get", status: "success", message: null });
     } catch (error) {
-      console.error(error);
-
       setCategoriesRequest({
         action: "get",
         status: "error",

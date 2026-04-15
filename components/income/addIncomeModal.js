@@ -60,7 +60,6 @@ const AddIncomeModal = ({ year, postIncome, modal, setModal }) => {
       closeAddModal();
     } catch (error) {
       setStatus("error");
-      console.error(error);
       return;
     }
   };

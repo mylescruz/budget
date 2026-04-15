@@ -39,7 +39,6 @@ const DeleteAccountTab = ({ user, deleteUser }) => {
       signOut();
     } catch (error) {
       setErrorOccurred(true);
-      console.error(error);
       return;
     } finally {
       setDeletingUser(false);

@@ -1,5 +1,6 @@
 // API Endpoint to check if a username exists
 
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 
 export default async function handler(req, res) {
@@ -33,7 +34,8 @@ async function checkUsername(req, res, usersCol) {
       return res.status(200).json({ exists: false });
     }
   } catch (error) {
-    console.error(`GET authorize/username request failed: ${error}`);
+    await logError({ error, req, username: req.query.username });
+
     return res
       .status(500)
       .send(

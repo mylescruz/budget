@@ -3,6 +3,7 @@
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { FUN_MONEY } from "@/lib/constants/categories";
 import { INCOME_TYPES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 
@@ -163,7 +164,8 @@ async function createAccount(
     // Return the newly onboarded user
     res.status(200).json(insertedUser);
   } catch (error) {
-    console.error(`POST onboarding request failed: ${error}`);
+    await logError({ error, req, username: req.body.username });
+
     res
       .status(500)
       .send(

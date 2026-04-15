@@ -22,7 +22,6 @@ const DeleteIncomeModal = ({ chosenSource, deleteIncome, modal, setModal }) => {
       closeDeleteModal();
     } catch (error) {
       setStatus("error");
-      console.error(error);
       return;
     }
   };

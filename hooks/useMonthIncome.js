@@ -44,8 +44,6 @@ const useMonthIncome = (month, year) => {
         message: null,
       });
     } catch (error) {
-      console.error(error);
-
       setMonthIncomeRequest({
         action: "get",
         status: "error",

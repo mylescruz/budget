@@ -6,6 +6,7 @@ import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import centsToDollars from "@/helpers/centsToDollars";
 import { INCOME_TYPES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
+import { logError } from "@/lib/logError";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -64,7 +65,8 @@ async function getIncome(req, res, { incomeCol, username }) {
 
     return res.status(200).json(income);
   } catch (error) {
-    console.error(`GET income request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -194,7 +196,8 @@ async function addIncome(req, res, { client, incomeCol, username }) {
 
     return res.status(200).json(insertedSources);
   } catch (error) {
-    console.error(`POST income request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

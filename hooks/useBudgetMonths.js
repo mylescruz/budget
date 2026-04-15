@@ -49,8 +49,6 @@ const useBudgetMonths = () => {
         message: null,
       });
     } catch (error) {
-      console.error(error);
-
       setBudgetMonthsRequest({
         action: "get",
         status: "error",

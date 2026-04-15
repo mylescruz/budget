@@ -2,6 +2,7 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
@@ -146,7 +147,8 @@ async function updateTransaction(
 
     return res.status(200).json(updatedTransaction);
   } catch (error) {
-    console.error(`PUT transaction request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -175,9 +177,8 @@ async function deleteTransaction(
     // Send a success message back to the client
     return res.status(200).send("Transaction was deleted successfully");
   } catch (error) {
-    console.error(
-      `DELETE transaction request failed for ${username}: ${error}`,
-    );
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

@@ -1,3 +1,4 @@
+import { logError } from "@/lib/logError";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -31,7 +32,8 @@ export const authOptions = {
             return null;
           }
         } catch (error) {
-          console.error(`Error fetching ${credentials.username}: ${error}`);
+          await logError({ error, req, username: credentials.username });
+
           return null;
         }
       },

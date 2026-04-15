@@ -38,7 +38,6 @@ const DeleteTransactionModal = ({
       setModal("none");
     } catch (error) {
       setErrorOccurred(true);
-      console.error(error);
       return;
     } finally {
       setDeletingTransaction(false);

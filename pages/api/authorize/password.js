@@ -1,5 +1,6 @@
 // API Endpoint to authorize a user's credentials
 
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
@@ -73,7 +74,8 @@ async function verifyLogin(req, res, usersCol) {
     // Send back verified user to NextAuth
     return res.status(200).json(verifiedUser);
   } catch (error) {
-    console.error(`POST authorize request failed for : ${error}`);
+    await logError({ error, req, username: req.body.username });
+
     return res
       .status(500)
       .send(
@@ -87,7 +89,6 @@ async function checkHashedPassword(password, hashedPassword) {
   try {
     return await bcrypt.compare(password, hashedPassword);
   } catch (error) {
-    console.error("Error comparing passwords: ", error);
     return false;
   }
 }

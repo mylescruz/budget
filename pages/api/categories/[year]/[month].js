@@ -3,6 +3,7 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { FUN_MONEY } from "@/lib/constants/categories";
+import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -59,7 +60,8 @@ async function getCategories(req, res, { client, categoriesCol, username }) {
 
     return res.status(200).json(categories);
   } catch (error) {
-    console.error(`GET categories request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -224,7 +226,8 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
 
     return res.status(200).json(addedCategory);
   } catch (error) {
-    console.error(`POST categories request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(

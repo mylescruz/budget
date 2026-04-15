@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { logError } from "@/lib/logError";
 
 // Configuring bcrypt for password encryption
 const bcrypt = require("bcryptjs");
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
 
   switch (req.method) {
     case "GET":
-      return getUser(res, userContext);
+      return getUser(req, res, userContext);
     case "PUT":
       return updateUser(req, res, userContext);
     case "DELETE":
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
 }
 
 // Function to get a user's information from MongoDB
-async function getUser(res, { usersCol, username }) {
+async function getUser(req, res, { usersCol, username }) {
   try {
     const user = await usersCol.findOne({ username }, { maxTimeMS: 5000 });
 
@@ -53,7 +54,8 @@ async function getUser(res, { usersCol, username }) {
     // Send the user back to the client
     return res.status(200).json(userInfo);
   } catch (error) {
-    console.error(`GET user request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -116,7 +118,8 @@ async function updateUser(req, res, { client, usersCol, username, _id }) {
     // Send the user back to the client
     return res.status(200).json(user);
   } catch (error) {
-    console.error(`PUT user request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -175,7 +178,8 @@ async function deleteUser(req, res, { client, db, usersCol, username, _id }) {
     // Send back a successful status that the user was deleted
     return res.status(200).send();
   } catch (error) {
-    console.error(`DELETE user request failed for ${username}: ${error}`);
+    await logError({ error, req, username });
+
     return res
       .status(500)
       .send(
@@ -191,7 +195,6 @@ async function checkHashedPassword(password, hashedPassword) {
   try {
     return await bcrypt.compare(password, hashedPassword);
   } catch (error) {
-    console.error("Error comparing passwords: ", error);
     return false;
   }
 }

@@ -55,7 +55,6 @@ const ChangeEmailTab = ({ user, putUser }) => {
       router.reload();
     } catch (error) {
       setErrorOccurred(true);
-      console.error(error);
       return;
     } finally {
       setUpdatingUser(false);
