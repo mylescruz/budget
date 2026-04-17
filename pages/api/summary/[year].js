@@ -364,6 +364,7 @@ async function getMonthsSummaries(
             _id: 1,
             month: 1,
             name: 1,
+            budget: 1,
             actual: 1,
             parentCategoryId: 1,
           },
@@ -381,7 +382,7 @@ async function getMonthsSummaries(
     if (!category.parentCategoryId) {
       fixedParentCategoriesMap.set(category._id.toString(), {
         ...category,
-        originalActual: category.actual,
+        originalActual: category.budget,
         actual: 0,
         subcategoriesCount: 0,
       });
@@ -398,7 +399,7 @@ async function getMonthsSummaries(
 
     parent.subcategoriesCount += 1;
 
-    parent.actual += subcategory.actual;
+    parent.actual += subcategory.budget;
   });
 
   // Map through the categories to update the final actual total
