@@ -43,6 +43,7 @@ const TotalsCards = ({ summary }) => {
     toSavings: centsToDollars(rawTotals.transfers.out),
     toChecking: centsToDollars(rawTotals.transfers.in),
     netSavings: centsToDollars(netSavings),
+    numMonths: summary.months.length,
   };
 
   const totalsArray = [
@@ -66,6 +67,24 @@ const TotalsCards = ({ summary }) => {
           ? "text-success fw-bold"
           : "text-danger fw-bold",
       modal: "remaining",
+    },
+    {
+      title: "Avg Income Per Month",
+      amount: totals.income / totals.numMonths,
+      textColor: "text-dark",
+    },
+    {
+      title: "Avg Expenses Per Month",
+      amount: totals.expenses / totals.numMonths,
+      textColor: "text-dark",
+    },
+    {
+      title: "Avg Net Per Month",
+      amount: totals.netCashFlow / totals.numMonths,
+      textColor:
+        totals.netCashFlow >= 0
+          ? "text-success fw-bold"
+          : "text-danger fw-bold",
     },
     {
       title: "Saved",
