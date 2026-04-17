@@ -8,7 +8,6 @@ import { updateFunMoney } from "@/lib/updateFunMoney";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
-import { update } from "tar";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
