@@ -40,7 +40,7 @@ const DeleteIncomeModal = ({
           <Modal.Body>
             <p className="mb-2">
               Are you sure you want to delete this source of income:{" "}
-              {chosenSource.name} on {dateFormatter(chosenSource.date)}?
+              {chosenSource.source} on {dateFormatter(chosenSource.date)}?
             </p>
             {formMeta.error && <ErrorMessage message={formMeta.error} />}
           </Modal.Body>
