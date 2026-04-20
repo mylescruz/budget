@@ -3,7 +3,7 @@ import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { PAYCHECK_FREQUENCIES_LIST } from "@/lib/constants/income";
 import { Button, Form } from "react-bootstrap";
 
-const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
+const PaycheckForm = ({ src, handleInput, year, setRepeating }) => {
   return (
     <>
       <Form.Group className="my-3">
@@ -14,7 +14,7 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
           type="date"
           min={`${year}-01-01`}
           max={`${year}-12-31`}
-          value={source.date}
+          value={src.date}
           onChange={handleInput}
           required
         />
@@ -22,10 +22,10 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
       <Form.Group className="my-3">
         <Form.Label>Who paid you?</Form.Label>
         <Form.Control
-          id="name"
+          id="source"
           className="h-100"
           type="text"
-          value={source.name}
+          value={src.source}
           onChange={handleInput}
           required
         />
@@ -46,7 +46,7 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
           type="number"
           min={0.01}
           step={0.01}
-          value={source.gross}
+          value={src.gross}
           onChange={handleInput}
           required
         />
@@ -67,7 +67,7 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
           type="number"
           min={0.01}
           step={0.01}
-          value={source.amount}
+          value={src.amount}
           onChange={handleInput}
           required
         />
@@ -88,7 +88,7 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
           type="number"
           min={0.01}
           step={0.01}
-          value={subtractDecimalValues(source.gross, source.amount)}
+          value={subtractDecimalValues(src.gross, src.amount)}
           disabled
           required
         />
@@ -99,19 +99,19 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
           id="description"
           className="h-100"
           type="text"
-          value={source.description}
+          value={src.description}
           placeholder="Optional"
           onChange={handleInput}
         />
       </Form.Group>
-      {source.new && (
+      {src.new && (
         <>
           <Form.Group controlId="repeating" className="my-3">
             <Form.Label>Is this a repeating paycheck?</Form.Label>
             <div>
               <Button
                 className={`${
-                  source.repeating
+                  src.repeating
                     ? "bg-primary border border-primary"
                     : "bg-secondary border border-secondary"
                 }`}
@@ -121,7 +121,7 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
               </Button>
               <Button
                 className={`mx-2 ${
-                  !source.repeating
+                  !src.repeating
                     ? "bg-primary border border-primary"
                     : "bg-secondary border border-secondary"
                 }`}
@@ -131,13 +131,13 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
               </Button>
             </div>
           </Form.Group>
-          {source.repeating && (
+          {src.repeating && (
             <div>
               <Form.Group controlId="frequency" className="mb-3">
                 <Form.Label>How often do you get paid?</Form.Label>
                 <Form.Select
                   className="h-100"
-                  value={source.frequency}
+                  value={src.frequency}
                   onChange={handleInput}
                   required
                 >
@@ -153,9 +153,9 @@ const PaycheckForm = ({ source, handleInput, year, setRepeating }) => {
                 <Form.Control
                   className="h-100"
                   type="date"
-                  min={source.date}
+                  min={src.date}
                   max={`${year}-12-31`}
-                  value={source.endRepeatDate}
+                  value={src.endRepeatDate}
                   onChange={handleInput}
                   required
                 />

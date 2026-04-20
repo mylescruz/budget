@@ -1,6 +1,6 @@
 import { Form } from "react-bootstrap";
 
-const GiftForm = ({ source, handleInput, year }) => {
+const GiftForm = ({ src, handleInput, year }) => {
   return (
     <>
       <Form.Group className="my-3">
@@ -11,7 +11,7 @@ const GiftForm = ({ source, handleInput, year }) => {
           type="date"
           min={`${year}-01-01`}
           max={`${year}-12-31`}
-          value={source.date}
+          value={src.date}
           onChange={handleInput}
           required
         />
@@ -19,10 +19,10 @@ const GiftForm = ({ source, handleInput, year }) => {
       <Form.Group className="my-3">
         <Form.Label>Who gave you this gift?</Form.Label>
         <Form.Control
-          id="name"
+          id="source"
           className="h-100"
           type="text"
-          value={source.name}
+          value={src.source}
           onChange={handleInput}
           required
         />
@@ -35,7 +35,7 @@ const GiftForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          value={source.amount}
+          value={src.amount}
           onChange={handleInput}
           required
         />
@@ -46,7 +46,7 @@ const GiftForm = ({ source, handleInput, year }) => {
           id="description"
           className="h-100"
           type="text"
-          value={source.description}
+          value={src.description}
           placeholder="Optional"
           onChange={handleInput}
         />

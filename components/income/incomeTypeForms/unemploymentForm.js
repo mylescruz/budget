@@ -1,6 +1,6 @@
 import { Form } from "react-bootstrap";
 
-const UnemploymentForm = ({ source, handleInput, year }) => {
+const UnemploymentForm = ({ src, handleInput, year }) => {
   return (
     <>
       <Form.Group className="my-3">
@@ -13,7 +13,7 @@ const UnemploymentForm = ({ source, handleInput, year }) => {
           type="date"
           min={`${year}-01-01`}
           max={`${year}-12-31`}
-          value={source.date}
+          value={src.date}
           onChange={handleInput}
           required
         />
@@ -26,7 +26,7 @@ const UnemploymentForm = ({ source, handleInput, year }) => {
           type="number"
           min={0.01}
           step={0.01}
-          value={source.amount}
+          value={src.amount}
           onChange={handleInput}
           required
         />
@@ -37,7 +37,7 @@ const UnemploymentForm = ({ source, handleInput, year }) => {
           id="description"
           className="h-100"
           type="text"
-          value={source.description}
+          value={src.description}
           placeholder="Optional"
           onChange={handleInput}
         />

@@ -49,7 +49,7 @@ const EditIncomeModal = ({
   };
 
   const incomeFormProps = {
-    source: chosenSource,
+    src: chosenSource,
     handleInput: handleInput,
     year: year,
   };
@@ -63,16 +63,16 @@ const EditIncomeModal = ({
           </Modal.Header>
           <Form onSubmit={updatePaycheck}>
             <Modal.Body>
-              {chosenSource.type === INCOME_TYPES.PAYCHECK && (
+              {chosenSource.incomeType === INCOME_TYPES.PAYCHECK && (
                 <PaycheckForm {...incomeFormProps} />
               )}
-              {chosenSource.type === INCOME_TYPES.SALE && (
+              {chosenSource.incomeType === INCOME_TYPES.SALE && (
                 <SaleForm {...incomeFormProps} />
               )}
-              {chosenSource.type === INCOME_TYPES.GIFT && (
+              {chosenSource.incomeType === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
               )}
-              {chosenSource.type === INCOME_TYPES.UNEMPLOYMENT && (
+              {chosenSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               {formMeta.error && <ErrorMessage message={formMeta.error} />}

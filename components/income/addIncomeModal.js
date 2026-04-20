@@ -24,9 +24,9 @@ const AddIncomeModal = ({
   const sourceDate = year === todayInfo.year ? todayInfo.date : `${year}-01-01`;
 
   const emptySource = {
-    type: INCOME_TYPES.PAYCHECK,
+    incomeType: INCOME_TYPES.PAYCHECK,
     date: sourceDate,
-    name: "",
+    source: "",
     description: "",
     gross: "",
     deductions: "",
@@ -37,19 +37,19 @@ const AddIncomeModal = ({
     new: true,
   };
 
-  const [source, setSource] = useState(emptySource);
+  const [newSource, setNewSource] = useState(emptySource);
   const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const handleInput = (e) => {
-    if (e.target.id === "type") {
-      setSource({ ...emptySource, type: e.target.value });
+    if (e.target.id === "incomeType") {
+      setNewSource({ ...emptySource, incomeType: e.target.value });
     } else {
-      handleObjectInput({ e, setObject: setSource });
+      handleObjectInput({ e, setObject: setNewSource });
     }
   };
 
   const setRepeating = () => {
-    setSource((prev) => ({
+    setNewSource((prev) => ({
       ...prev,
       repeating: !prev.repeating,
     }));
@@ -73,13 +73,13 @@ const AddIncomeModal = ({
   const closeAddModal = () => {
     setModal("none");
 
-    setSource(emptySource);
+    setNewSource(emptySource);
 
     setFormMeta({ status: "idle", error: null });
   };
 
   const incomeFormProps = {
-    source: source,
+    src: newSource,
     handleInput: handleInput,
     year: year,
   };
@@ -97,32 +97,32 @@ const AddIncomeModal = ({
               <Form.Group className="mb-3">
                 <Form.Label>What type of income is this?</Form.Label>
                 <Form.Select
-                  id="type"
+                  id="incomeType"
                   className="h-100"
-                  value={source.type}
+                  value={newSource.incomeType}
                   onChange={handleInput}
                   required
                 >
-                  {INCOME_TYPES_LIST.map((type, index) => (
-                    <option key={index} value={type}>
-                      {type}
+                  {INCOME_TYPES_LIST.map((incomeType, index) => (
+                    <option key={index} value={incomeType}>
+                      {incomeType}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
-              {source.type === INCOME_TYPES.PAYCHECK && (
+              {newSource.incomeType === INCOME_TYPES.PAYCHECK && (
                 <PaycheckForm
                   setRepeating={setRepeating}
                   {...incomeFormProps}
                 />
               )}
-              {source.type === INCOME_TYPES.SALE && (
+              {newSource.incomeType === INCOME_TYPES.SALE && (
                 <SaleForm {...incomeFormProps} />
               )}
-              {source.type === INCOME_TYPES.GIFT && (
+              {newSource.incomeType === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
               )}
-              {source.type === INCOME_TYPES.UNEMPLOYMENT && (
+              {newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               {formMeta.error && <ErrorMessage message={formMeta.error} />}
@@ -135,8 +135,8 @@ const AddIncomeModal = ({
                 variant="primary"
                 type="submit"
                 disabled={
-                  source.type === INCOME_TYPES.PAYCHECK &&
-                  source.amount > source.gross
+                  newSource.incomeType === INCOME_TYPES.PAYCHECK &&
+                  newSource.amount > newSource.gross
                 }
               >
                 Add
