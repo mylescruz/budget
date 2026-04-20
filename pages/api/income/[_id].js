@@ -8,6 +8,8 @@ import { updateFunMoney } from "@/lib/updateFunMoney";
 import centsToDollars from "@/helpers/centsToDollars";
 import { INCOME_TYPES } from "@/lib/constants/income";
 import { logError } from "@/lib/logError";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -25,6 +27,7 @@ export default async function handler(req, res) {
   const incomeContext = {
     client: client,
     incomeCol: db.collection("income"),
+    transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
 
@@ -39,7 +42,11 @@ export default async function handler(req, res) {
 }
 
 // Update the given source of income for the user in MongoDB
-async function updateIncome(req, res, { client, incomeCol, username }) {
+async function updateIncome(
+  req,
+  res,
+  { client, incomeCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
@@ -47,13 +54,27 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
 
     const updatedSource = {
       ...req.body,
-      amount: parseFloat(req.body.amount) * 100,
+      amount: Number(req.body.amount) * 100,
+    };
+
+    // Update the source of income in the transactions collection as well
+    const updatedIncomeQuery = {
+      incomeType: updatedSource.type,
+      date: updatedSource.date,
+      source: updatedSource.name.trim(),
+      description: updatedSource.description.trim(),
+      amount: dollarsToCents(req.body.amount),
     };
 
     if (updatedSource.type === INCOME_TYPES.PAYCHECK) {
       updatedSource.gross = parseFloat(req.body.gross) * 100;
       updatedSource.deductions =
         parseFloat(req.body.gross) * 100 - parseFloat(req.body.amount) * 100;
+
+      // Update the paycheck income fields in the transactions collection
+      updatedIncomeQuery.gross = dollarsToCents(req.body.gross);
+      updatedIncomeQuery.deductions =
+        dollarsToCents(req.body.gross) - dollarsToCents(req.body.amount);
     }
 
     // Define the source's date identifiers
@@ -93,8 +114,17 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
               amount: updatedSource.amount,
             },
           },
-          { session, maxTimeMS },
+          { session, maxTimeMS: 5000 },
         );
+
+        // Update the correlating income transaction
+        // await transactionsCol.updateOne(
+        //   {
+        //     _id: new ObjectId(sourceId),
+        //   },
+        //   updatedIncomeQuery,
+        //   { session, maxTimeMS: 5000 },
+        // );
       }
 
       // Define the source's old date identifiers
@@ -144,7 +174,11 @@ async function updateIncome(req, res, { client, incomeCol, username }) {
 }
 
 // Delete the given source of income for the user in MongoDB
-async function deleteIncome(req, res, { client, incomeCol, username }) {
+async function deleteIncome(
+  req,
+  res,
+  { client, incomeCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
@@ -157,6 +191,12 @@ async function deleteIncome(req, res, { client, incomeCol, username }) {
         { _id: new ObjectId(sourceId) },
         { session, maxTimeMS: 5000 },
       );
+
+      // Delete the given source from the transactions collection
+      // await transactionsCol.deleteOne(
+      //   { _id: new ObjectId(sourceId) },
+      //   { session, maxTimeMS: 5000 },
+      // );
 
       // Define the source's date identifiers
       const sourceDate = new Date(`${source.date}T00:00:00Z`);
