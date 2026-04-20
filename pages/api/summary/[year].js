@@ -2,8 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import centsToDollars from "@/helpers/centsToDollars";
-import dollarsToCents from "@/helpers/dollarsToCents";
-import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { INCOME_TYPES } from "@/lib/constants/income";
 import {
   TRANSACTION_TYPES,
@@ -113,7 +111,7 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
             localField: "_id",
             foreignField: "categoryId",
             pipeline: [
-              { $match: { username, year } },
+              { $match: { username, year, type: TRANSACTION_TYPES.EXPENSE } },
               {
                 $group: {
                   _id: { categoryId: "$categoryId", month: "$month" },
@@ -422,7 +420,16 @@ async function getMonthsSummaries(
   const expensesPerMonth = await transactionsCol
     .aggregate(
       [
-        { $match: { username, year, month: { $lte: month } } },
+        {
+          $match: {
+            username,
+            year,
+            month: { $lte: month },
+            type: {
+              $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.TRANSFER],
+            },
+          },
+        },
         {
           $group: {
             _id: { month: "$month", type: "$type", toAccount: "$toAccount" },
@@ -540,7 +547,16 @@ async function getTransactions(transactionsCol, username, month, year) {
   return await transactionsCol
     .aggregate(
       [
-        { $match: { username, year, month: { $lte: month } } },
+        {
+          $match: {
+            username,
+            year,
+            month: { $lte: month },
+            type: {
+              $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.TRANSFER],
+            },
+          },
+        },
         {
           $project: {
             type: 1,
