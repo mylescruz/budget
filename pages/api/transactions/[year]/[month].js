@@ -41,54 +41,6 @@ export default async function handler(req, res) {
   }
 }
 
-// Fetch the user's transactions for the given month and year
-async function fetchTransactions(transactionsCol, username, month, year) {
-  return await transactionsCol
-    .aggregate(
-      [
-        { $match: { username, month, year } },
-        {
-          $project: {
-            type: 1,
-            date: 1,
-            createdTS: 1,
-            store: 1,
-            items: 1,
-            categoryId: 1,
-            fromAccount: 1,
-            toAccount: 1,
-            description: 1,
-            amount: { $divide: ["$amount", 100] },
-          },
-        },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "categoryId",
-            foreignField: "_id",
-            as: "transactionCategory",
-          },
-        },
-        {
-          $addFields: {
-            category: { $arrayElemAt: ["$transactionCategory.name", 0] },
-            color: { $arrayElemAt: ["$transactionCategory.color", 0] },
-            fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
-            parentCategoryId: {
-              $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
-            },
-          },
-        },
-        {
-          $project: { transactionCategory: 0 },
-        },
-        { $sort: { date: 1, createdTS: 1 } },
-      ],
-      { maxTimeMS: 10000 },
-    )
-    .toArray();
-}
-
 // Get the user's transactions in MongoDB
 async function getTransactions(
   req,
@@ -96,12 +48,59 @@ async function getTransactions(
   { transactionsCol, username, month, year },
 ) {
   try {
-    const transactions = await fetchTransactions(
-      transactionsCol,
-      username,
-      month,
-      year,
-    );
+    const transactions = await transactionsCol
+      .aggregate(
+        [
+          {
+            $match: {
+              username,
+              month,
+              year,
+              type: {
+                $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.TRANSFER],
+              },
+            },
+          },
+          {
+            $project: {
+              type: 1,
+              date: 1,
+              createdTS: 1,
+              store: 1,
+              items: 1,
+              categoryId: 1,
+              fromAccount: 1,
+              toAccount: 1,
+              description: 1,
+              amount: { $divide: ["$amount", 100] },
+            },
+          },
+          {
+            $lookup: {
+              from: "categories",
+              localField: "categoryId",
+              foreignField: "_id",
+              as: "transactionCategory",
+            },
+          },
+          {
+            $addFields: {
+              category: { $arrayElemAt: ["$transactionCategory.name", 0] },
+              color: { $arrayElemAt: ["$transactionCategory.color", 0] },
+              fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
+              parentCategoryId: {
+                $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+              },
+            },
+          },
+          {
+            $project: { transactionCategory: 0 },
+          },
+          { $sort: { date: 1, createdTS: 1 } },
+        ],
+        { maxTimeMS: 10000 },
+      )
+      .toArray();
 
     // Send the transactions array back to the client
     return res.status(200).json(transactions);
