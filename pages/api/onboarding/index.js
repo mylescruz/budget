@@ -18,7 +18,6 @@ export default async function handler(req, res) {
     client: client,
     usersCol: db.collection("users"),
     categoriesCol: db.collection("categories"),
-    incomeCol: db.collection("income"),
     transactionsCol: db.collection("transactions"),
     month: today.getUTCMonth() + 1,
     year: today.getFullYear(),

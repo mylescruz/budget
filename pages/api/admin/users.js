@@ -29,7 +29,6 @@ export default async function handler(req, res) {
     username: session.user.username,
     usersCol: db.collection("users"),
     categoriesCol: db.collection("categories"),
-    incomeCol: db.collection("income"),
     transactionsCol: db.collection("transactions"),
   };
 
@@ -114,7 +113,7 @@ async function updateUser(req, res, { username, usersCol }) {
 async function deleteUser(
   req,
   res,
-  { client, username, usersCol, categoriesCol, incomeCol, transactionsCol },
+  { client, username, usersCol, categoriesCol, transactionsCol },
 ) {
   const mongoSession = client.startSession();
 
@@ -131,9 +130,6 @@ async function deleteUser(
 
       // Delete the users documents from the transactions collection
       await transactionsCol.deleteMany({ username }, { session });
-
-      // Delete the users documents from the income collection
-      await incomeCol.deleteMany({ username }, { session });
     });
 
     // Send back the deleted user to the client

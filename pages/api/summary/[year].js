@@ -33,7 +33,6 @@ export default async function handler(req, res) {
   const summaryContext = {
     categoriesCol: db.collection("categories"),
     transactionsCol: db.collection("transactions"),
-    incomeCol: db.collection("income"),
     username: session.user.username,
     month: queryMonth,
     year: year,
@@ -50,7 +49,7 @@ export default async function handler(req, res) {
 async function getYearSummary(
   req,
   res,
-  { categoriesCol, transactionsCol, incomeCol, username, month, year },
+  { categoriesCol, transactionsCol, username, month, year },
 ) {
   try {
     const categories = await getCategoriesSummary(
@@ -77,7 +76,6 @@ async function getYearSummary(
     const months = await getMonthsSummaries(
       categoriesCol,
       transactionsCol,
-      incomeCol,
       username,
       month,
       year,
@@ -359,7 +357,6 @@ async function getIncomeSummary(transactionsCol, username, month, year) {
 async function getMonthsSummaries(
   categoriesCol,
   transactionsCol,
-  incomeCol,
   username,
   month,
   year,

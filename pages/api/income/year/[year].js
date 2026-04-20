@@ -25,7 +25,6 @@ export default async function handler(req, res) {
 
   const incomeContext = {
     client: client,
-    incomeCol: db.collection("income"),
     transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
