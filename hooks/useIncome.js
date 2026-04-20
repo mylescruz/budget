@@ -206,7 +206,7 @@ const useIncome = (year) => {
       return null;
     }
 
-    const types = {
+    const incomeTypes = {
       Paycheck: 0,
       Gift: 0,
       Sale: 0,
@@ -220,40 +220,40 @@ const useIncome = (year) => {
     for (const source of income) {
       const sourceAmount = dollarsToCents(source.amount);
 
-      if (types[source.type] !== undefined) {
-        types[source.type] += sourceAmount;
+      if (incomeTypes[source.incomeType] !== undefined) {
+        incomeTypes[source.incomeType] += sourceAmount;
       }
 
       totalAmount += sourceAmount;
 
-      if (source.type === INCOME_TYPES.PAYCHECK) {
+      if (source.incomeType === INCOME_TYPES.PAYCHECK) {
         totalGross += dollarsToCents(source.gross);
         totalDeductions += dollarsToCents(source.deductions);
       }
     }
 
-    const typesTotals = Object.entries(types)
+    const incomeTypesTotals = Object.entries(incomeTypes)
       .map(([key, value]) => {
-        const type = {
-          type: key,
+        const incomeType = {
+          incomeType: key,
           amount: centsToDollars(value),
         };
 
         if (key === INCOME_TYPES.PAYCHECK) {
-          type.gross = centsToDollars(totalGross);
-          type.deductions = centsToDollars(totalDeductions);
+          incomeType.gross = centsToDollars(totalGross);
+          incomeType.deductions = centsToDollars(totalDeductions);
         }
 
-        return type;
+        return incomeType;
       })
-      .filter((type) => type.amount > 0);
+      .filter((incomeType) => incomeType.amount > 0);
 
     return {
       numSources: income.length,
       gross: centsToDollars(totalGross),
       deductions: centsToDollars(totalDeductions),
       amount: centsToDollars(totalAmount),
-      types: typesTotals,
+      incomeTypes: incomeTypesTotals,
     };
   }, [income]);
 

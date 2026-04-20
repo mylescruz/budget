@@ -31,14 +31,14 @@ const InnerIncomeLayout = ({ year }) => {
       return null;
     }
 
-    return income.map((source) => {
+    return income.map((src) => {
       return {
-        _id: source._id,
-        date: source.date,
-        name: source.name,
-        description: source.description,
-        type: source.type,
-        amount: source.amount,
+        _id: src._id,
+        date: src.date,
+        name: src.source,
+        description: src.description,
+        type: src.incomeType,
+        amount: src.amount,
       };
     });
   }, [income]);

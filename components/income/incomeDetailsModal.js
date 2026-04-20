@@ -19,13 +19,13 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
   return (
     <Modal show={modal === "incomeDetails"} onHide={closeDetailsModal} centered>
       <Modal.Header closeButton>
-        <Modal.Title>{chosenSource.type} Details</Modal.Title>
+        <Modal.Title>{chosenSource.incomeType} Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Row className="m-2">Date: {dateFormatter(chosenSource.date)}</Row>
-        {chosenSource.type === INCOME_TYPES.PAYCHECK && (
+        {chosenSource.incomeType === INCOME_TYPES.PAYCHECK && (
           <>
-            <Row className="m-2">Company: {chosenSource.name}</Row>
+            <Row className="m-2">Company: {chosenSource.source}</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
               Gross Income: {dollarFormatter(chosenSource.gross)}
@@ -38,25 +38,25 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
             </Row>
           </>
         )}
-        {chosenSource.type === INCOME_TYPES.SALE && (
+        {chosenSource.incomeType === INCOME_TYPES.SALE && (
           <>
-            <Row className="m-2">Item Sold: {chosenSource.name}</Row>
+            <Row className="m-2">Item Sold: {chosenSource.source}</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
               Sale Amount: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}
-        {chosenSource.type === INCOME_TYPES.GIFT && (
+        {chosenSource.incomeType === INCOME_TYPES.GIFT && (
           <>
-            <Row className="m-2">Received Gift From: {chosenSource.name}</Row>
+            <Row className="m-2">Received Gift From: {chosenSource.source}</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>
             <Row className="m-2">
               Gift Amount: {dollarFormatter(chosenSource.amount)}
             </Row>
           </>
         )}
-        {chosenSource.type === INCOME_TYPES.UNEMPLOYMENT && (
+        {chosenSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
           <>
             <Row className="m-2">Received Unemployment from EDD</Row>
             <Row className="m-2">Description: {chosenSource.description}</Row>

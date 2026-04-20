@@ -41,20 +41,20 @@ export default async function handler(req, res) {
 }
 
 // Get user's income array from MongoDB
-async function getIncome(req, res, { incomeCol, username }) {
+async function getIncome(req, res, { transactionsCol, username }) {
   const year = parseInt(req.query.year);
 
   try {
-    const income = await incomeCol
+    const income = await transactionsCol
       .aggregate(
         [
-          { $match: { username, year } },
+          { $match: { username, year, type: TRANSACTION_TYPES.INCOME } },
           {
             $project: {
               _id: 1,
               date: 1,
-              type: 1,
-              name: 1,
+              incomeType: 1,
+              source: 1,
               description: 1,
               gross: { $divide: ["$gross", 100] },
               deductions: { $divide: ["$deductions", 100] },
