@@ -3,6 +3,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import centsToDollars from "@/helpers/centsToDollars";
 import { logError } from "@/lib/logError";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 export default async function handler(req, res) {
   // Use NextAuth.js to authenticate a user's session in the server
@@ -19,26 +20,36 @@ export default async function handler(req, res) {
   const year = parseInt(req?.query?.year);
 
   const db = (await clientPromise).db(process.env.MONGO_DB);
-  const incomeCol = db.collection("income");
+  const transactionsCol = db.collection("transactions");
 
   if (method === "GET") {
     try {
-      // Get all the sources of income for the given month
-      const income = await incomeCol
-        .find(
-          { username: username, month: month, year: year },
+      // Calculate the sum of all the sources of income for the given month
+      const income = await transactionsCol
+        .aggregate(
+          [
+            {
+              $match: {
+                username: username,
+                month: month,
+                year: year,
+                type: TRANSACTION_TYPES.INCOME,
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalAmount: { $sum: "$amount" },
+              },
+            },
+          ],
           { maxTimeMS: 5000 },
         )
         .toArray();
 
-      if (income.length === 0) {
-        return res.status(200).send(0);
-      }
-
-      // Get the total income for the given month
-      const monthIncome = centsToDollars(
-        income.reduce((sum, current) => sum + current.amount, 0),
-      );
+      // Get the month's income or set the income equal to 0 if there is no income for the month
+      const monthIncome =
+        income.length > 0 ? centsToDollars(income[0].totalAmount) : 0;
 
       // Send the income for the month back to the client
       return res.status(200).send(monthIncome);
