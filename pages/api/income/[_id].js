@@ -42,95 +42,41 @@ export default async function handler(req, res) {
 }
 
 // Update the given source of income for the user in MongoDB
-async function updateIncome(
-  req,
-  res,
-  { client, incomeCol, transactionsCol, username },
-) {
+async function updateIncome(req, res, { client, transactionsCol, username }) {
   const mongoSession = client.startSession();
 
   try {
     const sourceId = req.query._id;
 
-    const updatedSource = {
-      ...req.body,
-      amount: Number(req.body.amount) * 100,
-    };
-
-    // Update the source of income in the transactions collection as well
-    const updatedIncomeQuery = {
-      incomeType: updatedSource.type,
-      date: updatedSource.date,
-      source: updatedSource.name.trim(),
-      description: updatedSource.description.trim(),
-      amount: dollarsToCents(req.body.amount),
-    };
-
-    if (updatedSource.type === INCOME_TYPES.PAYCHECK) {
-      updatedSource.gross = parseFloat(req.body.gross) * 100;
-      updatedSource.deductions =
-        parseFloat(req.body.gross) * 100 - parseFloat(req.body.amount) * 100;
-
-      // Update the paycheck income fields in the transactions collection
-      updatedIncomeQuery.gross = dollarsToCents(req.body.gross);
-      updatedIncomeQuery.deductions =
-        dollarsToCents(req.body.gross) - dollarsToCents(req.body.amount);
-    }
-
-    // Define the source's date identifiers
-    const updatedDate = new Date(`${updatedSource.date}T00:00:00Z`);
+    const updatedDate = new Date(`${req.body.date}T00:00:00Z`);
     const updatedMonth = updatedDate.getUTCMonth() + 1;
     const updatedYear = updatedDate.getFullYear();
 
+    // Update the source of income in the transactions collection as well
+    const updateQuery = {
+      incomeType: req.body.incomeType,
+      date: req.body.date,
+      month: updatedMonth,
+      year: updatedYear,
+      source: req.body.source.trim(),
+      description: req.body.description.trim(),
+      amount: dollarsToCents(req.body.amount),
+      updatedTS: new Date(),
+    };
+
+    // Update the extra fields for paychecks
+    if (updateQuery.incomeType === INCOME_TYPES.PAYCHECK) {
+      updateQuery.gross = dollarsToCents(req.body.gross);
+      updateQuery.deductions =
+        dollarsToCents(req.body.gross) - dollarsToCents(req.body.amount);
+    }
+
     await mongoSession.withTransaction(async (session) => {
-      // Update the edited source in MongoDB
-      if (updatedSource.type === INCOME_TYPES.PAYCHECK) {
-        await incomeCol.updateOne(
-          { _id: new ObjectId(sourceId), username },
-          {
-            $set: {
-              month: updatedMonth,
-              year: updatedYear,
-              date: updatedSource.date,
-              name: updatedSource.name.trim(),
-              description: updatedSource.description.trim(),
-              gross: updatedSource.gross,
-              deductions: updatedSource.deductions,
-              amount: updatedSource.amount,
-            },
-          },
-          { session, maxTimeMS: 5000 },
-        );
-      } else {
-        await incomeCol.updateOne(
-          { _id: new ObjectId(sourceId), username },
-          {
-            $set: {
-              month: updatedMonth,
-              year: updatedYear,
-              date: updatedSource.date,
-              name: updatedSource.name.trim(),
-              description: updatedSource.description.trim(),
-              amount: updatedSource.amount,
-            },
-          },
-          { session, maxTimeMS: 5000 },
-        );
-
-        // Update the correlating income transaction
-        // await transactionsCol.updateOne(
-        //   {
-        //     _id: new ObjectId(sourceId),
-        //   },
-        //   updatedIncomeQuery,
-        //   { session, maxTimeMS: 5000 },
-        // );
-      }
-
-      // Define the source's old date identifiers
-      const oldSourceDate = new Date(`${updatedSource.oldDate}T00:00:00Z`);
-      const oldMonth = oldSourceDate.getUTCMonth() + 1;
-      const oldYear = oldSourceDate.getFullYear();
+      await transactionsCol.updateOne(
+        { _id: new ObjectId(sourceId) },
+        { $set: updateQuery },
+        { session, maxTimeMS: 5000 },
+      );
 
       // Update the Fun Money category for the updated source's month
       await updateFunMoney({
@@ -139,6 +85,11 @@ async function updateIncome(
         year: updatedYear,
         session,
       });
+
+      // Define the source's old date identifiers
+      const oldSourceDate = new Date(`${req.body.oldDate}T00:00:00Z`);
+      const oldMonth = oldSourceDate.getUTCMonth() + 1;
+      const oldYear = oldSourceDate.getFullYear();
 
       if (updatedMonth !== oldMonth) {
         // Update the Fun Money category for the edited source's old month
@@ -152,14 +103,23 @@ async function updateIncome(
     });
 
     // Send the updated source back to the client
-    if (updatedSource.type === INCOME_TYPES.PAYCHECK) {
-      updatedSource.gross = centsToDollars(updatedSource.gross);
-      updatedSource.deductions = centsToDollars(updatedSource.deductions);
+    const updatedSource = {
+      _id: sourceId,
+      date: updateQuery.date,
+      incomeType: updateQuery.incomeType,
+      source: updateQuery.source,
+      description: updateQuery.description,
+      amount: centsToDollars(updateQuery.amount),
+      createdTS: req.body.createdTS,
+      updatedTS: updateQuery.updatedTS,
+    };
+
+    if (updateQuery.incomeType === INCOME_TYPES.PAYCHECK) {
+      updatedSource.gross = centsToDollars(updateQuery.gross);
+      updateQuery.deductions = centsToDollars(updateQuery.deductions);
     }
 
-    return res
-      .status(200)
-      .json({ ...updatedSource, amount: centsToDollars(updatedSource.amount) });
+    return res.status(200).json(updatedSource);
   } catch (error) {
     await logError({ error, req, username });
 
