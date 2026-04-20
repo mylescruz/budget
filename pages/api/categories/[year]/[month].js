@@ -3,6 +3,7 @@
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { FUN_MONEY } from "@/lib/constants/categories";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -256,8 +257,15 @@ async function getCurrentCategories(
             localField: "_id",
             foreignField: "categoryId",
             pipeline: [
-              { $match: { username, month, year } },
-              { $project: { category: 1, amount: 1 } },
+              {
+                $match: {
+                  username,
+                  month,
+                  year,
+                  type: TRANSACTION_TYPES.EXPENSE,
+                },
+              },
+              { $project: { categoryId: 1, amount: 1 } },
             ],
             as: "transactions",
           },
