@@ -116,7 +116,7 @@ async function updateIncome(req, res, { client, transactionsCol, username }) {
 
     if (updateQuery.incomeType === INCOME_TYPES.PAYCHECK) {
       updatedSource.gross = centsToDollars(updateQuery.gross);
-      updateQuery.deductions = centsToDollars(updateQuery.deductions);
+      updatedSource.deductions = centsToDollars(updateQuery.deductions);
     }
 
     return res.status(200).json(updatedSource);
