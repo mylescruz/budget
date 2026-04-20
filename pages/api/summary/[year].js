@@ -60,7 +60,12 @@ async function getYearSummary(
       year,
     );
 
-    const income = await getIncomeSummary(incomeCol, username, month, year);
+    const income = await getIncomeSummary(
+      transactionsCol,
+      username,
+      month,
+      year,
+    );
 
     const transactions = await getTransactions(
       transactionsCol,
@@ -278,14 +283,21 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
 }
 
 // Get the total sum of each type of income
-async function getIncomeSummary(incomeCol, username, month, year) {
-  const incomeTypes = await incomeCol
+async function getIncomeSummary(transactionsCol, username, month, year) {
+  const incomeTypes = await transactionsCol
     .aggregate(
       [
-        { $match: { username, year, month: { $lte: month } } },
+        {
+          $match: {
+            username,
+            year,
+            month: { $lte: month },
+            type: TRANSACTION_TYPES.INCOME,
+          },
+        },
         {
           $group: {
-            _id: "$type",
+            _id: "$incomeType",
             totalGross: { $sum: "$gross" },
             totalDeductions: { $sum: "$deductions" },
             totalAmount: { $sum: "$amount" },
@@ -451,10 +463,17 @@ async function getMonthsSummaries(
     .toArray();
 
   // Get the total income per month
-  const incomePerMonth = await incomeCol
+  const incomePerMonth = await transactionsCol
     .aggregate(
       [
-        { $match: { username, year, month: { $lte: month } } },
+        {
+          $match: {
+            username,
+            year,
+            month: { $lte: month },
+            type: TRANSACTION_TYPES.INCOME,
+          },
+        },
         {
           $group: {
             _id: "$month",
