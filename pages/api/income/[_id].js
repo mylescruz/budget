@@ -134,32 +134,21 @@ async function updateIncome(req, res, { client, transactionsCol, username }) {
 }
 
 // Delete the given source of income for the user in MongoDB
-async function deleteIncome(
-  req,
-  res,
-  { client, incomeCol, transactionsCol, username },
-) {
+async function deleteIncome(req, res, { client, transactionsCol, username }) {
   const mongoSession = client.startSession();
 
   try {
     const sourceId = req.query._id;
-    const source = req.body;
 
     await mongoSession.withTransaction(async (session) => {
       // Delete the given source from MongoDB
-      await incomeCol.deleteOne(
+      await transactionsCol.deleteOne(
         { _id: new ObjectId(sourceId) },
         { session, maxTimeMS: 5000 },
       );
 
-      // Delete the given source from the transactions collection
-      // await transactionsCol.deleteOne(
-      //   { _id: new ObjectId(sourceId) },
-      //   { session, maxTimeMS: 5000 },
-      // );
-
       // Define the source's date identifiers
-      const sourceDate = new Date(`${source.date}T00:00:00Z`);
+      const sourceDate = new Date(`${req.body.date}T00:00:00Z`);
       const month = sourceDate.getUTCMonth() + 1;
       const year = sourceDate.getFullYear();
 
