@@ -59,6 +59,8 @@ async function getIncome(req, res, { transactionsCol, username }) {
               gross: { $divide: ["$gross", 100] },
               deductions: { $divide: ["$deductions", 100] },
               amount: { $divide: ["$amount", 100] },
+              createdTS: 1,
+              updatedTS: 1,
             },
           },
         ],
@@ -79,11 +81,7 @@ async function getIncome(req, res, { transactionsCol, username }) {
 }
 
 // Add a user's new source of income to MongoDB
-async function addIncome(
-  req,
-  res,
-  { client, incomeCol, transactionsCol, username },
-) {
+async function addIncome(req, res, { client, transactionsCol, username }) {
   const mongoSession = client.startSession();
 
   try {
@@ -94,56 +92,39 @@ async function addIncome(
       .split("-")
       .map(Number);
 
-    // Assign the source's identifiers
-    const newSource = {
-      type: sourceInfo.type,
-      date: sourceInfo.date,
-      name: sourceInfo.name.trim(),
-      description: sourceInfo.description.trim(),
-      amount: parseFloat(sourceInfo.amount) * 100,
-      username,
-      month: sourceMonth,
-      year: sourceYear,
-    };
-
     // Create the new income as a transaction in the transactions collection
-    const newIncomeTransaction = {
+    const newSource = {
       username,
       month: sourceMonth,
       year: sourceYear,
       type: TRANSACTION_TYPES.INCOME,
-      incomeType: sourceInfo.type,
+      incomeType: sourceInfo.incomeType,
       date: sourceInfo.date,
-      createdTS: new Date(),
-      source: sourceInfo.name.trim(),
+      source: sourceInfo.source.trim(),
       description: sourceInfo.description.trim(),
       amount: Number(sourceInfo.amount) * 100,
+      createdTS: new Date(),
+      updatedTS: new Date(),
     };
 
-    if (newSource.type === INCOME_TYPES.PAYCHECK) {
-      newSource.gross = parseFloat(sourceInfo.gross) * 100;
+    // Add the paycheck fields to a new source of income
+    if (newSource.incomeType === INCOME_TYPES.PAYCHECK) {
+      newSource.gross = dollarsToCents(sourceInfo.gross);
       newSource.deductions =
-        parseFloat(sourceInfo.gross) * 100 -
-        parseFloat(sourceInfo.amount) * 100;
-
-      // Add the paycheck income type fields to the income transaction
-      newIncomeTransaction.gross = dollarsToCents(sourceInfo.gross);
-      newIncomeTransaction.deductions =
         dollarsToCents(sourceInfo.gross) - dollarsToCents(sourceInfo.amount);
     }
 
-    if (newSource.type === INCOME_TYPES.UNEMPLOYMENT) {
-      newSource.name = "EDD";
-
-      // Add the unemployment income type field to the income transaction
-      newIncomeTransaction.source = "EDD";
+    // Unify the source for unemployment income
+    if (newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT) {
+      newSource.source = "EDD";
     }
 
     const incomeSources = [];
 
-    const incomeTransactions = [];
-
-    if (newSource.type === INCOME_TYPES.PAYCHECK && sourceInfo.repeating) {
+    if (
+      newSource.incomeType === INCOME_TYPES.PAYCHECK &&
+      sourceInfo.repeating
+    ) {
       let dateIndex = newSource.date;
 
       while (dateIndex <= sourceInfo.endRepeatDate) {
@@ -152,17 +133,7 @@ async function addIncome(
 
         const paycheckSource = { ...newSource, date: dateIndex, month: month };
 
-        // Define the new repeating paycheck transaction
-        const paycheckTransaction = {
-          ...newIncomeTransaction,
-          date: dateIndex,
-          month: month,
-        };
-
         incomeSources.push(paycheckSource);
-
-        // Add the new paycheck transaction to the transactions to add to the database
-        incomeTransactions.push(paycheckTransaction);
 
         switch (sourceInfo.frequency) {
           case PAYCHECK_FREQUENCIES.WEEKLY:
@@ -187,30 +158,17 @@ async function addIncome(
       }
     } else {
       incomeSources.push(newSource);
-
-      incomeTransactions.push(newIncomeTransaction);
     }
 
     let insertedResult;
 
-    let insertedTransactions;
-
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
       // Add the new sources to the income collection in MongoDB
-      insertedResult = await incomeCol.insertMany(incomeSources, {
+      insertedResult = await transactionsCol.insertMany(incomeSources, {
         session,
         maxTimeMS: 5000,
       });
-
-      // Add the new sources of income to the transactions collection
-      insertedTransactions = await transactionsCol.insertMany(
-        incomeTransactions,
-        {
-          session,
-          maxTimeMS: 5000,
-        },
-      );
 
       // Update the Fun Money category for each month that a paycheck was added to
       let monthIndex = sourceMonth;
@@ -240,40 +198,13 @@ async function addIncome(
         amount: centsToDollars(sourceDetails.amount),
       };
 
-      if (addedSource.type === INCOME_TYPES.PAYCHECK) {
+      if (addedSource.incomeType === INCOME_TYPES.PAYCHECK) {
         addedSource.gross = centsToDollars(addedSource.gross);
         addedSource.deductions = centsToDollars(addedSource.deductions);
       }
 
       return addedSource;
     });
-
-    // Format the inserted income transactions to send back to the client
-    const insertedIncomeTransactions = incomeTransactions.map(
-      (transaction, index) => {
-        const {
-          username: u,
-          month: m,
-          year: y,
-          ...transactionDetails
-        } = transaction;
-
-        const addedTransaction = {
-          ...transactionDetails,
-          _id: insertedTransactions.insertedIds[index],
-          amount: centsToDollars(transactionDetails.amount),
-        };
-
-        if (addedTransaction.incomeType === INCOME_TYPES.PAYCHECK) {
-          addedTransaction.gross = centsToDollars(addedTransaction.gross);
-          addedTransaction.deductions = centsToDollars(
-            addedTransaction.deductions,
-          );
-        }
-
-        return addedTransaction;
-      },
-    );
 
     return res.status(200).json(insertedSources);
   } catch (error) {

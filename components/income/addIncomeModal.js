@@ -61,7 +61,7 @@ const AddIncomeModal = ({
     setFormMeta({ status: "loading", error: null });
 
     try {
-      await postIncome(source);
+      await postIncome(newSource);
 
       closeAddModal();
     } catch (error) {
