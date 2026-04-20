@@ -22,9 +22,9 @@ import handleObjectInput from "@/helpers/handleObjectInput";
 
 const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const emptySource = {
-    type: INCOME_TYPES.PAYCHECK,
+    incomeType: INCOME_TYPES.PAYCHECK,
     date: dateInfo.date,
-    name: "",
+    source: "",
     description: "",
     gross: "",
     deductions: "",
@@ -34,18 +34,18 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
     endRepeatDate: dateInfo.date,
   };
 
-  const [source, setSource] = useState(emptySource);
+  const [newSource, setNewSource] = useState(emptySource);
 
   const handleInput = (e) => {
-    if (e.target.id === "type") {
-      setSource({ ...emptySource, type: e.target.value });
+    if (e.target.id === "incomeType") {
+      setNewSource({ ...emptySource, incomeType: e.target.value });
     } else {
-      handleObjectInput({ e, setObject: setSource });
+      handleObjectInput({ e, setObject: setNewSource });
     }
   };
 
   const setRepeating = () => {
-    setSource((prev) => ({
+    setNewSource((prev) => ({
       ...prev,
       repeating: !prev.repeating,
     }));
@@ -55,13 +55,13 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   const addSource = (e) => {
     e.preventDefault();
 
-    if (source.type === INCOME_TYPES.UNEMPLOYMENT) {
-      source.name = "EDD";
+    if (newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT) {
+      newSource.name = "EDD";
     }
 
-    setNewUser({ ...newUser, income: [...newUser.income, source] });
+    setNewUser({ ...newUser, income: [...newUser.income, newSource] });
 
-    setSource(emptySource);
+    setNewSource(emptySource);
   };
 
   const completeOnboarding = () => {
@@ -69,7 +69,7 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   };
 
   const incomeFormProps = {
-    source: source,
+    src: newSource,
     handleInput: handleInput,
     year: dateInfo.year,
   };
@@ -95,32 +95,32 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
               <Form.Group className="my-2">
                 <Form.Label>What type of income is this?</Form.Label>
                 <Form.Select
-                  id="type"
+                  id="incomeType"
                   className="h-100"
-                  value={source.type}
+                  value={newSource.incomeType}
                   onChange={handleInput}
                   required
                 >
-                  {INCOME_TYPES_LIST.map((type, index) => (
-                    <option key={index} value={type}>
-                      {type}
+                  {INCOME_TYPES_LIST.map((incomeType, index) => (
+                    <option key={index} value={incomeType}>
+                      {incomeType}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
-              {source.type === INCOME_TYPES.PAYCHECK && (
+              {newSource.incomeType === INCOME_TYPES.PAYCHECK && (
                 <PaycheckForm
                   setRepeating={setRepeating}
                   {...incomeFormProps}
                 />
               )}
-              {source.type === INCOME_TYPES.SALE && (
+              {newSource.incomeType === INCOME_TYPES.SALE && (
                 <SaleForm {...incomeFormProps} />
               )}
-              {source.type === INCOME_TYPES.GIFT && (
+              {newSource.incomeType === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
               )}
-              {source.type === INCOME_TYPES.UNEMPLOYMENT && (
+              {newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
                 <UnemploymentForm {...incomeFormProps} />
               )}
               <Button type="submit" className="w-100 my-2">
@@ -138,11 +138,11 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
                 </tr>
               </thead>
               <tbody>
-                {newUser.income.map((source, index) => (
+                {newUser.income.map((src, index) => (
                   <tr key={index} className="d-flex">
-                    <td className="col-8 gray-background">{source.name}</td>
+                    <td className="col-8 gray-background">{src.source}</td>
                     <td className="col-4 text-end gray-background">
-                      ${source.amount}
+                      ${src.amount}
                     </td>
                   </tr>
                 ))}

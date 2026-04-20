@@ -19,6 +19,7 @@ export default async function handler(req, res) {
     usersCol: db.collection("users"),
     categoriesCol: db.collection("categories"),
     incomeCol: db.collection("income"),
+    transactionsCol: db.collection("transactions"),
     month: today.getUTCMonth() + 1,
     year: today.getFullYear(),
   };
@@ -34,7 +35,7 @@ export default async function handler(req, res) {
 async function createAccount(
   req,
   res,
-  { client, usersCol, categoriesCol, incomeCol, month, year },
+  { client, usersCol, categoriesCol, transactionsCol, month, year },
 ) {
   const mongoSession = client.startSession();
 
@@ -46,8 +47,8 @@ async function createAccount(
     await mongoSession.withTransaction(async (session) => {
       const incomeSources = [];
 
-      newUser.income.forEach((source) => {
-        const sourceInfo = { ...source };
+      newUser.income.forEach((src) => {
+        const sourceInfo = { ...src };
 
         const [sourceYear, sourceMonth, sourceDay] = sourceInfo.date
           .split("-")
@@ -57,25 +58,25 @@ async function createAccount(
           username: newUser.username,
           month: sourceMonth,
           year: sourceYear,
-          type: source.type,
-          date: source.date,
-          name: source.name.trim(),
-          description: source.description.trim(),
-          amount: parseFloat(source.amount) * 100,
+          incomeType: src.incomeType,
+          date: src.date,
+          source: src.source.trim(),
+          description: src.description.trim(),
+          amount: dollarsToCents(src.amount),
         };
 
-        if (formattedSource.type === INCOME_TYPES.PAYCHECK) {
-          formattedSource.gross = parseFloat(source.gross) * 100;
+        if (formattedSource.incomeType === INCOME_TYPES.PAYCHECK) {
+          formattedSource.gross = dollarsToCents(src.gross);
           formattedSource.deductions =
             formattedSource.gross - formattedSource.amount;
         }
 
-        if (formattedSource.type === INCOME_TYPES.UNEMPLOYMENT) {
-          formattedSource.name = "EDD";
+        if (formattedSource.incomeType === INCOME_TYPES.UNEMPLOYMENT) {
+          formattedSource.source = "EDD";
         }
 
         if (
-          formattedSource.type === INCOME_TYPES.PAYCHECK &&
+          formattedSource.incomeType === INCOME_TYPES.PAYCHECK &&
           sourceInfo.repeating
         ) {
           let dateIndex = formattedSource.date;
@@ -118,7 +119,10 @@ async function createAccount(
         }
       });
 
-      await incomeCol.insertMany(incomeSources, { session, maxTimeMS: 5000 });
+      await transactionsCol.insertMany(incomeSources, {
+        session,
+        maxTimeMS: 5000,
+      });
 
       if (!newUser.customCategories) {
         // Assign the default categories to the user
