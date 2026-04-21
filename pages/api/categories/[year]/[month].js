@@ -80,7 +80,11 @@ async function getCategories(
 }
 
 // Add a new category for the user in MongoDB
-async function addCategory(req, res, { client, categoriesCol, username }) {
+async function addCategory(
+  req,
+  res,
+  { client, categoriesCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
@@ -172,6 +176,66 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
         );
       }
 
+      // If the category or subcategories are fixed, create fixed transaction(s)
+      const fixedTransactions = [];
+
+      if (formattedCategory.fixed) {
+        if (newSubcategories.length === 0) {
+          // For a category with no subcategories, automatically insert a transaction for the new fixed category
+          const date = new Date(year, month - 1, formattedCategory.dueDate);
+
+          const currentTS = new Date();
+
+          const newTransaction = {
+            username,
+            month,
+            year,
+            type: TRANSACTION_TYPES.EXPENSE,
+            date: date,
+            fixed: true,
+            store: formattedCategory.name,
+            items: `Fixed expense occuring ${formattedCategory.frequency.toLowerCase()}`,
+            categoryId: insertedCategory.insertedId,
+            amount: formattedCategory.budget,
+            createdTS: currentTS,
+            updatedTS: currentTS,
+          };
+
+          fixedTransactions.push(newTransaction);
+        } else {
+          // For a category with subcategories, insert a transaction for each fixed subcategory
+          newSubcategories.forEach((subcategory, index) => {
+            const date = new Date(year, month - 1, subcategory.dueDate);
+
+            const currentTS = new Date();
+
+            const newTransaction = {
+              username,
+              month,
+              year,
+              type: TRANSACTION_TYPES.EXPENSE,
+              date: date,
+              fixed: true,
+              store: subcategory.name,
+              items: `Fixed expense occuring ${subcategory.frequency.toLowerCase()}`,
+              categoryId: insertedSubcategories.insertedIds[index],
+              parentCategoryId: insertedCategory.insertedId,
+              amount: subcategory.budget,
+              createdTS: currentTS,
+              updatedTS: currentTS,
+            };
+
+            fixedTransactions.push(newTransaction);
+          });
+        }
+
+        // Insert the fixed category or subcategories transaction(s) into the database
+        await transactionsCol.insertMany(fixedTransactions, {
+          session,
+          maxTimeMS: 5000,
+        });
+      }
+
       await updateFunMoney({ username, month, year, session });
     });
 
@@ -209,7 +273,7 @@ async function addCategory(req, res, { client, categoriesCol, username }) {
           formattedSubcategory.actual = 0;
         }
 
-        categoryActual += formattedSubcategory;
+        categoryActual += dollarsToCents(formattedSubcategory.actual);
 
         addedSubcategories.push(formattedSubcategory);
       });
