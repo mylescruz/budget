@@ -26,6 +26,7 @@ export default async function handler(req, res) {
   const categoriesContext = {
     client: client,
     categoriesCol: db.collection("categories"),
+    transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
 
@@ -40,7 +41,11 @@ export default async function handler(req, res) {
 }
 
 // Get the user's categories from MongoDB
-async function getCategories(req, res, { client, categoriesCol, username }) {
+async function getCategories(
+  req,
+  res,
+  { client, categoriesCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
@@ -55,6 +60,7 @@ async function getCategories(req, res, { client, categoriesCol, username }) {
         month,
         year,
         categoriesCol,
+        transactionsCol,
         session,
       );
     });
@@ -244,6 +250,7 @@ async function getCurrentCategories(
   month,
   year,
   categoriesCol,
+  transactionsCol,
   session,
 ) {
   // Fetch all the user's categories for the given month and year with the sum of each category's correlating transaction amounts
@@ -292,6 +299,7 @@ async function getCurrentCategories(
       month,
       year,
       categoriesCol,
+      transactionsCol,
       session,
     );
   }
@@ -432,6 +440,7 @@ async function getPreviousCategories(
   month,
   year,
   categoriesCol,
+  transactionsCol,
   session,
 ) {
   const latestCategories = await categoriesCol
@@ -467,6 +476,7 @@ async function getPreviousCategories(
     previous: { month: previousMonth, year: previousYear },
     current: { month: month, year: year },
     categoriesCol,
+    transactionsCol,
     session,
   });
 
@@ -476,6 +486,7 @@ async function getPreviousCategories(
     month,
     year,
     categoriesCol,
+    transactionsCol,
     session,
   );
 }
@@ -486,6 +497,7 @@ async function generateMissingMonths({
   previous,
   current,
   categoriesCol,
+  transactionsCol,
   session,
 }) {
   let monthIndex = previous.month + 1;
@@ -631,24 +643,33 @@ async function generateMissingMonths({
       });
 
       // Insert the new parent categories without the old _id
-      const insertedParentCategories = await categoriesCol.insertMany(
+      const insertedParentIds = await categoriesCol.insertMany(
         formattedParentCategories.map(({ oldId, ...category }) => category),
         { session, maxTimeMS: 10000 },
       );
 
+      // Map the new parent categories' inserted ids to the correlating parent category
+      const insertedParentCategories = formattedParentCategories.map(
+        (category, index) => {
+          return {
+            ...category,
+            _id: insertedParentIds.insertedIds[index],
+          };
+        },
+      );
+
+      // Map the old parent _id with the new _id
       const parentIdMap = new Map();
 
-      // Map the old parent _id with then new _id
-      formattedParentCategories.forEach((category, index) => {
+      insertedParentCategories.forEach((category) => {
         const oldId = category.oldId.toString();
-        const newId = insertedParentCategories.insertedIds[index];
 
-        parentIdMap.set(oldId, newId);
+        parentIdMap.set(oldId, category._id);
       });
 
-      const subcategories = [];
-
       // Format the subcategories and attach their new parent id
+      const formattedSubcategories = [];
+
       allCategories.forEach((category) => {
         if (category.parentCategoryId) {
           const newParentId = parentIdMap.get(
@@ -675,13 +696,73 @@ async function generateMissingMonths({
             formattedSubcategory.frequency = category.frequency;
           }
 
-          subcategories.push(formattedSubcategory);
+          formattedSubcategories.push(formattedSubcategory);
         }
       });
 
-      await categoriesCol.insertMany(subcategories, {
+      const insertedSubcategoriesIds = await categoriesCol.insertMany(
+        formattedSubcategories,
+        {
+          session,
+          maxTimeMS: 10000,
+        },
+      );
+
+      // Map the new subcategories' inserted ids to the correlating subcategory
+      const insertedSubcategories = formattedSubcategories.map(
+        (subcategory, index) => {
+          return {
+            ...subcategory,
+            _id: insertedSubcategoriesIds.insertedIds[index],
+          };
+        },
+      );
+
+      // Array to store the fixed category and subcategory expense transactions
+      const fixedTransactions = [];
+
+      // If a category or subcategory has a due date, create a transaction for the category
+      [...insertedParentCategories, ...insertedSubcategories].forEach(
+        (category) => {
+          if (category.fixed) {
+            if (category.dueDate) {
+              const date = new Date(
+                yearIndex,
+                monthIndex - 1,
+                category.dueDate,
+              );
+
+              const currentTS = new Date();
+
+              const newTransaction = {
+                username: category.username,
+                month: monthIndex,
+                year: yearIndex,
+                type: TRANSACTION_TYPES.EXPENSE,
+                date: date,
+                store: category.name,
+                items: `Fixed expense occuring ${category.frequency.toLowerCase()}`,
+                categoryId: category._id,
+                amount: category.budget,
+                createdTS: currentTS,
+                updatedTS: currentTS,
+              };
+
+              // Add the parent category's _id for easier querying
+              if (category.parentCategoryId) {
+                newTransaction.parentCategoryId = category.parentCategoryId;
+              }
+
+              fixedTransactions.push(newTransaction);
+            }
+          }
+        },
+      );
+
+      // Insert the fixed transactions for the month
+      await transactionsCol.insertMany(fixedTransactions, {
         session,
-        maxTimeMS: 10000,
+        maxTimeMS: 5000,
       });
 
       // Update user's Fun Money category for the missing month
