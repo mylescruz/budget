@@ -71,7 +71,7 @@ async function getYearSummary(
 
     const months = await getMonthsSummaries(
       categoriesCol,
-      transactionsCol,
+      transactions,
       username,
       month,
       year,
@@ -337,7 +337,7 @@ async function getIncomeTotals(transactions) {
 // Get total spending for each month
 async function getMonthsSummaries(
   categoriesCol,
-  transactionsCol,
+  transactions,
   username,
   month,
   year,
@@ -406,70 +406,6 @@ async function getMonthsSummaries(
     },
   );
 
-  // Get the total expenses per month based on type and transfers based on the account
-  const expensesPerMonth = await transactionsCol
-    .aggregate(
-      [
-        {
-          $match: {
-            username,
-            year,
-            month: { $lte: month },
-            type: {
-              $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.TRANSFER],
-            },
-          },
-        },
-        {
-          $group: {
-            _id: { month: "$month", type: "$type", toAccount: "$toAccount" },
-            totalAmount: { $sum: "$amount" },
-          },
-        },
-        {
-          $project: {
-            number: "$_id.month",
-            type: "$_id.type",
-            toAccount: "$_id.toAccount",
-            amount: "$totalAmount",
-            _id: 0,
-          },
-        },
-      ],
-      { maxTimeMS: 10000 },
-    )
-    .toArray();
-
-  // Get the total income per month
-  const incomePerMonth = await transactionsCol
-    .aggregate(
-      [
-        {
-          $match: {
-            username,
-            year,
-            month: { $lte: month },
-            type: TRANSACTION_TYPES.INCOME,
-          },
-        },
-        {
-          $group: {
-            _id: "$month",
-            totalAmount: { $sum: "$amount" },
-          },
-        },
-        {
-          $project: {
-            number: "$_id",
-            amount: "$totalAmount",
-            _id: 0,
-          },
-        },
-      ],
-      { maxTimeMS: 10000 },
-    )
-    .toArray();
-
   // Create a map to store each month's total income and expenses
   const monthsMap = new Map();
 
@@ -492,28 +428,28 @@ async function getMonthsSummaries(
     }
   });
 
-  // Map the expenses to the actual values and transfers to each month of the year
-  expensesPerMonth.forEach((month) => {
-    const foundMonth = monthsMap.get(month.number);
+  // Map each transaction's amount to the month based on its type: Expense, Transfer or Income
+  transactions.forEach((transaction) => {
+    const foundMonth = monthsMap.get(transaction.month);
 
-    if (month.type === TRANSACTION_TYPES.EXPENSE) {
-      foundMonth.actual += month.amount;
+    // Format the amount
+    const amount = dollarsToCents(transaction.amount);
+
+    if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+      foundMonth.actual += amount;
     }
 
-    if (month.type === TRANSACTION_TYPES.TRANSFER) {
-      if (month.toAccount === TRANSFER_ACCOUNTS.SAVINGS) {
-        foundMonth.transfers.out += month.amount;
+    if (transaction.type === TRANSACTION_TYPES.TRANSFER) {
+      if (transaction.toAccount === TRANSFER_ACCOUNTS.SAVINGS) {
+        foundMonth.transfers.out += amount;
       } else {
-        foundMonth.transfers.in += month.amount;
+        foundMonth.transfers.in += amount;
       }
     }
-  });
 
-  // Map each month's total income
-  incomePerMonth.forEach((month) => {
-    const foundMonth = monthsMap.get(month.number);
-
-    foundMonth.income += month.amount;
+    if (transaction.type === TRANSACTION_TYPES.INCOME) {
+      foundMonth.income += amount;
+    }
   });
 
   return [...monthsMap.values()]
@@ -554,6 +490,8 @@ async function getTransactions(transactionsCol, username, month, year) {
         {
           $project: {
             // All transaction types
+            month: 1,
+            year: 1,
             type: 1,
             date: 1,
             description: 1,
