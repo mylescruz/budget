@@ -154,6 +154,10 @@ async function addCategory(
     let insertedCategory;
     let insertedSubcategories;
 
+    // If the category or subcategories are fixed, create fixed transaction(s)
+    const fixedTransactions = [];
+    let insertedTransactions;
+
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
       insertedCategory = await categoriesCol.insertOne(formattedCategory, {
@@ -175,9 +179,6 @@ async function addCategory(
           { session, maxTimeMS: 10000 },
         );
       }
-
-      // If the category or subcategories are fixed, create fixed transaction(s)
-      const fixedTransactions = [];
 
       if (formattedCategory.fixed) {
         if (newSubcategories.length === 0) {
@@ -230,10 +231,13 @@ async function addCategory(
         }
 
         // Insert the fixed category or subcategories transaction(s) into the database
-        await transactionsCol.insertMany(fixedTransactions, {
-          session,
-          maxTimeMS: 5000,
-        });
+        insertedTransactions = await transactionsCol.insertMany(
+          fixedTransactions,
+          {
+            session,
+            maxTimeMS: 5000,
+          },
+        );
       }
 
       await updateFunMoney({ username, month, year, session });
@@ -277,6 +281,15 @@ async function addCategory(
 
         addedSubcategories.push(formattedSubcategory);
       });
+    } else {
+      // Charge a fixed category's actual value if their charge date already passed
+      const categoryDate = new Date(
+        `${month}/${formattedCategory.dueDate}/${year}`,
+      );
+
+      if (categoryDate <= today) {
+        categoryActual += formattedCategory.budget;
+      }
     }
 
     // Send the new category back to the client
@@ -295,7 +308,26 @@ async function addCategory(
       addedCategory.dueDate = formattedCategory.dueDate;
     }
 
-    return res.status(200).json(addedCategory);
+    // Have the return object return the added category as well as any fixed transactions
+    const addedCategoryObject = {
+      addedCategory,
+    };
+
+    // Format the fixed transactions to return back to the client
+    if (fixedTransactions.length > 0) {
+      addedCategoryObject.fixedTransactions = fixedTransactions.map(
+        (transaction, index) => {
+          return {
+            ...transaction,
+            _id: insertedTransactions.insertedIds[index],
+            amount: centsToDollars(transaction.amount),
+            category: transaction.store,
+          };
+        },
+      );
+    }
+
+    return res.status(200).json(addedCategoryObject);
   } catch (error) {
     await logError({ error, req, username });
 

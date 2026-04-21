@@ -100,7 +100,11 @@ const useCategories = (month, year) => {
         throw new Error(message);
       }
 
-      const addedCategory = await response.json();
+      const result = await response.json();
+
+      const addedCategory = result.addedCategory;
+
+      const addedFixedTransactions = result.fixedTransactions;
 
       setCategories((prev) => {
         // Add the new category to the user's categories
@@ -127,6 +131,8 @@ const useCategories = (month, year) => {
         status: "success",
         message: `Successfully created the new category: ${newCategory.name}!`,
       });
+
+      return addedFixedTransactions;
     } catch (error) {
       setCategoriesRequest({
         action: "create",

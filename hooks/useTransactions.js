@@ -223,6 +223,23 @@ const useTransactions = (month, year) => {
     }
   };
 
+  // Adds the newly added fixed transactions to the transactions array
+  const updateFixedCategoryTransactions = (fixedTransactions) => {
+    setTransactions((prev) => {
+      // Create a map of the current transactions based on the transaction id
+      const transactionsMap = new Map(
+        prev.map((transaction) => [transaction._id, transaction]),
+      );
+
+      // Set the new transactions in the map or replace the current transaction with the updated one
+      fixedTransactions.forEach((transaction) => {
+        transactionsMap.set(transaction._id, transaction);
+      });
+
+      return [...transactionsMap.values()].sort((a, b) => a.date - b.date);
+    });
+  };
+
   const transactionTotals = useMemo(() => {
     if (!transactions) {
       return null;
@@ -269,6 +286,7 @@ const useTransactions = (month, year) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
+    updateFixedCategoryTransactions,
     transactionTotals,
   };
 };

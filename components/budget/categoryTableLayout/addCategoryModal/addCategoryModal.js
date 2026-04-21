@@ -9,6 +9,7 @@ import CategoryConfirmationPage from "@/components/category/categoryConfirmation
 import PreviousCategoryForm from "./previousCategoryForm";
 import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { TransactionsContext } from "@/contexts/TransactionsContext";
 
 const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const emptyCategory = {
@@ -24,6 +25,8 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
 
   const { categoriesRequest, postCategory, categoryNames } =
     useContext(CategoriesContext);
+  const { updateFixedCategoryTransactions } = useContext(TransactionsContext);
+
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [formMeta, setFormMeta] = useState({
     status: "idle",
@@ -137,7 +140,11 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     setFormMeta({ status: "loading", error: null });
 
     try {
-      await postCategory(newCategory);
+      const addedFixedTransactions = await postCategory(newCategory);
+
+      if (addedFixedTransactions) {
+        updateFixedCategoryTransactions(addedFixedTransactions);
+      }
 
       closeModal();
     } catch (error) {
