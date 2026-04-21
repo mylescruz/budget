@@ -12,22 +12,18 @@ import ErrorMessage from "@/components/ui/errorMessage";
 
 const WARNING_PERCENTAGE = 10;
 
-const TotalsLayout = ({ monthIncome, monthIncomeRequest }) => {
+const TotalsLayout = () => {
   const { categoryTotals } = useContext(CategoriesContext);
   const { transactionTotals } = useContext(TransactionsContext);
 
   // Object that calculates the budget totals for the current month
   const totals = useMemo(() => {
-    if (
-      monthIncomeRequest.status === "error" ||
-      !categoryTotals ||
-      !transactionTotals
-    ) {
+    if (!categoryTotals || !transactionTotals) {
       return null;
     }
 
     const availableFunds = addDecimalValues(
-      monthIncome,
+      transactionTotals.income,
       transactionTotals.checkingTransfers,
     );
 
@@ -71,7 +67,7 @@ const TotalsLayout = ({ monthIncome, monthIncomeRequest }) => {
       fixedBudget: categoryTotals.fixedBudget,
       savingsTransfers: transactionTotals.savingsTransfers,
     };
-  }, [monthIncomeRequest, monthIncome, categoryTotals, transactionTotals]);
+  }, [categoryTotals, transactionTotals]);
 
   return (
     <div className="mb-4">

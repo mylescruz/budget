@@ -232,7 +232,9 @@ const useTransactions = (month, year) => {
       (sum, transaction) => {
         const amount = dollarsToCents(transaction.amount);
 
-        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+        if (transaction.type === TRANSACTION_TYPES.INCOME) {
+          sum.income += amount;
+        } else if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
           sum.expenses += amount;
         } else {
           if (transaction.toAccount === TRANSFER_ACCOUNTS.CHECKING) {
@@ -245,6 +247,7 @@ const useTransactions = (month, year) => {
         return sum;
       },
       {
+        income: 0,
         expenses: 0,
         toChecking: 0,
         toSavings: 0,
@@ -252,6 +255,7 @@ const useTransactions = (month, year) => {
     );
 
     return {
+      income: centsToDollars(totals.income),
       expenses: centsToDollars(totals.expenses),
       checkingTransfers: centsToDollars(totals.toChecking),
       savingsTransfers: centsToDollars(totals.toSavings),

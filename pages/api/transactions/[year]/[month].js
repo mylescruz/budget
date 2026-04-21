@@ -56,23 +56,23 @@ async function getTransactions(
               username,
               month,
               year,
-              type: {
-                $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.TRANSFER],
-              },
             },
           },
           {
             $project: {
               type: 1,
               date: 1,
-              createdTS: 1,
               store: 1,
               items: 1,
               categoryId: 1,
               fromAccount: 1,
               toAccount: 1,
+              source: 1,
+              incomeType: 1,
               description: 1,
               amount: { $divide: ["$amount", 100] },
+              createdTS: 1,
+              updatedTS: 1,
             },
           },
           {

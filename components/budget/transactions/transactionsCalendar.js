@@ -37,36 +37,38 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
     const year = dateInfo.year;
     const daysInMonth = parseInt(dateInfo.endOfMonth.split("-")[2]);
 
-    // Create the transactions map with the category's color
+    // Create a map for expense and transfer transactions with the correlating category's color
     const transactionsMap = new Map();
 
     transactions.forEach((transaction) => {
-      if (!transactionsMap.has(transaction.date)) {
-        transactionsMap.set(transaction.date, []);
+      if (transaction.type !== TRANSACTION_TYPES.INCOME) {
+        if (!transactionsMap.has(transaction.date)) {
+          transactionsMap.set(transaction.date, []);
+        }
+
+        const transactionObject = {
+          _id: transaction._id,
+          type: transaction.type,
+          date: transaction.date,
+        };
+
+        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+          transactionObject.store = transaction.store;
+          transactionObject.items = transaction.items;
+          transactionObject.category = transaction.category;
+          transactionObject.amount = transaction.amount;
+          transactionObject.color = categoryColors[transaction.category];
+          transactionObject.icon = "💸";
+        } else {
+          transactionObject.fromAccount = transaction.fromAccount;
+          transactionObject.toAccount = transaction.toAccount;
+          transactionObject.amount = transaction.amount;
+          transactionObject.description = transaction.description;
+          transactionObject.icon = "🔄";
+        }
+
+        transactionsMap.get(transaction.date).push(transactionObject);
       }
-
-      const transactionObject = {
-        _id: transaction._id,
-        type: transaction.type,
-        date: transaction.date,
-      };
-
-      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
-        transactionObject.store = transaction.store;
-        transactionObject.items = transaction.items;
-        transactionObject.category = transaction.category;
-        transactionObject.amount = transaction.amount;
-        transactionObject.color = categoryColors[transaction.category];
-        transactionObject.icon = "💸";
-      } else {
-        transactionObject.fromAccount = transaction.fromAccount;
-        transactionObject.toAccount = transaction.toAccount;
-        transactionObject.amount = transaction.amount;
-        transactionObject.description = transaction.description;
-        transactionObject.icon = "🔄";
-      }
-
-      transactionsMap.get(transaction.date).push(transactionObject);
     });
 
     // If dueDate field is present in the fixed category or subcategory, add it to the transactions calendar

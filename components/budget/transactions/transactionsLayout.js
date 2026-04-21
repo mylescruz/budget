@@ -26,29 +26,27 @@ const TransactionsLayout = ({ dateInfo }) => {
       return null;
     }
 
-    return transactions.map((transaction) => {
-      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
-        return {
+    return transactions
+      .filter((transaction) => transaction.type !== TRANSACTION_TYPES.INCOME)
+      .map((transaction) => {
+        const formattedTransaction = {
           _id: transaction._id,
           date: transaction.date,
-          name: transaction.store,
-          description: transaction.items,
-          type: transaction.category,
           amount: transaction.amount,
         };
-      } else if (transaction.type === TRANSACTION_TYPES.TRANSFER) {
-        return {
-          _id: transaction._id,
-          date: transaction.date,
-          name: `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`,
-          description: transaction.desciption,
-          type: transaction.type,
-          amount: transaction.amount,
-        };
-      } else {
-        return null;
-      }
-    });
+
+        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+          formattedTransaction.name = transaction.store;
+          formattedTransaction.description = transaction.items;
+          formattedTransaction.type = transaction.category;
+        } else {
+          formattedTransaction.name = `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`;
+          formattedTransaction.description = transaction.desciption;
+          formattedTransaction.type = transaction.type;
+        }
+
+        return formattedTransaction;
+      });
   }, [transactions]);
 
   const transactionColumns = {

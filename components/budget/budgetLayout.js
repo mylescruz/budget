@@ -14,17 +14,12 @@ import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
 import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
-import useMonthIncome from "@/hooks/useMonthIncome";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, categoriesRequest } = useContext(CategoriesContext);
   const { transactionsRequest } = useContext(TransactionsContext);
-  const { monthIncome, monthIncomeRequest } = useMonthIncome(
-    dateInfo.month,
-    dateInfo.year,
-  );
 
   const budgetStatus = useMemo(
     () => ({
@@ -32,9 +27,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
         (categoriesRequest.action === "get" &&
           categoriesRequest.status === "loading") ||
         (transactionsRequest.action === "get" &&
-          transactionsRequest.status === "loading") ||
-        (monthIncomeRequest.action === "get" &&
-          monthIncomeRequest.status === "loading"),
+          transactionsRequest.status === "loading"),
       categorySuccess:
         categoriesRequest.action !== "get" &&
         categoriesRequest.status === "success",
@@ -44,7 +37,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
       categoryMessage: categoriesRequest.message,
       transactionMessage: transactionsRequest.message,
     }),
-    [categoriesRequest, transactionsRequest, monthIncomeRequest],
+    [categoriesRequest, transactionsRequest],
   );
 
   if (budgetStatus.isInitialLoad) {
@@ -58,10 +51,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
       <Container>
         <Row className="d-flex justify-content-center">
           <Col className="col-12 col-xl-10">
-            <TotalsLayout
-              monthIncome={monthIncome}
-              monthIncomeRequest={monthIncomeRequest}
-            />
+            <TotalsLayout />
 
             {categories ? (
               <>
