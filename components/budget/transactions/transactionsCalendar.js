@@ -2,7 +2,6 @@ import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useMemo } from "react";
 import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import todayInfo from "@/helpers/todayInfo";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
@@ -11,7 +10,6 @@ const WEEK_LENGTH = 7;
 
 const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
   const { transactions } = useContext(TransactionsContext);
-  const { categories, categoryColors } = useContext(CategoriesContext);
 
   const openTransactionDetails = (transaction) => {
     if (["Category", "Subcategory", "Transfer"].includes(transaction.type)) {
@@ -42,8 +40,11 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
 
     transactions.forEach((transaction) => {
       if (transaction.type !== TRANSACTION_TYPES.INCOME) {
-        if (!transactionsMap.has(transaction.date)) {
-          transactionsMap.set(transaction.date, []);
+        const transactionDate = new Date(transaction.date);
+        const dateKey = transactionDate.toISOString().split("T")[0];
+
+        if (!transactionsMap.has(dateKey)) {
+          transactionsMap.set(dateKey, []);
         }
 
         const transactionObject = {
@@ -57,8 +58,13 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
           transactionObject.items = transaction.items;
           transactionObject.category = transaction.category;
           transactionObject.amount = transaction.amount;
-          transactionObject.color = categoryColors[transaction.category];
-          transactionObject.icon = "💸";
+          transactionObject.color = transaction.color;
+
+          if (transaction.fixed) {
+            transactionObject.icon = "🔒";
+          } else {
+            transactionObject.icon = "💸";
+          }
         } else {
           transactionObject.fromAccount = transaction.fromAccount;
           transactionObject.toAccount = transaction.toAccount;
@@ -67,64 +73,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
           transactionObject.icon = "🔄";
         }
 
-        transactionsMap.get(transaction.date).push(transactionObject);
-      }
-    });
-
-    // If dueDate field is present in the fixed category or subcategory, add it to the transactions calendar
-    categories.forEach((category) => {
-      if (category.fixed) {
-        if (category.subcategories.length > 0) {
-          category.subcategories.forEach((subcategory) => {
-            if (subcategory.dueDate) {
-              const subcategoryDate = new Date(
-                year,
-                monthNumber,
-                subcategory.dueDate,
-              );
-              const subcategoryDateISO = subcategoryDate
-                .toISOString()
-                .split("T")[0];
-
-              if (!transactionsMap.has(subcategoryDateISO)) {
-                transactionsMap.set(subcategoryDateISO, []);
-              }
-
-              transactionsMap.get(subcategoryDateISO).push({
-                _id: subcategory._id,
-                type: "Subcategory",
-                date: subcategoryDateISO,
-                store: subcategory.name,
-                items: "Fixed Subcategory",
-                category: category.name,
-                amount: subcategory.actual,
-                color: category.color,
-                icon: "🔒",
-              });
-            }
-          });
-        } else {
-          if (category.dueDate) {
-            const categoryDate = new Date(year, monthNumber, category.dueDate);
-            const categoryDateISO = categoryDate.toISOString().split("T")[0];
-
-            if (!transactionsMap.has(categoryDateISO)) {
-              transactionsMap.set(categoryDateISO, []);
-            }
-
-            transactionsMap.get(categoryDateISO).push({
-              _id: category._id,
-              type: "Category",
-              date: categoryDateISO,
-              store: category.name,
-              items: "Fixed Category",
-              category: category.name,
-              amount: category.actual,
-              color: category.color,
-              icon: "🔒",
-            });
-          }
-        }
+        transactionsMap.get(dateKey).push(transactionObject);
       }
     });
 
@@ -181,7 +130,7 @@ const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
     }
 
     return month;
-  }, [dateInfo, categories, categoryColors, transactions]);
+  }, [dateInfo, transactions]);
 
   return (
     <>
