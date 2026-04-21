@@ -14,7 +14,6 @@ import {
 } from "@/contexts/TransactionsContext";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../ui/loadingIndicator";
-import useMonthIncome from "@/hooks/useMonthIncome";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../category/categoryBadge";
 import AddTransactionsModal from "../budget/transactions/addTransactionsModal/addTransactionsModal";
@@ -26,11 +25,8 @@ const InnerDashboard = ({ dateInfo }) => {
   const { data: session } = useSession();
 
   const { categories, categoriesRequest } = useContext(CategoriesContext);
-  const { transactionsRequest } = useContext(TransactionsContext);
-  const { monthIncome, monthIncomeRequest } = useMonthIncome(
-    dateInfo.month,
-    dateInfo.year,
-  );
+  const { transactionsRequest, transactionTotals } =
+    useContext(TransactionsContext);
 
   const [modal, setModal] = useState("none");
 
@@ -67,9 +63,7 @@ const InnerDashboard = ({ dateInfo }) => {
     (categoriesRequest.action === "get" &&
       categoriesRequest.status === "loading") ||
     (transactionsRequest.action === "get" &&
-      transactionsRequest.status === "loading") ||
-    (monthIncomeRequest.action === "get" &&
-      monthIncomeRequest.status === "loading")
+      transactionsRequest.status === "loading")
   ) {
     return <LoadingIndicator message={"Loading your budget details"} />;
   } else {
@@ -150,10 +144,10 @@ const InnerDashboard = ({ dateInfo }) => {
                   <Card.Body>
                     <h4>
                       {dateInfo.monthName} Income:{" "}
-                      {monthIncomeRequest.status === "error" ? (
-                        <ErrorMessage message={monthIncomeRequest.message} />
+                      {transactionsRequest.status === "error" ? (
+                        <ErrorMessage message={transactionsRequest.message} />
                       ) : (
-                        <p>{dollarFormatter(monthIncome)} </p>
+                        <p>{dollarFormatter(transactionTotals.income)} </p>
                       )}
                     </h4>
                     <p>View your sources of income</p>
