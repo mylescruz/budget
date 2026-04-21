@@ -17,6 +17,12 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
     setModal("editTransaction");
   };
 
+  // Flag to give the user the option to delete an expense transaction if its not fixed or delete a transfer
+  const isAbleToDelete =
+    (chosenTransaction.type === TRANSACTION_TYPES.EXPENSE &&
+      !chosenTransaction.fixed) ||
+    chosenTransaction.type === TRANSACTION_TYPES.TRANSFER;
+
   return (
     <Modal
       show={modal === "transactionDetails"}
@@ -38,8 +44,7 @@ const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
           <CategoryDetails chosenTransaction={chosenTransaction} />
         )}
       </Modal.Body>
-      {(chosenTransaction.type === TRANSACTION_TYPES.EXPENSE ||
-        chosenTransaction.type === TRANSACTION_TYPES.TRANSFER) && (
+      {isAbleToDelete && (
         <Modal.Footer className="d-flex flex-row justify-content-between">
           <Button variant="danger" onClick={openDeleteModal}>
             Delete
