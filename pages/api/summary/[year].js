@@ -8,6 +8,7 @@ import {
   TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
 import { logError } from "@/lib/logError";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -66,12 +67,7 @@ async function getYearSummary(
       year,
     );
 
-    const income = await getIncomeSummary(
-      transactionsCol,
-      username,
-      month,
-      year,
-    );
+    const income = await getIncomeTotals(transactions);
 
     const months = await getMonthsSummaries(
       categoriesCol,
@@ -280,77 +276,62 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
   return categories;
 }
 
-// Get the total sum of each type of income
-async function getIncomeSummary(transactionsCol, username, month, year) {
-  const incomeTypes = await transactionsCol
-    .aggregate(
-      [
-        {
-          $match: {
-            username,
-            year,
-            month: { $lte: month },
-            type: TRANSACTION_TYPES.INCOME,
-          },
-        },
-        {
-          $group: {
-            _id: "$incomeType",
-            totalGross: { $sum: "$gross" },
-            totalDeductions: { $sum: "$deductions" },
-            totalAmount: { $sum: "$amount" },
-          },
-        },
-        {
-          $project: {
-            name: "$_id",
-            gross: "$totalGross",
-            deductions: "$totalDeductions",
-            amount: "$totalAmount",
-            _id: 0,
-          },
-        },
-        { $sort: { amount: -1 } },
-      ],
-      { maxTimeMS: 10000 },
-    )
-    .toArray();
+// Get the total values of each type of income
+async function getIncomeTotals(transactions) {
+  const incomeTypes = new Map();
 
-  const totalIncome = {
-    gross: 0,
-    deductions: 0,
-    amount: 0,
-  };
+  transactions.forEach((transaction) => {
+    if (transaction.type === TRANSACTION_TYPES.INCOME) {
+      const type = incomeTypes.get(transaction.incomeType);
 
-  const types = incomeTypes.map((type) => {
-    totalIncome.amount += type.amount;
-
-    if (type.name === INCOME_TYPES.PAYCHECK) {
-      totalIncome.gross = type.gross;
-      totalIncome.deductions = type.deductions;
-
-      return {
-        name: type.name,
-        gross: centsToDollars(type.gross),
-        deductions: centsToDollars(type.deductions),
-        amount: centsToDollars(type.amount),
+      // Define the universal values
+      const values = {
+        name: transaction.incomeType,
+        amount: dollarsToCents(transaction.amount),
       };
-    } else {
-      return {
-        name: type.name,
-        amount: centsToDollars(type.amount),
-      };
+
+      // Define the gross and deductions values for 'Paycheck' income
+      if (transaction.incomeType === INCOME_TYPES.PAYCHECK) {
+        values.gross = dollarsToCents(transaction.gross);
+        values.deductions = dollarsToCents(transaction.deductions);
+      }
+
+      if (!type) {
+        incomeTypes.set(transaction.incomeType, values);
+      } else {
+        // Define the universal values
+        const totals = {
+          name: transaction.incomeType,
+          amount: type.amount + values.amount,
+        };
+
+        // Define the gross and deductions values for 'Paycheck' income
+        if (transaction.incomeType === INCOME_TYPES.PAYCHECK) {
+          totals.gross = type.gross + values.gross;
+          totals.deductions = type.deductions + values.deductions;
+        }
+
+        incomeTypes.set(transaction.incomeType, totals);
+      }
     }
   });
 
-  return {
-    totalIncome: {
-      gross: centsToDollars(totalIncome.gross),
-      deductions: centsToDollars(totalIncome.deductions),
-      amount: centsToDollars(totalIncome.amount),
-    },
-    types,
-  };
+  // Format the income types back to dollar values
+  const types = [...incomeTypes.values()].map((type) => {
+    const totals = {
+      name: type.name,
+      amount: centsToDollars(type.amount),
+    };
+
+    if (type.name === INCOME_TYPES.PAYCHECK) {
+      totals.gross = centsToDollars(type.gross);
+      totals.deductions = centsToDollars(type.deductions);
+    }
+
+    return totals;
+  });
+
+  return types;
 }
 
 // Get total spending for each month
@@ -583,8 +564,8 @@ async function getTransactions(transactionsCol, username, month, year) {
             store: 1,
             items: 1,
             categoryId: 1,
-            gross: { $divide: ["$amount", 100] },
-            deductions: { $divide: ["$amount", 100] },
+            gross: { $divide: ["$gross", 100] },
+            deductions: { $divide: ["$deductions", 100] },
             // Transfer Transactions
             fromAccount: 1,
             toAccount: 1,
