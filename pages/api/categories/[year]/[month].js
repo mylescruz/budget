@@ -740,6 +740,7 @@ async function generateMissingMonths({
                 year: yearIndex,
                 type: TRANSACTION_TYPES.EXPENSE,
                 date: date,
+                fixed: true,
                 store: category.name,
                 items: `Fixed expense occuring ${category.frequency.toLowerCase()}`,
                 categoryId: category._id,
