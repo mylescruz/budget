@@ -52,6 +52,13 @@ async function getYearSummary(
   { categoriesCol, transactionsCol, username, month, year },
 ) {
   try {
+    const transactions = await getTransactions(
+      transactionsCol,
+      username,
+      month,
+      year,
+    );
+
     const categories = await getCategoriesSummary(
       categoriesCol,
       username,
@@ -60,13 +67,6 @@ async function getYearSummary(
     );
 
     const income = await getIncomeSummary(
-      transactionsCol,
-      username,
-      month,
-      year,
-    );
-
-    const transactions = await getTransactions(
       transactionsCol,
       username,
       month,
@@ -568,26 +568,33 @@ async function getTransactions(transactionsCol, username, month, year) {
             username,
             year,
             month: { $lte: month },
-            type: {
-              $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.TRANSFER],
-            },
           },
         },
         {
           $project: {
+            // All transaction types
             type: 1,
             date: 1,
+            description: 1,
+            amount: { $divide: ["$amount", 100] },
             createdTS: 1,
+            updatedTS: 1,
+            // Expense Transactions
             store: 1,
             items: 1,
             categoryId: 1,
+            gross: { $divide: ["$amount", 100] },
+            deductions: { $divide: ["$amount", 100] },
+            // Transfer Transactions
             fromAccount: 1,
             toAccount: 1,
-            description: 1,
-            amount: { $divide: ["$amount", 100] },
+            // Income Transactions
+            source: 1,
+            incomeType: 1,
           },
         },
         {
+          // Get the Expense transaction's correlating category's information
           $lookup: {
             from: "categories",
             localField: "categoryId",

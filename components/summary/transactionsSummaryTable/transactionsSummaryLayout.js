@@ -8,29 +8,31 @@ const TransactionsSummaryLayout = ({ transactions }) => {
   const [modal, setModal] = useState("none");
 
   const formattedTransactions = useMemo(() => {
-    return transactions.map((transaction) => {
-      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
-        return {
-          _id: transaction._id,
-          type: transaction.type,
-          date: transaction.date,
-          name: transaction.store,
-          description: transaction.items,
-          type: transaction.category,
-          amount: transaction.amount,
-        };
-      } else {
-        return {
-          _id: transaction._id,
-          type: transaction.type,
-          date: transaction.date,
-          name: `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`,
-          description: transaction.description,
-          type: TRANSACTION_TYPES.TRANSFER,
-          amount: transaction.amount,
-        };
-      }
-    });
+    return transactions
+      .filter((transaction) => transaction.type !== TRANSACTION_TYPES.INCOME)
+      .map((transaction) => {
+        if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+          return {
+            _id: transaction._id,
+            type: transaction.type,
+            date: transaction.date,
+            name: transaction.store,
+            description: transaction.items,
+            type: transaction.category,
+            amount: transaction.amount,
+          };
+        } else {
+          return {
+            _id: transaction._id,
+            type: transaction.type,
+            date: transaction.date,
+            name: `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`,
+            description: transaction.description,
+            type: TRANSACTION_TYPES.TRANSFER,
+            amount: transaction.amount,
+          };
+        }
+      });
   }, [transactions]);
 
   const transactionColumns = {
