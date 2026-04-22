@@ -4,7 +4,8 @@ import {
   TRANSACTION_TYPES,
   TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 // Fetches and returns all transactions for the user for a given month and year.
 // Each transaction includes its amount in USD and optional category information.
@@ -37,9 +38,19 @@ const useTransactions = (month, year) => {
     message: "Getting your transactions for the month",
   });
 
+  const { categoriesRequest } = useContext(CategoriesContext);
+
   useEffect(() => {
-    getTransactions();
-  }, [month, year]);
+    // Fetch the user's transactions once the categories are loaded
+    const readyToFetch =
+      transactionsRequest.status === "loading" &&
+      categoriesRequest.action === "get" &&
+      categoriesRequest.status === "success";
+
+    if (readyToFetch) {
+      getTransactions();
+    }
+  }, [month, year, categoriesRequest]);
 
   const getTransactions = async () => {
     setTransactionsRequest({
