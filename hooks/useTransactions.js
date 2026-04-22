@@ -240,6 +240,13 @@ const useTransactions = (month, year) => {
     });
   };
 
+  // Deletes the correlating fixed transactions stored in a set from the transactions array
+  const removeFixedCategoryTransactions = (categoryIds) => {
+    setTransactions((prev) =>
+      prev.filter((transaction) => !categoryIds.has(transaction.categoryId)),
+    );
+  };
+
   const transactionTotals = useMemo(() => {
     if (!transactions) {
       return null;
@@ -287,6 +294,7 @@ const useTransactions = (month, year) => {
     putTransaction,
     deleteTransaction,
     updateTransactionsFromCategory,
+    removeFixedCategoryTransactions,
     transactionTotals,
   };
 };

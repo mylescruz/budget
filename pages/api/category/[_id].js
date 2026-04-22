@@ -451,26 +451,19 @@ async function updateCategory(
 }
 
 // Delete a category from a user in MongoDB
-async function deleteCategory(req, res, { client, categoriesCol, username }) {
+async function deleteCategory(
+  req,
+  res,
+  { client, categoriesCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
     const categoryId = req.query._id;
+    const category = req.body;
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
-      // Find the category in the database to update the month's Fun Money category
-      const category = await categoriesCol.findOne(
-        {
-          _id: new ObjectId(categoryId),
-        },
-        { session, maxTimeMS: 5000 },
-      );
-
-      if (!category) {
-        throw new Error("Category not found!");
-      }
-
       // Delete the category and subcategories from MongoDB
       await categoriesCol.deleteMany(
         {
@@ -481,6 +474,26 @@ async function deleteCategory(req, res, { client, categoriesCol, username }) {
         },
         { session, maxTimeMS: 5000 },
       );
+
+      // Delete a fixed category or fixed subcategories' correlating transactions
+      if (category.fixed) {
+        const deletedIds = [];
+
+        if (category.subcategories.length > 0) {
+          category.subcategories.forEach((subcategory) =>
+            deletedIds.push(subcategory._id),
+          );
+        } else {
+          deletedIds.push(categoryId);
+        }
+
+        await transactionsCol.deleteMany(
+          {
+            categoryId: { $in: deletedIds.map((id) => new ObjectId(id)) },
+          },
+          { session, maxTimeMS: 5000 },
+        );
+      }
 
       // Update the Fun Money category for the category's month
       await updateFunMoney({
