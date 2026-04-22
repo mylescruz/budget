@@ -25,6 +25,7 @@ export default async function handler(req, res) {
   const categoriesContext = {
     client: client,
     categoriesCol: db.collection("categories"),
+    transactionsCol: db.collection("transactions"),
     username: session.user.username,
   };
 
@@ -39,12 +40,18 @@ export default async function handler(req, res) {
 }
 
 // Update an editted category in MongoDB
-async function updateCategory(req, res, { client, categoriesCol, username }) {
+async function updateCategory(
+  req,
+  res,
+  { client, categoriesCol, transactionsCol, username },
+) {
   const mongoSession = client.startSession();
 
   try {
     const categoryId = req.query._id;
     const category = { ...req.body };
+
+    const currentTS = new Date();
 
     // Define the category's edited fields
     const editedCategory = {
@@ -104,6 +111,9 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       }
     }
 
+    // Array to update the category or subcategories' correlating fixed transaction
+    const fixedTransactions = [];
+
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
       // Update the changes to any subcategory documents and delete the remaining
@@ -149,6 +159,32 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
               subcategoryQuery.budget = subcategory.budget;
               subcategoryQuery.frequency = subcategory.frequency;
               subcategoryQuery.dueDate = subcategory.dueDate;
+
+              // Update the correlating fixed subcategory's transaction
+              const subcategoryTransaction = await transactionsCol.findOne(
+                {
+                  categoryId: new ObjectId(subcategory._id),
+                },
+                { session, maxTimeMS: 3000 },
+              );
+
+              const subcategoryDate = new Date(
+                category.year,
+                category.month - 1,
+                subcategory.dueDate,
+              );
+
+              // Update the changed subcategory fields
+              const updatedTransaction = {
+                ...subcategoryTransaction,
+                date: subcategoryDate,
+                store: subcategory.name,
+                items: `Fixed expense occuring ${subcategory.frequency.toLowerCase()}`,
+                amount: subcategory.budget,
+                updatedTS: currentTS,
+              };
+
+              fixedTransactions.push(updatedTransaction);
             }
 
             await categoriesCol.updateOne(
@@ -163,18 +199,63 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       // Update the new fields for the category in MongoDB
       const categoryQuery = {
         budget: editedCategory.budget,
+        updatedTS: currentTS,
       };
 
       if (editedCategory.fixed && editedSubcategories.length === 0) {
         categoryQuery.frequency = editedCategory.frequency;
         categoryQuery.dueDate = editedCategory.dueDate;
+
+        // Update the correlating fixed category's transaction
+        const categoryTransaction = await transactionsCol.findOne(
+          {
+            categoryId: new ObjectId(categoryId),
+          },
+          { session, maxTimeMS: 3000 },
+        );
+
+        const categoryDate = new Date(
+          category.year,
+          category.month - 1,
+          editedCategory.dueDate,
+        );
+
+        // Update the changed category fields
+        const updatedTransaction = {
+          ...categoryTransaction,
+          date: categoryDate,
+          store: editedCategory.name,
+          items: `Fixed expense occuring ${editedCategory.frequency.toLowerCase()}`,
+          amount: editedCategory.budget,
+          updatedTS: currentTS,
+        };
+
+        fixedTransactions.push(updatedTransaction);
       }
 
+      // Update the parent category details
       await categoriesCol.updateOne(
         { _id: new ObjectId(categoryId) },
         { $set: categoryQuery },
         { session, maxTimeMS: 5000 },
       );
+
+      // Update the correlating fixed transactions
+      for (const transaction of fixedTransactions) {
+        await transactionsCol.updateOne(
+          { _id: new ObjectId(transaction._id) },
+          {
+            $set: {
+              date: transaction.date,
+              store: transaction.store,
+              items: transaction.items,
+              amount: transaction.amount,
+              updatedTS: currentTS,
+            },
+          },
+          { session, maxTimeMS: 3000 },
+        );
+      }
 
       // Update the name and color for all the categories with that name
       await categoriesCol.updateMany(
@@ -283,7 +364,25 @@ async function updateCategory(req, res, { client, categoriesCol, username }) {
       : centsToDollars(editedCategory.budget);
     updatedCategory.actual = centsToDollars(categoryActual);
 
-    return res.status(200).json(updatedCategory);
+    const updatedCategoryObject = {
+      updatedCategory,
+    };
+
+    // Format the fixed transactions back to the client
+    if (fixedTransactions.length > 0) {
+      updatedCategoryObject.fixedTransactions = fixedTransactions.map(
+        (transaction) => {
+          return {
+            ...transaction,
+            amount: centsToDollars(transaction.amount),
+            category: transaction.store,
+            color: updatedCategory.color,
+          };
+        },
+      );
+    }
+
+    return res.status(200).json(updatedCategoryObject);
   } catch (error) {
     await logError({ error, req, username });
 

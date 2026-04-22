@@ -166,7 +166,11 @@ const useCategories = (month, year) => {
         throw new Error(message);
       }
 
-      const updatedCategory = await response.json();
+      const result = await response.json();
+
+      const updatedCategory = result.updatedCategory;
+
+      const updatedFixedTransactions = result.fixedTransactions;
 
       setCategories((prev) => {
         return prev
@@ -197,6 +201,8 @@ const useCategories = (month, year) => {
         status: "success",
         message: `Successfully updated the category: ${editedCategory.name}!`,
       });
+
+      return updatedFixedTransactions;
     } catch (error) {
       setCategoriesRequest({
         action: "update",
