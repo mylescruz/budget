@@ -21,8 +21,7 @@ const EditCategoryModal = ({
 }) => {
   const { categoriesRequest, putCategory, categoryNames } =
     useContext(CategoriesContext);
-  const { getTransactions, updateTransactionsFromCategory } =
-    useContext(TransactionsContext);
+  const { updateTransactionsFromCategory } = useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
@@ -99,19 +98,14 @@ const EditCategoryModal = ({
     setFormMeta({ status: "loading", error: null });
 
     try {
-      const updatedFixedTransactions = await putCategory({
+      const updatedTransactions = await putCategory({
         ...editedCategory,
         month: dateInfo.month,
         year: dateInfo.year,
       });
 
-      if (updatedFixedTransactions) {
-        updateTransactionsFromCategory(updatedFixedTransactions);
-      }
-
-      // Fetch the updated transactions to show any category names changes
-      if (fieldChanges.name && !editedCategory.fixed) {
-        await getTransactions(dateInfo.month, dateInfo.year);
+      if (updatedTransactions) {
+        updateTransactionsFromCategory(updatedTransactions);
       }
 
       closeEditCategoryModal();

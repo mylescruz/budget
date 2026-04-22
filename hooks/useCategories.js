@@ -170,7 +170,7 @@ const useCategories = (month, year) => {
 
       const updatedCategory = result.updatedCategory;
 
-      const updatedFixedTransactions = result.fixedTransactions;
+      const updatedTransactions = result.updatedTransactions;
 
       setCategories((prev) => {
         return prev
@@ -202,7 +202,7 @@ const useCategories = (month, year) => {
         message: `Successfully updated the category: ${editedCategory.name}!`,
       });
 
-      return updatedFixedTransactions;
+      return updatedTransactions;
     } catch (error) {
       setCategoriesRequest({
         action: "update",

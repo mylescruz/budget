@@ -88,6 +88,7 @@ async function updateCategory(
             _id: subcategory._id,
             parentCategoryId: categoryId,
             name: subcategory.name.trim(),
+            currentName: subcategory.currentName,
             budget: dollarsToCents(subcategory.budget),
           };
 
@@ -112,7 +113,7 @@ async function updateCategory(
     }
 
     // Array to update the category or subcategories' correlating fixed transaction
-    const fixedTransactions = [];
+    const updatedTransactions = [];
 
     // Start a transaction to process all MongoDB statements or rollback any failures
     await mongoSession.withTransaction(async (session) => {
@@ -184,7 +185,30 @@ async function updateCategory(
                 updatedTS: currentTS,
               };
 
-              fixedTransactions.push(updatedTransaction);
+              updatedTransactions.push(updatedTransaction);
+            } else {
+              // Change the category name for the correlating transactions to send back to the client
+              if (subcategory.name !== subcategory.currentName) {
+                const subcategoryTransactions = await transactionsCol
+                  .find({ categoryId: new ObjectId(subcategory._id) })
+                  .toArray();
+
+                // If there are transactions under this subcategory, change their category name
+                if (subcategoryTransactions.length > 0) {
+                  const formattedTransactions = subcategoryTransactions.map(
+                    (subcat) => {
+                      return {
+                        ...subcat,
+                        category: subcategory.name,
+                      };
+                    },
+                  );
+
+                  formattedTransactions.forEach((transaction) =>
+                    updatedTransactions.push(transaction),
+                  );
+                }
+              }
             }
 
             await categoriesCol.updateOne(
@@ -202,35 +226,58 @@ async function updateCategory(
         updatedTS: currentTS,
       };
 
-      if (editedCategory.fixed && editedSubcategories.length === 0) {
-        categoryQuery.frequency = editedCategory.frequency;
-        categoryQuery.dueDate = editedCategory.dueDate;
+      if (editedCategory.fixed) {
+        if (editedSubcategories.length === 0) {
+          categoryQuery.frequency = editedCategory.frequency;
+          categoryQuery.dueDate = editedCategory.dueDate;
 
-        // Update the correlating fixed category's transaction
-        const categoryTransaction = await transactionsCol.findOne(
-          {
-            categoryId: new ObjectId(categoryId),
-          },
-          { session, maxTimeMS: 3000 },
-        );
+          // Update the correlating fixed category's transaction
+          const categoryTransaction = await transactionsCol.findOne(
+            {
+              categoryId: new ObjectId(categoryId),
+            },
+            { session, maxTimeMS: 3000 },
+          );
 
-        const categoryDate = new Date(
-          category.year,
-          category.month - 1,
-          editedCategory.dueDate,
-        );
+          const categoryDate = new Date(
+            category.year,
+            category.month - 1,
+            editedCategory.dueDate,
+          );
 
-        // Update the changed category fields
-        const updatedTransaction = {
-          ...categoryTransaction,
-          date: categoryDate,
-          store: editedCategory.name,
-          items: `Fixed expense occuring ${editedCategory.frequency.toLowerCase()}`,
-          amount: editedCategory.budget,
-          updatedTS: currentTS,
-        };
+          // Update the changed category fields
+          const updatedTransaction = {
+            ...categoryTransaction,
+            date: categoryDate,
+            store: editedCategory.name,
+            items: `Fixed expense occuring ${editedCategory.frequency.toLowerCase()}`,
+            amount: editedCategory.budget,
+            updatedTS: currentTS,
+          };
 
-        fixedTransactions.push(updatedTransaction);
+          updatedTransactions.push(updatedTransaction);
+        }
+      } else {
+        // Change the category name for the correlating transactions to send back to the client
+        if (editedCategory.name !== editedCategory.currentName) {
+          const categoryTransactions = await transactionsCol
+            .find({ categoryId: new ObjectId(editedCategory._id) })
+            .toArray();
+
+          // If there are transactions under this category, change their category name
+          if (categoryTransactions.length > 0) {
+            const formattedTransactions = categoryTransactions.map((subcat) => {
+              return {
+                ...subcat,
+                category: editedCategory.name,
+              };
+            });
+
+            formattedTransactions.forEach((transaction) =>
+              updatedTransactions.push(transaction),
+            );
+          }
+        }
       }
 
       // Update the parent category details
@@ -240,21 +287,23 @@ async function updateCategory(
         { session, maxTimeMS: 5000 },
       );
 
-      // Update the correlating fixed transactions
-      for (const transaction of fixedTransactions) {
-        await transactionsCol.updateOne(
-          { _id: new ObjectId(transaction._id) },
-          {
-            $set: {
-              date: transaction.date,
-              store: transaction.store,
-              items: transaction.items,
-              amount: transaction.amount,
-              updatedTS: currentTS,
+      // Update the correlating fixed transactions in the database
+      for (const transaction of updatedTransactions) {
+        if (transaction.fixed) {
+          await transactionsCol.updateOne(
+            { _id: new ObjectId(transaction._id) },
+            {
+              $set: {
+                date: transaction.date,
+                store: transaction.store,
+                items: transaction.items,
+                amount: transaction.amount,
+                updatedTS: currentTS,
+              },
             },
-          },
-          { session, maxTimeMS: 3000 },
-        );
+            { session, maxTimeMS: 3000 },
+          );
+        }
       }
 
       // Update the name and color for all the categories with that name
@@ -368,16 +417,21 @@ async function updateCategory(
       updatedCategory,
     };
 
-    // Format the fixed transactions back to the client
-    if (fixedTransactions.length > 0) {
-      updatedCategoryObject.fixedTransactions = fixedTransactions.map(
+    // Format the updated transactions back to the client
+    if (updatedTransactions.length > 0) {
+      updatedCategoryObject.updatedTransactions = updatedTransactions.map(
         (transaction) => {
-          return {
+          const formattedTransaction = {
             ...transaction,
             amount: centsToDollars(transaction.amount),
-            category: transaction.store,
             color: updatedCategory.color,
           };
+
+          if (transaction.fixed) {
+            formattedTransaction.category = transaction.store;
+          }
+
+          return formattedTransaction;
         },
       );
     }
