@@ -2,6 +2,7 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import ensureCategoriesExist from "@/lib/ensureCategoriesExist";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -45,62 +46,78 @@ export default async function handler(req, res) {
 async function getTransactions(
   req,
   res,
-  { transactionsCol, username, month, year },
+  { client, transactionsCol, categoriesCol, username, month, year },
 ) {
+  const mongoSession = client.startSession();
+
+  let transactions;
+
   try {
-    const transactions = await transactionsCol
-      .aggregate(
-        [
-          {
-            $match: {
-              username,
-              month,
-              year,
-            },
-          },
-          {
-            $project: {
-              type: 1,
-              date: 1,
-              store: 1,
-              items: 1,
-              categoryId: 1,
-              fromAccount: 1,
-              toAccount: 1,
-              source: 1,
-              incomeType: 1,
-              description: 1,
-              amount: { $divide: ["$amount", 100] },
-              createdTS: 1,
-              updatedTS: 1,
-            },
-          },
-          {
-            $lookup: {
-              from: "categories",
-              localField: "categoryId",
-              foreignField: "_id",
-              as: "transactionCategory",
-            },
-          },
-          {
-            $addFields: {
-              category: { $arrayElemAt: ["$transactionCategory.name", 0] },
-              color: { $arrayElemAt: ["$transactionCategory.color", 0] },
-              fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
-              parentCategoryId: {
-                $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+    await mongoSession.withTransaction(async (session) => {
+      // Make sure a user's fixed category transactions exist for the given month first
+      await ensureFixedTransactionsExist({
+        username,
+        month,
+        year,
+        transactionsCol,
+        categoriesCol,
+        session,
+      });
+
+      transactions = await transactionsCol
+        .aggregate(
+          [
+            {
+              $match: {
+                username,
+                month,
+                year,
               },
             },
-          },
-          {
-            $project: { transactionCategory: 0 },
-          },
-          { $sort: { date: 1, createdTS: 1 } },
-        ],
-        { maxTimeMS: 10000 },
-      )
-      .toArray();
+            {
+              $project: {
+                type: 1,
+                date: 1,
+                store: 1,
+                items: 1,
+                categoryId: 1,
+                fromAccount: 1,
+                toAccount: 1,
+                source: 1,
+                incomeType: 1,
+                description: 1,
+                amount: { $divide: ["$amount", 100] },
+                createdTS: 1,
+                updatedTS: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: "categories",
+                localField: "categoryId",
+                foreignField: "_id",
+                as: "transactionCategory",
+              },
+            },
+            {
+              $addFields: {
+                category: { $arrayElemAt: ["$transactionCategory.name", 0] },
+                color: { $arrayElemAt: ["$transactionCategory.color", 0] },
+                fixed: { $arrayElemAt: ["$transactionCategory.fixed", 0] },
+                parentCategoryId: {
+                  $arrayElemAt: ["$transactionCategory.parentCategoryId", 0],
+                },
+              },
+            },
+            {
+              $project: { transactionCategory: 0 },
+            },
+            { $sort: { date: 1, createdTS: 1 } },
+          ],
+          { session, maxTimeMS: 10000 },
+        )
+        .toArray();
+    });
 
     // Send the transactions array back to the client
     return res.status(200).json(transactions);
@@ -112,6 +129,8 @@ async function getTransactions(
       .send(
         "We're unable to load your transactions at the moment. Please try again later!",
       );
+  } finally {
+    await mongoSession.endSession();
   }
 }
 
@@ -227,5 +246,69 @@ async function addTransactions(
       );
   } finally {
     await mongoSession.endSession();
+  }
+}
+
+// Checks if a user's fixed category's transactions exist and if not, adds them to the database
+async function ensureFixedTransactionsExist({
+  username,
+  month,
+  year,
+  transactionsCol,
+  categoriesCol,
+  session,
+}) {
+  // Check if a user's fixed category transactions exist
+  const transactionDocs = await transactionsCol.countDocuments(
+    { username, month, year, fixed: true },
+    { session, maxTimeMS: 5000 },
+  );
+
+  if (transactionDocs === 0) {
+    // Creates the fixed transactions for the given month if they don't currently exist
+    const fixedCategories = await categoriesCol
+      .find(
+        { username, month, year, fixed: true, dueDate: { $ne: null } },
+        { session, maxTimeMS: 5000 },
+      )
+      .toArray();
+
+    // Array to store the fixed category and subcategory expense transactions
+    const fixedTransactions = [];
+
+    // If a category or subcategory has a due date, create a transaction for the category
+    fixedCategories.forEach((category) => {
+      const date = new Date(year, month - 1, category.dueDate);
+
+      const currentTS = new Date();
+
+      const newTransaction = {
+        username: username,
+        month: month,
+        year: year,
+        type: TRANSACTION_TYPES.EXPENSE,
+        date: date,
+        fixed: true,
+        store: category.name,
+        items: `Fixed expense occuring ${category.frequency.toLowerCase()}`,
+        categoryId: category._id,
+        amount: category.budget,
+        createdTS: currentTS,
+        updatedTS: currentTS,
+      };
+
+      // Add the parent category's _id for easier querying
+      if (category.parentCategoryId) {
+        newTransaction.parentCategoryId = category.parentCategoryId;
+      }
+
+      fixedTransactions.push(newTransaction);
+    });
+
+    // Insert the fixed transactions for the month
+    await transactionsCol.insertMany(fixedTransactions, {
+      session,
+      maxTimeMS: 5000,
+    });
   }
 }

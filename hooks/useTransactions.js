@@ -1,3 +1,4 @@
+import { CategoriesContext } from "@/contexts/CategoriesContext";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import {
@@ -5,7 +6,6 @@ import {
   TRANSFER_ACCOUNTS,
 } from "@/lib/constants/transactions";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 
 // Fetches and returns all transactions for the user for a given month and year.
 // Each transaction includes its amount in USD and optional category information.
@@ -39,6 +39,16 @@ const useTransactions = (month, year) => {
   });
 
   const { categoriesRequest } = useContext(CategoriesContext);
+
+  useEffect(() => {
+    // Reset the transactions request when switching between months
+    setTransactions(null);
+    setTransactionsRequest({
+      action: "get",
+      status: "loading",
+      message: "Getting your transactions for the month",
+    });
+  }, [month, year]);
 
   useEffect(() => {
     // Fetch the user's transactions once the categories are loaded
