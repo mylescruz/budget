@@ -50,7 +50,7 @@ const PreviousCategoryForm = ({ dateInfo, setNewCategory, setModalPage }) => {
 
     if (foundCategory.fixed) {
       formattedCategory.dueDate = foundCategory.dueDate;
-      formattedCategory.frequency = foundCategory.dueDate;
+      formattedCategory.frequency = foundCategory.frequency;
     }
 
     setNewCategory(formattedCategory);
