@@ -25,7 +25,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
 
   const { categoriesRequest, postCategory, categoryNames } =
     useContext(CategoriesContext);
-  const { updateFixedCategoryTransactions } = useContext(TransactionsContext);
+  const { updateTransactionsFromCategory } = useContext(TransactionsContext);
 
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [formMeta, setFormMeta] = useState({
@@ -143,7 +143,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
       const addedFixedTransactions = await postCategory(newCategory);
 
       if (addedFixedTransactions) {
-        updateFixedCategoryTransactions(addedFixedTransactions);
+        updateTransactionsFromCategory(addedFixedTransactions);
       }
 
       closeModal();

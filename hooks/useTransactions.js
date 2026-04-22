@@ -224,7 +224,7 @@ const useTransactions = (month, year) => {
   };
 
   // Adds the newly added fixed transactions to the transactions array
-  const updateFixedCategoryTransactions = (fixedTransactions) => {
+  const updateTransactionsFromCategory = (updatedTransactions) => {
     setTransactions((prev) => {
       // Create a map of the current transactions based on the transaction id
       const transactionsMap = new Map(
@@ -232,7 +232,7 @@ const useTransactions = (month, year) => {
       );
 
       // Set the new transactions in the map or replace the current transaction with the updated one
-      fixedTransactions.forEach((transaction) => {
+      updatedTransactions.forEach((transaction) => {
         transactionsMap.set(transaction._id, transaction);
       });
 
@@ -286,7 +286,7 @@ const useTransactions = (month, year) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
-    updateFixedCategoryTransactions,
+    updateTransactionsFromCategory,
     transactionTotals,
   };
 };

@@ -21,7 +21,7 @@ const EditCategoryModal = ({
 }) => {
   const { categoriesRequest, putCategory, categoryNames } =
     useContext(CategoriesContext);
-  const { getTransactions, updateFixedCategoryTransactions } =
+  const { getTransactions, updateTransactionsFromCategory } =
     useContext(TransactionsContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
@@ -106,7 +106,7 @@ const EditCategoryModal = ({
       });
 
       if (updatedFixedTransactions) {
-        updateFixedCategoryTransactions(updatedFixedTransactions);
+        updateTransactionsFromCategory(updatedFixedTransactions);
       }
 
       // Fetch the updated transactions to show any category names changes

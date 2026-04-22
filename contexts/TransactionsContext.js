@@ -14,7 +14,7 @@ export const TransactionsProvider = ({ children, dateInfo }) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
-    updateFixedCategoryTransactions,
+    updateTransactionsFromCategory,
     transactionTotals,
   } = useTransactions(dateInfo.month, dateInfo.year);
 
@@ -27,7 +27,7 @@ export const TransactionsProvider = ({ children, dateInfo }) => {
         postTransactions,
         putTransaction,
         deleteTransaction,
-        updateFixedCategoryTransactions,
+        updateTransactionsFromCategory,
         transactionTotals,
       }}
     >
