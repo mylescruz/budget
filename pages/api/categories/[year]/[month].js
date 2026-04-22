@@ -440,8 +440,8 @@ async function getCurrentCategories(
         const categoryDate = new Date(`${month}/${category.dueDate}/${year}`);
 
         if (categoryDate <= today) {
-          // Charge a fixed parent's actual value to the total if their charge date already passed
-          formattedCategory.actual = category.budget;
+          // Charge a fixed parent's transaction amount if their due date already passed
+          formattedCategory.actual = category.transactionsAmount;
         } else {
           // Apply no charge if their charge date hasn't passed
           formattedCategory.actual = 0;
@@ -482,8 +482,8 @@ async function getCurrentCategories(
       );
 
       if (subcategoryDate <= today) {
-        // Charge a fixed parent's actual value to the total if their charge date already passed
-        formattedSubcategory.actual = subcategory.budget;
+        // Charge a fixed subcategory's transaction amount if their due date already passed
+        formattedSubcategory.actual = subcategory.transactionsAmount;
       } else {
         formattedSubcategory.actual = 0;
       }
