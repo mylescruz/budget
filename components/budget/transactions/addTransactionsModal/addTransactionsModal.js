@@ -1,8 +1,6 @@
 import { useContext, useState } from "react";
 import { Form, Button, Modal } from "react-bootstrap";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import todayInfo from "@/helpers/todayInfo";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import {
   TRANSACTION_TYPES,
@@ -13,11 +11,10 @@ import AddExpenseForm from "./addExpenseForm";
 import AddTransferForm from "./addTransferForm";
 import styles from "@/styles/transactions/addTransactionsModal.module.css";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
-  const { categories, updateCategoriesFromTransaction } =
-    useContext(CategoriesContext);
-  const { postTransactions } = useContext(TransactionsContext);
+  const { categories, postTransactions } = useContext(BudgetContext);
 
   // Get a list of all the variable category names
   const categoryNames = [];
@@ -187,16 +184,7 @@ const AddTransactionsModal = ({ dateInfo, modal, setModal }) => {
     setFormMeta((prev) => ({ ...prev, status: "loading" }));
 
     try {
-      // Adds the new transaction and updates the correlating category in MongoDB
-      const addedTransactions = await postTransactions(newTransactions);
-
-      // Update the correlating category's state in the categories table
-      addedTransactions.forEach((transaction) => {
-        updateCategoriesFromTransaction({
-          oldTransaction: null,
-          newTransaction: transaction,
-        });
-      });
+      await postTransactions(newTransactions);
 
       closeAddModal();
     } catch (error) {

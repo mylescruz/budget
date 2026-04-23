@@ -515,16 +515,18 @@ const useBudget = (month, year) => {
 
     // Get the total amount spent on each category based on transactions
     updatedTransactions.forEach((transaction) => {
-      const categoryKey = transaction.categoryId.toString();
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+        const categoryKey = transaction.categoryId;
 
-      if (!categoryTotals.has(categoryKey)) {
-        categoryTotals.set(categoryKey, 0);
+        if (!categoryTotals.has(categoryKey)) {
+          categoryTotals.set(categoryKey, 0);
+        }
+
+        categoryTotals.set(
+          categoryKey,
+          categoryTotals.get(categoryKey) + dollarsToCents(transaction.amount),
+        );
       }
-
-      categoryTotals.set(
-        categoryKey,
-        categoryTotals.get(categoryKey) + dollarsToCents(transaction.amount),
-      );
     });
 
     // Assign the total amount to the correlating category's actual value
@@ -533,7 +535,7 @@ const useBudget = (month, year) => {
 
       // Parent categories with no subcategories
       if (category.subcategories.length === 0) {
-        categoryActual = categoryTotals.get(category._id.toString()) || 0;
+        categoryActual = categoryTotals.get(category._id) || 0;
 
         return {
           ...category,
@@ -543,8 +545,7 @@ const useBudget = (month, year) => {
 
       // Parent categories with subcategories
       const updatedSubcategories = category.subcategories.map((subcategory) => {
-        const subcategoryActual =
-          categoryTotals.get(subcategory._id.toString()) || 0;
+        const subcategoryActual = categoryTotals.get(subcategory._id) || 0;
 
         categoryActual += subcategoryActual;
 

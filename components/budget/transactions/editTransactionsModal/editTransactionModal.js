@@ -1,12 +1,11 @@
 import { Button, Form, Modal } from "react-bootstrap";
 import { useContext, useState } from "react";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
 import LoadingMessage from "@/components/ui/loadingMessage";
 import EditExpenseForm from "./editExpenseForm";
 import EditTransferForm from "./editTransferForm";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const EditTransactionModal = ({
   chosenTransaction,
@@ -14,9 +13,7 @@ const EditTransactionModal = ({
   modal,
   setModal,
 }) => {
-  const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
-  const { transactionsRequest, putTransaction } =
-    useContext(TransactionsContext);
+  const { budgetRequest, putTransaction } = useContext(BudgetContext);
 
   // Format the transaction's date to match the date input format
   const formattedDate = new Date(chosenTransaction.date)
@@ -48,16 +45,9 @@ const EditTransactionModal = ({
         throw new Error("Invalid amount entered");
       }
 
-      // Update the transaction in the backend and return the updated transaction
-      const updatedTransaction = await putTransaction({
+      await putTransaction({
         ...transaction,
         amount: formattedAmount,
-      });
-
-      // Update the correlating category's state in the categories table
-      updateCategoriesFromTransaction({
-        oldTransaction: chosenTransaction,
-        newTransaction: updatedTransaction,
       });
 
       setModal("none");
@@ -106,7 +96,7 @@ const EditTransactionModal = ({
         </>
       )}
       {formMeta.status === "loading" && (
-        <LoadingMessage message={transactionsRequest.message} />
+        <LoadingMessage message={budgetRequest.message} />
       )}
     </Modal>
   );

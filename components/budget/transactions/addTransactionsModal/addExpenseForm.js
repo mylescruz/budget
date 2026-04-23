@@ -1,10 +1,10 @@
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext } from "react";
 import { Form } from "react-bootstrap";
 import SelectCategoryOption from "../selectCategoryOption";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const AddExpenseForm = ({ dateInfo, transaction, handleInput, index }) => {
-  const { categories } = useContext(CategoriesContext);
+  const { categories } = useContext(BudgetContext);
 
   return (
     <>

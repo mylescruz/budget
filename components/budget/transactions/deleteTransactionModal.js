@@ -1,14 +1,11 @@
 import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
+import { BudgetContext } from "@/contexts/BudgetContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 const DeleteTransactionModal = ({ chosenTransaction, modal, setModal }) => {
-  const { updateCategoriesFromTransaction } = useContext(CategoriesContext);
-  const { transactionsRequest, deleteTransaction } =
-    useContext(TransactionsContext);
+  const { budgetRequest, deleteTransaction } = useContext(BudgetContext);
   const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const closeDeleteModal = () => {
@@ -19,14 +16,7 @@ const DeleteTransactionModal = ({ chosenTransaction, modal, setModal }) => {
     setFormMeta({ status: "loading", error: null });
 
     try {
-      // Deletes a transaction from the transactions array by sending a DELETE request to the API
-      await deleteTransaction(chosenTransaction._id);
-
-      // Update the correlating category's state in the categories table
-      updateCategoriesFromTransaction({
-        oldTransaction: chosenTransaction,
-        newTransaction: null,
-      });
+      await deleteTransaction(chosenTransaction);
 
       setModal("none");
 
@@ -61,7 +51,7 @@ const DeleteTransactionModal = ({ chosenTransaction, modal, setModal }) => {
         </>
       )}
       {formMeta.status === "loading" && (
-        <LoadingMessage message={transactionsRequest.message} />
+        <LoadingMessage message={budgetRequest.message} />
       )}
     </Modal>
   );
