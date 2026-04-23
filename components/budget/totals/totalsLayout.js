@@ -1,7 +1,5 @@
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useMemo } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarFormatter from "@/helpers/dollarFormatter";
@@ -9,12 +7,12 @@ import PopUp from "@/components/ui/popUp";
 import ProgressBar from "@/components/ui/progressBar";
 import addDecimalValues from "@/helpers/addDecimalValues";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const WARNING_PERCENTAGE = 10;
 
 const TotalsLayout = () => {
-  const { categoryTotals } = useContext(CategoriesContext);
-  const { transactionTotals } = useContext(TransactionsContext);
+  const { categoryTotals, transactionTotals } = useContext(BudgetContext);
 
   // Object that calculates the budget totals for the current month
   const totals = useMemo(() => {
