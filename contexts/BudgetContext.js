@@ -6,10 +6,14 @@ import { createContext } from "react";
 export const BudgetContext = createContext({});
 
 export const BudgetProvider = ({ children, dateInfo }) => {
-  const { categories, transactions, budgetRequest } = useBudget(
-    dateInfo.month,
-    dateInfo.year,
-  );
+  const {
+    categories,
+    transactions,
+    budgetRequest,
+    postTransactions,
+    putTransaction,
+    deleteTransaction,
+  } = useBudget(dateInfo.month, dateInfo.year);
 
   return (
     <BudgetContext.Provider
@@ -17,6 +21,9 @@ export const BudgetProvider = ({ children, dateInfo }) => {
         categories,
         transactions,
         budgetRequest,
+        postTransactions,
+        putTransaction,
+        deleteTransaction,
       }}
     >
       {children}
