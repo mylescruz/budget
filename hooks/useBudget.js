@@ -1,3 +1,6 @@
+import addDecimalValues from "@/helpers/addDecimalValues";
+import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import { FUN_MONEY } from "@/lib/constants/categories";
 import { MONTHS } from "@/lib/constants/date";
@@ -90,8 +93,14 @@ const useBudget = (month, year) => {
           ...addedTransactions,
         ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
+        // Re-calculate each category's actual value
+        const updatedCategories = computeCategories(
+          prev.categories,
+          updatedTransactions,
+        );
+
         return {
-          ...prev,
+          categories: updatedCategories,
           transactions: updatedTransactions,
         };
       });
@@ -147,8 +156,14 @@ const useBudget = (month, year) => {
             : transaction,
         );
 
+        // Re-calculate each category's actual value
+        const updatedCategories = computeCategories(
+          prev.categories,
+          updatedTransactions,
+        );
+
         return {
-          ...prev,
+          categories: updatedCategories,
           transactions: updatedTransactions,
         };
       });
@@ -199,8 +214,14 @@ const useBudget = (month, year) => {
           (transaction) => transaction._id !== deletedTransaction._id,
         );
 
+        // Re-calculate each category's actual value
+        const updatedCategories = computeCategories(
+          prev.categories,
+          updatedTransactions,
+        );
+
         return {
-          ...prev,
+          categories: updatedCategories,
           transactions: updatedTransactions,
         };
       });
@@ -419,6 +440,61 @@ const useBudget = (month, year) => {
 
       throw error;
     }
+  };
+
+  // Computes each category's total actual value based on the updated transactions
+  const computeCategories = (categories, updatedTransactions) => {
+    const categoryTotals = new Map();
+
+    // Get the total amount spent on each category based on transactions
+    updatedTransactions.forEach((transaction) => {
+      const categoryKey = transaction.categoryId.toString();
+
+      if (!categoryTotals.has(categoryKey)) {
+        categoryTotals.set(categoryKey, 0);
+      }
+
+      categoryTotals.set(
+        categoryKey,
+        categoryTotals.get(categoryKey) + dollarsToCents(transaction.amount),
+      );
+    });
+
+    // Assign the total amount to the correlating category's actual value
+    const updatedCategories = categories.map((category) => {
+      let categoryActual = 0;
+
+      // Parent categories with no subcategories
+      if (category.subcategories.length === 0) {
+        categoryActual = categoryTotals.get(category._id.toString()) || 0;
+
+        return {
+          ...category,
+          actual: centsToDollars(categoryActual),
+        };
+      }
+
+      // Parent categories with subcategories
+      const updatedSubcategories = category.subcategories.map((subcategory) => {
+        const subcategoryActual =
+          categoryTotals.get(subcategory._id.toString()) || 0;
+
+        categoryActual += subcategoryActual;
+
+        return {
+          ...subcategory,
+          actual: centsToDollars(subcategoryActual),
+        };
+      });
+
+      return {
+        ...category,
+        actual: centsToDollars(categoryActual),
+        subcategories: updatedSubcategories,
+      };
+    });
+
+    return updatedCategories;
   };
 
   return {
