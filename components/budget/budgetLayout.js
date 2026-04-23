@@ -1,9 +1,7 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TransactionsLayout from "./transactions/transactionsLayout";
-import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
 import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
@@ -67,17 +65,13 @@ const BudgetLayout = ({ dateInfo }) => {
 
   return (
     <BudgetProvider month={monthInfo.month} year={monthInfo.year}>
-      <CategoriesProvider dateInfo={monthInfo}>
-        <TransactionsProvider dateInfo={monthInfo}>
-          <BudgetMonthSwitcher
-            monthInfo={monthInfo}
-            setMonthInfo={setMonthInfo}
-            pageInfo={pageInfo}
-          >
-            <InnerBudgetLayout dateInfo={monthInfo} />
-          </BudgetMonthSwitcher>
-        </TransactionsProvider>
-      </CategoriesProvider>
+      <BudgetMonthSwitcher
+        monthInfo={monthInfo}
+        setMonthInfo={setMonthInfo}
+        pageInfo={pageInfo}
+      >
+        <InnerBudgetLayout dateInfo={monthInfo} />
+      </BudgetMonthSwitcher>
     </BudgetProvider>
   );
 };

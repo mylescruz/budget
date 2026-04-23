@@ -1,5 +1,4 @@
 import LoadingMessage from "@/components/ui/loadingMessage";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
 import { Button, Modal, Row } from "react-bootstrap";
 import centsToDollars from "@/helpers/centsToDollars";
