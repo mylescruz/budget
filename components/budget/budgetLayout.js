@@ -1,43 +1,29 @@
 import { useContext, useMemo, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import {
-  CategoriesContext,
-  CategoriesProvider,
-} from "@/contexts/CategoriesContext";
+import { CategoriesProvider } from "@/contexts/CategoriesContext";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TransactionsLayout from "./transactions/transactionsLayout";
-import {
-  TransactionsContext,
-  TransactionsProvider,
-} from "@/contexts/TransactionsContext";
+import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
 import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
+import { BudgetContext, BudgetProvider } from "@/contexts/BudgetContext";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
-  const { categories, categoriesRequest } = useContext(CategoriesContext);
-  const { transactionsRequest } = useContext(TransactionsContext);
+  const { categories, budgetRequest } = useContext(BudgetContext);
 
   const budgetStatus = useMemo(
     () => ({
       isInitialLoad:
-        (categoriesRequest.action === "get" &&
-          categoriesRequest.status === "loading") ||
-        (transactionsRequest.action === "get" &&
-          transactionsRequest.status === "loading"),
-      categorySuccess:
-        categoriesRequest.action !== "get" &&
-        categoriesRequest.status === "success",
-      transactionSuccess:
-        transactionsRequest.action !== "get" &&
-        transactionsRequest.status === "success",
-      categoryMessage: categoriesRequest.message,
-      transactionMessage: transactionsRequest.message,
+        budgetRequest.action === "get" && budgetRequest.status === "loading",
+      isSuccess:
+        budgetRequest.action !== "get" && budgetRequest.status === "success",
+      message: budgetRequest.message,
     }),
-    [categoriesRequest, transactionsRequest],
+    [budgetRequest],
   );
 
   if (budgetStatus.isInitialLoad) {
@@ -60,7 +46,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
                 <CategoryTableLayout dateInfo={dateInfo} />
               </>
             ) : (
-              <ErrorMessage message={categoriesRequest.message} />
+              <ErrorMessage message={budgetRequest.message} />
             )}
 
             <TransactionsLayout dateInfo={dateInfo} />
@@ -68,12 +54,8 @@ const InnerBudgetLayout = ({ dateInfo }) => {
         </Row>
 
         <SuccessMessage
-          show={budgetStatus.categorySuccess || budgetStatus.transactionSuccess}
-          message={
-            budgetStatus.categorySuccess
-              ? budgetStatus.categoryMessage
-              : transactionsRequest.message
-          }
+          show={budgetStatus.isSuccess}
+          message={budgetStatus.message}
         />
       </Container>
     );
@@ -90,17 +72,19 @@ const BudgetLayout = ({ dateInfo }) => {
   };
 
   return (
-    <CategoriesProvider dateInfo={monthInfo}>
-      <TransactionsProvider dateInfo={monthInfo}>
-        <BudgetMonthSwitcher
-          monthInfo={monthInfo}
-          setMonthInfo={setMonthInfo}
-          pageInfo={pageInfo}
-        >
-          <InnerBudgetLayout dateInfo={monthInfo} />
-        </BudgetMonthSwitcher>
-      </TransactionsProvider>
-    </CategoriesProvider>
+    <BudgetProvider month={monthInfo.month} year={monthInfo.year}>
+      <CategoriesProvider dateInfo={monthInfo}>
+        <TransactionsProvider dateInfo={monthInfo}>
+          <BudgetMonthSwitcher
+            monthInfo={monthInfo}
+            setMonthInfo={setMonthInfo}
+            pageInfo={pageInfo}
+          >
+            <InnerBudgetLayout dateInfo={monthInfo} />
+          </BudgetMonthSwitcher>
+        </TransactionsProvider>
+      </CategoriesProvider>
+    </BudgetProvider>
   );
 };
 
