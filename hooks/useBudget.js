@@ -60,6 +60,107 @@ const useBudget = (month, year) => {
     getBudget();
   }, [getBudget]);
 
+  // Derived memo objects created from categories
+
+  // Get the total budget, actual and remaining values for both fixed and variable categories
+  const categoryTotals = useMemo(() => {
+    if (!budget.categories) {
+      return null;
+    }
+
+    const totals = budget.categories.reduce(
+      (sum, category) => {
+        const categoryBudget = dollarsToCents(category.budget);
+        const categoryActual = dollarsToCents(category.actual);
+
+        if (category.fixed && category.subcategories.length > 0) {
+          category.subcategories.forEach((subcategory) => {
+            const subcategoryActual = dollarsToCents(subcategory.actual);
+            const subcategoryBudget = dollarsToCents(subcategory.budget);
+
+            sum.categoryBudget += subcategoryBudget;
+            sum.categoryActuals += subcategoryActual;
+            sum.fixedActual += subcategoryActual;
+            sum.fixedBudget += subcategoryBudget;
+          });
+        } else if (category.fixed && category.subcategories.length === 0) {
+          sum.categoryBudget += categoryBudget;
+          sum.fixedBudget += categoryBudget;
+
+          sum.categoryActuals += categoryActual;
+          sum.fixedActual += categoryActual;
+        } else {
+          sum.categoryBudget += categoryBudget;
+          sum.variableBudget += categoryBudget;
+          sum.categoryActuals += categoryActual;
+          sum.variableActual += categoryActual;
+        }
+
+        return sum;
+      },
+      {
+        categoryBudget: 0,
+        categoryActuals: 0,
+        fixedBudget: 0,
+        fixedActual: 0,
+        variableBudget: 0,
+        variableActual: 0,
+      },
+    );
+
+    const variableRemaining = totals.variableBudget - totals.variableActual;
+
+    return {
+      budget: centsToDollars(totals.categoryBudget),
+      actual: centsToDollars(totals.categoryActuals),
+      fixedBudget: centsToDollars(totals.fixedBudget),
+      fixedActual: centsToDollars(totals.fixedActual),
+      variableBudget: centsToDollars(totals.variableBudget),
+      variableActual: centsToDollars(totals.variableActual),
+      variableRemaining: centsToDollars(variableRemaining),
+    };
+  }, [budget.categories]);
+
+  // Define all the category and subcategory's correlating colors
+  const categoryColors = useMemo(() => {
+    if (!budget.categories) {
+      return null;
+    }
+
+    const colors = {};
+
+    budget.categories.forEach((category) => {
+      if (category.subcategories.length === 0) {
+        colors[category.name] = category.color;
+      } else {
+        category.subcategories.forEach((subcategory) => {
+          colors[subcategory.name] = category.color;
+        });
+      }
+    });
+
+    return colors;
+  }, [budget.categories]);
+
+  // Create a set of the user's categories so a user cannot create a category with the same name
+  const categoryNames = useMemo(() => {
+    if (!budget.categories) {
+      return null;
+    }
+
+    const names = new Set();
+
+    budget.categories.forEach((category) => {
+      names.add(category.name);
+
+      category.subcategories.forEach((subcategory) => {
+        names.add(subcategory.name);
+      });
+    });
+
+    return names;
+  }, [budget.categories]);
+
   // Transaction mutation methods
 
   const postTransactions = async (newTransactions) => {
@@ -427,6 +528,9 @@ const useBudget = (month, year) => {
     categories: budget.categories,
     transactions: budget.transactions,
     budgetRequest,
+    categoryTotals,
+    categoryColors,
+    categoryNames,
     postTransactions,
     putTransaction,
     deleteTransaction,
