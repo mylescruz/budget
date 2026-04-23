@@ -1,3 +1,4 @@
+import { MONTHS } from "@/lib/constants/date";
 import { useCallback, useEffect, useState } from "react";
 
 const useBudget = (month, year) => {
@@ -8,7 +9,7 @@ const useBudget = (month, year) => {
   const [budgetRequest, setBudgetRequest] = useState({
     action: "get", // get
     status: "loading", // loading | success | error
-    message: `Loading your budget for ${month}/${year}`,
+    message: `Loading your budget for ${MONTHS[month]}/${year}`,
   });
 
   // Fetch a user's categories and transactions for the current month
@@ -16,7 +17,7 @@ const useBudget = (month, year) => {
     setBudgetRequest({
       action: "get",
       status: "loading",
-      message: `Loading your budget for ${month}/${year}`,
+      message: `Loading your budget for ${MONTHS[month]}/${year}`,
     });
 
     try {
