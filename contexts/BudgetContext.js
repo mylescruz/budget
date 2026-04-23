@@ -6,7 +6,7 @@ import { createContext } from "react";
 export const BudgetContext = createContext({});
 
 export const BudgetProvider = ({ children, dateInfo }) => {
-  const { categories, transactions, budgetMeta } = useBudget(
+  const { categories, transactions, budgetRequest } = useBudget(
     dateInfo.month,
     dateInfo.year,
   );
@@ -16,7 +16,7 @@ export const BudgetProvider = ({ children, dateInfo }) => {
       value={{
         categories,
         transactions,
-        budgetMeta,
+        budgetRequest,
       }}
     >
       {children}

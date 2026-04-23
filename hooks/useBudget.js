@@ -5,7 +5,7 @@ const useBudget = (month, year) => {
     categories: null,
     transactions: null,
   });
-  const [budgetMeta, setBudgetMeta] = useState({
+  const [budgetRequest, setBudgetRequest] = useState({
     action: "get", // get
     status: "loading", // loading | success | error
     message: `Loading your budget for ${month}/${year}`,
@@ -13,7 +13,7 @@ const useBudget = (month, year) => {
 
   // Fetch a user's categories and transactions for the current month
   const getBudget = useCallback(async () => {
-    setBudgetMeta({
+    setBudgetRequest({
       action: "get",
       status: "loading",
       message: `Loading your budget for ${month}/${year}`,
@@ -35,14 +35,14 @@ const useBudget = (month, year) => {
         transactions: fetchedBudget.transactions,
       });
 
-      setBudgetMeta({
+      setBudgetRequest({
         action: "get",
         status: "success",
         message: "Successfully loaded your budget",
       });
     } catch (error) {
       //   throw error;
-      setBudgetMeta({
+      setBudgetRequest({
         action: "get",
         status: "error",
         message: error.message,
@@ -57,7 +57,7 @@ const useBudget = (month, year) => {
   return {
     categories: budget.categories,
     transactions: budget.transactions,
-    budgetMeta,
+    budgetRequest,
   };
 };
 
