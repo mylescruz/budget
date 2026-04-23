@@ -1,6 +1,5 @@
 import { Button, Row } from "react-bootstrap";
 import { useContext, useMemo, useState } from "react";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
 import TransactionsCalendar from "./transactionsCalendar";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
@@ -8,12 +7,12 @@ import DataTableLayout from "@/components/ui/dataTableLayout/dataTableLayout";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const TransactionsLayout = ({ dateInfo }) => {
-  const { categoriesRequest } = useContext(CategoriesContext);
-  const { transactionsRequest, transactions } = useContext(TransactionsContext);
+  const { transactions, budgetRequest } = useContext(BudgetContext);
+
   const [view, setView] = useState({
     display: "Table",
     text: "View Calendar",
@@ -91,7 +90,7 @@ const TransactionsLayout = ({ dateInfo }) => {
   if (!transactions) {
     return (
       <Row className="mt-4 text-center">
-        <ErrorMessage message={transactionsRequest.message} />
+        <ErrorMessage message={budgetRequest.message} />
       </Row>
     );
   } else {
@@ -102,7 +101,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             variant="secondary"
             onClick={toggleTransactions}
             className="text-nowrap"
-            disabled={categoriesRequest.status === "error"}
+            disabled={budgetRequest.status === "error"}
           >
             {view.text}
           </Button>
@@ -110,7 +109,7 @@ const TransactionsLayout = ({ dateInfo }) => {
             variant="primary"
             onClick={openAddTransaction}
             className="text-nowrap"
-            disabled={categoriesRequest.status === "error"}
+            disabled={budgetRequest.status === "error"}
           >
             Add Transactions
           </Button>

@@ -1,15 +1,15 @@
-import { TransactionsContext } from "@/contexts/TransactionsContext";
 import { useContext, useMemo } from "react";
 import { Table } from "react-bootstrap";
 import styles from "@/styles/budget/transactions/transactionsCalendar.module.css";
 import todayInfo from "@/helpers/todayInfo";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const WEEK_LENGTH = 7;
 
 const TransactionsCalendar = ({ dateInfo, setChosenTransaction, setModal }) => {
-  const { transactions } = useContext(TransactionsContext);
+  const { transactions } = useContext(BudgetContext);
 
   const openTransactionDetails = (transaction) => {
     if (["Category", "Subcategory", "Transfer"].includes(transaction.type)) {
