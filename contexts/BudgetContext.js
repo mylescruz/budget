@@ -13,6 +13,9 @@ export const BudgetProvider = ({ children, dateInfo }) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
+    postCategory,
+    putCategory,
+    deleteCategory,
   } = useBudget(dateInfo.month, dateInfo.year);
 
   return (
@@ -24,6 +27,9 @@ export const BudgetProvider = ({ children, dateInfo }) => {
         postTransactions,
         putTransaction,
         deleteTransaction,
+        postCategory,
+        putCategory,
+        deleteCategory,
       }}
     >
       {children}

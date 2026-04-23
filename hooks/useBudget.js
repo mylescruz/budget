@@ -1,3 +1,5 @@
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import { FUN_MONEY } from "@/lib/constants/categories";
 import { MONTHS } from "@/lib/constants/date";
 import { useCallback, useEffect, useState } from "react";
 
@@ -219,6 +221,206 @@ const useBudget = (month, year) => {
     }
   };
 
+  // Categories mutation methods
+
+  const postCategory = async (newCategory) => {
+    setBudgetRequest({
+      action: "create",
+      status: "loading",
+      message: `Adding the new category: ${newCategory.name}`,
+    });
+
+    try {
+      const response = await fetch(`/api/categories/${year}/${month}`, {
+        method: "POST",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newCategory),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const addedCategory = await response.json();
+
+      // Add the new category to the categories state
+      setBudget((prev) => {
+        const updatedCategories = [...prev.categories, addedCategory]
+          .map((category) => {
+            // Update the Fun Money's budget based on the new category's budget
+            if (category.name === FUN_MONEY) {
+              return {
+                ...category,
+                budget: subtractDecimalValues(
+                  category.budget,
+                  addedCategory.budget,
+                ),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => Number(b.budget) - Number(a.budget));
+
+        return {
+          ...prev,
+          categories: updatedCategories,
+        };
+      });
+
+      setBudgetRequest({
+        action: "create",
+        status: "success",
+        message: `Successfully created the new category: ${newCategory.name}`,
+      });
+    } catch (error) {
+      setBudgetRequest({
+        action: "create",
+        status: "error",
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
+  const putCategory = async (editedCategory) => {
+    setBudgetRequest({
+      action: "update",
+      status: "loading",
+      message: `Updating the ${editedCategory.name} category`,
+    });
+
+    try {
+      const response = await fetch(`/api/category/${editedCategory._id}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedCategory),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const updatedCategory = await response.json();
+
+      // Replace the old category with the new category in the categories state
+      setBudget((prev) => {
+        const updatedCategories = prev.categories
+          .map((category) => {
+            if (category._id === updatedCategory._id) {
+              return updatedCategory;
+            } else if (category.name === FUN_MONEY) {
+              // Update the Fun Money's budget based on the edited category's new and old budget
+              const updateAmount = subtractDecimalValues(
+                updatedCategory.budget,
+                editedCategory.currentBudget,
+              );
+
+              return {
+                ...category,
+                budget: subtractDecimalValues(category.budget, updateAmount),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => Number(b.budget) - Number(a.budget));
+
+        return {
+          ...prev,
+          categories: updatedCategories,
+        };
+      });
+
+      setBudgetRequest({
+        action: "update",
+        status: "success",
+        message: `Successfully updated the category: ${updatedCategory.name}`,
+      });
+    } catch (error) {
+      setBudgetRequest({
+        action: "update",
+        status: "error",
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
+  const deleteCategory = async (deletedCategory) => {
+    setBudgetRequest({
+      action: "delete",
+      status: "loading",
+      message: `Deleting the category: ${deletedCategory.name}`,
+    });
+
+    try {
+      const response = await fetch(`/api/category/${deletedCategory._id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deletedCategory),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      // Remove the deleted category from the categories state
+      setBudget((prev) => {
+        const updatedCategories = prev.categories
+          .filter((category) => category._id !== deletedCategory._id)
+          .map((category) => {
+            // Update the Fun Money's budget based on the new category's budget
+            if (category.name === FUN_MONEY) {
+              return {
+                ...category,
+                budget: addDecimalValues(
+                  category.budget,
+                  deletedCategory.budget,
+                ),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => Number(b.budget) - Number(a.budget));
+
+        return {
+          ...prev,
+          categories: updatedCategories,
+        };
+      });
+
+      setBudgetRequest({
+        action: "delete",
+        status: "success",
+        message: `Successfully deleted the category: ${deletedCategory.name}`,
+      });
+    } catch (error) {
+      setBudgetRequest({
+        action: "delete",
+        status: "error",
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
   return {
     categories: budget.categories,
     transactions: budget.transactions,
@@ -226,6 +428,9 @@ const useBudget = (month, year) => {
     postTransactions,
     putTransaction,
     deleteTransaction,
+    postCategory,
+    putCategory,
+    deleteCategory,
   };
 };
 
