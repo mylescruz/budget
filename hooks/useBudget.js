@@ -1,8 +1,5 @@
-import addDecimalValues from "@/helpers/addDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
-import subtractDecimalValues from "@/helpers/subtractDecimalValues";
-import { FUN_MONEY } from "@/lib/constants/categories";
 import { MONTHS } from "@/lib/constants/date";
 import { useCallback, useEffect, useState } from "react";
 
@@ -59,6 +56,46 @@ const useBudget = (month, year) => {
   useEffect(() => {
     getBudget();
   }, [getBudget]);
+
+  // Derived memo objects created from transcations
+  const transactionTotals = useMemo(() => {
+    if (!budget.transactions) {
+      return null;
+    }
+
+    const totals = budget.transactions.reduce(
+      (sum, transaction) => {
+        const amount = dollarsToCents(transaction.amount);
+
+        if (transaction.type === TRANSACTION_TYPES.INCOME) {
+          sum.income += amount;
+        } else if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+          sum.expenses += amount;
+        } else {
+          if (transaction.toAccount === TRANSFER_ACCOUNTS.CHECKING) {
+            sum.toChecking += amount;
+          } else {
+            sum.toSavings += amount;
+          }
+        }
+
+        return sum;
+      },
+      {
+        income: 0,
+        expenses: 0,
+        toChecking: 0,
+        toSavings: 0,
+      },
+    );
+
+    return {
+      income: centsToDollars(totals.income),
+      expenses: centsToDollars(totals.expenses),
+      checkingTransfers: centsToDollars(totals.toChecking),
+      savingsTransfers: centsToDollars(totals.toSavings),
+    };
+  }, [budget.transactions]);
 
   // Derived memo objects created from categories
 
@@ -528,6 +565,7 @@ const useBudget = (month, year) => {
     categories: budget.categories,
     transactions: budget.transactions,
     budgetRequest,
+    transactionTotals,
     categoryTotals,
     categoryColors,
     categoryNames,
