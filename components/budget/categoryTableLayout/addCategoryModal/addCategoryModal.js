@@ -9,7 +9,7 @@ import CategoryConfirmationPage from "@/components/category/categoryConfirmation
 import PreviousCategoryForm from "./previousCategoryForm";
 import { FIXED_FREQUENCIES } from "@/lib/constants/categories";
 import ErrorMessage from "@/components/ui/errorMessage";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
   const emptyCategory = {
@@ -23,9 +23,8 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     subcategories: [],
   };
 
-  const { categoriesRequest, postCategory, categoryNames } =
-    useContext(CategoriesContext);
-  const { updateTransactionsFromCategory } = useContext(TransactionsContext);
+  const { budgetRequest, postCategory, categoryNames } =
+    useContext(BudgetContext);
 
   const [newCategory, setNewCategory] = useState(emptyCategory);
   const [formMeta, setFormMeta] = useState({
@@ -140,11 +139,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
     setFormMeta({ status: "loading", error: null });
 
     try {
-      const addedFixedTransactions = await postCategory(newCategory);
-
-      if (addedFixedTransactions) {
-        updateTransactionsFromCategory(addedFixedTransactions);
-      }
+      await postCategory(newCategory);
 
       closeModal();
     } catch (error) {
@@ -261,7 +256,7 @@ const AddCategoryModal = ({ dateInfo, modal, setModal }) => {
         </>
       )}
       {formMeta.status === "loading" && (
-        <LoadingMessage message={categoriesRequest.message} />
+        <LoadingMessage message={budgetRequest.message} />
       )}
     </Modal>
   );

@@ -1,13 +1,11 @@
 import ErrorMessage from "@/components/ui/errorMessage";
 import LoadingMessage from "@/components/ui/loadingMessage";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
+import { BudgetContext } from "@/contexts/BudgetContext";
 import { useContext, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
-  const { categoriesRequest, deleteCategory } = useContext(CategoriesContext);
-  const { removeFixedCategoryTransactions } = useContext(TransactionsContext);
+  const { budgetRequest, deleteCategory } = useContext(BudgetContext);
 
   const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
@@ -20,21 +18,6 @@ const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
 
     try {
       await deleteCategory(editedCategory);
-
-      // If the category is fixed, delete the correlating fixed transactions from the transactions state array
-      if (editedCategory.fixed) {
-        const categoryIds = new Set();
-
-        if (editedCategory.subcategories.length > 0) {
-          editedCategory.subcategories.forEach((subcategory) => {
-            categoryIds.add(subcategory._id);
-          });
-        } else {
-          categoryIds.add(editedCategory._id);
-        }
-
-        removeFixedCategoryTransactions(categoryIds);
-      }
 
       setModal("none");
 
@@ -70,7 +53,7 @@ const ConfirmDeleteCategoryModal = ({ editedCategory, modal, setModal }) => {
         </>
       )}
       {formMeta.status === "loading" && (
-        <LoadingMessage message={categoriesRequest.message} />
+        <LoadingMessage message={budgetRequest.message} />
       )}
     </Modal>
   );

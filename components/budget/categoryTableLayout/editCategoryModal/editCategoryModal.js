@@ -1,16 +1,15 @@
 import LoadingMessage from "@/components/ui/loadingMessage";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import { useContext, useState } from "react";
 import { Form, Button, Modal, Col, Row, Table } from "react-bootstrap";
 import AddSubcategoryPage from "./addSubcategoryPage";
 import EditSubcategoryPage from "./editSubcategoryPage";
-import { TransactionsContext } from "@/contexts/TransactionsContext";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import dayFormatter from "@/helpers/dayFormatter";
 import PopUp from "@/components/ui/popUp";
 import { FIXED_FREQUENCIES_LIST } from "@/lib/constants/categories";
 import handleObjectInput from "@/helpers/handleObjectInput";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const EditCategoryModal = ({
   editedCategory,
@@ -19,9 +18,8 @@ const EditCategoryModal = ({
   modal,
   setModal,
 }) => {
-  const { categoriesRequest, putCategory, categoryNames } =
-    useContext(CategoriesContext);
-  const { updateTransactionsFromCategory } = useContext(TransactionsContext);
+  const { budgetRequest, putCategory, categoryNames } =
+    useContext(BudgetContext);
 
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
@@ -98,15 +96,11 @@ const EditCategoryModal = ({
     setFormMeta({ status: "loading", error: null });
 
     try {
-      const updatedTransactions = await putCategory({
+      await putCategory({
         ...editedCategory,
         month: dateInfo.month,
         year: dateInfo.year,
       });
-
-      if (updatedTransactions) {
-        updateTransactionsFromCategory(updatedTransactions);
-      }
 
       closeEditCategoryModal();
     } catch (error) {
@@ -380,7 +374,7 @@ const EditCategoryModal = ({
         </>
       )}
       {formMeta.status === "loading" && (
-        <LoadingMessage message={categoriesRequest.message} />
+        <LoadingMessage message={budgetRequest.message} />
       )}
     </Modal>
   );
