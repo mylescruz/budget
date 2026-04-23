@@ -2,6 +2,7 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -147,10 +148,41 @@ async function updateCategory(
               editedCategory.budget += dollarsToCents(subcategory.budget);
             }
 
-            await categoriesCol.insertOne(formattedSubcategory, {
-              session,
-              maxTimeMS: 5000,
-            });
+            // Insert the new subcategory
+            const insertedSubcategory = await categoriesCol.insertOne(
+              formattedSubcategory,
+              {
+                session,
+                maxTimeMS: 5000,
+              },
+            );
+
+            // Create a new fixed transaction for a fixed subcategory
+            if (formattedSubcategory.fixed) {
+              const subcategoryDate = new Date(
+                category.year,
+                category.month - 1,
+                formattedSubcategory.dueDate,
+              );
+
+              const newTransaction = {
+                username,
+                month: category.month,
+                year: category.year,
+                type: TRANSACTION_TYPES.EXPENSE,
+                date: subcategoryDate,
+                fixed: true,
+                store: formattedSubcategory.name,
+                items: `Fixed expense occuring ${formattedSubcategory.frequency.toLowerCase()}`,
+                categoryId: insertedSubcategory.insertedId,
+                parentCategoryId: categoryId,
+                amount: formattedSubcategory.budget,
+                createdTS: currentTS,
+                updatedTS: currentTS,
+              };
+
+              updatedTransactions.push(newTransaction);
+            }
           } else {
             const subcategoryQuery = {
               name: subcategory.name,
@@ -290,6 +322,21 @@ async function updateCategory(
       // Update the correlating fixed transactions in the database
       for (const transaction of updatedTransactions) {
         if (transaction.fixed) {
+          // Define the fields to be inserted if a subcategory was added to the database
+          const setOnInsert = {
+            username: transaction.username,
+            month: transaction.month,
+            year: transaction.year,
+            type: transaction.type,
+            fixed: true,
+            categoryId: transaction.categoryId,
+            createdTS: currentTS,
+          };
+
+          if (transaction.parentCategoryId) {
+            setOnInsert.parentCategoryId = transaction.parentCategoryId;
+          }
+
           await transactionsCol.updateOne(
             { _id: new ObjectId(transaction._id) },
             {
@@ -300,8 +347,9 @@ async function updateCategory(
                 amount: transaction.amount,
                 updatedTS: currentTS,
               },
+              $setOnInsert: setOnInsert,
             },
-            { session, maxTimeMS: 3000 },
+            { upsert: true, session, maxTimeMS: 3000 },
           );
         }
       }
