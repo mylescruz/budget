@@ -2,9 +2,9 @@ import PopUp from "@/components/ui/popUp";
 import { Button, Table } from "react-bootstrap";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { useContext } from "react";
-import { CategoriesContext } from "@/contexts/CategoriesContext";
 import FixedCategoryRow from "./fixedCategories/fixedCategoryRow";
 import ChangingCategoryRow from "./changingCategories/changingCategoryRow";
+import { BudgetContext } from "@/contexts/BudgetContext";
 
 const WARNING_PERCENTAGE = 10;
 
@@ -17,7 +17,7 @@ const leftColumn =
 const progressColumn = "d-none d-md-block col-md-4 col-lg-3";
 
 const CategoryTable = ({ dateInfo, setEditedCategory, setModal }) => {
-  const { categories, categoryTotals } = useContext(CategoriesContext);
+  const { categories, categoryTotals } = useContext(BudgetContext);
 
   // Define the text color of the amount values for the cards
   const variableSpendingPercentage = Math.round(
