@@ -2,16 +2,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
-import {
-  CategoriesContext,
-  CategoriesProvider,
-} from "@/contexts/CategoriesContext";
 import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
-import {
-  TransactionsContext,
-  TransactionsProvider,
-} from "@/contexts/TransactionsContext";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../ui/loadingIndicator";
 import dollarFormatter from "@/helpers/dollarFormatter";
@@ -19,14 +11,14 @@ import CategoryBadge from "../category/categoryBadge";
 import AddTransactionsModal from "../budget/transactions/addTransactionsModal/addTransactionsModal";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
+import { BudgetContext, BudgetProvider } from "@/contexts/BudgetContext";
 
 const InnerDashboard = ({ dateInfo }) => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { categories, categoriesRequest } = useContext(CategoriesContext);
-  const { transactionsRequest, transactionTotals } =
-    useContext(TransactionsContext);
+  const { categories, budgetRequest, transactionTotals } =
+    useContext(BudgetContext);
 
   const [modal, setModal] = useState("none");
 
@@ -59,13 +51,8 @@ const InnerDashboard = ({ dateInfo }) => {
     setModal("addTransaction");
   };
 
-  if (
-    (categoriesRequest.action === "get" &&
-      categoriesRequest.status === "loading") ||
-    (transactionsRequest.action === "get" &&
-      transactionsRequest.status === "loading")
-  ) {
-    return <LoadingIndicator message={"Loading your budget details"} />;
+  if (budgetRequest.action === "get" && budgetRequest.status === "loading") {
+    return <LoadingIndicator message={"Loading your budget dashboard"} />;
   } else {
     return (
       <Container>
@@ -107,7 +94,7 @@ const InnerDashboard = ({ dateInfo }) => {
                       </Col>
                     </>
                   ) : (
-                    <ErrorMessage message={categoriesRequest.message} />
+                    <ErrorMessage message={budgetRequest.message} />
                   )}
                   <Button
                     as={Link}
@@ -144,8 +131,8 @@ const InnerDashboard = ({ dateInfo }) => {
                   <Card.Body>
                     <h4>
                       {dateInfo.monthName} Income:{" "}
-                      {transactionsRequest.status === "error" ? (
-                        <ErrorMessage message={transactionsRequest.message} />
+                      {budgetRequest.status === "error" ? (
+                        <ErrorMessage message={budgetRequest.message} />
                       ) : (
                         <p>{dollarFormatter(transactionTotals.income)} </p>
                       )}
@@ -192,10 +179,10 @@ const InnerDashboard = ({ dateInfo }) => {
 
         <SuccessMessage
           show={
-            transactionsRequest.action === "create" &&
-            transactionsRequest.status === "success"
+            budgetRequest.action === "create" &&
+            budgetRequest.status === "success"
           }
-          message={transactionsRequest.message}
+          message={budgetRequest.message}
         />
       </Container>
     );
@@ -207,11 +194,9 @@ const Dashboard = () => {
   const dateInfo = getDateInfo(today);
 
   return (
-    <CategoriesProvider dateInfo={dateInfo}>
-      <TransactionsProvider dateInfo={dateInfo}>
-        <InnerDashboard dateInfo={dateInfo} />
-      </TransactionsProvider>
-    </CategoriesProvider>
+    <BudgetProvider month={dateInfo.month} year={dateInfo.year}>
+      <InnerDashboard dateInfo={dateInfo} />
+    </BudgetProvider>
   );
 };
 
