@@ -48,7 +48,6 @@ const useBudget = (month, year) => {
         message: "Successfully loaded your budget",
       });
     } catch (error) {
-      //   throw error;
       setBudgetRequest({
         action: "get",
         status: "error",

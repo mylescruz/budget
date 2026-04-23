@@ -15,18 +15,15 @@ import { BudgetContext, BudgetProvider } from "@/contexts/BudgetContext";
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { categories, budgetRequest } = useContext(BudgetContext);
 
-  const budgetStatus = useMemo(
-    () => ({
-      isInitialLoad:
-        budgetRequest.action === "get" && budgetRequest.status === "loading",
-      isSuccess:
-        budgetRequest.action !== "get" && budgetRequest.status === "success",
-      message: budgetRequest.message,
-    }),
-    [budgetRequest],
-  );
+  const budgetLoading =
+    budgetRequest.action === "get" && budgetRequest.status === "loading";
+  const budgetError =
+    budgetRequest.action === "get" && budgetRequest.status === "error";
+  const successAction =
+    budgetRequest.action !== "get" && budgetRequest.status === "success";
+  const budgetMessage = budgetRequest.message;
 
-  if (budgetStatus.isInitialLoad) {
+  if (budgetLoading) {
     return (
       <LoadingIndicator
         message={`Loading your budget for ${dateInfo.monthName} ${dateInfo.year}`}
@@ -35,28 +32,25 @@ const InnerBudgetLayout = ({ dateInfo }) => {
   } else {
     return (
       <Container>
-        <Row className="d-flex justify-content-center">
-          <Col className="col-12 col-xl-10">
-            <TotalsLayout />
+        {budgetError ? (
+          <ErrorMessage message={budgetMessage} />
+        ) : (
+          <>
+            <Row className="d-flex justify-content-center">
+              <Col className="col-12 col-xl-10">
+                <TotalsLayout />
 
-            {categories ? (
-              <>
                 <CategoryPieChart categories={categories} />
 
                 <CategoryTableLayout dateInfo={dateInfo} />
-              </>
-            ) : (
-              <ErrorMessage message={budgetRequest.message} />
-            )}
 
-            <TransactionsLayout dateInfo={dateInfo} />
-          </Col>
-        </Row>
+                <TransactionsLayout dateInfo={dateInfo} />
+              </Col>
+            </Row>
 
-        <SuccessMessage
-          show={budgetStatus.isSuccess}
-          message={budgetStatus.message}
-        />
+            <SuccessMessage show={successAction} message={budgetMessage} />
+          </>
+        )}
       </Container>
     );
   }
