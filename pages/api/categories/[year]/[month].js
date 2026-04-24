@@ -4,7 +4,6 @@ import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { FUN_MONEY } from "@/lib/constants/categories";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
-import ensureCategoriesExist from "@/lib/ensureCategoriesExist";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -52,9 +51,6 @@ async function getCategories(req, res, { client, categoriesCol, username }) {
     let categories;
 
     await mongoSession.withTransaction(async (session) => {
-      // Make sure a user's categories exist for the given month
-      await ensureCategoriesExist({ username, month, year, session });
-
       // Fetch and format the user's categories
       categories = await getCurrentCategories(
         username,

@@ -2,7 +2,6 @@
 
 import centsToDollars from "@/helpers/centsToDollars";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
-import ensureCategoriesExist from "@/lib/ensureCategoriesExist";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
