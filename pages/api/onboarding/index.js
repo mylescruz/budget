@@ -13,15 +13,15 @@ export default async function handler(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
 
-  const today = new Date();
+  const currentTS = new Date();
 
   const onboardingContext = {
     client: client,
     usersCol: db.collection("users"),
     categoriesCol: db.collection("categories"),
     transactionsCol: db.collection("transactions"),
-    month: today.getUTCMonth() + 1,
-    year: today.getFullYear(),
+    month: currentTS.getUTCMonth() + 1,
+    year: currentTS.getFullYear(),
   };
 
   switch (req.method) {
@@ -50,24 +50,26 @@ async function createAccount(
       newUser.income.forEach((src) => {
         const sourceInfo = { ...src };
 
-        const [sourceYear, sourceMonth, sourceDay] = sourceInfo.date
-          .split("-")
-          .map(Number);
+        const currentTS = new Date();
+
+        const sourceDate = new Date(sourceInfo.date);
 
         const formattedSource = {
           username: newUser.username,
-          month: sourceMonth,
-          year: sourceYear,
+          month,
+          year,
           type: TRANSACTION_TYPES.INCOME,
-          incomeType: src.incomeType,
-          date: src.date,
-          source: src.source.trim(),
-          description: src.description.trim(),
-          amount: dollarsToCents(src.amount),
+          incomeType: sourceInfo.incomeType,
+          date: sourceDate,
+          source: sourceInfo.source.trim(),
+          description: sourceInfo.description.trim(),
+          amount: dollarsToCents(sourceInfo.amount),
+          createdTS: currentTS,
+          updatedTS: currentTS,
         };
 
         if (formattedSource.incomeType === INCOME_TYPES.PAYCHECK) {
-          formattedSource.gross = dollarsToCents(src.gross);
+          formattedSource.gross = dollarsToCents(sourceInfo.gross);
           formattedSource.deductions =
             formattedSource.gross - formattedSource.amount;
         }
@@ -88,7 +90,7 @@ async function createAccount(
 
             const paycheckSource = {
               ...formattedSource,
-              date: dateIndex,
+              date: date,
               month: month,
             };
 
