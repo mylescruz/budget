@@ -3,6 +3,7 @@
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { FUN_MONEY } from "@/lib/constants/categories";
 import { INCOME_TYPES, PAYCHECK_FREQUENCIES } from "@/lib/constants/income";
+import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -57,6 +58,7 @@ async function createAccount(
           username: newUser.username,
           month: sourceMonth,
           year: sourceYear,
+          type: TRANSACTION_TYPES.INCOME,
           incomeType: src.incomeType,
           date: src.date,
           source: src.source.trim(),
@@ -143,6 +145,61 @@ async function createAccount(
           session,
         });
       }
+
+      // Fetch the user's new fixed categories and subcategories with a due date
+      const categories = await categoriesCol
+        .aggregate(
+          [
+            {
+              $match: {
+                username: newUser.username,
+                month,
+                year,
+                fixed: true,
+                dueDate: { $ne: null },
+              },
+            },
+          ],
+          { session, maxTimeMS: 5000 },
+        )
+        .toArray();
+
+      const fixedTransactions = [];
+
+      const currentTS = new Date();
+
+      // For each fixed category, create a correlating transaction
+      categories.forEach((category) => {
+        const date = new Date(year, month - 1, category.dueDate);
+
+        const newTransaction = {
+          username: newUser.username,
+          month,
+          year,
+          type: TRANSACTION_TYPES.EXPENSE,
+          date: date,
+          fixed: true,
+          store: category.name,
+          items: `Fixed expense occuring ${category.frequency.toLowerCase()}`,
+          categoryId: category._id,
+          amount: category.budget,
+          createdTS: currentTS,
+          updatedTS: currentTS,
+        };
+
+        // If the current category is a subcategory, add its parent's _id
+        if (category.parentCategoryId) {
+          newTransaction.parentCategoryId = category.parentCategoryId;
+        }
+
+        fixedTransactions.push(newTransaction);
+      });
+
+      // Insert the new user's fixed categories' correlating transactions
+      await transactionsCol.insertMany(fixedTransactions, {
+        session,
+        maxTimeMS: 5000,
+      });
 
       // Update the Fun Money category's budget based on the user's income
       await updateFunMoney({
