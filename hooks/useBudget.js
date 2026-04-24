@@ -1,5 +1,8 @@
+import addDecimalValues from "@/helpers/addDecimalValues";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarsToCents from "@/helpers/dollarsToCents";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
+import { FUN_MONEY } from "@/lib/constants/categories";
 import { MONTHS } from "@/lib/constants/date";
 import {
   TRANSACTION_TYPES,
@@ -407,15 +410,54 @@ const useBudget = (month, year) => {
         throw new Error(message);
       }
 
-      const addedCategory = await response.json();
+      const result = await response.json();
+
+      const { fixedTransactions, ...addedCategory } = result;
+
+      setBudget((prev) => {
+        // Add the new category to the categories array
+        const updatedCategories = [...prev.categories, addedCategory]
+          .map((category) => {
+            // Update the month's Fun Money budget
+            if (category.name === FUN_MONEY) {
+              return {
+                ...category,
+                budget: subtractDecimalValues(
+                  category.budget,
+                  addedCategory.budget,
+                ),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => Number(b.budget) - Number(a.budget));
+
+        // For an added variable category, only update the state of the categories array
+        if (!addedCategory.fixed) {
+          return {
+            ...prev,
+            categories: updatedCategories,
+          };
+        }
+
+        // For an added fixed category, return the updated categories array and the added fixed transactions
+        const updatedTransactions = [
+          ...prev.transactions,
+          ...fixedTransactions,
+        ].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        return {
+          categories: updatedCategories,
+          transactions: updatedTransactions,
+        };
+      });
 
       setBudgetRequest({
         action: "create",
         status: "success",
         message: `Successfully created the new category: ${newCategory.name}`,
       });
-
-      await getBudget();
     } catch (error) {
       setBudgetRequest({
         action: "create",
@@ -449,15 +491,73 @@ const useBudget = (month, year) => {
         throw new Error(message);
       }
 
-      const updatedCategory = await response.json();
+      const result = await response.json();
+
+      const { updatedTransactions, ...updatedCategory } = result;
+
+      setBudget((prev) => {
+        const updatedCategories = prev.categories
+          .map((category) => {
+            if (category._id === updatedCategory._id) {
+              // Replace the old category with the updated category
+              return updatedCategory;
+            } else if (category.name === FUN_MONEY) {
+              // Update the month's Fun Money budget
+              const changedBudget = subtractDecimalValues(
+                updatedCategory.budget,
+                editedCategory.currentBudget,
+              );
+
+              return {
+                ...category,
+                budget: subtractDecimalValues(category.budget, changedBudget),
+              };
+            } else {
+              return category;
+            }
+          })
+          .sort((a, b) => Number(b.budget) - Number(a.budget));
+
+        // For an updated variable category, only update the state of the categories array
+        if (!updatedTransactions) {
+          return {
+            ...prev,
+            categories: updatedCategories,
+          };
+        }
+
+        // Create a map of the current transactions based on the transaction id
+        const transactionsMap = new Map(
+          prev.transactions.map((transaction) => [
+            transaction._id,
+            transaction,
+          ]),
+        );
+
+        // Set the new transactions in the map or replace the current transaction with the updated one
+        updatedTransactions.forEach((transaction) => {
+          if (transaction.deleted) {
+            transactionsMap.delete(transaction._id);
+          } else {
+            transactionsMap.set(transaction._id, transaction);
+          }
+        });
+
+        const formattedTransactions = [...transactionsMap.values()].sort(
+          (a, b) => new Date(a.date) - new Date(b.date),
+        );
+
+        return {
+          categories: updatedCategories,
+          transactions: formattedTransactions,
+        };
+      });
 
       setBudgetRequest({
         action: "update",
         status: "success",
         message: `Successfully updated the category: ${updatedCategory.name}`,
       });
-
-      await getBudget();
     } catch (error) {
       setBudgetRequest({
         action: "update",
@@ -491,13 +591,55 @@ const useBudget = (month, year) => {
         throw new Error(message);
       }
 
+      setBudget((prev) => {
+        // Remove the deleted category from the categories array
+        const updatedCategories = prev.categories
+          .filter((category) => category._id !== deletedCategory._id)
+          .map((category) => {
+            // Update the month's Fun Money budget
+            if (category.name === FUN_MONEY) {
+              return {
+                ...category,
+                budget: addDecimalValues(
+                  category.budget,
+                  deletedCategory.budget,
+                ),
+              };
+            } else {
+              return category;
+            }
+          });
+
+        // For a deleted variable category, only update the state of the categories array
+        if (!deletedCategory.fixed) {
+          return {
+            ...prev,
+            categories: updatedCategories,
+          };
+        }
+
+        // Delete the fixed parent category or fixed subcategories' correlating transactions
+        const updatedTransactions = prev.transactions.filter((transaction) => {
+          if (transaction.categoryId === deletedCategory._id) {
+            return false;
+          } else if (transaction.parentCategoryId === deletedCategory._id) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+
+        return {
+          categories: updatedCategories,
+          transactions: updatedTransactions,
+        };
+      });
+
       setBudgetRequest({
         action: "delete",
         status: "success",
         message: `Successfully deleted the category: ${deletedCategory.name}`,
       });
-
-      await getBudget();
     } catch (error) {
       setBudgetRequest({
         action: "delete",

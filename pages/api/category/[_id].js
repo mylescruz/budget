@@ -127,6 +127,20 @@ async function updateCategory(
               { _id: new ObjectId(subcategory._id) },
               { session, maxTimeMS: 5000 },
             );
+
+            if (editedCategory.fixed) {
+              // Delete the correlating fixed subcategory's transaction
+              const subcategoryTransaction =
+                await transactionsCol.findOneAndDelete(
+                  { categoryId: new ObjectId(subcategory._id) },
+                  { session, maxTimeMS: 5000 },
+                );
+
+              updatedTransactions.push({
+                _id: subcategoryTransaction._id,
+                deleted: true,
+              });
+            }
           } else if (subcategory.added) {
             // Add the new subcategory to the budget
             const formattedSubcategory = {
@@ -461,13 +475,9 @@ async function updateCategory(
       : centsToDollars(editedCategory.budget);
     updatedCategory.actual = centsToDollars(categoryActual);
 
-    const updatedCategoryObject = {
-      updatedCategory,
-    };
-
     // Format the updated transactions back to the client
     if (updatedTransactions.length > 0) {
-      updatedCategoryObject.updatedTransactions = updatedTransactions.map(
+      updatedCategory.updatedTransactions = updatedTransactions.map(
         (transaction) => {
           const formattedTransaction = {
             ...transaction,
@@ -484,7 +494,7 @@ async function updateCategory(
       );
     }
 
-    return res.status(200).json(updatedCategoryObject);
+    return res.status(200).json(updatedCategory);
   } catch (error) {
     await logError({ error, req, username });
 

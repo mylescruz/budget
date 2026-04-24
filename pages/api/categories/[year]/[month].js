@@ -308,26 +308,22 @@ async function addCategory(
       addedCategory.dueDate = formattedCategory.dueDate;
     }
 
-    // Have the return object return the added category as well as any fixed transactions
-    const addedCategoryObject = {
-      addedCategory,
-    };
-
     // Format the fixed transactions to return back to the client
     if (fixedTransactions.length > 0) {
-      addedCategoryObject.fixedTransactions = fixedTransactions.map(
+      addedCategory.fixedTransactions = fixedTransactions.map(
         (transaction, index) => {
           return {
             ...transaction,
             _id: insertedTransactions.insertedIds[index],
             amount: centsToDollars(transaction.amount),
             category: transaction.store,
+            color: addedCategory.color,
           };
         },
       );
     }
 
-    return res.status(200).json(addedCategoryObject);
+    return res.status(200).json(addedCategory);
   } catch (error) {
     await logError({ error, req, username });
 
