@@ -8,7 +8,7 @@ const CategoryBadge = ({ name, color }) => {
   const smName = name.length > 20 ? name.slice(0, 17) + "..." : name;
   const mdName = name.length > 16 ? name.slice(0, 13) + "..." : name;
   const lgName = name.length > 18 ? name.slice(0, 15) + "..." : name;
-  const xlName = name.length > 15 ? name.slice(0, 12) + "..." : name;
+  const xlName = name.length > 25 ? name.slice(0, 22) + "..." : name;
 
   return (
     <span style={badgeStyle} className="badge fw-bold fs-6 text-white">

@@ -1,31 +1,20 @@
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
+import { Card, Col, Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../../categoriesCharts/categoryPieChart";
-import styles from "@/styles/home/dashboard.module.css";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../../ui/loadingIndicator";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../../category/categoryBadge";
-import ErrorMessage from "../../ui/errorMessage";
 import useDashboard from "@/hooks/useDashboard";
 import { useMemo } from "react";
-import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 import DashboardSummary from "./dashboardSummary";
-import addDecimalValues from "@/helpers/addDecimalValues";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 
 const DashboardLayout = () => {
-  // Using NextAuth.js to authenticate a user's session
-  const { data: session } = useSession();
-
   const { dashboard, dashboardRequest } = useDashboard();
 
   const today = new Date();
   const dateInfo = getDateInfo(today);
-
-  console.log(dashboard);
 
   const top5Categories = useMemo(() => {
     if (!dashboard) {
@@ -68,7 +57,6 @@ const DashboardLayout = () => {
     const spendingTrendColor =
       spendingTrend <= 0 ? "text-success" : "text-danger";
 
-    console.log(previous.income, current.income);
     return {
       current: {
         ...current,
@@ -108,35 +96,39 @@ const DashboardLayout = () => {
         {/* Insights */}
         <Row className="mb-4">
           <Col md={4}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100">
+            <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
               <Card.Body>
-                <h6 className="text-muted">Income Trend</h6>
+                <h6 className="text-muted">{dateInfo.monthName} Income</h6>
                 <h4 className="fw-bold">
                   {dollarFormatter(totals.current.income)}
                 </h4>
                 <p className={`mb-0 ${totals.trends.incomeColor}`}>
-                  {totals.trends.income} vs last month
+                  {totals.trends.income} vs last month (
+                  {dollarFormatter(totals.previous.income)})
                 </p>
               </Card.Body>
             </Card>
           </Col>
           <Col md={4}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100">
+            <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
               <Card.Body>
-                <h6 className="text-muted">Spending Trend</h6>
+                <h6 className="text-muted">{dateInfo.monthName} Spending</h6>
                 <h4 className="fw-bold">
                   {dollarFormatter(totals.current.expenses)}
                 </h4>
                 <p className={`mb-0 ${totals.trends.expensesColor}`}>
-                  {totals.trends.expenses} vs last month
+                  {totals.trends.expenses} vs last month (
+                  {dollarFormatter(totals.previous.expenses)})
                 </p>
               </Card.Body>
             </Card>
           </Col>
           <Col md={4}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100">
+            <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
               <Card.Body>
-                <h6 className="text-muted">Top Category</h6>
+                <h6 className="text-muted">
+                  {dateInfo.monthName}'s Top Category
+                </h6>
                 <h4 className="fw-bold">{top5Categories[0].name}</h4>
                 <p className="mb-0">
                   {dollarFormatter(top5Categories[0].actual)} (
@@ -153,14 +145,16 @@ const DashboardLayout = () => {
         {/* Activity */}
         <Row>
           <Col md={6}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100">
+            <Card className="bg-light shadow-sm border-0 rounded-4 h-100 mb-2">
               <Card.Body>
-                <h6 className="text-muted mb-3">Top Spending Categories</h6>
+                <h6 className="text-muted mb-3">
+                  {dateInfo.monthName}'s Top Spending Categories
+                </h6>
 
                 {dashboard.categories.slice(0, 10).map((category, index) => (
                   <div
                     key={category._id}
-                    className="d-flex justify-content-between my-2"
+                    className="d-flex justify-content-between my-4"
                   >
                     <CategoryBadge
                       name={category.name}
@@ -173,9 +167,11 @@ const DashboardLayout = () => {
             </Card>
           </Col>
           <Col md={6}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100">
+            <Card className="bg-light shadow-sm border-0 rounded-4 h-100 mb-2">
               <Card.Body>
-                <h6 className="text-muted mb-3">Spending Breakdown</h6>
+                <h6 className="text-muted mb-3">
+                  {dateInfo.monthName}'s Spending Breakdown
+                </h6>
                 <CategoryPieChart categories={dashboard.categories} />
               </Card.Body>
             </Card>

@@ -22,7 +22,7 @@ const DashboardSummary = ({ dateInfo, totals }) => {
   }
 
   return (
-    <Card className="bg-light shadow-sm border-0 rounded-4">
+    <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
       <Card.Body>
         <Row className="align-items-center">
           <Col md={8}>
