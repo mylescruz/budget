@@ -69,13 +69,7 @@ async function getYearSummary(
 
     const income = await getIncomeTotals(transactions);
 
-    const months = await getMonthsSummaries(
-      categoriesCol,
-      transactions,
-      username,
-      month,
-      year,
-    );
+    const months = await getMonthsSummaries(transactions, year);
 
     // Send the year summary back to the client
     return res.status(200).json({
@@ -182,8 +176,7 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
 
       parent.budget += category.budget;
 
-      const categoryActual = category.fixed ? category.budget : category.actual;
-      parent.actual += categoryActual;
+      parent.actual += category.actual;
 
       parent.totalMonths += 1;
 
@@ -213,12 +206,8 @@ async function getCategoriesSummary(categoriesCol, username, month, year) {
     // Increment the parent category and subcategory's actual field
     const subcategory = parent.subcategoriesMap.get(category.name);
 
-    const subcategoryActual = category.fixed
-      ? category.budget
-      : category.actual;
-
-    subcategory.actual += subcategoryActual;
-    parent.actual += subcategoryActual;
+    subcategory.actual += category.actual;
+    parent.actual += category.actual;
 
     subcategory.totalMonths += 1;
   });
@@ -335,102 +324,27 @@ async function getIncomeTotals(transactions) {
 }
 
 // Get total spending for each month
-async function getMonthsSummaries(
-  categoriesCol,
-  transactions,
-  username,
-  month,
-  year,
-) {
-  // Get the total fixed expenses for each month
-  const allFixedCategories = await categoriesCol
-    .aggregate(
-      [
-        { $match: { username, year, month: { $lte: month }, fixed: true } },
-        {
-          $project: {
-            _id: 1,
-            month: 1,
-            name: 1,
-            budget: 1,
-            actual: 1,
-            parentCategoryId: 1,
-          },
-        },
-      ],
-      { maxTimeMS: 5000 },
-    )
-    .toArray();
-
-  // Separate the parent and subcategories
-  const fixedParentCategoriesMap = new Map();
-  const fixedSubcategories = [];
-
-  allFixedCategories.forEach((category) => {
-    if (!category.parentCategoryId) {
-      fixedParentCategoriesMap.set(category._id.toString(), {
-        ...category,
-        originalActual: category.budget,
-        actual: 0,
-        subcategoriesCount: 0,
-      });
-    } else {
-      fixedSubcategories.push(category);
-    }
-  });
-
-  // Add each subcategory's actual value to the parent category's total
-  fixedSubcategories.forEach((subcategory) => {
-    const parent = fixedParentCategoriesMap.get(
-      subcategory.parentCategoryId.toString(),
-    );
-
-    parent.subcategoriesCount += 1;
-
-    parent.actual += subcategory.budget;
-  });
-
-  // Map through the categories to update the final actual total
-  const fixedCategoriesPerMonth = [...fixedParentCategoriesMap.values()].map(
-    (category) => {
-      const formattedCategory = {
-        number: category.month,
-        actual: category.actual,
-      };
-
-      if (category.subcategoriesCount === 0) {
-        formattedCategory.actual = category.originalActual;
-      }
-
-      return formattedCategory;
-    },
-  );
-
+async function getMonthsSummaries(transactions, year) {
   // Create a map to store each month's total income and expenses
   const monthsMap = new Map();
 
-  // Map the fixed expenses to each month of the year
-  fixedCategoriesPerMonth.forEach((month) => {
-    const foundMonth = monthsMap.get(month.number);
+  // Map each transaction's amount to the month based on its type: Expense, Transfer or Income
+  transactions.forEach((transaction) => {
+    const monthNum = transaction.month;
 
-    if (!foundMonth) {
-      monthsMap.set(month.number, {
-        number: month.number,
+    if (!monthsMap.has(monthNum)) {
+      monthsMap.set(monthNum, {
+        number: monthNum,
         income: 0,
         transfers: {
           in: 0,
           out: 0,
         },
-        actual: month.actual,
+        actual: 0,
       });
-    } else {
-      foundMonth.actual += month.actual;
     }
-  });
 
-  // Map each transaction's amount to the month based on its type: Expense, Transfer or Income
-  transactions.forEach((transaction) => {
-    const foundMonth = monthsMap.get(transaction.month);
+    const foundMonth = monthsMap.get(monthNum);
 
     // Format the amount
     const amount = dollarsToCents(transaction.amount);
