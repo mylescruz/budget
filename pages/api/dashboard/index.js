@@ -41,7 +41,7 @@ async function getDashboardInfo(
 
   // Object to return to the client
   const dashboard = {
-    top5Categories: null,
+    categories: null,
     monthExpenses: null,
     monthIncome: null,
   };
@@ -54,7 +54,7 @@ async function getDashboardInfo(
   try {
     await mongoSession.withTransaction(async (session) => {
       // Get the top 5 categories that a user has spent money on
-      dashboard.top5Categories = await categoriesCol
+      dashboard.categories = await categoriesCol
         .aggregate(
           [
             {
@@ -99,9 +99,6 @@ async function getDashboardInfo(
             {
               $sort: { actual: -1 },
             },
-            {
-              $limit: 5,
-            },
           ],
           { session, maxTimeMS: 5000 },
         )
@@ -141,11 +138,11 @@ async function getDashboardInfo(
 
       // Define the month's expenses and income to send back to the client
       totals.forEach((total) => {
-        if (total.name === TRANSACTION_TYPES.EXPENSE) {
+        if (total.type === TRANSACTION_TYPES.EXPENSE) {
           dashboard.monthExpenses = total.amount;
         }
 
-        if (total.name === TRANSACTION_TYPES.INCOME) {
+        if (total.type === TRANSACTION_TYPES.INCOME) {
           dashboard.monthIncome = total.amount;
         }
       });

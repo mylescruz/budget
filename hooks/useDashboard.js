@@ -10,7 +10,7 @@ const useDashboard = () => {
 
   useEffect(() => {
     getDashboardInfo();
-  });
+  }, []);
 
   const getDashboardInfo = async () => {
     setDashboardRequest({

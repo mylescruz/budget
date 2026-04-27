@@ -2,57 +2,53 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
-import { useContext, useMemo, useState } from "react";
 import styles from "@/styles/home/dashboard.module.css";
 import getDateInfo from "@/helpers/getDateInfo";
 import LoadingIndicator from "../ui/loadingIndicator";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import CategoryBadge from "../category/categoryBadge";
-import AddTransactionsModal from "../budget/transactions/addTransactionsModal/addTransactionsModal";
-import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
-import { BudgetContext, BudgetProvider } from "@/contexts/BudgetContext";
+import useDashboard from "@/hooks/useDashboard";
+import { useMemo } from "react";
+import subtractDecimalValues from "@/helpers/subtractDecimalValues";
 
-const InnerDashboard = ({ dateInfo }) => {
+const Dashboard = () => {
   // Using NextAuth.js to authenticate a user's session
   const { data: session } = useSession();
 
-  const { categories, budgetRequest, transactionTotals } =
-    useContext(BudgetContext);
+  const { dashboard, dashboardRequest } = useDashboard();
 
-  const [modal, setModal] = useState("none");
+  const today = new Date();
+  const dateInfo = getDateInfo(today);
 
-  // Get the top 5 categories to display on the dashboard
-  const topCategories = useMemo(() => {
-    if (!categories) {
+  const top5Categories = useMemo(() => {
+    if (!dashboard) {
       return null;
     }
 
-    return categories
-      .filter((category) => {
-        return category.actual > 0;
-      })
-      .map((category) => {
-        return {
-          ...category,
-          style: {
-            backgroundColor: category.color,
-            border: category.color,
-          },
-        };
-      })
-      .sort((categoryA, categoryB) => {
-        return categoryB.actual - categoryA.actual;
-      })
-      .slice(0, 5);
-  }, [categories]);
+    return dashboard.categories.slice(0, 5);
+  }, [dashboard]);
 
-  const openAddTransaction = () => {
-    setModal("addTransaction");
-  };
+  const totals = useMemo(() => {
+    if (!dashboard) {
+      return null;
+    }
 
-  if (budgetRequest.action === "get" && budgetRequest.status === "loading") {
-    return <LoadingIndicator message={"Loading your budget dashboard"} />;
+    return {
+      income: dashboard.monthIncome,
+      expenses: dashboard.monthExpenses,
+      remaining: subtractDecimalValues(
+        dashboard.monthIncome,
+        dashboard.monthExpenses,
+      ),
+    };
+  }, [dashboard]);
+
+  if (
+    dashboardRequest.action === "get" &&
+    dashboardRequest.status === "loading"
+  ) {
+    return <LoadingIndicator message={dashboardRequest.message} />;
   } else {
     return (
       <Container>
@@ -63,16 +59,16 @@ const InnerDashboard = ({ dateInfo }) => {
               <Card.Body>
                 <h3>{dateInfo.monthName} Spending</h3>
                 <Row className="mx-auto d-flex">
-                  {categories ? (
+                  {dashboard.categories ? (
                     <>
                       <Col className="col-12 col-lg-6">
-                        <CategoryPieChart categories={categories} />
+                        <CategoryPieChart categories={dashboard.categories} />
                       </Col>
                       <Col className="col-12 col-lg-6">
-                        <h5 className="text-center">Top Categories</h5>
+                        <h5 className="text-center">Top 5 Categories</h5>
                         <Table borderless>
                           <tbody>
-                            {topCategories.map((category) => (
+                            {top5Categories.map((category) => (
                               <tr key={category._id} className="d-flex">
                                 <td
                                   className={`col-7 ${styles.grayBackground}`}
@@ -94,14 +90,9 @@ const InnerDashboard = ({ dateInfo }) => {
                       </Col>
                     </>
                   ) : (
-                    <ErrorMessage message={budgetRequest.message} />
+                    <ErrorMessage message={dashboardRequest.message} />
                   )}
-                  <Button
-                    as={Link}
-                    href="/budget"
-                    disabled={!categories}
-                    variant="primary"
-                  >
+                  <Button as={Link} href="/budget" variant="primary">
                     View Full Budget
                   </Button>
                 </Row>
@@ -113,30 +104,46 @@ const InnerDashboard = ({ dateInfo }) => {
               <Col className="col-12">
                 <Card className="my-2 card-background">
                   <Card.Body>
-                    <h3>New Transaction</h3>
-                    <p>Add a transaction for the current month</p>
-                    <Button
-                      variant="primary"
-                      className="w-100"
-                      onClick={openAddTransaction}
-                      disabled={!categories}
-                    >
-                      Add Transaction
-                    </Button>
+                    <h4>{dateInfo.monthName} Totals</h4>
+                    <h5>
+                      Income:{" "}
+                      {totals.income ? (
+                        <span>{dollarFormatter(totals.income)}</span>
+                      ) : (
+                        <span className="text-danger fw-bold">N/A</span>
+                      )}
+                    </h5>
+                    <h5>
+                      Expenses:{" "}
+                      {totals.expenses ? (
+                        <span>{dollarFormatter(totals.expenses)}</span>
+                      ) : (
+                        <span className="text-danger fw-bold">N/A</span>
+                      )}
+                    </h5>
+                    <h5>
+                      Remaining:{" "}
+                      {totals.remaining ? (
+                        <span
+                          className={
+                            totals.remaining < 0
+                              ? "text-danger fw-bold"
+                              : "text-dark"
+                          }
+                        >
+                          {dollarFormatter(totals.remaining)}
+                        </span>
+                      ) : (
+                        <span className="text-danger fw-bold">N/A</span>
+                      )}
+                    </h5>
                   </Card.Body>
                 </Card>
               </Col>
               <Col className="col-12">
                 <Card className="my-2 card-background">
                   <Card.Body>
-                    <h4>
-                      {dateInfo.monthName} Income:{" "}
-                      {budgetRequest.status === "error" ? (
-                        <ErrorMessage message={budgetRequest.message} />
-                      ) : (
-                        <p>{dollarFormatter(transactionTotals.income)} </p>
-                      )}
-                    </h4>
+                    <h4>{dateInfo.year} Income</h4>
                     <p>View your sources of income</p>
                     <Button
                       as={Link}
@@ -168,36 +175,9 @@ const InnerDashboard = ({ dateInfo }) => {
             </Row>
           </Col>
         </Row>
-
-        {categories && (
-          <AddTransactionsModal
-            dateInfo={dateInfo}
-            modal={modal}
-            setModal={setModal}
-          />
-        )}
-
-        <SuccessMessage
-          show={
-            budgetRequest.action === "create" &&
-            budgetRequest.status === "success"
-          }
-          message={budgetRequest.message}
-        />
       </Container>
     );
   }
-};
-
-const Dashboard = () => {
-  const today = new Date();
-  const dateInfo = getDateInfo(today);
-
-  return (
-    <BudgetProvider month={dateInfo.month} year={dateInfo.year}>
-      <InnerDashboard dateInfo={dateInfo} />
-    </BudgetProvider>
-  );
 };
 
 export default Dashboard;
