@@ -2,7 +2,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import clientPromise from "@/lib/mongodb";
 import { logError } from "@/lib/logError";
-import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import {
+  TRANSACTION_TYPES,
+  TRANSFER_ACCOUNTS,
+} from "@/lib/constants/transactions";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
@@ -39,12 +42,8 @@ async function getDashboardInfo(
 ) {
   const mongoSession = client.startSession();
 
-  // Object to return to the client
-  const dashboard = {
-    categories: null,
-    monthExpenses: null,
-    monthIncome: null,
-  };
+  let categories;
+  let totals;
 
   // Querying info
   const currentTS = new Date();
@@ -53,8 +52,8 @@ async function getDashboardInfo(
 
   try {
     await mongoSession.withTransaction(async (session) => {
-      // Get the top 5 categories that a user has spent money on
-      dashboard.categories = await categoriesCol
+      // Get the user's categories that for the month
+      categories = await categoriesCol
         .aggregate(
           [
             {
@@ -104,51 +103,99 @@ async function getDashboardInfo(
         )
         .toArray();
 
+      let previousMonth = month - 1;
+      let previousYear = year;
+
+      if (previousMonth === 0) {
+        previousMonth = 12;
+        previousYear -= 1;
+      }
+
       // Get the user's total income and expenses for the month
-      const totals = await transactionsCol
-        .aggregate(
-          [
-            {
-              $match: {
-                username,
-                month,
-                year,
-                type: {
-                  $in: [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.INCOME],
-                },
-              },
+      const monthTotals = await transactionsCol
+        .aggregate([
+          {
+            $match: {
+              username,
+              $or: [
+                { month, year },
+                { month: previousMonth, year: previousYear },
+              ],
             },
-            {
-              $group: {
-                _id: "$type",
-                amount: { $sum: "$amount" },
-              },
+          },
+          {
+            $group: {
+              _id: { month: "$month", type: "$type", toAccount: "$toAccount" },
+              amount: { $sum: "$amount" },
             },
-            {
-              $project: {
-                type: "$_id",
-                amount: { $divide: ["$amount", 100] },
-                _id: 0,
-              },
+          },
+          {
+            $project: {
+              _id: 0,
+              month: "$_id.month",
+              type: "$_id.type",
+              toAccount: "$_id.toAccount",
+              amount: { $divide: ["$amount", 100] },
             },
-          ],
-          { session, maxTimeMS: 5000 },
-        )
+          },
+        ])
         .toArray();
 
-      // Define the month's expenses and income to send back to the client
-      totals.forEach((total) => {
-        if (total.type === TRANSACTION_TYPES.EXPENSE) {
-          dashboard.monthExpenses = total.amount;
-        }
+      totals = {
+        current: {
+          number: month,
+          income: 0,
+          expenses: 0,
+          transfersIn: 0,
+          transfersOut: 0,
+        },
+        previous: {
+          number: previousMonth,
+          income: 0,
+          expenses: 0,
+          transfersIn: 0,
+          transfersOut: 0,
+        },
+      };
 
-        if (total.type === TRANSACTION_TYPES.INCOME) {
-          dashboard.monthIncome = total.amount;
+      // Define the month's expenses and income to send back to the client
+      monthTotals.forEach((total) => {
+        const amount = total.amount;
+
+        if (total.type === TRANSACTION_TYPES.EXPENSE) {
+          if (total.month === month) {
+            totals.current.expenses = amount;
+          } else {
+            totals.previous.expenses = amount;
+          }
+        } else if (total.type === TRANSACTION_TYPES.INCOME) {
+          if (total.month === month) {
+            totals.current.income = amount;
+          } else {
+            totals.previous.income = amount;
+          }
+        } else {
+          if (total.month === month) {
+            if (total.toAccount === TRANSFER_ACCOUNTS.CHECKING) {
+              totals.current.transfersIn = amount;
+            } else {
+              totals.current.transfersOut = amount;
+            }
+          } else {
+            if (total.toAccount === TRANSFER_ACCOUNTS.CHECKING) {
+              totals.previous.transfersIn = amount;
+            } else {
+              totals.previous.transfersOut = amount;
+            }
+          }
         }
       });
     });
 
-    return res.status(200).json(dashboard);
+    return res.status(200).json({
+      categories,
+      totals,
+    });
   } catch (error) {
     await logError({ error, req, username });
 
