@@ -1,17 +1,16 @@
 import { useContext, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import TransactionsLayout from "./transactions/transactionsLayout";
 import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
-import CategoryTableLayout from "./categoryTableLayout/categoryTableLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
 import { BudgetContext, BudgetProvider } from "@/contexts/BudgetContext";
+import CategoriesLayout from "./categoriesLayout/categoriesLayout";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
-  const { categories, budgetRequest } = useContext(BudgetContext);
+  const { budgetRequest } = useContext(BudgetContext);
 
   const budgetLoading =
     budgetRequest.action === "get" && budgetRequest.status === "loading";
@@ -38,9 +37,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
               <Col className="col-12 col-xl-10">
                 <TotalsLayout />
 
-                <CategoryPieChart categories={categories} />
-
-                <CategoryTableLayout dateInfo={dateInfo} />
+                <CategoriesLayout dateInfo={dateInfo} />
 
                 <TransactionsLayout dateInfo={dateInfo} />
               </Col>
