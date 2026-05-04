@@ -96,7 +96,7 @@ const CategoryCard = ({ category, onEdit }) => {
             )}
 
             {dueInfo.type === "next" && (
-              <>Next due: {dayFormatter(dueInfo.date)}</>
+              <>Next charge on the {dayFormatter(dueInfo.date)}</>
             )}
           </div>
         )}

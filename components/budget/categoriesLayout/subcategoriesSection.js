@@ -17,7 +17,7 @@ const SubcategoriesSection = ({ subcategory }) => {
           </span>
         )}
       </div>
-      <span>{dollarFormatter(subcategory.actual)}</span>
+      <span>{dollarFormatter(subcategory.budget)}</span>
     </div>
   );
 };
