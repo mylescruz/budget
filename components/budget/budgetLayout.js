@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import TransactionsLayout from "./transactions/transactionsLayout";
 import LoadingIndicator from "../ui/loadingIndicator";
 import TotalsLayout from "./totals/totalsLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
@@ -8,6 +7,7 @@ import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
 import { BudgetContext, BudgetProvider } from "@/contexts/BudgetContext";
 import CategoriesLayout from "./categoriesLayout/categoriesLayout";
+import TransactionsLayout from "./transactionsLayout/transactionsLayout";
 
 const InnerBudgetLayout = ({ dateInfo }) => {
   const { budgetRequest } = useContext(BudgetContext);
@@ -39,7 +39,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
 
                 <CategoriesLayout dateInfo={dateInfo} />
 
-                <TransactionsLayout dateInfo={dateInfo} />
+                <TransactionsLayout />
               </Col>
             </Row>
 
