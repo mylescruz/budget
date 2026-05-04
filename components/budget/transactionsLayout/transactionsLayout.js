@@ -2,13 +2,16 @@ import { BudgetContext } from "@/contexts/BudgetContext";
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import styles from "@/styles/budget/transactionsLayout/transactionsLayout.module.css";
+import TransactionsPagination from "./transactionsPagination";
+
+const TRANSACTIONS_PER_PAGE = 20;
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(BudgetContext);
@@ -16,14 +19,24 @@ const TransactionsLayout = ({ dateInfo }) => {
   const [modal, setModal] = useState(null);
   const [chosenTransaction, setChosenTransaction] = useState(null);
   const [searchInput, setSearchInput] = useState("");
+  const [page, setPage] = useState(1);
+
+  // Reset the results if the type or search filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchInput]);
+
+  const expenseTransactions = transactions.filter(
+    (transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE,
+  );
 
   // Filters the array based on the searched input
   const searchedTransactions = useMemo(() => {
     if (searchInput === "") {
-      return transactions;
+      return expenseTransactions;
     }
 
-    return transactions.filter((transaction) => {
+    return expenseTransactions.filter((transaction) => {
       if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         return (
           transaction.store.toLowerCase().includes(searchInput.toLowerCase()) ||
@@ -35,7 +48,22 @@ const TransactionsLayout = ({ dateInfo }) => {
           .includes(searchInput.toLowerCase());
       }
     });
-  }, [searchInput, transactions]);
+  }, [searchInput, expenseTransactions]);
+
+  // Paginate the transactions sorted by date
+  const displayedTransactions = useMemo(() => {
+    return searchedTransactions
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(
+        page * TRANSACTIONS_PER_PAGE - TRANSACTIONS_PER_PAGE,
+        page * TRANSACTIONS_PER_PAGE,
+      );
+  }, [searchedTransactions, page]);
+
+  // Get the total pages for the array after the search and filter options to display for pagination
+  const totalPages = Math.ceil(
+    searchedTransactions.length / TRANSACTIONS_PER_PAGE,
+  );
 
   const openDetailsModal = (transaction) => {
     setChosenTransaction({
@@ -89,11 +117,12 @@ const TransactionsLayout = ({ dateInfo }) => {
           </Row>
 
           <div className="d-flex flex-column w-100">
-            {searchedTransactions
-              .filter(
-                (transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE,
-              )
-              .map((transaction) => (
+            {displayedTransactions.length === 0 ? (
+              <div className="py-4 text-center text-muted small">
+                There are no results that match these filters
+              </div>
+            ) : (
+              displayedTransactions.map((transaction) => (
                 <Row
                   key={transaction._id}
                   className={`d-flex flex-row py-1 my-1 ${styles.transactionRow}`}
@@ -141,8 +170,16 @@ const TransactionsLayout = ({ dateInfo }) => {
                     </div>
                   </Col>
                 </Row>
-              ))}
+              ))
+            )}
           </div>
+          {displayedTransactions.length !== 0 && (
+            <TransactionsPagination
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
+          )}
         </Card.Body>
       </Card>
 
