@@ -655,6 +655,8 @@ const useBudget = (month, year) => {
   const computeCategories = (categories, updatedTransactions) => {
     const categoryTotals = new Map();
 
+    const currentTS = new Date();
+
     // Get the total amount spent on each category based on transactions
     updatedTransactions.forEach((transaction) => {
       if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
@@ -664,10 +666,19 @@ const useBudget = (month, year) => {
           categoryTotals.set(categoryKey, 0);
         }
 
-        categoryTotals.set(
-          categoryKey,
-          categoryTotals.get(categoryKey) + dollarsToCents(transaction.amount),
-        );
+        const transactionDate = new Date(transaction.date);
+
+        // Only calculate fixed transactions to the transaction total if their charge date passed
+        if (
+          !transaction.fixed ||
+          (transaction.fixed && transactionDate <= currentTS)
+        ) {
+          categoryTotals.set(
+            categoryKey,
+            categoryTotals.get(categoryKey) +
+              dollarsToCents(transaction.amount),
+          );
+        }
       }
     });
 
