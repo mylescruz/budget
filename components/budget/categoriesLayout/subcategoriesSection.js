@@ -4,6 +4,9 @@ import getDueDateDisplay from "@/helpers/getDueDateDisplay";
 
 const SubcategoriesSection = ({ subcategory }) => {
   const dueInfo = getDueDateDisplay(subcategory);
+
+  const amount = subcategory.fixed ? subcategory.budget : subcategory.actual;
+
   return (
     <div
       key={subcategory._id}
@@ -17,7 +20,7 @@ const SubcategoriesSection = ({ subcategory }) => {
           </span>
         )}
       </div>
-      <span>{dollarFormatter(subcategory.budget)}</span>
+      <span>{dollarFormatter(amount)}</span>
     </div>
   );
 };
