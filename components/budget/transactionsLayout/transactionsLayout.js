@@ -2,8 +2,8 @@ import { BudgetContext } from "@/contexts/BudgetContext";
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
-import { useContext, useState } from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { useContext, useMemo, useState } from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
@@ -14,6 +14,27 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   const [modal, setModal] = useState(null);
   const [chosenTransaction, setChosenTransaction] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
+
+  // Filters the array based on the searched input
+  const searchedTransactions = useMemo(() => {
+    if (searchInput === "") {
+      return transactions;
+    }
+
+    return transactions.filter((transaction) => {
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+        return (
+          transaction.store.toLowerCase().includes(searchInput.toLowerCase()) ||
+          transaction.items.toLowerCase().includes(searchInput.toLowerCase())
+        );
+      } else {
+        return transaction.description
+          .toLowerCase()
+          .includes(searchInput.toLowerCase());
+      }
+    });
+  }, [searchInput, transactions]);
 
   const openDetailsModal = (transaction) => {
     setChosenTransaction({
@@ -25,6 +46,10 @@ const TransactionsLayout = ({ dateInfo }) => {
     setModal("DETAILS");
   };
 
+  const handleSearch = (e) => {
+    setSearchInput(e.target.value);
+  };
+
   return (
     <>
       <Card className="shadow-sm border-0">
@@ -34,6 +59,17 @@ const TransactionsLayout = ({ dateInfo }) => {
             <Button size="sm" onClick={() => setModal("ADD")}>
               + Add
             </Button>
+          </div>
+
+          <div className="mb-2">
+            <Form.Group controlId="searchInput">
+              <Form.Control
+                type="text"
+                value={searchInput}
+                placeholder="Search for a transaction"
+                onChange={handleSearch}
+              />
+            </Form.Group>
           </div>
 
           <Row className="d-flex flex-row text-muted small">
@@ -52,7 +88,7 @@ const TransactionsLayout = ({ dateInfo }) => {
           </Row>
 
           <div className="d-flex flex-column w-100">
-            {transactions
+            {searchedTransactions
               .filter(
                 (transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE,
               )
