@@ -1,22 +1,18 @@
 import { BudgetContext } from "@/contexts/BudgetContext";
 import { useContext, useState } from "react";
 import CategorySection from "./categorySection";
-import AddCategoryModal from "../categoryTableLayout/addCategoryModal/addCategoryModal";
-import EditCategoryModal from "../categoryTableLayout/editCategoryModal/editCategoryModal";
-import ConfirmDeleteCategoryModal from "../categoryTableLayout/editCategoryModal/confirmDeleteCategoryModal";
 import { Button } from "react-bootstrap";
 import CategoryPieChart from "@/components/categoriesCharts/categoryPieChart";
+import AddCategoryModal from "./addCategoryModal/addCategoryModal";
+import EditCategoryModal from "./editCategoryModal/editCategoryModal";
+import ConfirmDeleteCategoryModal from "./editCategoryModal/confirmDeleteCategoryModal";
 
 const CategoriesLayout = ({ dateInfo }) => {
   const { categories } = useContext(BudgetContext);
 
-  const [modal, setModal] = useState("none");
+  const [modal, setModal] = useState(null);
   const [editedCategory, setEditedCategory] = useState({});
   const [showPie, setShowPie] = useState(false);
-
-  const openAddModal = () => {
-    setModal("add");
-  };
 
   const onEdit = (category) => {
     setEditedCategory({
@@ -25,7 +21,7 @@ const CategoriesLayout = ({ dateInfo }) => {
       currentBudget: category.budget,
     });
 
-    setModal("edit");
+    setModal("EDIT");
   };
 
   const togglePie = () => {
@@ -47,7 +43,7 @@ const CategoriesLayout = ({ dateInfo }) => {
             onClick={togglePie}
           />
         </h5>
-        <Button size="sm" onClick={openAddModal}>
+        <Button size="sm" onClick={() => setModal("ADD")}>
           Add Category
         </Button>
       </div>
@@ -63,7 +59,7 @@ const CategoriesLayout = ({ dateInfo }) => {
         onEdit={onEdit}
       />
 
-      {modal === "add" && (
+      {modal === "ADD" && (
         <AddCategoryModal
           dateInfo={dateInfo}
           modal={modal}
@@ -71,7 +67,7 @@ const CategoriesLayout = ({ dateInfo }) => {
         />
       )}
 
-      {modal === "edit" && (
+      {modal === "EDIT" && (
         <EditCategoryModal
           editedCategory={editedCategory}
           setEditedCategory={setEditedCategory}
@@ -81,7 +77,7 @@ const CategoriesLayout = ({ dateInfo }) => {
         />
       )}
 
-      {modal === "delete" && (
+      {modal === "DELETE" && (
         <ConfirmDeleteCategoryModal
           editedCategory={editedCategory}
           modal={modal}
