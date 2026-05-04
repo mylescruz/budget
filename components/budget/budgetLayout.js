@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import LoadingIndicator from "../ui/loadingIndicator";
-import TotalsLayout from "./totals/totalsLayout";
+import TotalsLayout from "./totalsLayout/totalsLayout";
 import BudgetMonthSwitcher from "../ui/budgetMonthSwitcher";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
