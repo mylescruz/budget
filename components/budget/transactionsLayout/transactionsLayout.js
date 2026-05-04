@@ -8,6 +8,7 @@ import TransactionDetailsModal from "./transactionDetailsModal/transactionDetail
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
+import styles from "@/styles/budget/transactionsLayout/transactionsLayout.module.css";
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(BudgetContext);
@@ -95,7 +96,7 @@ const TransactionsLayout = ({ dateInfo }) => {
               .map((transaction) => (
                 <Row
                   key={transaction._id}
-                  className="d-flex flex-row my-2"
+                  className={`d-flex flex-row py-1 my-1 ${styles.transactionRow}`}
                   onClick={() => openDetailsModal(transaction)}
                 >
                   <Col xs={3} md={2} lg={1} className="px-2">
