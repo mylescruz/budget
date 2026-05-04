@@ -39,7 +39,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
 
                 <CategoriesLayout dateInfo={dateInfo} />
 
-                <TransactionsLayout />
+                <TransactionsLayout dateInfo={dateInfo} />
               </Col>
             </Row>
 
