@@ -210,7 +210,7 @@ const useBudget = (month, year) => {
     setBudgetRequest({
       action: "create",
       status: "loading",
-      message: `Adding your transaction${newTransactions.length > 1 && "s"} to your budget`,
+      message: `Adding your transaction${newTransactions.length > 1 ? "s" : ""} to your budget`,
     });
 
     try {
@@ -252,7 +252,7 @@ const useBudget = (month, year) => {
       setBudgetRequest({
         action: "create",
         status: "success",
-        message: `Successfully added your new transaction${newTransactions.length > 1 && "s"}`,
+        message: `Successfully added your new transaction${newTransactions.length > 1 ? "s" : ""}`,
       });
     } catch (error) {
       setBudgetRequest({
