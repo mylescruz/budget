@@ -183,30 +183,30 @@ async function addTransactions(
           );
 
           if (!transactionCategory) {
-            return res
-              .status(500)
-              .send(
-                `${newTransaction.category} is not a category in your budget.`,
-              );
+            throw new Error(
+              `${newTransaction.category} is not a category in your budget.`,
+            );
           }
 
           // Update the transaction with the proper categoryId and name
           newTransaction.categoryId = transactionCategory._id;
           newTransaction.category = transactionCategory.name;
           newTransaction.color = transactionCategory.color;
-          transaction.fixed = transactionCategory.fixed;
+
+          if (transactionCategory.fixed) {
+            newTransaction.fixed = transactionCategory.fixed;
+          }
 
           if (transactionCategory.parentCategoryId) {
-            transaction.parentCategoryId = transactionCategory.parentCategoryId;
+            newTransaction.parentCategoryId =
+              transactionCategory.parentCategoryId;
           }
         } else if (transactionType === TRANSACTION_TYPES.TRANSFER) {
           newTransaction.fromAccount = transaction.fromAccount;
           newTransaction.toAccount = transaction.toAccount;
           newTransaction.description = transaction.description;
         } else {
-          return res
-            .status(500)
-            .send(`${transactionType} is an invalid transaction type`);
+          throw new Error(`${transactionType} is an invalid transaction type`);
         }
 
         formattedTransactions.push(newTransaction);
