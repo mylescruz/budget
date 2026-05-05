@@ -73,7 +73,18 @@ const TransactionsLayout = ({ dateInfo }) => {
   // Paginate the transactions sorted by date
   const displayedTransactions = useMemo(() => {
     return searchedTransactions
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .sort((a, b) => {
+        const aDate = new Date(a.date);
+        const bDate = new Date(b.date);
+
+        if (aDate > bDate) {
+          return 1;
+        } else if (aDate < bDate) {
+          return -1;
+        } else {
+          return new Date(a.createdTS) - new Date(b.createdTS);
+        }
+      })
       .slice(
         page * TRANSACTIONS_PER_PAGE - TRANSACTIONS_PER_PAGE,
         page * TRANSACTIONS_PER_PAGE,
@@ -89,8 +100,6 @@ const TransactionsLayout = ({ dateInfo }) => {
     const foundTransaction = transactions.find(
       (transaction) => transaction._id === transactionId,
     );
-
-    console.log(foundTransaction);
 
     if (foundTransaction.type === TRANSACTION_TYPES.EXPENSE) {
       foundTransaction.oldCategory = foundTransaction.category;
