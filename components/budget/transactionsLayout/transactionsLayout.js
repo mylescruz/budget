@@ -26,29 +26,49 @@ const TransactionsLayout = ({ dateInfo }) => {
     setPage(1);
   }, [searchInput]);
 
-  const expenseTransactions = transactions.filter(
-    (transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE,
-  );
+  const formattedTransactions = transactions
+    .filter(
+      (transaction) =>
+        transaction.type === TRANSACTION_TYPES.EXPENSE ||
+        transaction.type === TRANSACTION_TYPES.TRANSFER,
+    )
+    .map((transaction) => {
+      const formatted = {
+        _id: transaction._id,
+        transactionType: transaction.type,
+        date: transaction.date,
+        amount: transaction.amount,
+        createdTS: transaction.createdTS,
+      };
+
+      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
+        formatted.name = transaction.store;
+        formatted.description = transaction.items;
+        formatted.type = transaction.category;
+        formatted.color = transaction.color;
+      } else {
+        formatted.name = `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`;
+        formatted.description = transaction.description;
+        formatted.type = TRANSACTION_TYPES.TRANSFER;
+      }
+
+      return formatted;
+    });
 
   // Filters the array based on the searched input
   const searchedTransactions = useMemo(() => {
     if (searchInput === "") {
-      return expenseTransactions;
+      return formattedTransactions;
     }
 
-    return expenseTransactions.filter((transaction) => {
-      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
-        return (
-          transaction.store.toLowerCase().includes(searchInput.toLowerCase()) ||
-          transaction.items.toLowerCase().includes(searchInput.toLowerCase())
-        );
-      } else {
-        return transaction.description
+    return formattedTransactions.filter(
+      (transaction) =>
+        transaction.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+        transaction.description
           .toLowerCase()
-          .includes(searchInput.toLowerCase());
-      }
-    });
-  }, [searchInput, expenseTransactions]);
+          .includes(searchInput.toLowerCase()),
+    );
+  }, [searchInput, formattedTransactions]);
 
   // Paginate the transactions sorted by date
   const displayedTransactions = useMemo(() => {
@@ -65,12 +85,19 @@ const TransactionsLayout = ({ dateInfo }) => {
     searchedTransactions.length / TRANSACTIONS_PER_PAGE,
   );
 
-  const openDetailsModal = (transaction) => {
-    setChosenTransaction({
-      ...transaction,
-      oldCategory: transaction.category,
-      oldAmount: transaction.amount,
-    });
+  const openDetailsModal = (transactionId) => {
+    const foundTransaction = transactions.find(
+      (transaction) => transaction._id === transactionId,
+    );
+
+    console.log(foundTransaction);
+
+    if (foundTransaction.type === TRANSACTION_TYPES.EXPENSE) {
+      foundTransaction.oldCategory = foundTransaction.category;
+      foundTransaction.oldAmount = foundTransaction.amount;
+    }
+
+    setChosenTransaction(foundTransaction);
 
     setModal("DETAILS");
   };
@@ -126,18 +153,18 @@ const TransactionsLayout = ({ dateInfo }) => {
                 <Row
                   key={transaction._id}
                   className={`d-flex flex-row py-1 my-1 ${styles.transactionRow}`}
-                  onClick={() => openDetailsModal(transaction)}
+                  onClick={() => openDetailsModal(transaction._id)}
                 >
                   <Col xs={3} md={2} lg={1} className="px-2">
                     {dateFormatter(transaction.date)}
                   </Col>
                   <Col xs={5} md={5} lg={6} className="px-2">
                     <div>
-                      <div className="fw-semibold">{transaction.store}</div>
+                      <div className="fw-semibold">{transaction.name}</div>
                       <div className="text-muted small d-none d-md-flex">
-                        {transaction.items.length > 60
-                          ? transaction.items.slice(0, 60) + "..."
-                          : transaction.items}
+                        {transaction.description.length > 60
+                          ? transaction.description.slice(0, 60) + "..."
+                          : transaction.description}
                       </div>
                     </div>
                   </Col>
@@ -148,17 +175,19 @@ const TransactionsLayout = ({ dateInfo }) => {
                     className="d-none d-md-flex align-items-start px-2"
                   >
                     <div className="d-flex flex-row align-items-center">
-                      <div
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          backgroundColor: transaction.color,
-                        }}
-                      />
+                      {transaction.color && (
+                        <div
+                          style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            backgroundColor: transaction.color,
+                          }}
+                        />
+                      )}
 
                       <div className="fw-semibold mx-2 my-0">
-                        {transaction.category}
+                        {transaction.type}
                       </div>
                     </div>
                   </Col>
