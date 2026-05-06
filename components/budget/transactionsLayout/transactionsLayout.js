@@ -19,6 +19,10 @@ const TransactionsLayout = ({ dateInfo }) => {
   const [modal, setModal] = useState(null);
   const [chosenTransaction, setChosenTransaction] = useState(null);
   const [searchInput, setSearchInput] = useState("");
+  const [sort, setSort] = useState({
+    field: "date",
+    asc: true,
+  });
   const [page, setPage] = useState(1);
 
   // Reset the results if the type or search filter changes
@@ -74,22 +78,51 @@ const TransactionsLayout = ({ dateInfo }) => {
   const displayedTransactions = useMemo(() => {
     return searchedTransactions
       .sort((a, b) => {
-        const aDate = new Date(a.date);
-        const bDate = new Date(b.date);
+        switch (sort.field) {
+          case "date":
+            const aDate = new Date(a.date);
+            const bDate = new Date(b.date);
 
-        if (aDate > bDate) {
-          return 1;
-        } else if (aDate < bDate) {
-          return -1;
-        } else {
-          return new Date(a.createdTS) - new Date(b.createdTS);
+            if (aDate > bDate) {
+              if (sort.asc) {
+                return 1;
+              } else {
+                return -1;
+              }
+            } else if (aDate < bDate) {
+              if (sort.asc) {
+                return -1;
+              } else {
+                return 1;
+              }
+            } else {
+              return new Date(a.createdTS) - new Date(b.createdTS);
+            }
+          case "name":
+            if (sort.asc) {
+              return a.name.localeCompare(b.name);
+            } else {
+              return b.name.localeCompare(a.name);
+            }
+          case "type":
+            if (sort.asc) {
+              return a.type.localeCompare(b.type);
+            } else {
+              return b.type.localeCompare(a.type);
+            }
+          case "amount":
+            if (sort.asc) {
+              return a.amount - b.amount;
+            } else {
+              return b.amount - a.amount;
+            }
         }
       })
       .slice(
         page * TRANSACTIONS_PER_PAGE - TRANSACTIONS_PER_PAGE,
         page * TRANSACTIONS_PER_PAGE,
       );
-  }, [searchedTransactions, page]);
+  }, [searchedTransactions, sort, page]);
 
   // Get the total pages for the array after the search and filter options to display for pagination
   const totalPages = Math.ceil(
@@ -109,6 +142,14 @@ const TransactionsLayout = ({ dateInfo }) => {
     setChosenTransaction(foundTransaction);
 
     setModal("DETAILS");
+  };
+
+  // Sort the rows in the table by the column header in ascending or descending order
+  const handleSort = (field) => {
+    setSort((prev) => ({
+      field: field,
+      asc: prev.field === field ? !prev.asc : true,
+    }));
   };
 
   const handleSearch = (e) => {
@@ -138,17 +179,61 @@ const TransactionsLayout = ({ dateInfo }) => {
           </div>
 
           <Row className="d-flex flex-row text-muted small">
-            <Col xs={3} md={2} lg={1} className="px-2">
-              Date
+            <Col
+              xs={3}
+              md={2}
+              lg={1}
+              className="px-2 clicker"
+              onClick={() => handleSort("date")}
+            >
+              Date{" "}
+              {sort.field === "date" && (
+                <i
+                  className={`bi ${sort.asc ? "bi-arrow-up" : "bi-arrow-down"}`}
+                />
+              )}
             </Col>
-            <Col xs={5} md={5} lg={6} className="px-2">
-              Merchant
+            <Col
+              xs={5}
+              md={5}
+              lg={6}
+              className="px-2 clicker"
+              onClick={() => handleSort("name")}
+            >
+              Merchant{" "}
+              {sort.field === "name" && (
+                <i
+                  className={`bi ${sort.asc ? "bi-arrow-up" : "bi-arrow-down"}`}
+                />
+              )}
             </Col>
-            <Col xs={0} md={3} lg={3} className="d-none d-md-flex px-2">
-              Category
+            <Col
+              xs={0}
+              md={3}
+              lg={3}
+              className="d-none d-md-flex px-2 clicker"
+              onClick={() => handleSort("type")}
+            >
+              Category{" "}
+              {sort.field === "type" && (
+                <i
+                  className={`bi ${sort.asc ? "bi-arrow-up" : "bi-arrow-down"}`}
+                />
+              )}
             </Col>
-            <Col xs={4} md={2} lg={2} className="px-2 text-end">
-              Amount
+            <Col
+              xs={4}
+              md={2}
+              lg={2}
+              className="px-2 text-end clicker"
+              onClick={() => handleSort("amount")}
+            >
+              Amount{" "}
+              {sort.field === "amount" && (
+                <i
+                  className={`bi ${sort.asc ? "bi-arrow-up" : "bi-arrow-down"}`}
+                />
+              )}
             </Col>
           </Row>
 
