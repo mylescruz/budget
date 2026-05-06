@@ -2,8 +2,8 @@ import dayFormatter from "@/helpers/dayFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import getDueDateDisplay from "@/helpers/getDueDateDisplay";
 
-const SubcategoriesSection = ({ subcategory }) => {
-  const dueInfo = getDueDateDisplay(subcategory);
+const SubcategoriesSection = ({ subcategory, dateInfo }) => {
+  const dueInfo = getDueDateDisplay(subcategory, dateInfo);
 
   const amount = subcategory.fixed ? subcategory.budget : subcategory.actual;
 

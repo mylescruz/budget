@@ -1,7 +1,7 @@
 import { Row } from "react-bootstrap";
 import CategoryCard from "./categoryCard";
 
-const CategorySection = ({ title, categories, onEdit }) => {
+const CategorySection = ({ title, categories, onEdit, dateInfo }) => {
   return (
     <div className="mb-4">
       <h6 className="text-muted mb-2">{title}</h6>
@@ -12,6 +12,7 @@ const CategorySection = ({ title, categories, onEdit }) => {
             key={category._id}
             category={category}
             onEdit={onEdit}
+            dateInfo={dateInfo}
           />
         ))}
       </Row>

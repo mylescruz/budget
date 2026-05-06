@@ -5,7 +5,7 @@ import { useState } from "react";
 import SubcategoriesSection from "./subcategoriesSection";
 import { Col } from "react-bootstrap";
 
-const CategoryCard = ({ category, onEdit }) => {
+const CategoryCard = ({ category, onEdit, dateInfo }) => {
   const [expanded, setExpanded] = useState(false);
 
   const percent = Math.min(
@@ -19,7 +19,7 @@ const CategoryCard = ({ category, onEdit }) => {
   const remaining = category.budget - category.actual;
   const isOver = remaining < 0;
 
-  const dueInfo = getDueDateDisplay(category);
+  const dueInfo = getDueDateDisplay(category, dateInfo);
 
   return (
     <Col xs={12} lg={6} className="my-2">
@@ -96,7 +96,10 @@ const CategoryCard = ({ category, onEdit }) => {
             )}
 
             {dueInfo.type === "next" && (
-              <>Next charge on the {dayFormatter(dueInfo.date)}</>
+              <>
+                Next charge for {dueInfo.name} on the{" "}
+                {dayFormatter(dueInfo.date)}
+              </>
             )}
           </div>
         )}
@@ -115,6 +118,7 @@ const CategoryCard = ({ category, onEdit }) => {
                 <SubcategoriesSection
                   key={subcategory._id}
                   subcategory={subcategory}
+                  dateInfo={dateInfo}
                 />
               ))}
           </div>

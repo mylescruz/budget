@@ -1,22 +1,25 @@
-const getDueDateDisplay = (category) => {
+const getDueDateDisplay = (category, budgetDateInfo) => {
   if (!category.fixed) {
     return null;
   }
 
   const today = new Date();
-  const month = today.getMonth();
-  const year = today.getFullYear();
 
   // No subcategories → direct due date
   if (!category.subcategories?.length) {
     const display = {
       type: "single",
+      name: category.name,
       date: category.dueDate,
     };
 
-    const date = new Date(year, month, category.dueDate);
+    const categoryDate = new Date(
+      budgetDateInfo.year,
+      budgetDateInfo.month - 1,
+      category.dueDate,
+    );
 
-    if (date <= today) {
+    if (categoryDate <= today) {
       display.text = "Charged on the";
     } else {
       display.text = "Due on the";
@@ -28,7 +31,11 @@ const getDueDateDisplay = (category) => {
   // Has subcategories → find next due date
   const upcoming = category.subcategories
     .filter((subcategory) => {
-      const date = new Date(year, month, subcategory.dueDate);
+      const date = new Date(
+        budgetDateInfo.year,
+        budgetDateInfo.month - 1,
+        subcategory.dueDate,
+      );
 
       return date >= today;
     })
@@ -37,6 +44,7 @@ const getDueDateDisplay = (category) => {
   if (upcoming) {
     return {
       type: "next",
+      name: upcoming.name,
       date: upcoming.dueDate,
       count: category.subcategories.length,
     };

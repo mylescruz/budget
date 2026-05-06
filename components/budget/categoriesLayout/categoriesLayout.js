@@ -52,11 +52,13 @@ const CategoriesLayout = ({ dateInfo }) => {
         title={"Fixed"}
         categories={fixedCategories}
         onEdit={onEdit}
+        dateInfo={dateInfo}
       />
       <CategorySection
         title={"Variable"}
         categories={variableCategories}
         onEdit={onEdit}
+        dateInfo={dateInfo}
       />
 
       {modal === "ADD" && (
