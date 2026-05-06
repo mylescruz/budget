@@ -1,4 +1,4 @@
-import { Button, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { useMemo, useState } from "react";
 import LoadingIndicator from "../ui/loadingIndicator";
 import useIncome from "@/hooks/useIncome";
@@ -12,6 +12,7 @@ import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
 import IncomeHeader from "./IncomeHeader";
+import IncomeTable from "./incomeTable/incomeTable";
 
 const InnerIncomeLayout = ({ year }) => {
   const {
@@ -68,25 +69,16 @@ const InnerIncomeLayout = ({ year }) => {
   } else {
     return (
       <Container>
-        {income && <IncomeHeader incomeTotals={incomeTotals} />}
-
-        <Button
-          size="sm"
-          variant="primary"
-          className="float-end"
-          onClick={openAddModal}
-        >
-          + Add
-        </Button>
-
         {income ? (
-          <Row className="d-flex align-items-center col-12 col-xl-10 mt-2 mb-4 mx-auto">
-            <DataTableLayout
-              data={formattedIncome}
-              columns={incomeColumns}
-              type={"income"}
-              openDetails={openIncomeDetails}
-            />
+          <Row className="d-flex justify-content-center">
+            <Col className="col-12 col-xl-10">
+              <IncomeHeader incomeTotals={incomeTotals} />
+              <IncomeTable
+                income={income}
+                setChosenSource={setChosenSource}
+                setModal={setModal}
+              />
+            </Col>
           </Row>
         ) : (
           <ErrorMessage message={incomeRequest.message} />
