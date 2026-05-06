@@ -67,10 +67,16 @@ const TransactionsLayout = ({ dateInfo }) => {
 
     return formattedTransactions.filter(
       (transaction) =>
+        // Search by the expense transaction's store or transfer transaction's accounts
         transaction.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+        // Search by the expense transaction's items bought or transfer transaction's description
         transaction.description
           .toLowerCase()
-          .includes(searchInput.toLowerCase()),
+          .includes(searchInput.toLowerCase()) ||
+        // Search by the expense transaction's category or search for a transfer type transaction
+        transaction.type.toLowerCase().includes(searchInput.toLowerCase()) ||
+        // Search for the amount of a transaction
+        transaction.amount.toString().includes(searchInput.toLowerCase()),
     );
   }, [searchInput, formattedTransactions]);
 
