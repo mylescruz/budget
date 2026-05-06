@@ -7,7 +7,7 @@ import addDecimalValues from "@/helpers/addDecimalValues";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { BudgetContext } from "@/contexts/BudgetContext";
 
-const WARNING_PERCENTAGE = 0.9;
+const WARNING_PERCENTAGE = 90;
 
 const TotalsLayout = () => {
   const { categoryTotals, transactionTotals } = useContext(BudgetContext);
@@ -66,13 +66,15 @@ const TotalsLayout = () => {
     };
   }, [categoryTotals, transactionTotals]);
 
-  const percentSpent = totals.currentSpending / totals.availableFunds;
+  let percentSpent = Math.round(
+    (totals.currentSpending / totals.availableFunds) * 100,
+  );
 
   let spentColor;
   let remainingText;
   const isOver = totals.leftToSpend < 0;
 
-  if (percentSpent <= 0 && totals.leftToSpend <= 0) {
+  if (percentSpent >= 0 && totals.leftToSpend <= 0) {
     spentColor = "text-danger";
     remainingText = "You're overspending!";
   } else if (percentSpent >= 0 && percentSpent >= WARNING_PERCENTAGE) {
@@ -83,6 +85,16 @@ const TotalsLayout = () => {
     remainingText = "On track";
   }
 
+  if (totals.availableFunds === 0) {
+    percentSpent = 100;
+  }
+
+  if (percentSpent >= 100 && totals.leftToSpend > 0) {
+    percentSpent = 99;
+  }
+
+  const percentText = percentSpent >= 100 ? "Over budget" : `${percentSpent}%`;
+
   return (
     <div className="mb-4">
       {totals ? (
@@ -91,7 +103,7 @@ const TotalsLayout = () => {
             <Card.Body>
               <Row className="align-items-center">
                 <Col>
-                  <h2 className={`fw-bold ${totals.leftToSpendTextColor}`}>
+                  <h2 className={`fw-bold ${spentColor}`}>
                     {dollarFormatter(totals.leftToSpend)} Remaining
                   </h2>
 
@@ -107,7 +119,7 @@ const TotalsLayout = () => {
                         <div className="text-muted small">Current Expenses</div>
                         <div className="fw-semibold">
                           {dollarFormatter(totals.currentSpending)} (
-                          {Math.round(percentSpent * 100)}%)
+                          <span className={spentColor}>{percentText}</span>)
                         </div>
                       </div>
                     </div>
