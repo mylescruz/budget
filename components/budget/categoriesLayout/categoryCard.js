@@ -8,10 +8,22 @@ import { Col } from "react-bootstrap";
 const CategoryCard = ({ category, onEdit, dateInfo }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const percent = Math.min(
+  let percent = Math.min(
     100,
     Math.round((category.actual / category.budget) * 100),
   );
+
+  if (category.budget <= 0) {
+    percent = 100;
+  }
+
+  const percentText = `${percent}%`;
+
+  let percentColor = "text-muted";
+
+  if (category.budget <= 0 || category.actual > category.budget) {
+    percentColor = "text-danger";
+  }
 
   const hasSubcategory = category.subcategories.length > 0;
 
@@ -49,8 +61,16 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
               </div>
               <div className="text-muted small">
                 {dollarFormatter(category.actual)} /{" "}
-                {dollarFormatter(category.budget)}{" "}
-                <span className="text-muted">({percent}%)</span>
+                <span
+                  className={
+                    category.budget <= 0
+                      ? "text-danger fw-semibold"
+                      : "text-muted"
+                  }
+                >
+                  {dollarFormatter(category.budget)}
+                </span>{" "}
+                ({percentText})
               </div>
             </div>
           </div>
