@@ -1,14 +1,12 @@
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { useMemo, useState } from "react";
 import LoadingIndicator from "../ui/loadingIndicator";
 import useIncome from "@/hooks/useIncome";
 import AddIncomeModal from "./addIncomeModal";
-import IncomeTotalsLayout from "./IncomeHeader";
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import EditIncomeModal from "./editIncomeModal";
 import IncomeDetailsModal from "./incomeDetailsModal";
 import DeleteIncomeModal from "./deleteIncomeModal";
-import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
 import IncomeHeader from "./IncomeHeader";
@@ -24,45 +22,8 @@ const InnerIncomeLayout = ({ year }) => {
     incomeTotals,
   } = useIncome(year);
 
-  const [modal, setModal] = useState("none");
-
+  const [modal, setModal] = useState(null);
   const [chosenSource, setChosenSource] = useState(null);
-
-  const formattedIncome = useMemo(() => {
-    if (!income) {
-      return null;
-    }
-
-    return income.map((src) => {
-      return {
-        _id: src._id,
-        date: src.date,
-        name: src.source,
-        description: src.description,
-        type: src.incomeType,
-        amount: src.amount,
-      };
-    });
-  }, [income]);
-
-  const incomeColumns = {
-    column1: "Date",
-    column2: "Source",
-    column3: "Type",
-    column4: "Amount",
-  };
-
-  const openAddModal = () => {
-    setModal("addIncome");
-  };
-
-  const openIncomeDetails = (sourceId) => {
-    const foundSource = income.find((source) => source._id === sourceId);
-
-    setChosenSource({ ...foundSource, new: false });
-
-    setModal("incomeDetails");
-  };
 
   if (incomeRequest.action === "get" && incomeRequest.status === "loading") {
     return <LoadingIndicator message={incomeRequest.message} />;
@@ -84,7 +45,7 @@ const InnerIncomeLayout = ({ year }) => {
           <ErrorMessage message={incomeRequest.message} />
         )}
 
-        {modal === "addIncome" && (
+        {modal === "ADD" && (
           <AddIncomeModal
             year={year}
             postIncome={postIncome}
@@ -94,7 +55,7 @@ const InnerIncomeLayout = ({ year }) => {
           />
         )}
 
-        {modal === "incomeDetails" && (
+        {modal === "DETAILS" && (
           <IncomeDetailsModal
             chosenSource={chosenSource}
             modal={modal}
@@ -102,7 +63,7 @@ const InnerIncomeLayout = ({ year }) => {
           />
         )}
 
-        {modal === "editIncome" && (
+        {modal === "EDIT" && (
           <EditIncomeModal
             chosenSource={chosenSource}
             setChosenSource={setChosenSource}
@@ -114,7 +75,7 @@ const InnerIncomeLayout = ({ year }) => {
           />
         )}
 
-        {modal === "deleteIncome" && (
+        {modal === "DELETE" && (
           <DeleteIncomeModal
             chosenSource={chosenSource}
             deleteIncome={deleteIncome}

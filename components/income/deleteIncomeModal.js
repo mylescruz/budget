@@ -14,7 +14,7 @@ const DeleteIncomeModal = ({
   const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
 
   const closeDeleteModal = () => {
-    setModal("none");
+    setModal("DETAILS");
 
     setFormMeta({ status: "idle", error: null });
   };
@@ -25,7 +25,7 @@ const DeleteIncomeModal = ({
     try {
       await deleteIncome(chosenSource);
 
-      closeDeleteModal();
+      setModal(null);
     } catch (error) {
       setFormMeta({ status: "idle", error: error.message });
       return;
@@ -33,7 +33,7 @@ const DeleteIncomeModal = ({
   };
 
   return (
-    <Modal show={modal === "deleteIncome"} onHide={closeDeleteModal} centered>
+    <Modal show={modal === "DELETE"} onHide={closeDeleteModal} centered>
       {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>Delete Income</Modal.Header>

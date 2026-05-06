@@ -27,7 +27,7 @@ const EditIncomeModal = ({
   const closeEditModal = () => {
     setFormMeta({ status: "idle", error: null });
 
-    setModal("details");
+    setModal("DETAILS");
   };
 
   const updatePaycheck = async (e) => {
@@ -55,7 +55,7 @@ const EditIncomeModal = ({
   };
 
   return (
-    <Modal show={modal === "editIncome"} onHide={closeEditModal} centered>
+    <Modal show={modal === "EDIT"} onHide={closeEditModal} centered>
       {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>

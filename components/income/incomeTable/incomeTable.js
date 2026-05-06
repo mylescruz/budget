@@ -113,7 +113,7 @@ const IncomeTable = ({ income, setChosenSource, setModal }) => {
 
     setChosenSource({ ...foundSource, new: false });
 
-    setModal("incomeDetails");
+    setModal("DETAILS");
   };
 
   // Sort the rows in the table by the column header in ascending or descending order
@@ -134,7 +134,7 @@ const IncomeTable = ({ income, setChosenSource, setModal }) => {
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5 className="mb-0">Income</h5>
-            <Button size="sm" onClick={() => setModal("addIncome")}>
+            <Button size="sm" onClick={() => setModal("ADD")}>
               + Add
             </Button>
           </div>

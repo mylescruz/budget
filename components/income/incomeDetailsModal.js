@@ -5,19 +5,19 @@ import { Button, Modal, Row } from "react-bootstrap";
 
 const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
   const closeDetailsModal = () => {
-    setModal("none");
+    setModal(null);
   };
 
   const openEditModal = () => {
-    setModal("editIncome");
+    setModal("EDIT");
   };
 
   const openDeleteModal = () => {
-    setModal("deleteIncome");
+    setModal("DELETE");
   };
 
   return (
-    <Modal show={modal === "incomeDetails"} onHide={closeDetailsModal} centered>
+    <Modal show={modal === "DETAILS"} onHide={closeDetailsModal} centered>
       <Modal.Header closeButton>
         <Modal.Title>{chosenSource.incomeType} Details</Modal.Title>
       </Modal.Header>

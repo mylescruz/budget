@@ -71,7 +71,7 @@ const AddIncomeModal = ({
   };
 
   const closeAddModal = () => {
-    setModal("none");
+    setModal(null);
 
     setNewSource(emptySource);
 
@@ -85,7 +85,7 @@ const AddIncomeModal = ({
   };
 
   return (
-    <Modal show={modal === "addIncome"} onHide={closeAddModal} centered>
+    <Modal show={modal === "ADD"} onHide={closeAddModal} centered>
       {formMeta.status === "idle" && (
         <>
           <Modal.Header closeButton>
