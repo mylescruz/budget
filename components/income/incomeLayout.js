@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import LoadingIndicator from "../ui/loadingIndicator";
 import useIncome from "@/hooks/useIncome";
 import AddIncomeModal from "./addIncomeModal";
-import IncomeTotalsLayout from "./incomeTotalsLayout";
+import IncomeTotalsLayout from "./IncomeHeader";
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import EditIncomeModal from "./editIncomeModal";
 import IncomeDetailsModal from "./incomeDetailsModal";
@@ -11,6 +11,7 @@ import DeleteIncomeModal from "./deleteIncomeModal";
 import DataTableLayout from "../ui/dataTableLayout/dataTableLayout";
 import SuccessMessage from "../ui/successMessage";
 import ErrorMessage from "../ui/errorMessage";
+import IncomeHeader from "./IncomeHeader";
 
 const InnerIncomeLayout = ({ year }) => {
   const {
@@ -67,14 +68,16 @@ const InnerIncomeLayout = ({ year }) => {
   } else {
     return (
       <Container>
-        <Container className="d-flex align-items-center justify-content-between col-12 col-xl-10 mx-auto mt-2">
-          <h4 className="my-0">Income</h4>
-          <Button variant="primary" onClick={openAddModal}>
-            + Add Income
-          </Button>
-        </Container>
+        {income && <IncomeHeader incomeTotals={incomeTotals} />}
 
-        {income && <IncomeTotalsLayout incomeTotals={incomeTotals} />}
+        <Button
+          size="sm"
+          variant="primary"
+          className="float-end"
+          onClick={openAddModal}
+        >
+          + Add
+        </Button>
 
         {income ? (
           <Row className="d-flex align-items-center col-12 col-xl-10 mt-2 mb-4 mx-auto">
@@ -146,6 +149,7 @@ const IncomeLayout = () => {
   const [year, setYear] = useState(today.getFullYear());
 
   const pageInfo = {
+    title: "Income",
     description: "Keep track of all your income for the year.",
   };
 
