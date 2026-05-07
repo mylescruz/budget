@@ -368,12 +368,41 @@ async function updateCategory(
         }
       }
 
-      // Update the name and color for all the categories with that name
+      // Update the name for all the categories with that name
       await categoriesCol.updateMany(
         { username, name: editedCategory.currentName },
         {
           $set: {
             name: editedCategory.name.trim(),
+            color: editedCategory.color,
+          },
+        },
+        { session, maxTimeMS: 5000 },
+      );
+
+      // Get all the past parent categories that match the category's name
+      const parentCategories = await categoriesCol
+        .aggregate(
+          [
+            { $match: { username, name: editedCategory.name } },
+            { $project: { _id: 1 } },
+          ],
+          {
+            session,
+            maxTimeMS: 5000,
+          },
+        )
+        .toArray();
+
+      // Update each subcategory under this category's name with the new color
+      await categoriesCol.updateMany(
+        {
+          parentCategoryId: {
+            $in: parentCategories.map((category) => new ObjectId(category._id)),
+          },
+        },
+        {
+          $set: {
             color: editedCategory.color,
           },
         },
