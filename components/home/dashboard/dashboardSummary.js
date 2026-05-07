@@ -1,15 +1,9 @@
-import centsToDollars from "@/helpers/centsToDollars";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import dollarsToCents from "@/helpers/dollarsToCents";
 import { Card, Col, Row } from "react-bootstrap";
 
 const WARNING_PERCENTAGE = 90;
 
 const DashboardSummary = ({ dateInfo, totals }) => {
-  const remaining =
-    dollarsToCents(totals.current.funds) -
-    dollarsToCents(totals.current.expenses);
-
   // The percentage of money spent this money
   let outflowPercent = Math.min(
     100,
@@ -17,21 +11,25 @@ const DashboardSummary = ({ dateInfo, totals }) => {
   );
 
   // Keep percentage below 100 if there's any remaining funds to spend but the percentage was calculated to 100
-  if (outflowPercent === 100 && remaining > 0 && totals.current.funds !== 0) {
+  if (
+    outflowPercent === 100 &&
+    totals.current.remaining > 0 &&
+    totals.current.funds !== 0
+  ) {
     outflowPercent = 99;
   }
 
   // Display the proper text if a user is under or over budget
   const remainingText =
-    remaining >= 0
-      ? `${dollarFormatter(centsToDollars(remaining))} Remaining`
-      : `${dollarFormatter(Math.abs(centsToDollars(remaining)))} Over Budget`;
+    totals.current.remaining >= 0
+      ? `${dollarFormatter(totals.current.remaining)} Remaining`
+      : `${dollarFormatter(Math.abs(totals.current.remaining))} Over Budget`;
 
   // Determine the color to show based on if the user is under budget, close to their budget or over budget
   let remainingColor;
   let outflowColor;
 
-  if (outflowPercent <= 0 || remaining <= 0) {
+  if (outflowPercent <= 0 || totals.current.remaining <= 0) {
     remainingColor = "text-danger";
     outflowColor = "bg-danger";
   } else if (outflowPercent >= WARNING_PERCENTAGE && outflowPercent < 100) {
