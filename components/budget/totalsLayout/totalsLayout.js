@@ -3,7 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import addDecimalValues from "@/helpers/addDecimalValues";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { BudgetContext } from "@/contexts/BudgetContext";
 
@@ -18,82 +17,71 @@ const TotalsLayout = () => {
       return null;
     }
 
-    const income = transactionTotals.income;
+    const income = dollarsToCents(transactionTotals.income);
 
-    const transfersIn = transactionTotals.checkingTransfers;
+    const transfersIn = dollarsToCents(transactionTotals.transfersIn);
 
-    const availableFunds = addDecimalValues(income, transfersIn);
+    const transfersOut = dollarsToCents(transactionTotals.transfersOut);
 
-    const currentSpending = addDecimalValues(
-      categoryTotals.actual,
-      transactionTotals.savingsTransfers,
-    );
+    const actual = dollarsToCents(categoryTotals.actual);
 
-    const leftToSpend = centsToDollars(
-      dollarsToCents(availableFunds) -
-        dollarsToCents(categoryTotals.fixedBudget) -
-        dollarsToCents(categoryTotals.variableActual) -
-        dollarsToCents(transactionTotals.savingsTransfers),
-    );
+    const fixedBudget = dollarsToCents(categoryTotals.fixedBudget);
 
-    let leftToSpendTextColor;
+    const variableActual = dollarsToCents(categoryTotals.variableActual);
 
-    const variableSpentPercent = leftToSpend / availableFunds;
+    // The total funds available to spend for the month
+    const inflow = income + transfersIn;
 
-    if (variableSpentPercent <= 0 && leftToSpend <= 0) {
-      leftToSpendTextColor = "text-danger";
-    } else if (
-      variableSpentPercent >= 0 &&
-      variableSpentPercent >= WARNING_PERCENTAGE
-    ) {
-      leftToSpendTextColor = "text-warning";
+    // The funds that left their budget
+    const outflow = actual + transfersOut;
+
+    // The remaining money left to spend after all expenses and transfers out
+    const remaining = inflow - fixedBudget - variableActual - transfersOut;
+
+    // The percentage of money spent this money
+    let outflowPercent = Math.min(100, Math.round((outflow / inflow) * 100));
+
+    // Keep percentage below 100 if there's any remaining funds to spend but the percentage was calculated to 100
+    if (outflowPercent === 100 && remaining > 0 && inflow !== 0) {
+      outflowPercent = 99;
+    }
+
+    // Display the proper text if a user is under or over budget
+    const remainingText =
+      remaining >= 0
+        ? `${dollarFormatter(centsToDollars(remaining))} Remaining`
+        : `${dollarFormatter(Math.abs(centsToDollars(remaining)))} Over Budget`;
+
+    // Determine the color to show based on if the user is under budget, close to their budget or over budget
+    let remainingColor;
+    let outflowColor;
+
+    if (outflowPercent <= 0 || remaining <= 0) {
+      remainingColor = "text-danger";
+      outflowColor = "bg-danger";
+    } else if (outflowPercent >= WARNING_PERCENTAGE && outflowPercent < 100) {
+      remainingColor = "text-warning";
+      outflowColor = "bg-warning";
     } else {
-      leftToSpendTextColor = "text-success";
+      remainingColor = "text-success";
+      outflowColor = "bg-success";
     }
 
     return {
-      income,
-      transfersIn,
-      availableFunds,
-      availableFundsTextColor:
-        availableFunds === 0 ? "text-danger" : "text-dark",
-      currentSpending,
-      leftToSpend,
-      leftToSpendTextColor,
-      variableActual: categoryTotals.variableActual,
-      fixedBudget: categoryTotals.fixedBudget,
-      savingsTransfers: transactionTotals.savingsTransfers,
+      income: centsToDollars(income),
+      variableActual: centsToDollars(variableActual),
+      fixedBudget: centsToDollars(fixedBudget),
+      transfersIn: centsToDollars(transfersIn),
+      transfersOut: centsToDollars(transfersOut),
+      inflow: centsToDollars(inflow),
+      outflow: centsToDollars(outflow),
+      remaining: centsToDollars(remaining),
+      outflowPercent,
+      remainingText,
+      remainingColor,
+      outflowColor,
     };
   }, [categoryTotals, transactionTotals]);
-
-  let percentSpent = Math.round(
-    (totals.currentSpending / totals.availableFunds) * 100,
-  );
-
-  let spentColor;
-  let remainingText;
-  const isOver = totals.leftToSpend < 0;
-
-  if (percentSpent >= 0 && totals.leftToSpend <= 0) {
-    spentColor = "text-danger";
-    remainingText = "You're overspending!";
-  } else if (percentSpent >= 0 && percentSpent >= WARNING_PERCENTAGE) {
-    spentColor = "text-warning";
-    remainingText = "Close to limit";
-  } else {
-    spentColor = "text-success";
-    remainingText = "On track";
-  }
-
-  if (totals.availableFunds === 0) {
-    percentSpent = 100;
-  }
-
-  if (percentSpent >= 100 && totals.leftToSpend > 0) {
-    percentSpent = 99;
-  }
-
-  const percentText = percentSpent >= 100 ? "Over budget" : `${percentSpent}%`;
 
   return (
     <div className="mb-4">
@@ -103,23 +91,28 @@ const TotalsLayout = () => {
             <Card.Body>
               <Row className="align-items-center">
                 <Col>
-                  <h2 className={`fw-bold ${spentColor}`}>
-                    {dollarFormatter(totals.leftToSpend)} Remaining
+                  <h2 className={`fw-bold ${totals.remainingColor}`}>
+                    {totals.remainingText}
                   </h2>
 
                   <div className="d-flex gap-4 mt-3 flex-column flex-lg-row justify-content-between">
                     <div className="d-flex flex-row">
                       <div className="mx-2">
-                        <div className="text-muted small">Available Funds</div>
-                        <div className="fw-semibold">
-                          {dollarFormatter(totals.availableFunds)}
+                        <div className="text-muted small">Total Inflow</div>
+                        <div
+                          className={`fw-semibold ${totals.inflow === 0 ? "text-danger" : "text-dark"}`}
+                        >
+                          {dollarFormatter(totals.inflow)}
                         </div>
                       </div>
                       <div className="mx-2">
-                        <div className="text-muted small">Current Expenses</div>
+                        <div className="text-muted small">Current Outflow</div>
                         <div className="fw-semibold">
-                          {dollarFormatter(totals.currentSpending)} (
-                          <span className={spentColor}>{percentText}</span>)
+                          {dollarFormatter(totals.outflow)} (
+                          <span className={totals.remainingColor}>
+                            {totals.outflowPercent}%
+                          </span>
+                          )
                         </div>
                       </div>
                     </div>
@@ -127,7 +120,7 @@ const TotalsLayout = () => {
                       <div className="mx-2">
                         <div className="text-muted small">Income</div>
                         <div
-                          className={`fw-semibold ${totals.availableFundsTextColor}`}
+                          className={`fw-semibold ${totals.income === 0 ? "text-danger" : "text-dark"}`}
                         >
                           {dollarFormatter(totals.income)}
                         </div>
@@ -143,17 +136,17 @@ const TotalsLayout = () => {
                       <div className="mx-2">
                         <div className="text-muted small">Saved</div>
                         <div className="fw-semibold">
-                          {dollarFormatter(totals.savingsTransfers)}
+                          {dollarFormatter(totals.transfersOut)}
                         </div>
                       </div>
                       <div className="mx-2">
-                        <div className="text-muted small">Expenses</div>
+                        <div className="text-muted small">Variable Spent</div>
                         <div className="fw-semibold">
                           {dollarFormatter(totals.variableActual)}
                         </div>
                       </div>
                       <div className="mx-2">
-                        <div className="text-muted small">Fixed Bils</div>
+                        <div className="text-muted small">Fixed Bills</div>
                         <div className="fw-semibold">
                           {dollarFormatter(totals.fixedBudget)}
                         </div>
@@ -165,14 +158,8 @@ const TotalsLayout = () => {
               <div className="mt-2">
                 <div className="progress" style={{ height: 6 }}>
                   <div
-                    className={`progress-bar ${
-                      isOver
-                        ? "bg-danger"
-                        : percentSpent > 90
-                          ? "bg-warning"
-                          : "bg-success"
-                    }`}
-                    style={{ width: `${percentSpent * 100}%` }}
+                    className={`progress-bar ${totals.outflowColor}`}
+                    style={{ width: `${totals.outflowPercent}%` }}
                   />
                 </div>
               </div>

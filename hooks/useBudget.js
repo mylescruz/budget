@@ -98,8 +98,8 @@ const useBudget = (month, year) => {
     return {
       income: centsToDollars(totals.income),
       expenses: centsToDollars(totals.expenses),
-      checkingTransfers: centsToDollars(totals.toChecking),
-      savingsTransfers: centsToDollars(totals.toSavings),
+      transfersIn: centsToDollars(totals.toChecking),
+      transfersOut: centsToDollars(totals.toSavings),
     };
   }, [budget.transactions]);
 
