@@ -238,8 +238,14 @@ const useBudget = (month, year) => {
         ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
         // Re-calculate each category's actual value
-        const updatedCategories = computeCategories(
+        const computedCategories = computeCategories(
           prev.categories,
+          updatedTransactions,
+        );
+
+        // Re-calculate the Fun Money category's budget
+        const updatedCategories = computeFunMoneyBudget(
+          computedCategories,
           updatedTransactions,
         );
 
@@ -301,8 +307,14 @@ const useBudget = (month, year) => {
         );
 
         // Re-calculate each category's actual value
-        const updatedCategories = computeCategories(
+        const computedCategories = computeCategories(
           prev.categories,
+          updatedTransactions,
+        );
+
+        // Re-calculate the Fun Money category's budget
+        const updatedCategories = computeFunMoneyBudget(
+          computedCategories,
           updatedTransactions,
         );
 
@@ -359,8 +371,14 @@ const useBudget = (month, year) => {
         );
 
         // Re-calculate each category's actual value
-        const updatedCategories = computeCategories(
+        const computedCategories = computeCategories(
           prev.categories,
+          updatedTransactions,
+        );
+
+        // Re-calculate the Fun Money category's budget
+        const updatedCategories = computeFunMoneyBudget(
+          computedCategories,
           updatedTransactions,
         );
 
@@ -713,6 +731,60 @@ const useBudget = (month, year) => {
         actual: centsToDollars(categoryActual),
         subcategories: updatedSubcategories,
       };
+    });
+
+    return updatedCategories;
+  };
+
+  // Calculate the Fun Money category's budget based on the user's income, transfers in and other categories' budgets
+  const computeFunMoneyBudget = (categories, transactions) => {
+    // Calculate the net income and transfer totals
+    const transactionTotals = transactions.reduce(
+      (sum, transaction) => {
+        const amount = dollarsToCents(transaction.amount);
+
+        if (transaction.type === TRANSACTION_TYPES.TRANSFER) {
+          if (transaction.toAccount === TRANSFER_ACCOUNTS.CHECKING) {
+            sum.transfer += amount;
+          } else {
+            sum.transfer -= amount;
+          }
+        } else if (transaction.type === TRANSACTION_TYPES.INCOME) {
+          sum.income += amount;
+        }
+
+        return sum;
+      },
+      {
+        income: 0,
+        transfer: 0,
+      },
+    );
+
+    // Calculate the total budget for all other categories
+    const totalBudget = categories.reduce((sum, category) => {
+      if (category.name !== FUN_MONEY) {
+        sum += dollarsToCents(category.budget);
+      }
+
+      return sum;
+    }, 0);
+
+    // Calculate the Fun Money budget from the income, net transfer and other categories' total budget
+    const funMoneyBudget = centsToDollars(
+      transactionTotals.income + transactionTotals.transfer - totalBudget,
+    );
+
+    // Update the Fun Money category's budget from the calculations
+    const updatedCategories = categories.map((category) => {
+      if (category.name === FUN_MONEY) {
+        return {
+          ...category,
+          budget: funMoneyBudget,
+        };
+      }
+
+      return category;
     });
 
     return updatedCategories;
