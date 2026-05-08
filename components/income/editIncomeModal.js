@@ -4,7 +4,6 @@ import { Button, Form, Modal } from "react-bootstrap";
 import PaycheckForm from "./incomeTypeForms/paycheckForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
-import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 import { INCOME_TYPES } from "@/lib/constants/income";
 import handleObjectInput from "@/helpers/handleObjectInput";
 import ErrorMessage from "../ui/errorMessage";
@@ -71,9 +70,6 @@ const EditIncomeModal = ({
               )}
               {chosenSource.incomeType === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
-              )}
-              {chosenSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
-                <UnemploymentForm {...incomeFormProps} />
               )}
               {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>

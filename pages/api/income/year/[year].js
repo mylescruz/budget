@@ -113,11 +113,6 @@ async function addIncome(req, res, { client, transactionsCol, username }) {
         dollarsToCents(sourceInfo.gross) - dollarsToCents(sourceInfo.amount);
     }
 
-    // Unify the source for unemployment income
-    if (newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT) {
-      newSource.source = "EDD";
-    }
-
     const incomeSources = [];
 
     if (

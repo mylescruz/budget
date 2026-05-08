@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 //   {
 //     _id: string,
 //     date: string,              // date the income source was received
-//     type: string,              // "Paycheck" | "Gift" | "Sale" | "Unemployment"
+//     type: string,              // "Paycheck" | "Gift" | "Sale"
 //     name: string,
 //     description: string,
 //     amount: number,            // in USD
@@ -210,7 +210,6 @@ const useIncome = (year) => {
       Paycheck: 0,
       Gift: 0,
       Sale: 0,
-      Unemployment: 0,
     };
 
     let totalGross = 0;

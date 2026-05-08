@@ -56,15 +56,6 @@ const IncomeDetailsModal = ({ chosenSource, modal, setModal }) => {
             </Row>
           </>
         )}
-        {chosenSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
-          <>
-            <Row className="m-2">Received Unemployment from EDD</Row>
-            <Row className="m-2">Description: {chosenSource.description}</Row>
-            <Row className="m-2">
-              Payout Amount: {dollarFormatter(chosenSource.amount)}
-            </Row>
-          </>
-        )}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between">
         <Button variant="danger" onClick={openDeleteModal}>

@@ -5,7 +5,6 @@ import LoadingMessage from "../ui/loadingMessage";
 import PaycheckForm from "./incomeTypeForms/paycheckForm";
 import SaleForm from "./incomeTypeForms/saleForm";
 import GiftForm from "./incomeTypeForms/giftForm";
-import UnemploymentForm from "./incomeTypeForms/unemploymentForm";
 import {
   INCOME_TYPES,
   INCOME_TYPES_LIST,
@@ -121,9 +120,6 @@ const AddIncomeModal = ({
               )}
               {newSource.incomeType === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
-              )}
-              {newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
-                <UnemploymentForm {...incomeFormProps} />
               )}
               {formMeta.error && <ErrorMessage message={formMeta.error} />}
             </Modal.Body>

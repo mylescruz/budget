@@ -12,7 +12,6 @@ import PopUp from "@/components/ui/popUp";
 import PaycheckForm from "@/components/income/incomeTypeForms/paycheckForm";
 import SaleForm from "@/components/income/incomeTypeForms/saleForm";
 import GiftForm from "@/components/income/incomeTypeForms/giftForm";
-import UnemploymentForm from "@/components/income/incomeTypeForms/unemploymentForm";
 import {
   INCOME_TYPES,
   INCOME_TYPES_LIST,
@@ -54,10 +53,6 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
   // Update the new income array with the user's inputted sources
   const addSource = (e) => {
     e.preventDefault();
-
-    if (newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT) {
-      newSource.name = "EDD";
-    }
 
     setNewUser({ ...newUser, income: [...newUser.income, newSource] });
 
@@ -119,9 +114,6 @@ const IncomeSection = ({ dateInfo, newUser, setNewUser, openComplete }) => {
               )}
               {newSource.incomeType === INCOME_TYPES.GIFT && (
                 <GiftForm {...incomeFormProps} />
-              )}
-              {newSource.incomeType === INCOME_TYPES.UNEMPLOYMENT && (
-                <UnemploymentForm {...incomeFormProps} />
               )}
               <Button type="submit" className="w-100 my-2">
                 Add Income

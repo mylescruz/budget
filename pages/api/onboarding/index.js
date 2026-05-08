@@ -74,10 +74,6 @@ async function createAccount(
             formattedSource.gross - formattedSource.amount;
         }
 
-        if (formattedSource.incomeType === INCOME_TYPES.UNEMPLOYMENT) {
-          formattedSource.source = "EDD";
-        }
-
         if (
           formattedSource.incomeType === INCOME_TYPES.PAYCHECK &&
           sourceInfo.repeating
