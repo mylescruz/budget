@@ -8,7 +8,7 @@ import { BudgetContext } from "@/contexts/BudgetContext";
 
 const WARNING_PERCENTAGE = 90;
 
-const TotalsLayout = () => {
+const TotalsLayout = ({ dateInfo }) => {
   const { categoryTotals, transactionTotals } = useContext(BudgetContext);
 
   // Object that calculates the budget totals for the current month
@@ -87,10 +87,67 @@ const TotalsLayout = () => {
     };
   }, [categoryTotals, transactionTotals]);
 
-  return (
-    <div className="mb-4">
-      {totals ? (
-        <>
+  // Check if the current budget month is a future month to display a different header
+  const currentTS = new Date();
+  const currentMonth = currentTS.getMonth() + 1;
+  const currentYear = currentTS.getFullYear();
+
+  const isFutureMonth =
+    dateInfo.year === currentYear && dateInfo.month > currentMonth;
+
+  if (!totals) {
+    return (
+      <div className="mb-4">
+        <ErrorMessage
+          message={"There was a problem getting your budget totals"}
+        />
+      </div>
+    );
+  } else {
+    if (isFutureMonth) {
+      return (
+        <div className="mb-4">
+          <Card className="shadow-sm border-0 rounded-4 mb-4">
+            <Card.Body>
+              <Row className="align-items-center">
+                <Col>
+                  <div className="d-flex gap-4 mt-3 flex-column flex-lg-row justify-content-between">
+                    <div className="d-flex flex-row">
+                      <div className="mx-2">
+                        <div className="text-muted small">Expected Income</div>
+                        <div
+                          className={`fw-semibold ${totals.income === 0 ? "text-danger" : "text-dark"}`}
+                        >
+                          {dollarFormatter(totals.income)}
+                        </div>
+                      </div>
+                      <div className="mx-2">
+                        <div className="text-muted small">
+                          Expected Fixed Bills
+                        </div>
+                        <div className="fw-semibold">
+                          {dollarFormatter(totals.fixedBudget)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <div className="mt-2">
+                <div className="progress" style={{ height: 6 }}>
+                  <div
+                    className={`progress-bar ${totals.outflowColor}`}
+                    style={{ width: `${totals.outflowPercent}%` }}
+                  />
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
+      );
+    } else {
+      return (
+        <div className="mb-4">
           <Card className="shadow-sm border-0 rounded-4 mb-4">
             <Card.Body>
               <Row className="align-items-center">
@@ -169,14 +226,10 @@ const TotalsLayout = () => {
               </div>
             </Card.Body>
           </Card>
-        </>
-      ) : (
-        <ErrorMessage
-          message={"There was a problem getting your budget totals"}
-        />
-      )}
-    </div>
-  );
+        </div>
+      );
+    }
+  }
 };
 
 export default TotalsLayout;

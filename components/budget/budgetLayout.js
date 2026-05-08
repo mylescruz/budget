@@ -35,7 +35,7 @@ const InnerBudgetLayout = ({ dateInfo }) => {
           <>
             <Row className="d-flex justify-content-center">
               <Col className="col-12 col-xl-10">
-                <TotalsLayout />
+                <TotalsLayout dateInfo={dateInfo} />
 
                 <CategoriesLayout dateInfo={dateInfo} />
 
