@@ -46,6 +46,10 @@ const TotalsLayout = () => {
       outflowPercent = 99;
     }
 
+    if (Number.isNaN(outflowPercent)) {
+      outflowPercent = 0;
+    }
+
     // Display the proper text if a user is under or over budget
     const remainingText =
       remaining >= 0
