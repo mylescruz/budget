@@ -10,6 +10,8 @@ import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
 import styles from "@/styles/budget/transactionsLayout/transactionsLayout.module.css";
 import TransactionsPagination from "./transactionsPagination";
+import dollarsToCents from "@/helpers/dollarsToCents";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const TRANSACTIONS_PER_PAGE = 20;
 
@@ -135,6 +137,14 @@ const TransactionsLayout = ({ dateInfo }) => {
     searchedTransactions.length / TRANSACTIONS_PER_PAGE,
   );
 
+  // Calculate the total amount of the searched transactions
+  const totalAmount = centsToDollars(
+    displayedTransactions.reduce(
+      (sum, transaction) => sum + dollarsToCents(transaction.amount),
+      0,
+    ),
+  );
+
   const openDetailsModal = (transactionId) => {
     const foundTransaction = transactions.find(
       (transaction) => transaction._id === transactionId,
@@ -183,6 +193,13 @@ const TransactionsLayout = ({ dateInfo }) => {
               />
             </Form.Group>
           </div>
+
+          {displayedTransactions.length > 0 && searchInput !== "" && (
+            <p className="text-muted">
+              {displayedTransactions.length} transactions cost{" "}
+              {dollarFormatter(totalAmount)}
+            </p>
+          )}
 
           <Row className="d-flex flex-row text-muted small">
             <Col
