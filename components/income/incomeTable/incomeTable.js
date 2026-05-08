@@ -5,6 +5,8 @@ import styles from "@/styles/income/incomeTable.module.css";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import centsToDollars from "@/helpers/centsToDollars";
+import dollarsToCents from "@/helpers/dollarsToCents";
 
 const SOURCES_PER_PAGE = 20;
 
@@ -108,6 +110,14 @@ const IncomeTable = ({ income, setChosenSource, setModal }) => {
   // Get the total pages for the array after the search and filter options to display for pagination
   const totalPages = Math.ceil(searchedIncome.length / SOURCES_PER_PAGE);
 
+  // Calculate the total amount of the searched income
+  const totalAmount = centsToDollars(
+    searchedIncome.reduce(
+      (sum, source) => sum + dollarsToCents(source.amount),
+      0,
+    ),
+  );
+
   const openIncomeDetails = (sourceId) => {
     const foundSource = income.find((source) => source._id === sourceId);
 
@@ -149,6 +159,13 @@ const IncomeTable = ({ income, setChosenSource, setModal }) => {
               />
             </Form.Group>
           </div>
+
+          {searchedIncome.length > 0 && searchInput !== "" && (
+            <p className="text-muted">
+              {searchedIncome.length} sources brought in{" "}
+              {dollarFormatter(totalAmount)} net
+            </p>
+          )}
 
           <Row className="d-flex flex-row text-muted small">
             <Col
