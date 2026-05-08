@@ -139,7 +139,7 @@ const TransactionsLayout = ({ dateInfo }) => {
 
   // Calculate the total amount of the searched transactions
   const totalAmount = centsToDollars(
-    displayedTransactions.reduce(
+    searchedTransactions.reduce(
       (sum, transaction) => sum + dollarsToCents(transaction.amount),
       0,
     ),
@@ -194,9 +194,9 @@ const TransactionsLayout = ({ dateInfo }) => {
             </Form.Group>
           </div>
 
-          {displayedTransactions.length > 0 && searchInput !== "" && (
+          {searchedTransactions.length > 0 && searchInput !== "" && (
             <p className="text-muted">
-              {displayedTransactions.length} transactions cost{" "}
+              {searchedTransactions.length} transactions cost{" "}
               {dollarFormatter(totalAmount)}
             </p>
           )}
