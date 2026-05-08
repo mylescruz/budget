@@ -40,7 +40,9 @@ const EditIncomeModal = ({
         oldDate: chosenSource.date,
       });
 
-      closeEditModal();
+      setModal(null);
+
+      setFormMeta({ status: "idle", error: null });
     } catch (error) {
       setFormMeta({ status: "idle", error: error.message });
       return;
