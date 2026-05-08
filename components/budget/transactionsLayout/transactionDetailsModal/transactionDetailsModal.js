@@ -6,7 +6,7 @@ import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 
 const TransactionDetailsModal = ({ chosenTransaction, modal, setModal }) => {
   const closeDetailsModal = () => {
-    setModal("none");
+    setModal(null);
   };
 
   // Flag to give the user the option to delete an expense transaction if its not fixed or delete a transfer
