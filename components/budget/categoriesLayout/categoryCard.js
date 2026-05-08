@@ -35,7 +35,7 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
 
   return (
     <Col xs={12} lg={6} className="my-2">
-      <div className="h-100 bg-white rounded-3 shadow-sm p-3 mb-3">
+      <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
         {/* TOP ROW */}
         <div className="d-flex justify-content-between align-items-start">
           <div className="d-flex align-items-center gap-2">
