@@ -33,6 +33,18 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
 
   const dueInfo = getDueDateDisplay(category, dateInfo);
 
+  // Check if the current budget month is a future month to display a different message
+  const currentTS = new Date();
+  const currentMonth = currentTS.getMonth() + 1;
+  const currentYear = currentTS.getFullYear();
+
+  const isFutureMonth =
+    dateInfo.year === currentYear && dateInfo.month > currentMonth;
+
+  if (isFutureMonth) {
+    percent = 0;
+  }
+
   return (
     <Col xs={12} lg={6} className="my-2">
       <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
@@ -76,16 +88,20 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
           </div>
 
           {/* ACTION */}
-          <div className="d-flex flex-column align-items-end">
-            <span className="clicker" onClick={() => onEdit(category)}>
-              &#8942;
-            </span>
-            <div className="small">
-              <span className={isOver ? "text-danger fw-semibold" : ""}>
-                {isOver ? "Over budget" : `${dollarFormatter(remaining)} left`}
+          {!isFutureMonth && (
+            <div className="d-flex flex-column align-items-end">
+              <span className="clicker" onClick={() => onEdit(category)}>
+                &#8942;
               </span>
+              <div className="small">
+                <span className={isOver ? "text-danger fw-semibold" : ""}>
+                  {isOver
+                    ? "Over budget"
+                    : `${dollarFormatter(remaining)} left`}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* PROGRESS */}
