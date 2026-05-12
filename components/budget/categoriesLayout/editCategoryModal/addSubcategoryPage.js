@@ -15,12 +15,16 @@ const AddSubcategoryPage = ({
   validateCategoryName,
 }) => {
   const emptySubcategory = {
+    _id: Math.random(),
     name: "",
-    budget: "",
-    frequency: FIXED_FREQUENCIES.MONTHLY,
-    dueDate: "",
     added: true,
   };
+
+  if (editedCategory.fixed) {
+    emptySubcategory.budget = "";
+    emptySubcategory.frequency = FIXED_FREQUENCIES.MONTHLY;
+    emptySubcategory.dueDate = "";
+  }
 
   const [newSubcategory, setNewSubcategory] = useState(emptySubcategory);
 

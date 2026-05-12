@@ -21,6 +21,8 @@ const EditCategoryModal = ({
   const { budgetRequest, putCategory, categoryNames } =
     useContext(BudgetContext);
 
+  console.log(editedCategory);
+
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
   const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
