@@ -12,6 +12,7 @@ const AddSubcategoryPage = ({
   setEditedCategory,
   backToDetails,
   setPage,
+  setCategoryNamesSet,
   validateCategoryName,
 }) => {
   const emptySubcategory = {
@@ -35,6 +36,15 @@ const AddSubcategoryPage = ({
     if (!validName) {
       return;
     }
+
+    // Add the new subcategory to the set of category names
+    setCategoryNamesSet((prev) => {
+      const namesSet = new Set(prev);
+
+      namesSet.add(newSubcategory.name);
+
+      return namesSet;
+    });
 
     // Set the budget value to cents or 0 if it is a new not fixed subcategory
     if (!editedCategory.fixed) {

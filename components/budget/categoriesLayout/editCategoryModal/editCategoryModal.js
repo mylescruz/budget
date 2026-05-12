@@ -21,36 +21,14 @@ const EditCategoryModal = ({
   const { budgetRequest, putCategory, categoryNames } =
     useContext(BudgetContext);
 
-  console.log(editedCategory);
-
   const [editedSubcategory, setEditedSubcategory] = useState(null);
   const [page, setPage] = useState("details");
   const [formMeta, setFormMeta] = useState({ status: "idle", error: null });
-  const [fieldChanges, setFieldChanges] = useState({
-    name: false,
-    budget: false,
-  });
 
-  // Create a new set to filter out the current category and subcategories' names in case a change is made to it other than its name
-  const filteredNames = new Set(categoryNames);
-
-  filteredNames.delete(editedCategory.currentName);
-
-  if (editedCategory.subcategories.length > 0) {
-    editedCategory.subcategories.forEach((subcategory) =>
-      filteredNames.delete(subcategory.name),
-    );
-  }
+  const catNames = new Set(categoryNames);
+  const [categoryNamesSet, setCategoryNamesSet] = useState(catNames);
 
   const handleInput = (e) => {
-    const id = e.target.id;
-
-    if (id === "name") {
-      setFieldChanges((prev) => ({ ...prev, name: true }));
-    } else if (id === "budget") {
-      setFieldChanges((prev) => ({ ...prev, budget: true }));
-    }
-
     handleObjectInput({ e, setObject: setEditedCategory });
   };
 
@@ -71,7 +49,7 @@ const EditCategoryModal = ({
   const validateCategoryName = (categoryName) => {
     let isValid = true;
 
-    if (filteredNames.has(categoryName)) {
+    if (categoryNamesSet.has(categoryName)) {
       setFormMeta({
         status: "idle",
         error: `There is already a category named ${categoryName}`,
@@ -89,10 +67,12 @@ const EditCategoryModal = ({
   };
 
   const updateCategory = async () => {
-    const validName = validateCategoryName(editedCategory.name);
+    if (editedCategory.name !== editedCategory.currentName) {
+      const validName = validateCategoryName(editedCategory.name);
 
-    if (!validName) {
-      return;
+      if (!validName) {
+        return;
+      }
     }
 
     setFormMeta({ status: "loading", error: null });
@@ -326,6 +306,7 @@ const EditCategoryModal = ({
                   setEditedCategory={setEditedCategory}
                   backToDetails={backToDetails}
                   setPage={setPage}
+                  setCategoryNamesSet={setCategoryNamesSet}
                   validateCategoryName={validateCategoryName}
                 />
               </div>
@@ -338,8 +319,8 @@ const EditCategoryModal = ({
                   setEditedCategory={setEditedCategory}
                   editedSubcategory={editedSubcategory}
                   setEditedSubcategory={setEditedSubcategory}
-                  setFieldChanges={setFieldChanges}
                   setPage={setPage}
+                  setCategoryNamesSet={setCategoryNamesSet}
                   validateCategoryName={validateCategoryName}
                   backToDetails={backToDetails}
                 />

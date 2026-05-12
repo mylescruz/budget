@@ -13,35 +13,34 @@ const EditSubcategoryPage = ({
   setEditedCategory,
   editedSubcategory,
   setEditedSubcategory,
-  setFieldChanges,
   setPage,
+  setCategoryNamesSet,
   validateCategoryName,
   backToDetails,
 }) => {
   const handleInput = (e) => {
-    const id = e.target.id;
-
-    if (id === "name") {
-      setFieldChanges((prev) => ({ ...prev, name: true }));
-    } else {
-      if (id === "budget" && editedCategory.fixed) {
-        setFieldChanges((prev) => ({
-          ...prev,
-          budget: true,
-        }));
-      }
-    }
-
     handleObjectInput({ e, setObject: setEditedSubcategory });
   };
 
   const saveSubcategory = () => {
-    // Validate whether the inputted subcategory name has been taken or not
-    const validName = validateCategoryName(editedSubcategory.name);
+    if (editedSubcategory.name !== editedSubcategory.currentName) {
+      // Validate whether the inputted subcategory name has been taken or not
+      const validName = validateCategoryName(editedSubcategory.name);
 
-    if (!validName) {
-      return;
+      if (!validName) {
+        return;
+      }
     }
+
+    // Delete the current name from the set of category names and add the new name
+    setCategoryNamesSet((prev) => {
+      const namesSet = new Set(prev);
+
+      namesSet.delete(editedSubcategory.currentName);
+      namesSet.add(editedSubcategory.name);
+
+      return namesSet;
+    });
 
     let subcategoriesTotal = 0;
 
@@ -112,6 +111,15 @@ const EditSubcategoryPage = ({
     }
 
     setEditedCategory(updatedCategory);
+
+    // Delete the subcategory's name from the set of category names
+    setCategoryNamesSet((prev) => {
+      const namesSet = new Set(prev);
+
+      namesSet.delete(editedSubcategory.name);
+
+      return namesSet;
+    });
 
     setPage("details");
   };
