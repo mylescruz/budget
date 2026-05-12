@@ -111,7 +111,7 @@ async function updateCategory(
               name: subcategory.name,
               color: editedCategory.color,
               fixed: editedCategory.fixed,
-              parentCategoryId: categoryId,
+              parentCategoryId: new ObjectId(categoryId),
               createdTS: currentTS,
               updatedTS: currentTS,
             };
@@ -192,7 +192,7 @@ async function updateCategory(
               // Define the fields in the query object to update in the database
               subcategoryQuery.budget = subcategoryBudget;
               subcategoryQuery.dueDate = dueDate;
-              subcategoryQuery.frequency = formattedSubcategory.frequency;
+              subcategoryQuery.frequency = subcategory.frequency;
 
               // Format the subcategory being returned to the client
               formattedSubcategory.budget = subcategoryBudget;
