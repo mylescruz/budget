@@ -88,11 +88,11 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
           </div>
 
           {/* ACTION */}
-          {!isFutureMonth && (
-            <div className="d-flex flex-column align-items-end">
-              <span className="clicker" onClick={() => onEdit(category)}>
-                &#8942;
-              </span>
+          <div className="d-flex flex-column align-items-end">
+            <span className="clicker" onClick={() => onEdit(category)}>
+              &#8942;
+            </span>
+            {!isFutureMonth && (
               <div className="small">
                 <span className={isOver ? "text-danger fw-semibold" : ""}>
                   {isOver
@@ -100,8 +100,8 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
                     : `${dollarFormatter(remaining)} left`}
                 </span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* PROGRESS */}
