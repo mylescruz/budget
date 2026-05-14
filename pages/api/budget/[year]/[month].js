@@ -6,6 +6,7 @@ import { updateFunMoney } from "@/lib/updateFunMoney";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { FUN_MONEY } from "@/lib/constants/categories";
 import centsToDollars from "@/helpers/centsToDollars";
+import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
   // Using NextAuth.js to authenticate a user's session in the server
