@@ -137,6 +137,10 @@ const CategoryCard = ({ category, onEdit, dateInfo }) => {
                 {dayFormatter(dueInfo.date)}
               </>
             )}
+
+            {dueInfo.type === "none" && (
+              <>All subcategories have been charged</>
+            )}
           </div>
         )}
 
