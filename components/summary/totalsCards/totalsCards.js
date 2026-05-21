@@ -111,26 +111,22 @@ const TotalsCards = ({ summary }) => {
       <Row className="d-flex justify-content-center">
         {totalsArray.map((total, index) => (
           <Col key={index} className="col-12 col-md-4">
-            <Card className="my-2 card-background">
-              <Card.Body>
-                <h5 className="fw-bold">{total.title}</h5>
-                <h4>
-                  <span className={total.textColor}>
-                    {dollarFormatter(total.amount)}
-                  </span>
-                </h4>
-                {total.modal && (
-                  <p
-                    className="text-center text-decoration-underline clicker m-0"
-                    onClick={() => {
-                      showModal(total.modal);
-                    }}
-                  >
-                    Details
-                  </p>
-                )}
-              </Card.Body>
-            </Card>
+            <div className="bg-white rounded-3 shadow-sm p-3 mb-3 text-start">
+              <h6 className="text-muted">{total.title}</h6>
+              <h4 className={`fw-bold ${total.textColor}`}>
+                {dollarFormatter(total.amount)}
+              </h4>
+              {total.modal && (
+                <p
+                  className="text-muted text-decoration-underline small clicker m-0"
+                  onClick={() => {
+                    showModal(total.modal);
+                  }}
+                >
+                  Month Breakdown
+                </p>
+              )}
+            </div>
           </Col>
         ))}
       </Row>

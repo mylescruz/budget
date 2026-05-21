@@ -20,8 +20,8 @@ const InnerSummaryLayout = ({ year }) => {
       <Container>
         {summary ? (
           <Row className="mx-auto d-flex justify-content-center align-items-center col-12 col-xl-10">
-            <div className="my-4 text-center">
-              <h3>Year Totals</h3>
+            <div className="my-4">
+              <h5 className="fw-bold">Totals</h5>
               <TotalsCards summary={summary} />
             </div>
 
