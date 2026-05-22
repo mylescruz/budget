@@ -383,6 +383,7 @@ async function getMonthsSummaries(transactions, year) {
         transfers: {
           in: centsToDollars(month.transfers.in),
           out: centsToDollars(month.transfers.out),
+          net: centsToDollars(month.transfers.out - month.transfers.in),
         },
       };
     })
