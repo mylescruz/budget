@@ -3,16 +3,15 @@ import { Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../ui/loadingIndicator";
 import { useMemo, useState } from "react";
-import TotalsCards from "./totals/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
-import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import ErrorMessage from "../ui/errorMessage";
 import AveragesLayout from "./averages/averagesLayout";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 import TotalsLayout from "./totals/totalsLayout";
+import TransactionsLayout from "./transactions/transactionsLayout";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryRequest } = useSummary(year);
@@ -82,10 +81,7 @@ const InnerSummaryLayout = ({ year }) => {
               />
             </div>
 
-            <div className="my-4">
-              <h3 className="text-center">{year} Transactions</h3>
-              <TransactionsSummaryLayout transactions={summary.transactions} />
-            </div>
+            <TransactionsLayout transactions={summary.transactions} />
           </Row>
         ) : (
           <ErrorMessage message={summaryRequest.message} />
