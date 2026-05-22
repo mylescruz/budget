@@ -1,14 +1,10 @@
-import dollarFormatter from "@/helpers/dollarFormatter";
 import { useMemo, useState } from "react";
-import { Col, Row } from "react-bootstrap";
 import MonthTotalsModal from "./monthTotalsModal";
+import TotalsCards from "./totalsCards";
+import { Row } from "react-bootstrap";
 
-const TotalsCards = ({ months, totals }) => {
+const TotalsLayout = ({ months, totals }) => {
   const [topic, setTopic] = useState(null);
-
-  const chooseTopic = (title) => {
-    setTopic(title);
-  };
 
   const monthData = useMemo(() => {
     return months.map((mth) => {
@@ -42,47 +38,49 @@ const TotalsCards = ({ months, totals }) => {
     });
   }, [topic]);
 
+  // Get the title and description of each modal to display
   const modalDetails = useMemo(() => {
+    let title;
+    let description;
+
     switch (topic) {
       case "Income":
-        return {
-          title: "Income Breakdown",
-          description: "The total amount you made each month",
-        };
+        title = "Income Breakdown";
+        description = "The total amount you made each month";
+        break;
       case "Expenses":
-        return {
-          title: "Expenses Breakdown",
-          description: "The total amount you spent each month",
-        };
+        title = "Expenses Breakdown";
+        description = "The total amount you spent each month";
+        break;
       case "Net Cash Flow":
-        return {
-          title: "Net Breakdown",
-          description:
-            "The total leftover balance between your income and expenses each month",
-        };
+        title = "Net Breakdown";
+        description =
+          "The total leftover balance between your income and expenses each month";
+        break;
       case "Saved":
-        return {
-          title: "Savings Breakdown",
-          description: "The total amount saved each month",
-        };
+        title = "Savings Breakdown";
+        description = "The total amount saved each month";
+        break;
       case "Transfers In":
-        return {
-          title: "Transfers In Breakdown",
-          description:
-            "The total amount transferred into your budget each month",
-        };
+        title = "Transfers In Breakdown";
+        description =
+          "The total amount transferred into your budget each month";
+        break;
       case "Net Savings":
-        return {
-          title: "Net Savings Breakdown",
-          description:
-            "The total amount transferred to or out of savings each month",
-        };
+        title = "Net Savings Breakdown";
+        description =
+          "The total amount transferred to or out of savings each month";
+        break;
       default:
-        return {
-          title: null,
-          description: null,
-        };
+        title = null;
+        description = null;
+        break;
     }
+
+    return {
+      title,
+      description,
+    };
   }, [topic]);
 
   const totalsArray = [
@@ -90,13 +88,11 @@ const TotalsCards = ({ months, totals }) => {
       title: "Income",
       amount: totals.income,
       textColor: "text-dark",
-      hasModal: true,
     },
     {
       title: "Expenses",
       amount: totals.expenses,
       textColor: "text-dark",
-      hasModal: true,
     },
     {
       title: "Net Cash Flow",
@@ -105,53 +101,37 @@ const TotalsCards = ({ months, totals }) => {
         totals.netCashFlow >= 0
           ? "text-success fw-bold"
           : "text-danger fw-bold",
-      hasModal: true,
     },
     {
       title: "Saved",
       amount: totals.toSavings,
       textColor:
         totals.toSavings > 0 ? "text-success fw-bold" : "text-danger fw-bold",
-      hasModal: true,
     },
     {
       title: "Transfers In",
       amount: totals.toChecking,
       textColor:
         totals.toChecking > 0 ? "text-danger fw-bold" : "text-success fw-bold",
-      hasModal: true,
     },
     {
       title: "Net Savings",
       amount: totals.netSavings,
       textColor:
         totals.netSavings >= 0 ? "text-success fw-bold" : "text-danger fw-bold",
-      hasModal: true,
     },
   ];
 
+  const chooseTopic = (title) => {
+    setTopic(title);
+  };
+
   return (
-    <>
+    <div className="my-4">
+      <h5 className="fw-bold">Totals</h5>
       <Row className="d-flex justify-content-center">
         {totalsArray.map((total, index) => (
-          <Col key={index} className="col-12 col-md-4">
-            <div className="bg-white rounded-3 shadow-sm p-3 mb-3 text-center">
-              <h6 className="text-muted">{total.title}</h6>
-              <h4 className={`fw-bold ${total.textColor}`}>
-                {dollarFormatter(total.amount)}
-              </h4>
-              {total.hasModal && (
-                <p
-                  className="text-muted small clicker m-0"
-                  onClick={() => {
-                    chooseTopic(total.title);
-                  }}
-                >
-                  Per Month Breakdown <i className="bi bi-arrow-right small" />
-                </p>
-              )}
-            </div>
-          </Col>
+          <TotalsCards key={index} total={total} chooseTopic={chooseTopic} />
         ))}
       </Row>
 
@@ -161,8 +141,8 @@ const TotalsCards = ({ months, totals }) => {
         topic={topic}
         setTopic={setTopic}
       />
-    </>
+    </div>
   );
 };
 
-export default TotalsCards;
+export default TotalsLayout;

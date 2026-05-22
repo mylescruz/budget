@@ -3,7 +3,7 @@ import { Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../ui/loadingIndicator";
 import { useMemo, useState } from "react";
-import TotalsCards from "./totalsCards/totalsCards";
+import TotalsCards from "./totals/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
@@ -12,6 +12,7 @@ import ErrorMessage from "../ui/errorMessage";
 import AveragesLayout from "./averages/averagesLayout";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
+import TotalsLayout from "./totals/totalsLayout";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryRequest } = useSummary(year);
@@ -61,10 +62,7 @@ const InnerSummaryLayout = ({ year }) => {
       <Container>
         {summary ? (
           <Row className="mx-auto d-flex justify-content-center align-items-center col-12 col-xl-10">
-            <div className="my-4">
-              <h5 className="fw-bold">Totals</h5>
-              <TotalsCards months={summary.months} totals={totals} />
-            </div>
+            <TotalsLayout months={summary.months} totals={totals} />
 
             <AveragesLayout totals={totals} />
 
