@@ -1,5 +1,4 @@
-import { Card, Col, Row } from "react-bootstrap";
-import styles from "@/styles/summary/spendingInsights/insightCards.module.css";
+import { Col, Row } from "react-bootstrap";
 import InsightModal from "./insightModal";
 import { useState } from "react";
 
@@ -8,39 +7,36 @@ const InsightCard = ({ insight }) => {
 
   return (
     <>
-      <Col className="col-12 col-md-6 col-lg-4">
-        <Card className={`mb-4 card-background ${styles.insightCard}`}>
-          <Card.Body className="text-center d-flex flex-column justify-content-between">
+      <Col xs={12} md={6} lg={4}>
+        <div className="bg-white rounded-3 shadow-sm p-3 mb-3 text-start">
+          <div className="d-flex flex-column justify-content-between text-center">
             <div>
-              <h4 className="fw-bold">{insight.title}</h4>
+              <h6 className="text-muted">{insight.title}</h6>
             </div>
-            <div className="flex-fill">
-              {insight.data.length === 0 ? (
-                <h6 className="fw-bold">{insight.emptyMessage}</h6>
-              ) : (
-                insight.data.slice(0, 3).map((obj, index) => (
+            {insight.data.length === 0 ? (
+              <div className="flex-fill">
+                <h6 className="fw-bold small">{insight.emptyMessage}</h6>
+              </div>
+            ) : (
+              <div className="flex-fill">
+                {insight.data.slice(0, 1).map((obj, index) => (
                   <Row key={index} className="d-flex my-1">
-                    <h5 className="fw-bold">
-                      <i className={`fs-6 bi bi-${index + 1}-square`} />{" "}
-                      {obj.name}
-                    </h5>
-                    <h6>{obj.value}</h6>
+                    <h4 className="fw-bold">{obj.name}</h4>
+                    <h5 className="">{obj.value}</h5>
                   </Row>
-                ))
-              )}
-            </div>
-            <div>
-              <p
-                className="text-center text-decoration-underline align-self-end clicker m-0"
-                onClick={() => {
-                  setShowModal(true);
-                }}
-              >
-                Details
-              </p>
-            </div>
-          </Card.Body>
-        </Card>
+                ))}
+                <p
+                  className="clicker small m-0"
+                  onClick={() => {
+                    setShowModal(true);
+                  }}
+                >
+                  Top 10 <i className="bi bi-arrow-right small" />
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </Col>
 
       <InsightModal

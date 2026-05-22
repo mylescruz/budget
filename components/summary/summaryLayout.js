@@ -26,6 +26,7 @@ const InnerSummaryLayout = ({ year }) => {
             </div>
 
             <div className="my-4">
+              <h5 className="fw-bold">Spending Insights</h5>
               <SpendingInsightsLayout
                 categories={summary.categories}
                 months={summary.months}

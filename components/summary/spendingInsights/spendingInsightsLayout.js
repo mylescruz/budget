@@ -85,9 +85,13 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
         };
       });
 
+    const variableTransactions = transactions.filter(
+      (transaction) =>
+        transaction.type === TRANSACTION_TYPES.EXPENSE && !transaction.fixed,
+    );
+
     // Top transactions of the year
-    const topTransactions = [...transactions]
-      .filter((transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE)
+    const topTransactions = variableTransactions
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 10)
       .map((transaction) => {
@@ -100,24 +104,22 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Create a stores map to get the total spent at each store and how many times a user visited
     const storesMap = new Map();
 
-    transactions.forEach((transaction) => {
-      if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
-        const store = storesMap.get(transaction.store);
+    variableTransactions.forEach((transaction) => {
+      const store = storesMap.get(transaction.store);
 
-        if (!store) {
-          storesMap.set(transaction.store, {
-            store: transaction.store,
-            amount: transaction.amount,
-            visits: 1,
-          });
-        } else {
-          const totalSpent = addDecimalValues(store.amount, transaction.amount);
-          storesMap.set(transaction.store, {
-            store: transaction.store,
-            amount: totalSpent,
-            visits: store.visits + 1,
-          });
-        }
+      if (!store) {
+        storesMap.set(transaction.store, {
+          store: transaction.store,
+          amount: transaction.amount,
+          visits: 1,
+        });
+      } else {
+        const totalSpent = addDecimalValues(store.amount, transaction.amount);
+        storesMap.set(transaction.store, {
+          store: transaction.store,
+          amount: totalSpent,
+          visits: store.visits + 1,
+        });
       }
     });
 
@@ -147,47 +149,47 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
 
     return [
       {
-        title: "Top Spending Months",
+        title: "Top Spending Month",
         data: topSpendingMonths,
         emptyMessage: "You somehow haven't spent any money this year!",
       },
       {
-        title: "Lowest Spending Months",
+        title: "Lowest Spending Month",
         data: lowestSpendingMonths,
         emptyMessage: "You somehow haven't spent any money this year!",
       },
       {
-        title: "Months Over Budget",
+        title: "Top Overspent Month",
         data: topOverspendingMonths,
         emptyMessage: "You haven't overspent during any month! Congrats!",
       },
       {
-        title: "Top Spending Categories",
-        data: topSpendingCategories,
-        emptyMessage: "You somehow haven't spent any money this year!",
-      },
-      {
-        title: "Top Fixed Categories",
+        title: "Top Fixed Category",
         data: topFixedCategories,
         emptyMessage: "You somehow don't have ANY bills! Good for you!",
       },
       {
-        title: "Categories Over Budget",
+        title: "Top Variable Category",
+        data: topSpendingCategories,
+        emptyMessage: "You somehow haven't spent any money this year!",
+      },
+      {
+        title: "Top Overspent Category",
         data: topOverspendingCategories,
         emptyMessage: "You haven't overspent in any category! Congrats!",
       },
       {
-        title: "Top Transactions",
+        title: "Top Transaction",
         data: topTransactions,
         emptyMessage: "You somehow haven't spent any money this year!",
       },
       {
-        title: "Top Stores Shopped At",
+        title: "Top Merchant Shopped At",
         data: topStoresShopped,
         emptyMessage: "You somehow haven't shopped anywhere this year!",
       },
       {
-        title: "Top Stores Visited",
+        title: "Most Frequented Merchant",
         data: topStoresVisited,
         emptyMessage: "You somehow haven't shopped anywhere this year!",
       },
@@ -196,7 +198,6 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
 
   return (
     <Row>
-      <h3 className="text-center">Spending Insights</h3>
       {insights.map((insight) => (
         <InsightCard key={insight.title} insight={insight} />
       ))}
