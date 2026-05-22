@@ -9,6 +9,7 @@ import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSummaryLayout";
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import ErrorMessage from "../ui/errorMessage";
+import AveragesLayout from "./averages/averagesLayout";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryRequest } = useSummary(year);
@@ -24,6 +25,8 @@ const InnerSummaryLayout = ({ year }) => {
               <h5 className="fw-bold">Totals</h5>
               <TotalsCards summary={summary} />
             </div>
+
+            <AveragesLayout summary={summary} />
 
             <div className="my-4">
               <h5 className="fw-bold">Spending Insights</h5>

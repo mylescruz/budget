@@ -142,24 +142,6 @@ const TotalsCards = ({ summary }) => {
       hasModal: true,
     },
     {
-      title: "Avg Income Per Month",
-      amount: totals.income / totals.numMonths,
-      textColor: "text-dark",
-    },
-    {
-      title: "Avg Expenses Per Month",
-      amount: totals.expenses / totals.numMonths,
-      textColor: "text-dark",
-    },
-    {
-      title: "Avg Net Per Month",
-      amount: totals.netCashFlow / totals.numMonths,
-      textColor:
-        totals.netCashFlow >= 0
-          ? "text-success fw-bold"
-          : "text-danger fw-bold",
-    },
-    {
       title: "Saved",
       amount: totals.toSavings,
       textColor:
