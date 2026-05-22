@@ -46,7 +46,7 @@ const TotalsLayout = ({ months, totals }) => {
     switch (topic) {
       case "Income":
         title = "Income Breakdown";
-        description = "The total amount you made each month";
+        description = "The total net pay from each month";
         break;
       case "Expenses":
         title = "Expenses Breakdown";

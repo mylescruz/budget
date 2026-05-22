@@ -1,4 +1,4 @@
-import { Col, Modal, Row } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 
 const InsightModal = ({ insight, setInsight }) => {
   const closeModal = () => {
@@ -6,16 +6,23 @@ const InsightModal = ({ insight, setInsight }) => {
   };
 
   return (
-    <Modal show={insight} onHide={closeModal} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>{insight.title}</Modal.Title>
+    <Modal show={insight} size={"sm"} onHide={closeModal} centered>
+      <Modal.Header
+        className="d-flex align-items-center justify-content-center"
+        closeButton
+      >
+        <Modal.Title className="fs-5">{insight.title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="text-center">
-        <p className="text-muted small m-0">{insight.description}</p>
+      <Modal.Body>
+        <p className="text-center text-muted small mt-0 mb-2">
+          {insight.description}
+        </p>
         {insight.data.map((obj, index) => (
-          <div key={index} className="my-1">
-            <p className="fw-bold mb-0">{obj.name}</p>
-            <h6 className="text-muted">{obj.value}</h6>
+          <div key={index} className="border-bottom py-1">
+            <p className="text-muted mb-0">
+              {index + 1}. {obj.name}
+            </p>
+            <h5 className="fw-bold mx-3">{obj.value}</h5>
           </div>
         ))}
       </Modal.Body>
