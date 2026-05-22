@@ -23,7 +23,7 @@ const TransactionsLayout = ({ dateInfo }) => {
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState({
     field: "date",
-    asc: true,
+    asc: false,
   });
   const [page, setPage] = useState(1);
 
@@ -38,6 +38,16 @@ const TransactionsLayout = ({ dateInfo }) => {
         transaction.type === TRANSACTION_TYPES.EXPENSE ||
         transaction.type === TRANSACTION_TYPES.TRANSFER,
     )
+    .filter((transaction) => {
+      if (!transaction.fixed) {
+        return true;
+      }
+
+      const currentTS = new Date();
+      const transactionTS = new Date(transaction.date);
+
+      return transactionTS <= currentTS;
+    })
     .map((transaction) => {
       const formatted = {
         _id: transaction._id,
