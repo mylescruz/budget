@@ -1,11 +1,9 @@
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import dollarsToCents from "@/helpers/dollarsToCents";
-import centsToDollars from "@/helpers/centsToDollars";
 import MonthTotalsModal from "./monthTotalsModal";
 
-const TotalsCards = ({ summary }) => {
+const TotalsCards = ({ months, totals }) => {
   const [topic, setTopic] = useState(null);
 
   const chooseTopic = (title) => {
@@ -13,7 +11,7 @@ const TotalsCards = ({ summary }) => {
   };
 
   const monthData = useMemo(() => {
-    return summary.months.map((mth) => {
+    return months.map((mth) => {
       let amount;
 
       switch (topic) {
@@ -86,38 +84,6 @@ const TotalsCards = ({ summary }) => {
         };
     }
   }, [topic]);
-
-  // Get the totals for income, expenses and transfers
-  const rawTotals = summary.months.reduce(
-    (sum, month) => {
-      sum.income += dollarsToCents(month.income);
-
-      sum.expenses += dollarsToCents(month.actual);
-
-      sum.transfers.in += dollarsToCents(month.transfers.in);
-
-      sum.transfers.out += dollarsToCents(month.transfers.out);
-
-      return sum;
-    },
-    { income: 0, expenses: 0, transfers: { in: 0, out: 0 } },
-  );
-
-  // Get the net cash flow for the year
-  const netCashFlow = rawTotals.income - rawTotals.expenses;
-
-  // Get the net savings for the year
-  const netSavings = rawTotals.transfers.out - rawTotals.transfers.in;
-
-  const totals = {
-    income: centsToDollars(rawTotals.income),
-    expenses: centsToDollars(rawTotals.expenses),
-    netCashFlow: centsToDollars(netCashFlow),
-    toSavings: centsToDollars(rawTotals.transfers.out),
-    toChecking: centsToDollars(rawTotals.transfers.in),
-    netSavings: centsToDollars(netSavings),
-    numMonths: summary.months.length,
-  };
 
   const totalsArray = [
     {

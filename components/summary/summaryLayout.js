@@ -2,7 +2,7 @@ import useSummary from "@/hooks/useSummary";
 import { Container, Row } from "react-bootstrap";
 import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../ui/loadingIndicator";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TotalsCards from "./totalsCards/totalsCards";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
 import CategorySummaryTable from "./categorySummary/categorySummaryTable";
@@ -10,9 +10,49 @@ import TransactionsSummaryLayout from "./transactionsSummaryTable/transactionsSu
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import ErrorMessage from "../ui/errorMessage";
 import AveragesLayout from "./averages/averagesLayout";
+import dollarsToCents from "@/helpers/dollarsToCents";
+import centsToDollars from "@/helpers/centsToDollars";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryRequest } = useSummary(year);
+
+  // Get the user's totals for income, expenses and transfers for the year
+  const totals = useMemo(() => {
+    if (!summary) {
+      return null;
+    }
+
+    const totals = summary.months.reduce(
+      (sum, month) => {
+        sum.income += dollarsToCents(month.income);
+
+        sum.expenses += dollarsToCents(month.actual);
+
+        sum.transfers.in += dollarsToCents(month.transfers.in);
+
+        sum.transfers.out += dollarsToCents(month.transfers.out);
+
+        return sum;
+      },
+      { income: 0, expenses: 0, transfers: { in: 0, out: 0 } },
+    );
+
+    // Get the net cash flow for the year
+    const netCashFlow = totals.income - totals.expenses;
+
+    // Get the net savings for the year
+    const netSavings = totals.transfers.out - totals.transfers.in;
+
+    return {
+      income: centsToDollars(totals.income),
+      expenses: centsToDollars(totals.expenses),
+      netCashFlow: centsToDollars(netCashFlow),
+      toSavings: centsToDollars(totals.transfers.out),
+      toChecking: centsToDollars(totals.transfers.in),
+      netSavings: centsToDollars(netSavings),
+      numMonths: summary.months.length,
+    };
+  }, [summary]);
 
   if (summaryRequest.action === "get" && summaryRequest.status === "loading") {
     return <LoadingIndicator message={summaryRequest.message} />;
@@ -23,10 +63,10 @@ const InnerSummaryLayout = ({ year }) => {
           <Row className="mx-auto d-flex justify-content-center align-items-center col-12 col-xl-10">
             <div className="my-4">
               <h5 className="fw-bold">Totals</h5>
-              <TotalsCards summary={summary} />
+              <TotalsCards months={summary.months} totals={totals} />
             </div>
 
-            <AveragesLayout summary={summary} />
+            <AveragesLayout totals={totals} />
 
             <div className="my-4">
               <h5 className="fw-bold">Spending Insights</h5>
