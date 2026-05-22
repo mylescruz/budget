@@ -1,16 +1,19 @@
 import { Row } from "react-bootstrap";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import InsightCard from "./insightCard";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import addDecimalValues from "@/helpers/addDecimalValues";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import InsightModal from "./insightModal";
 
 const SpendingInsightsLayout = ({ months, categories, transactions }) => {
+  const [insight, setInsight] = useState(null);
+
   const insights = useMemo(() => {
     // Highest spending months
     const topSpendingMonths = [...months]
       .sort((a, b) => b.actual - a.actual)
-      .slice(0, 10)
+      .slice(0, months.length / 2)
       .map((month) => {
         return {
           name: month.name,
@@ -21,7 +24,7 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     // Lowest spending months
     const lowestSpendingMonths = [...months]
       .sort((a, b) => a.actual - b.actual)
-      .slice(0, 10)
+      .slice(0, Math.ceil(months.length / 2))
       .map((month) => {
         return {
           name: month.name,
@@ -33,7 +36,6 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
     const topOverspendingMonths = [...months]
       .filter((month) => month.remaining < 0)
       .sort((a, b) => a.remaining - b.remaining)
-      .slice(0, 10)
       .map((month) => {
         return {
           name: month.name,
@@ -152,56 +154,117 @@ const SpendingInsightsLayout = ({ months, categories, transactions }) => {
         title: "Top Spending Month",
         data: topSpendingMonths,
         emptyMessage: "You somehow haven't spent any money this year!",
+        modal: {
+          title: "Top Spending Months",
+          description: "The top half of spending months",
+        },
       },
       {
         title: "Lowest Spending Month",
         data: lowestSpendingMonths,
         emptyMessage: "You somehow haven't spent any money this year!",
+        modal: {
+          title: "Lowest Spending Months",
+          description: "The bottom half of spending months",
+        },
       },
       {
         title: "Top Overspent Month",
         data: topOverspendingMonths,
         emptyMessage: "You haven't overspent during any month! Congrats!",
+        modal: {
+          title: "Top Overspent Months",
+          description: "All the months you spent more than you brought in",
+        },
       },
       {
         title: "Top Fixed Category",
         data: topFixedCategories,
         emptyMessage: "You somehow don't have ANY bills! Good for you!",
+        modal: {
+          title: "Top Fixed Categories",
+          description:
+            "The top 10 most expensive fixed categories for the year",
+        },
       },
       {
         title: "Top Variable Category",
         data: topSpendingCategories,
         emptyMessage: "You somehow haven't spent any money this year!",
+        modal: {
+          title: "Top Variable Categories",
+          description:
+            "The top 10 most expensive variable categories for the year",
+        },
       },
       {
         title: "Top Overspent Category",
         data: topOverspendingCategories,
         emptyMessage: "You haven't overspent in any category! Congrats!",
+        modal: {
+          title: "Top Overspent Categories",
+          description:
+            "The top 10 categories you spent more than your budgeted amount",
+        },
       },
       {
         title: "Top Transaction",
         data: topTransactions,
         emptyMessage: "You somehow haven't spent any money this year!",
+        modal: {
+          title: "Top Transactions",
+          description: "The top 10 most expensive transactions this year",
+        },
       },
       {
         title: "Top Merchant Shopped At",
         data: topStoresShopped,
         emptyMessage: "You somehow haven't shopped anywhere this year!",
+        modal: {
+          title: "Top Merchants Shopped At",
+          description: "The top 10 merchants you spent the most at",
+        },
       },
       {
         title: "Most Frequented Merchant",
         data: topStoresVisited,
         emptyMessage: "You somehow haven't shopped anywhere this year!",
+        modal: {
+          title: "Most Frequented Merchants",
+          description: "The top 10 stores you frequented the most",
+        },
       },
     ];
   }, [months, categories, transactions]);
 
+  // When a user clicks on an insight, find the insight and display their top 10 values
+  const chooseTopic = (title) => {
+    const foundTopic = insights.find((insight) => insight.title === title);
+
+    if (foundTopic) {
+      setInsight({
+        title: foundTopic.modal.title,
+        description: foundTopic.modal.description,
+        data: foundTopic.data,
+      });
+    }
+  };
+
   return (
-    <Row>
-      {insights.map((insight) => (
-        <InsightCard key={insight.title} insight={insight} />
-      ))}
-    </Row>
+    <div className="my-4">
+      <h5 className="fw-bold">Spending Insights</h5>
+      <Row>
+        {insights.map((insight) => (
+          <InsightCard
+            key={insight.title}
+            insight={insight}
+            chooseTopic={chooseTopic}
+          />
+        ))}
+      </Row>
+
+      {insight && <InsightModal insight={insight} setInsight={setInsight} />}
+    </div>
   );
 };
 

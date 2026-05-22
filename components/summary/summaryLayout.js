@@ -66,14 +66,11 @@ const InnerSummaryLayout = ({ year }) => {
 
             <AveragesLayout totals={totals} />
 
-            <div className="my-4">
-              <h5 className="fw-bold">Spending Insights</h5>
-              <SpendingInsightsLayout
-                categories={summary.categories}
-                months={summary.months}
-                transactions={summary.transactions}
-              />
-            </div>
+            <SpendingInsightsLayout
+              categories={summary.categories}
+              months={summary.months}
+              transactions={summary.transactions}
+            />
 
             <div className="my-4">
               <h3 className="text-center">Categories Breakdown</h3>
