@@ -14,7 +14,7 @@ const IncomeTable = ({ income, setChosenSource, setModal }) => {
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState({
     field: "date",
-    asc: true,
+    asc: false,
   });
   const [page, setPage] = useState(1);
 
