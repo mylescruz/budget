@@ -1,10 +1,8 @@
 import useSummary from "@/hooks/useSummary";
 import { Container, Row } from "react-bootstrap";
-import CategoryPieChart from "../categoriesCharts/categoryPieChart";
 import LoadingIndicator from "../ui/loadingIndicator";
 import { useMemo, useState } from "react";
 import SpendingInsightsLayout from "./spendingInsights/spendingInsightsLayout";
-import CategorySummaryTable from "./categorySummary/categorySummaryTable";
 import BudgetYearSwitcher from "../ui/budgetYearSwitcher";
 import ErrorMessage from "../ui/errorMessage";
 import AveragesLayout from "./averages/averagesLayout";
@@ -12,6 +10,7 @@ import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 import TotalsLayout from "./totals/totalsLayout";
 import TransactionsLayout from "./transactions/transactionsLayout";
+import CategoriesLayout from "./categories/categoriesLayout";
 
 const InnerSummaryLayout = ({ year }) => {
   const { summary, summaryRequest } = useSummary(year);
@@ -71,15 +70,7 @@ const InnerSummaryLayout = ({ year }) => {
               transactions={summary.transactions}
             />
 
-            <div className="my-4">
-              <h3 className="text-center">Categories Breakdown</h3>
-              <CategoryPieChart categories={summary.categories} />
-              <CategorySummaryTable
-                categories={summary.categories}
-                year={year}
-                monthsLength={summary.monthsLength}
-              />
-            </div>
+            <CategoriesLayout categories={summary.categories} />
 
             <TransactionsLayout transactions={summary.transactions} />
           </Row>
