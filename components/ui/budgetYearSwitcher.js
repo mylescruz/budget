@@ -1,7 +1,9 @@
 import useBudgetMonths from "@/hooks/useBudgetMonths";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Dropdown, Row } from "react-bootstrap";
 import LoadingIndicator from "./loadingIndicator";
 import ErrorMessage from "./errorMessage";
+import { useMemo } from "react";
+import styles from "@/styles/ui/budgetMonthSwitcher.module.css";
 
 const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
   const { budgetMonths, budgetMonthsRequest } = useBudgetMonths();
@@ -13,6 +15,20 @@ const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
   const nextYear = () => {
     setYear((prev) => prev + 1);
   };
+
+  const chooseYear = (yr) => {
+    setYear(yr);
+  };
+
+  const budgetYears = useMemo(() => {
+    if (!budgetMonths) {
+      return null;
+    }
+
+    const years = new Set(budgetMonths.months.map((month) => month.year));
+
+    return [...years];
+  }, [budgetMonths]);
 
   if (
     budgetMonthsRequest.action === "get" &&
@@ -35,9 +51,29 @@ const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
               </Button>
             </Col>
             <Col className="col-8">
-              <h1 className="p-0 m-0 fw-bold">
-                {year} {pageInfo.title}
-              </h1>
+              <div className="d-flex justify-content-center align-items-center">
+                <h1 className={styles.title}>
+                  {year} {pageInfo.title}
+                </h1>
+                <Dropdown>
+                  <Dropdown.Toggle
+                    variant="light"
+                    className="border-0 bg-transparent"
+                  />
+                  <Dropdown.Menu className={styles.menu}>
+                    {budgetYears.map((yr) => (
+                      <div key={yr}>
+                        <Dropdown.Item
+                          className={yr === year ? "bg-primary text-white" : ""}
+                          onClick={() => chooseYear(yr)}
+                        >
+                          {yr}
+                        </Dropdown.Item>
+                      </div>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             </Col>
             <Col className="col-2">
               <Button
