@@ -4,7 +4,7 @@ import dollarFormatter from "@/helpers/dollarFormatter";
 import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import TransactionDetailsModal from "./transactionDetailsModal/transactionDetailsModal";
+import TransactionDetailsModal from "./transactionDetailsModal";
 import AddTransactionsModal from "./addTransactionsModal/addTransactionsModal";
 import EditTransactionModal from "./editTransactionsModal/editTransactionModal";
 import DeleteTransactionModal from "./deleteTransactionModal";
@@ -13,7 +13,7 @@ import TransactionsPagination from "./transactionsPagination";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import centsToDollars from "@/helpers/centsToDollars";
 
-const TRANSACTIONS_PER_PAGE = 20;
+const TRANSACTIONS_PER_PAGE = 25;
 
 const TransactionsLayout = ({ dateInfo }) => {
   const { transactions } = useContext(BudgetContext);
@@ -61,11 +61,21 @@ const TransactionsLayout = ({ dateInfo }) => {
         formatted.name = transaction.store;
         formatted.description = transaction.items;
         formatted.type = transaction.category;
-        formatted.color = transaction.color;
+        formatted.icon = (
+          <div
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              backgroundColor: transaction.color,
+            }}
+          />
+        );
       } else {
         formatted.name = `Transfer from ${transaction.fromAccount} to ${transaction.toAccount}`;
         formatted.description = transaction.description;
         formatted.type = TRANSACTION_TYPES.TRANSFER;
+        formatted.icon = "🔄";
       }
 
       return formatted;
@@ -302,16 +312,7 @@ const TransactionsLayout = ({ dateInfo }) => {
                     className="d-none d-md-flex align-items-start px-2"
                   >
                     <div className="d-flex flex-row align-items-center">
-                      {transaction.color && (
-                        <div
-                          style={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: "50%",
-                            backgroundColor: transaction.color,
-                          }}
-                        />
-                      )}
+                      <div>{transaction.icon}</div>
 
                       <div className="fw-semibold mx-2 my-0">
                         {transaction.type}
