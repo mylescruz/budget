@@ -8,14 +8,16 @@ const SubcategoriesSection = ({ subcategory }) => {
   return (
     <div
       key={subcategory.name}
-      className="d-flex justify-content-between py-1 small text-muted"
+      className="d-flex justify-content-between py-1 small"
     >
       <div>
-        <span>
-          {subcategory.name}: {dollarFormatter(amount)} ({numMonths})
+        <span className="text-muted">
+          {subcategory.name}:{" "}
+          {dollarFormatter(amount / subcategory.totalMonths)} / month (
+          {numMonths})
         </span>
       </div>
-      <span>{dollarFormatter(amount / subcategory.totalMonths)} / month</span>
+      <span className="text-dark fw-semibold">{dollarFormatter(amount)}</span>
     </div>
   );
 };

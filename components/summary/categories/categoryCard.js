@@ -58,33 +58,22 @@ const CategoryCard = ({ category }) => {
                 )}
               </div>
               <div className="text-muted small">
-                {dollarFormatter(category.actual)} /{" "}
-                <span
-                  className={
-                    category.budget <= 0
-                      ? "text-danger fw-semibold"
-                      : "text-muted"
-                  }
-                >
-                  {dollarFormatter(category.budget)}
-                </span>{" "}
-                <span className={isOver ? "text-danger fw-semibold" : ""}>
-                  (
-                  {isOver
-                    ? "Over budget"
-                    : `${dollarFormatter(remaining)} left`}
-                  )
-                </span>
+                {dollarFormatter(category.actual / category.totalMonths)} /
+                month ({numMonths})
               </div>
             </div>
           </div>
 
           {/* ACTION */}
           <div className="d-flex flex-column align-items-end">
-            <div className="small text-muted">
-              {dollarFormatter(category.actual / category.totalMonths)} / month
+            <div className="fs-6 fw-bold">
+              {dollarFormatter(category.actual)}
             </div>
-            <div className="small text-muted">{numMonths}</div>
+            {!category.fixed && (
+              <div className="small text-muted">
+                Budget: {dollarFormatter(category.budget)}
+              </div>
+            )}
           </div>
         </div>
 
