@@ -24,20 +24,36 @@ const AveragesLayout = ({ totals }) => {
     {
       title: "Avg Saved Per Month",
       amount: totals.toSavings / totals.numMonths,
-      textColor:
-        totals.toSavings > 0 ? "text-success fw-bold" : "text-danger fw-bold",
+      textColor: "text-dark",
     },
     {
       title: "Avg Transfers In Per Month",
       amount: totals.toChecking / totals.numMonths,
-      textColor:
-        totals.toChecking > 0 ? "text-danger fw-bold" : "text-success fw-bold",
+      textColor: "text-dark",
     },
     {
       title: "Avg Net Savings Per Month",
       amount: totals.netSavings / totals.numMonths,
       textColor:
         totals.netSavings >= 0 ? "text-success fw-bold" : "text-danger fw-bold",
+    },
+    {
+      title: "Avg Budget Inflow",
+      amount: (totals.income + totals.toChecking) / totals.numMonths,
+      textColor: "text-dark",
+    },
+    {
+      title: "Avg Budget Outflow",
+      amount: (totals.expenses + totals.toSavings) / totals.numMonths,
+      textColor: "text-dark",
+    },
+    {
+      title: "Avg Budget Remaining",
+      amount: (totals.netCashFlow - totals.netSavings) / totals.numMonths,
+      textColor:
+        totals.netCashFlow - totals.netSavings >= 0
+          ? "text-success fw-bold"
+          : "text-danger fw-bold",
     },
   ];
 

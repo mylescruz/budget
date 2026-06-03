@@ -29,6 +29,15 @@ const TotalsLayout = ({ months, totals }) => {
         case "Net Savings":
           amount = mth.transfers.net;
           break;
+        case "Budget Inflow":
+          amount = mth.income + mth.transfers.in;
+          break;
+        case "Budget Outflow":
+          amount = mth.actual - mth.transfers.out;
+          break;
+        case "Budget Remaining":
+          amount = mth.remaining - mth.transfers.net;
+          break;
       }
 
       return {
@@ -45,40 +54,45 @@ const TotalsLayout = ({ months, totals }) => {
 
     switch (topic) {
       case "Income":
-        title = "Income Breakdown";
         description = "The total net pay from each month";
         break;
       case "Expenses":
-        title = "Expenses Breakdown";
         description = "The total amount you spent each month";
         break;
       case "Net Cash Flow":
-        title = "Net Breakdown";
         description =
           "The total leftover balance between your income and expenses each month";
         break;
       case "Saved":
-        title = "Savings Breakdown";
         description = "The total amount saved each month";
         break;
       case "Transfers In":
-        title = "Transfers In Breakdown";
         description =
           "The total amount transferred into your budget each month";
         break;
       case "Net Savings":
-        title = "Net Savings Breakdown";
         description =
           "The total amount transferred to or out of savings each month";
         break;
+      case "Budget Inflow":
+        description =
+          "The total amount of income plus any transfers in for each month";
+        break;
+      case "Budget Outflow":
+        description =
+          "The total amount of expenses plus transfers to savings for each month";
+        break;
+      case "Budget Remaining":
+        description =
+          "The total leftover balance between the budget's inflow and outflow each month";
+        break;
       default:
-        title = null;
         description = null;
         break;
     }
 
     return {
-      title,
+      title: topic,
       description,
     };
   }, [topic]);
@@ -103,22 +117,38 @@ const TotalsLayout = ({ months, totals }) => {
           : "text-danger fw-bold",
     },
     {
-      title: "Saved",
-      amount: totals.toSavings,
-      textColor:
-        totals.toSavings > 0 ? "text-success fw-bold" : "text-danger fw-bold",
-    },
-    {
       title: "Transfers In",
       amount: totals.toChecking,
-      textColor:
-        totals.toChecking > 0 ? "text-danger fw-bold" : "text-success fw-bold",
+      textColor: "text-dark",
+    },
+    {
+      title: "Saved",
+      amount: totals.toSavings,
+      textColor: "text-dark",
     },
     {
       title: "Net Savings",
       amount: totals.netSavings,
       textColor:
         totals.netSavings >= 0 ? "text-success fw-bold" : "text-danger fw-bold",
+    },
+    {
+      title: "Budget Inflow",
+      amount: totals.income + totals.toChecking,
+      textColor: "text-dark",
+    },
+    {
+      title: "Budget Outflow",
+      amount: totals.expenses + totals.toSavings,
+      textColor: "text-dark",
+    },
+    {
+      title: "Budget Remaining",
+      amount: totals.netCashFlow - totals.netSavings,
+      textColor:
+        totals.netCashFlow - totals.netSavings >= 0
+          ? "text-success fw-bold"
+          : "text-danger fw-bold",
     },
   ];
 
