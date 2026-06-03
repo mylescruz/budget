@@ -2,25 +2,23 @@ import {
   TRANSFER_ACCOUNTS,
   TRANSFER_ACCOUNTS_LIST,
 } from "@/lib/constants/transactions";
-import { useMemo } from "react";
 import { Form } from "react-bootstrap";
 
 const AddTransferForm = ({ dateInfo, transaction, handleInput, index }) => {
-  // Define the transfer each type of account can make
-  const transferToList = useMemo(() => {
-    return TRANSFER_ACCOUNTS_LIST.filter((account) => {
-      // Loan accounts can only transfer to checking
-      if (transaction.fromAccount === TRANSFER_ACCOUNTS.LOAN) {
-        return account === TRANSFER_ACCOUNTS.CHECKING;
-      }
-
-      // Don't allow the user to transfer to a loan account or the same account they chose to transfer from
-      return (
-        account !== TRANSFER_ACCOUNTS.LOAN &&
-        account !== transaction.fromAccount
-      );
-    });
-  }, [transaction.fromAccount]);
+  const transferToList = TRANSFER_ACCOUNTS_LIST.filter((account) => {
+    if (account === TRANSFER_ACCOUNTS.LOAN) {
+      return false;
+    } else if (account === transaction.fromAccount) {
+      return false;
+    } else if (
+      transaction.fromAccount === TRANSFER_ACCOUNTS.LOAN &&
+      account === TRANSFER_ACCOUNTS.SAVINGS
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 
   return (
     <>

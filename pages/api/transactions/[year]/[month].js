@@ -1,7 +1,10 @@
 // API Endpoint for a user's transactions data
 
 import centsToDollars from "@/helpers/centsToDollars";
-import { TRANSACTION_TYPES } from "@/lib/constants/transactions";
+import {
+  TRANSACTION_TYPES,
+  TRANSFER_ACCOUNTS,
+} from "@/lib/constants/transactions";
 import { logError } from "@/lib/logError";
 import clientPromise from "@/lib/mongodb";
 import { updateFunMoney } from "@/lib/updateFunMoney";
@@ -202,8 +205,13 @@ async function addTransactions(
               transactionCategory.parentCategoryId;
           }
         } else if (transactionType === TRANSACTION_TYPES.TRANSFER) {
+          if (transaction.fromAccount === TRANSFER_ACCOUNTS.CHECKING) {
+            newTransaction.toAccount = TRANSFER_ACCOUNTS.SAVINGS;
+          } else {
+            newTransaction.toAccount = TRANSFER_ACCOUNTS.CHECKING;
+          }
+
           newTransaction.fromAccount = transaction.fromAccount;
-          newTransaction.toAccount = transaction.toAccount;
           newTransaction.description = transaction.description;
         } else {
           throw new Error(`${transactionType} is an invalid transaction type`);
