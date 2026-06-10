@@ -1,7 +1,15 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Button, Card, Container, Form, Modal, Spinner } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
 import Link from "next/link";
 import Image from "next/image";
 import handleObjectInput from "@/helpers/handleObjectInput";
@@ -58,39 +66,44 @@ const LoginPageForm = ({ csrfToken }) => {
           />
           <p>Login to get back on track with your finances</p>
         </div>
-        <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
-          <Form onSubmit={loginUser}>
-            <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-            <Form.Group controlId="username" className="h-100 my-2">
-              <Form.Control
-                type="text"
-                value={user.username}
-                placeholder="Username"
-                onChange={(e) => handleObjectInput({ e, setObject: setUser })}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="password" className="h-100 my-2">
-              <Form.Control
-                type="password"
-                value={user.password}
-                placeholder="Password"
-                onChange={(e) => handleObjectInput({ e, setObject: setUser })}
-                required
-              />
-            </Form.Group>
-            {loginError && <ErrorMessage message={loginError} />}
-            <Button className="btn btn-primary w-100" type="submit">
-              Login
-            </Button>
-          </Form>
-          <Link href="/auth/createAccount" className="mt-2 text-center small">
-            New user?{" "}
-            <span className="text-primary text-decoration-underline">
-              Create account
-            </span>
-          </Link>
-        </Card>
+
+        <Col xs={12} md={4}>
+          <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+            <Form onSubmit={loginUser}>
+              <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+              <Form.Group controlId="username" className="h-100 my-2">
+                <Form.Control
+                  type="text"
+                  value={user.username}
+                  placeholder="Username"
+                  onChange={(e) => handleObjectInput({ e, setObject: setUser })}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="password" className="h-100 my-2">
+                <Form.Control
+                  type="password"
+                  value={user.password}
+                  placeholder="Password"
+                  onChange={(e) => handleObjectInput({ e, setObject: setUser })}
+                  required
+                />
+              </Form.Group>
+              {loginError && <ErrorMessage message={loginError} />}
+              <Button className="btn btn-primary w-100" type="submit">
+                Login
+              </Button>
+            </Form>
+            <div className="mt-2 text-center">
+              <Link href="/auth/createAccount" className="small">
+                New user?{" "}
+                <span className="text-primary text-decoration-underline">
+                  Create account
+                </span>
+              </Link>
+            </div>
+          </div>
+        </Col>
       </Container>
 
       <Modal show={loggingIn} onHide={closeLoggingIn} centered>

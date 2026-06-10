@@ -53,8 +53,8 @@ const Home = () => {
 
   return (
     <Container>
-      <Card className="col-12 mx-auto card-background">
-        <Card.Body>
+      <Col xs={12}>
+        <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
           <Row>
             <Col className="col-12 col-lg-6 mt-3">
               <Row className="d-flex flex-column mx-4 mx-auto">
@@ -104,14 +104,10 @@ const Home = () => {
                 <Col className="col-12 col-md-6 col-lg-7 col-xl-6">
                   <Table borderless>
                     <thead>
-                      <tr className={`d-flex ${styles.grayBackground}`}>
+                      <tr className={`d-flex`}>
+                        <th className={`col-6 col-lg-7 col-xl-6`}>Category</th>
                         <th
-                          className={`col-6 col-lg-7 col-xl-6 ${styles.grayBackground}`}
-                        >
-                          Category
-                        </th>
-                        <th
-                          className={`col-6 col-lg-5 col-xl-6 text-end fw-bold ${styles.grayBackground}`}
+                          className={`col-6 col-lg-5 col-xl-6 text-end fw-bold`}
                         >
                           Spent
                         </th>
@@ -120,9 +116,7 @@ const Home = () => {
                     <tbody>
                       {exampleCategories.map((category, index) => (
                         <tr key={index} className="d-flex">
-                          <td
-                            className={`col-6 col-lg-7 col-xl-6 ${styles.grayBackground}`}
-                          >
+                          <td className={`col-6 col-lg-7 col-xl-6`}>
                             <Button
                               style={category.style}
                               className="btn-sm fw-bold"
@@ -131,7 +125,7 @@ const Home = () => {
                             </Button>
                           </td>
                           <td
-                            className={`col-6 col-lg-5 col-xl-6 text-end fw-bold ${styles.grayBackground}`}
+                            className={`col-6 col-lg-5 col-xl-6 text-end fw-bold`}
                           >
                             {dollarFormatter(category.actual)}
                           </td>
@@ -143,8 +137,8 @@ const Home = () => {
               </Row>
             </Col>
           </Row>
-        </Card.Body>
-      </Card>
+        </div>
+      </Col>
     </Container>
   );
 };

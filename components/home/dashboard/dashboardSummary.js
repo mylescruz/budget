@@ -41,8 +41,8 @@ const DashboardSummary = ({ dateInfo, totals }) => {
   }
 
   return (
-    <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
-      <Card.Body>
+    <Col xs={12}>
+      <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
         <Row className="align-items-center">
           <Col md={8}>
             <h5 className="text-muted">
@@ -84,8 +84,8 @@ const DashboardSummary = ({ dateInfo, totals }) => {
             </div>
           </div>
         </Row>
-      </Card.Body>
-    </Card>
+      </div>
+    </Col>
   );
 };
 

@@ -96,85 +96,72 @@ const DashboardLayout = () => {
         {/* Insights */}
         <Row className="mb-4">
           <Col md={4}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
-              <Card.Body>
-                <h6 className="text-muted">{dateInfo.monthName} Income</h6>
-                <h4 className="fw-bold">
-                  {dollarFormatter(totals.current.income)}
-                </h4>
-                <p className={`mb-0 ${totals.trends.incomeColor}`}>
-                  {totals.trends.income} vs last month (
-                  {dollarFormatter(totals.previous.income)})
-                </p>
-              </Card.Body>
-            </Card>
+            <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+              <h6 className="text-muted">{dateInfo.monthName} Income</h6>
+              <h4 className="fw-bold">
+                {dollarFormatter(totals.current.income)}
+              </h4>
+              <p className={`mb-0 ${totals.trends.incomeColor}`}>
+                {totals.trends.income} vs last month (
+                {dollarFormatter(totals.previous.income)})
+              </p>
+            </div>
           </Col>
           <Col md={4}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
-              <Card.Body>
-                <h6 className="text-muted">{dateInfo.monthName} Spending</h6>
-                <h4 className="fw-bold">
-                  {dollarFormatter(totals.current.expenses)}
-                </h4>
-                <p className={`mb-0 ${totals.trends.expensesColor}`}>
-                  {totals.trends.expenses} vs last month (
-                  {dollarFormatter(totals.previous.expenses)})
-                </p>
-              </Card.Body>
-            </Card>
+            <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+              <h6 className="text-muted">{dateInfo.monthName} Spending</h6>
+              <h4 className="fw-bold">
+                {dollarFormatter(totals.current.expenses)}
+              </h4>
+              <p className={`mb-0 ${totals.trends.expensesColor}`}>
+                {totals.trends.expenses} vs last month (
+                {dollarFormatter(totals.previous.expenses)})
+              </p>
+            </div>
           </Col>
           <Col md={4}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 mb-4">
-              <Card.Body>
-                <h6 className="text-muted">
-                  {dateInfo.monthName}'s Top Category
-                </h6>
-                <h4 className="fw-bold">{top5Categories[0].name}</h4>
-                <p className="mb-0">
-                  {dollarFormatter(top5Categories[0].actual)} (
-                  {Math.round(
-                    (top5Categories[0].actual / totals.current.expenses) * 100,
-                  )}
-                  %)
-                </p>
-              </Card.Body>
-            </Card>
+            <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+              <h6 className="text-muted">
+                {dateInfo.monthName}'s Top Category
+              </h6>
+              <h4 className="fw-bold">{top5Categories[0].name}</h4>
+              <p className="mb-0">
+                {dollarFormatter(top5Categories[0].actual)} (
+                {Math.round(
+                  (top5Categories[0].actual / totals.current.expenses) * 100,
+                )}
+                %)
+              </p>
+            </div>
           </Col>
         </Row>
 
         {/* Activity */}
         <Row>
           <Col md={6}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100 mb-2">
-              <Card.Body>
-                <h6 className="text-muted mb-3">
-                  {dateInfo.monthName}'s Top Spending Categories
-                </h6>
+            <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+              <h6 className="text-muted mb-3">
+                {dateInfo.monthName}'s Top Spending Categories
+              </h6>
 
-                {dashboard.categories.slice(0, 10).map((category, index) => (
-                  <div
-                    key={category._id}
-                    className="d-flex justify-content-between my-4"
-                  >
-                    <CategoryBadge
-                      name={category.name}
-                      color={category.color}
-                    />
-                    <div>{dollarFormatter(category.actual)}</div>
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
+              {dashboard.categories.slice(0, 10).map((category, index) => (
+                <div
+                  key={category._id}
+                  className="d-flex justify-content-between my-4"
+                >
+                  <CategoryBadge name={category.name} color={category.color} />
+                  <div>{dollarFormatter(category.actual)}</div>
+                </div>
+              ))}
+            </div>
           </Col>
           <Col md={6}>
-            <Card className="bg-light shadow-sm border-0 rounded-4 h-100 mb-2">
-              <Card.Body>
-                <h6 className="text-muted mb-3">
-                  {dateInfo.monthName}'s Spending Breakdown
-                </h6>
-                <CategoryPieChart categories={dashboard.categories} />
-              </Card.Body>
-            </Card>
+            <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+              <h6 className="text-muted mb-3">
+                {dateInfo.monthName}'s Spending Breakdown
+              </h6>
+              <CategoryPieChart categories={dashboard.categories} />
+            </div>
           </Col>
         </Row>
       </Container>

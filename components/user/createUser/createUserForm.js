@@ -2,7 +2,7 @@ import ErrorMessage from "@/components/ui/errorMessage";
 import handleObjectInput from "@/helpers/handleObjectInput";
 import Link from "next/link";
 import { useState } from "react";
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Button, Card, Col, Container, Form } from "react-bootstrap";
 
 const errorFields = {
   message: null,
@@ -112,90 +112,108 @@ const CreateUserForm = ({
 
   return (
     <Container className="d-flex justify-content-center align-items-center">
-      <Card className="p-3 col-12 col-sm-10 col-md-6 col-lg-4 card-background">
-        <h1 className="text-center">Create account</h1>
-        <Form onSubmit={verifyInput}>
-          <Form.Group controlId="name" className="h-100 my-2">
-            <Form.Control
-              type="text"
-              value={newUser.name}
-              placeholder="Name"
-              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="email" className="h-100 my-2">
-            <Form.Control
-              type="text"
-              value={newUser.email}
-              placeholder="Email"
-              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={formErrors.email}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              {formErrors.email}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group controlId="username" className="h-100 my-2">
-            <Form.Control
-              type="text"
-              value={newUser.username}
-              placeholder="Username"
-              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={formErrors.username}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              {formErrors.username}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group controlId="password" className="h-100 my-2">
-            <Form.Control
-              type="password"
-              value={newUser.password}
-              placeholder="Password"
-              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={formErrors.password}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              {formErrors.password}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group controlId="confirmPassword" className="h-100 my-2">
-            <Form.Control
-              type="password"
-              value={newUser.confirmPassword}
-              placeholder="Confirm Password"
-              onChange={(e) => handleObjectInput({ e, setObject: setNewUser })}
-              isInvalid={formErrors.passwordMatch}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              {formErrors.passwordMatch}
-            </Form.Control.Feedback>
-            <Form.Text>
-              Your password must include:
-              <ul>
-                <li>An uppercase letter</li>
-                <li>A lowercase letter</li>
-                <li>A number</li>
-                <li>A special character: !@#$%&*?</li>
-                <li>Minimum 8 characters</li>
-              </ul>
-            </Form.Text>
-          </Form.Group>
-          {formErrors.message && <ErrorMessage message={formErrors.message} />}
-          <Button className="w-100" type="submit">
-            Sign Up
-          </Button>
-        </Form>
-        <Link href="/auth/signIn" className="mt-2 text-center small">
-          Already have an account?{" "}
-          <span className="text-primary text-decoration-underline">Login</span>
-        </Link>
-      </Card>
+      <Col xs={12} md={4}>
+        <div className="bg-white rounded-3 shadow-sm p-3 mb-3">
+          <h1 className="text-center">Create account</h1>
+          <Form onSubmit={verifyInput}>
+            <Form.Group controlId="name" className="h-100 my-2">
+              <Form.Control
+                type="text"
+                value={newUser.name}
+                placeholder="Name"
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewUser })
+                }
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="email" className="h-100 my-2">
+              <Form.Control
+                type="text"
+                value={newUser.email}
+                placeholder="Email"
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewUser })
+                }
+                isInvalid={formErrors.email}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.email}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="username" className="h-100 my-2">
+              <Form.Control
+                type="text"
+                value={newUser.username}
+                placeholder="Username"
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewUser })
+                }
+                isInvalid={formErrors.username}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.username}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="password" className="h-100 my-2">
+              <Form.Control
+                type="password"
+                value={newUser.password}
+                placeholder="Password"
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewUser })
+                }
+                isInvalid={formErrors.password}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.password}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="confirmPassword" className="h-100 my-2">
+              <Form.Control
+                type="password"
+                value={newUser.confirmPassword}
+                placeholder="Confirm Password"
+                onChange={(e) =>
+                  handleObjectInput({ e, setObject: setNewUser })
+                }
+                isInvalid={formErrors.passwordMatch}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.passwordMatch}
+              </Form.Control.Feedback>
+              <Form.Text>
+                Your password must include:
+                <ul>
+                  <li>An uppercase letter</li>
+                  <li>A lowercase letter</li>
+                  <li>A number</li>
+                  <li>A special character: !@#$%&*?</li>
+                  <li>Minimum 8 characters</li>
+                </ul>
+              </Form.Text>
+            </Form.Group>
+            {formErrors.message && (
+              <ErrorMessage message={formErrors.message} />
+            )}
+            <Button className="w-100 mb-2" type="submit">
+              Sign Up
+            </Button>
+          </Form>
+          <div className="mt-2 text-center">
+            <Link href="/auth/signIn" className="small">
+              Already have an account?{" "}
+              <span className="text-primary text-decoration-underline">
+                Login
+              </span>
+            </Link>
+          </div>
+        </div>
+      </Col>
     </Container>
   );
 };
