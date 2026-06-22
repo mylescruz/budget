@@ -16,7 +16,7 @@ import centsToDollars from "@/helpers/centsToDollars";
 const TRANSACTIONS_PER_PAGE = 25;
 
 const TransactionsLayout = ({ dateInfo }) => {
-  const { transactions } = useContext(BudgetContext);
+  const { categories, transactions } = useContext(BudgetContext);
 
   const [modal, setModal] = useState(null);
   const [chosenTransaction, setChosenTransaction] = useState(null);
@@ -60,7 +60,22 @@ const TransactionsLayout = ({ dateInfo }) => {
       if (transaction.type === TRANSACTION_TYPES.EXPENSE) {
         formatted.name = transaction.store;
         formatted.description = transaction.items;
-        formatted.type = transaction.category;
+
+        if (transaction.fixed && transaction.parentCategoryId) {
+          // If the transaction is a fixed subcategory, show the parent category's name as the type
+          const foundParent = categories.find(
+            (category) => category._id === transaction.parentCategoryId,
+          );
+
+          if (!foundParent) {
+            formatted.type = transaction.category;
+          } else {
+            formatted.type = foundParent.name;
+          }
+        } else {
+          formatted.type = transaction.category;
+        }
+
         formatted.icon = (
           <div
             style={{
