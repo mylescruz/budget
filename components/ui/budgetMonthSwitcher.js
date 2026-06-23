@@ -38,45 +38,45 @@ const BudgetMonthSwitcher = ({
 
   // Function to move one month back
   const previousMonth = () => {
-    if (
-      monthInfo.month !== budgetMonths.min.month ||
-      monthInfo.year !== budgetMonths.min.year
-    ) {
-      let monthNum = monthInfo.month - 1;
-      let yearNum = monthInfo.year;
+    let monthNum = monthInfo.month - 1;
+    let yearNum = monthInfo.year;
 
-      if (monthNum === 0) {
-        monthNum = 12;
-        yearNum -= 1;
-      }
-
-      const date = new Date(`${monthNum}/01/${yearNum}`);
-      const info = getDateInfo(date);
-
-      setMonthInfo(info);
+    if (monthNum === 0) {
+      monthNum = 12;
+      yearNum -= 1;
     }
+
+    const date = new Date(`${monthNum}/01/${yearNum}`);
+    const info = getDateInfo(date);
+
+    setMonthInfo(info);
   };
 
   // Function to move one month forward
   const nextMonth = () => {
-    if (
-      monthInfo.year !== budgetMonths.max.year ||
-      (monthInfo.year === budgetMonths.max.year && monthInfo.month < 12)
-    ) {
-      let monthNum = monthInfo.month + 1;
-      let yearNum = monthInfo.year;
+    let monthNum = monthInfo.month + 1;
+    let yearNum = monthInfo.year;
 
-      if (monthNum > 12) {
-        monthNum = 1;
-        yearNum += 1;
-      }
-
-      const date = new Date(`${monthNum}/01/${yearNum}`);
-      const info = getDateInfo(date);
-
-      setMonthInfo(info);
+    if (monthNum > 12) {
+      monthNum = 1;
+      yearNum += 1;
     }
+
+    const date = new Date(`${monthNum}/01/${yearNum}`);
+    const info = getDateInfo(date);
+
+    setMonthInfo(info);
   };
+
+  const hidePreviousMonth = budgetMonths
+    ? monthInfo.month !== budgetMonths.min.month ||
+      monthInfo.year !== budgetMonths.min.year
+    : false;
+
+  const hideNextMonth = budgetMonths
+    ? monthInfo.year !== budgetMonths.max.year ||
+      (monthInfo.year === budgetMonths.max.year && monthInfo.month < 12)
+    : false;
 
   if (
     budgetMonthsRequest.action === "get" &&
@@ -89,13 +89,15 @@ const BudgetMonthSwitcher = ({
         <div className="mx-auto">
           {budgetMonths ? (
             <Row className="d-flex col-12 col-md-8 col-lg-6 col-xl-5 justify-items-between mx-auto align-items-center text-center">
-              <Col className="col-2 col-lg-1">
-                <i
-                  className="bi bi-chevron-left clicker"
-                  onClick={previousMonth}
-                />
+              <Col xs={2} lg={1}>
+                {hidePreviousMonth && (
+                  <i
+                    className="bi bi-chevron-left clicker"
+                    onClick={previousMonth}
+                  />
+                )}
               </Col>
-              <Col className="col-8 col-lg-10 px-0">
+              <Col xs={8} lg={10} className="px-0">
                 <div className="d-flex justify-content-center align-items-center">
                   <h1 className={styles.title}>{pageInfo.title}</h1>
                   <Dropdown>
@@ -128,11 +130,13 @@ const BudgetMonthSwitcher = ({
                   </Dropdown>
                 </div>
               </Col>
-              <Col className="col-2 col-lg-1">
-                <i
-                  className="bi bi-chevron-right clicker"
-                  onClick={nextMonth}
-                />
+              <Col xs={8} lg={1}>
+                {hideNextMonth && (
+                  <i
+                    className="bi bi-chevron-right clicker"
+                    onClick={nextMonth}
+                  />
+                )}
               </Col>
             </Row>
           ) : (
