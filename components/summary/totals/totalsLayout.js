@@ -99,6 +99,24 @@ const TotalsLayout = ({ months, totals }) => {
 
   const totalsArray = [
     {
+      title: "Budget Inflow",
+      amount: totals.income + totals.toChecking,
+      textColor: "text-dark",
+    },
+    {
+      title: "Budget Outflow",
+      amount: totals.expenses + totals.toSavings,
+      textColor: "text-dark",
+    },
+    {
+      title: "Budget Remaining",
+      amount: totals.netCashFlow - totals.netSavings,
+      textColor:
+        totals.netCashFlow - totals.netSavings >= 0
+          ? "text-success fw-bold"
+          : "text-danger fw-bold",
+    },
+    {
       title: "Income",
       amount: totals.income,
       textColor: "text-dark",
@@ -131,24 +149,6 @@ const TotalsLayout = ({ months, totals }) => {
       amount: totals.netSavings,
       textColor:
         totals.netSavings >= 0 ? "text-success fw-bold" : "text-danger fw-bold",
-    },
-    {
-      title: "Budget Inflow",
-      amount: totals.income + totals.toChecking,
-      textColor: "text-dark",
-    },
-    {
-      title: "Budget Outflow",
-      amount: totals.expenses + totals.toSavings,
-      textColor: "text-dark",
-    },
-    {
-      title: "Budget Remaining",
-      amount: totals.netCashFlow - totals.netSavings,
-      textColor:
-        totals.netCashFlow - totals.netSavings >= 0
-          ? "text-success fw-bold"
-          : "text-danger fw-bold",
     },
   ];
 

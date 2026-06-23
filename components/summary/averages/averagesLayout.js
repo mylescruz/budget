@@ -4,6 +4,24 @@ import AveragesCards from "./averagesCards";
 const AveragesLayout = ({ totals }) => {
   const averages = [
     {
+      title: "Avg Budget Inflow",
+      amount: (totals.income + totals.toChecking) / totals.numMonths,
+      textColor: "text-dark",
+    },
+    {
+      title: "Avg Budget Outflow",
+      amount: (totals.expenses + totals.toSavings) / totals.numMonths,
+      textColor: "text-dark",
+    },
+    {
+      title: "Avg Budget Remaining",
+      amount: (totals.netCashFlow - totals.netSavings) / totals.numMonths,
+      textColor:
+        totals.netCashFlow - totals.netSavings >= 0
+          ? "text-success fw-bold"
+          : "text-danger fw-bold",
+    },
+    {
       title: "Avg Income Per Month",
       amount: totals.income / totals.numMonths,
       textColor: "text-dark",
@@ -36,24 +54,6 @@ const AveragesLayout = ({ totals }) => {
       amount: totals.netSavings / totals.numMonths,
       textColor:
         totals.netSavings >= 0 ? "text-success fw-bold" : "text-danger fw-bold",
-    },
-    {
-      title: "Avg Budget Inflow",
-      amount: (totals.income + totals.toChecking) / totals.numMonths,
-      textColor: "text-dark",
-    },
-    {
-      title: "Avg Budget Outflow",
-      amount: (totals.expenses + totals.toSavings) / totals.numMonths,
-      textColor: "text-dark",
-    },
-    {
-      title: "Avg Budget Remaining",
-      amount: (totals.netCashFlow - totals.netSavings) / totals.numMonths,
-      textColor:
-        totals.netCashFlow - totals.netSavings >= 0
-          ? "text-success fw-bold"
-          : "text-danger fw-bold",
     },
   ];
 
