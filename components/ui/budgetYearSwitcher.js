@@ -40,17 +40,15 @@ const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
       <div className="mx-auto">
         {budgetMonths ? (
           <Row className="d-flex col-12 col-md-8 col-lg-6 col-xl-5 justify-items-between mx-auto align-items-center text-center">
-            <Col className="col-2">
-              <Button
-                onClick={previousYear}
-                size="sm"
-                className="btn-dark fw-bold"
-                disabled={year === budgetMonths.min.year}
-              >
-                &#60;
-              </Button>
+            <Col xs={2} lg={1}>
+              {year !== budgetMonths.min.year && (
+                <i
+                  className="bi bi-chevron-left clicker"
+                  onClick={previousYear}
+                />
+              )}
             </Col>
-            <Col className="col-8">
+            <Col xs={8} lg={10} className="px-0">
               <div className="d-flex justify-content-center align-items-center">
                 <h1 className={styles.title}>
                   {year} {pageInfo.title}
@@ -75,15 +73,10 @@ const BudgetYearSwitcher = ({ year, setYear, pageInfo, children }) => {
                 </Dropdown>
               </div>
             </Col>
-            <Col className="col-2">
-              <Button
-                onClick={nextYear}
-                size="sm"
-                className="btn-dark fw-bold"
-                disabled={year === budgetMonths.max.year}
-              >
-                &#62;
-              </Button>
+            <Col xs={2} lg={1}>
+              {year !== budgetMonths.max.year && (
+                <i className="bi bi-chevron-right clicker" onClick={nextYear} />
+              )}
             </Col>
           </Row>
         ) : (
