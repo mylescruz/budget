@@ -89,7 +89,7 @@ const BudgetMonthSwitcher = ({
         <div className="mx-auto">
           {budgetMonths ? (
             <Row className="d-flex col-12 col-md-8 col-lg-6 col-xl-5 justify-items-between mx-auto align-items-center text-center">
-              <Col xs={2} lg={1}>
+              <Col xs={1}>
                 {hidePreviousMonth && (
                   <i
                     className="bi bi-chevron-left clicker"
@@ -97,7 +97,7 @@ const BudgetMonthSwitcher = ({
                   />
                 )}
               </Col>
-              <Col xs={8} lg={10} className="px-0">
+              <Col xs={10} className="px-0">
                 <div className="d-flex justify-content-center align-items-center">
                   <h1 className={styles.title}>{pageInfo.title}</h1>
                   <Dropdown>
@@ -130,7 +130,7 @@ const BudgetMonthSwitcher = ({
                   </Dropdown>
                 </div>
               </Col>
-              <Col xs={8} lg={1}>
+              <Col xs={1}>
                 {hideNextMonth && (
                   <i
                     className="bi bi-chevron-right clicker"
