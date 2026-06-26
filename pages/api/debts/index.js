@@ -4,6 +4,7 @@ import clientPromise from "@/lib/mongodb";
 import { logError } from "@/lib/logError";
 import dollarsToCents from "@/helpers/dollarsToCents";
 import { DEBT_TYPE } from "@/lib/constants/debt";
+import centsToDollars from "@/helpers/centsToDollars";
 
 export default async function handler(req, res) {
   // Establish NextAuth.js session
@@ -37,7 +38,30 @@ export default async function handler(req, res) {
 async function getDebts(req, res, { debtsCol, username }) {
   try {
     const fetchedDebts = await debtsCol
-      .aggregate([{ $match: { username } }])
+      .aggregate([
+        { $match: { username } },
+        {
+          $project: {
+            _id: 1,
+            username: 1,
+            type: 1,
+            lender: 1,
+            active: 1,
+            currentBalance: { $divide: ["$currentBalance", 100] },
+            originalBalance: { $divide: ["$originalBalance", 100] },
+            apr: 1,
+            monthlyPayment: { $divide: ["$monthlyPayment", 100] },
+            startDate: 1,
+            targetPayoffDate: 1,
+            creditLimit: { $divide: ["$creditLimit", 100] },
+            promoAPR: 1,
+            promoAPREndDate: 1,
+            notes: 1,
+            createdTS: 1,
+            updatedTS: 1,
+          },
+        },
+      ])
       .toArray();
 
     return res.status(200).json(fetchedDebts);
@@ -67,8 +91,7 @@ async function addDebt(req, res, { debtsCol, username }) {
       active: true,
       currentBalance: dollarsToCents(debtInfo.currentBalance),
       apr: Number(debtInfo.apr),
-      minimumPayment: dollarsToCents(debtInfo.minimumPayment),
-      notes: debtInfo.notes,
+      monthlyPayment: dollarsToCents(debtInfo.monthlyPayment),
       createdTS: currentTS,
       updatedTS: currentTS,
     };
@@ -98,7 +121,22 @@ async function addDebt(req, res, { debtsCol, username }) {
       maxTimeMS: 5000,
     });
 
-    return res.status(200).json({ _id: insertedDebt.insertedId, ...newDebt });
+    const addedDebt = {
+      ...newDebt,
+      _id: insertedDebt.insertedId,
+      currentBalance: centsToDollars(newDebt.currentBalance),
+      monthlyPayment: centsToDollars(newDebt.monthlyPayment),
+    };
+
+    if (addedDebt.type === DEBT_TYPE.LOAN) {
+      addedDebt.originalBalance = centsToDollars(newDebt.originalBalance);
+    }
+
+    if (addedDebt.type === DEBT_TYPE.CREDIT_CARD) {
+      addedDebt.creditLimit = centsToDollars(newDebt.creditLimit);
+    }
+
+    return res.status(200).json(addedDebt);
   } catch (error) {
     await logError({ error, req, username });
 

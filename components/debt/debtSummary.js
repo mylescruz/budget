@@ -6,13 +6,13 @@ const DebtSummary = ({ debts }) => {
   const totals = debts.reduce(
     (sum, debt) => {
       sum.debts += debt.currentBalance;
-      sum.minimums += debt.minimumPayment;
+      sum.monthlyPayments += debt.monthlyPayment;
       sum.accounts += 1;
       sum.apr += debt.apr;
 
       return sum;
     },
-    { accounts: 0, debts: 0, minimums: 0, apr: 0 },
+    { accounts: 0, debts: 0, monthlyPayments: 0, apr: 0 },
   );
 
   // Calculate the average APR between all debts
@@ -29,8 +29,8 @@ const DebtSummary = ({ debts }) => {
       />
 
       <DebtSummaryCard
-        title="Monthly Minimums"
-        amount={totals.minimums}
+        title="Monthly Payments"
+        amount={totals.monthlyPayments}
         icon="bi-calendar-check"
       />
 

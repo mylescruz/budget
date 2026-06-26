@@ -14,12 +14,12 @@ import { useEffect, useMemo, useState } from "react";
 //          currentBalance: number,      // in USD
 //          apr: number,                 // Percentage
 //          originalBalance: number,     // in USD
+//          monthlyPayment: number,      // in USD
 //          startDate: date,
 //          targetPayoffDate: date,
 //          creditLimit: number,         // in USD
 //          promoAPR: number,            // Percentage
 //          promoAPREndDate: date,
-//          notes: string,
 //          createdTS: date,
 //          updatedTS: date,
 //      }
