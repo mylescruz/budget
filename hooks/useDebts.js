@@ -73,6 +73,52 @@ const useDebts = () => {
     getDebts();
   }, []);
 
+  // Add a new debt to the database
+  const postDebt = async (newDebt) => {
+    setDebtsRequest({
+      action: REQUEST_TYPE.POST,
+      status: REQUEST_STATUS.LOADING,
+      message: "Adding your new debt",
+    });
+
+    try {
+      const response = await fetch("/api/debts", {
+        method: REQUEST_TYPE.POST,
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newDebt),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+
+        throw new Error(errorMessage);
+      }
+
+      // Get the inserted debt
+      const addedDebt = await response.json();
+
+      // Add the new debt to the debts array
+      setDebts((prev) => [...prev, addedDebt]);
+
+      setDebtsRequest({
+        action: REQUEST_TYPE.POST,
+        status: REQUEST_STATUS.SUCCESS,
+        message: "Successfully added your debt",
+      });
+    } catch (error) {
+      setDebtsRequest({
+        action: REQUEST_TYPE.POST,
+        status: REQUEST_STATUS.ERROR,
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
   // Status of the API call to the debts endpoint
   const reqStatus = useMemo(() => {
     if (!debtsRequest) {
@@ -91,7 +137,7 @@ const useDebts = () => {
     };
   }, [debtsRequest]);
 
-  return { debts, reqStatus };
+  return { debts, reqStatus, postDebt };
 };
 
 export default useDebts;
