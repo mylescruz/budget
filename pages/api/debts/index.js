@@ -67,6 +67,7 @@ async function addDebt(req, res, { debtsCol, username }) {
       active: true,
       currentBalance: dollarsToCents(debtInfo.currentBalance),
       apr: Number(debtInfo.apr),
+      minimumPayment: dollarsToCents(debtInfo.minimumPayment),
       notes: debtInfo.notes,
       createdTS: currentTS,
       updatedTS: currentTS,
