@@ -45,6 +45,7 @@ async function getDebts(req, res, { debtsCol, username }) {
             _id: 1,
             username: 1,
             type: 1,
+            loanType: 1,
             lender: 1,
             active: 1,
             currentBalance: { $divide: ["$currentBalance", 100] },
@@ -98,6 +99,7 @@ async function addDebt(req, res, { debtsCol, username }) {
 
     // Add specific fields for Loan type debt
     if (newDebt.type === DEBT_TYPE.LOAN) {
+      newDebt.loanType = debtInfo.loanType;
       newDebt.originalBalance = dollarsToCents(debtInfo.originalBalance);
       newDebt.startDate = new Date(debtInfo.startDate);
       newDebt.targetPayoffDate = new Date(debtInfo.targetPayoffDate);

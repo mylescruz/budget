@@ -1,5 +1,6 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import { DEBT_TYPE, LOAN_TYPE } from "@/lib/constants/debt";
 import { Badge, Card, Col, Dropdown, ProgressBar, Row } from "react-bootstrap";
 
 const DebtCard = ({ debt }) => {
@@ -8,10 +9,12 @@ const DebtCard = ({ debt }) => {
       <Card.Body>
         <div className="d-flex justify-content-between mb-3">
           <div>
-            <h5 className="mb-1">{debt.name}</h5>
+            <h5 className="mb-1">{debt.lender}</h5>
 
-            <Badge bg={debt.type === "loan" ? "primary" : "success"}>
-              {debt.type === "loan" ? "Personal Loan" : "Credit Card"}
+            <Badge bg={debt.type === DEBT_TYPE.LOAN ? "primary" : "success"}>
+              {debt.type === DEBT_TYPE.LOAN
+                ? debt.loanType
+                : DEBT_TYPE.CREDIT_CARD}
             </Badge>
           </div>
 
@@ -41,9 +44,9 @@ const DebtCard = ({ debt }) => {
           </Col>
 
           <Col xs={6}>
-            <small className="text-muted">Minimum Payment</small>
+            <small className="text-muted">Monthly Payment</small>
             <div className="fw-bold">
-              {dollarFormatter(debt.minimumPayment)}
+              {dollarFormatter(debt.monthlyPayment)}
             </div>
           </Col>
 

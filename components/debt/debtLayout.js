@@ -6,6 +6,7 @@ import DebtHeader from "./debtHeader";
 import DebtSummary from "./debtSummary";
 import { useState } from "react";
 import AddDebtModal from "./addDebtModal/addDebtModal";
+import DebtCard from "./debtCard";
 
 const DebtLayout = () => {
   const { debts, reqStatus, postDebt } = useDebts();
@@ -37,7 +38,17 @@ const DebtLayout = () => {
               {reqStatus.isInitialError ? (
                 <ErrorMessage message={reqStatus.message} />
               ) : (
-                <DebtSummary debts={debts} />
+                <>
+                  <DebtSummary debts={debts} />
+
+                  <Row className="g-3">
+                    {debts.map((debt) => (
+                      <Col key={debt._id} xs={12} lg={6}>
+                        <DebtCard debt={debt} />
+                      </Col>
+                    ))}
+                  </Row>
+                </>
               )}
             </Col>
           </Row>
