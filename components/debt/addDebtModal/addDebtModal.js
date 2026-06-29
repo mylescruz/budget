@@ -14,6 +14,7 @@ const AddDebtModal = ({ modal, setModal, postDebt }) => {
     currentBalance: "",
     apr: "",
     monthlyPayment: "",
+    dueDate: "",
     notes: "",
   };
 

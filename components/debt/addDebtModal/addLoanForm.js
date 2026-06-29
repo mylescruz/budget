@@ -74,6 +74,14 @@ const AddLoanForm = ({ debt, setDebt, handleInput }) => {
         handleInput={handleInput}
         min={0}
       />
+      <NumberInput
+        id={"dueDate"}
+        label={"What day of the month is your payment due?"}
+        value={debt.dueDate}
+        handleInput={handleInput}
+        min={1}
+        max={31}
+      />
     </>
   );
 };
