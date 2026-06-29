@@ -56,8 +56,6 @@ async function getDebts(req, res, { debtsCol, username }) {
             startDate: 1,
             targetPayoffDate: 1,
             creditLimit: { $divide: ["$creditLimit", 100] },
-            promoAPR: 1,
-            promoAPREndDate: 1,
             notes: 1,
             createdTS: 1,
             updatedTS: 1,
@@ -110,12 +108,6 @@ async function addDebt(req, res, { debtsCol, username }) {
     // Add specific fields for Credit Card type debt
     if (newDebt.type === DEBT_TYPE.CREDIT_CARD) {
       newDebt.creditLimit = dollarsToCents(debtInfo.creditLimit);
-      newDebt.promoAPR =
-        debtInfo.promoAPR === "" ? null : Number(debtInfo.promoAPR);
-      newDebt.promoAPREndDate =
-        debtInfo.promoAPREndDate === ""
-          ? null
-          : new Date(debtInfo.promoAPREndDate);
     }
 
     let insertedDebt;

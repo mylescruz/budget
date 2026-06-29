@@ -32,9 +32,6 @@ const AddDebtModal = ({ modal, setModal, postDebt }) => {
     ...debt,
     type: DEBT_TYPE.CREDIT_CARD,
     creditLimit: "",
-    hasPromoAPR: false,
-    promoAPR: "",
-    promoAPREndDate: "",
   };
 
   const [newDebt, setNewDebt] = useState(newLoan);
