@@ -23,6 +23,12 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
     setModal("EDIT");
   };
 
+  const openPaidOff = () => {
+    setSelectedDebt(debt);
+
+    setModal("PAID OFF");
+  };
+
   const openDeleteModal = () => {
     setSelectedDebt(debt);
 
@@ -72,6 +78,9 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
 
             <Dropdown.Menu>
               <Dropdown.Item onClick={openEditModal}>Edit</Dropdown.Item>
+              <Dropdown.Item className="text-success" onClick={openPaidOff}>
+                Mark Paid Off
+              </Dropdown.Item>
               <Dropdown.Item className="text-danger" onClick={openDeleteModal}>
                 Delete
               </Dropdown.Item>

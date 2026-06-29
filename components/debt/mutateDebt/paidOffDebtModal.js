@@ -4,21 +4,19 @@ import { REQUEST_STATUS } from "@/lib/constants/requests";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const DeleteDebtModal = ({ debt, deleteDebt, reqStatus, modal, setModal }) => {
+const PaidOffDebtModal = ({ debt, reqStatus, modal, setModal }) => {
   const [form, setForm] = useState({
     status: REQUEST_STATUS.IDLE,
     error: null,
   });
 
-  const closeDeleteModal = () => {
+  const closePaidOffModal = () => {
     setModal(null);
   };
 
-  const confirmDeleteDebt = async () => {
+  const confirmPaidDebt = async () => {
     try {
       setForm({ status: REQUEST_STATUS.LOADING, error: null });
-
-      await deleteDebt(debt._id);
 
       setModal(null);
     } catch (error) {
@@ -27,24 +25,24 @@ const DeleteDebtModal = ({ debt, deleteDebt, reqStatus, modal, setModal }) => {
   };
 
   return (
-    <Modal show={modal === "DELETE"} onHide={closeDeleteModal} centered>
+    <Modal show={modal === "PAID OFF"} onHide={closePaidOffModal} centered>
       {form.status === REQUEST_STATUS.IDLE && (
         <>
           <Modal.Header closeButton>
-            <Modal.Title>Delete Debt</Modal.Title>
+            <Modal.Title>Pay Off Debt</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              Are you sure you want to delete your debt through {debt.lender}?
-            </p>
+            Congrats on paying off your {debt.type.toLowerCase()} with{" "}
+            {debt.lender}! That's a huge accomplishment! Confirm you paid it off
+            below to mark off this debt.
             {form.error && <ErrorMessage message={form.error} />}
           </Modal.Body>
           <Modal.Footer className="d-flex flex-row justify-content-between">
-            <Button variant="secondary" onClick={closeDeleteModal}>
+            <Button variant="secondary" onClick={closePaidOffModal}>
               Cancel
             </Button>
-            <Button variant="danger" onClick={confirmDeleteDebt}>
-              Delete
+            <Button variant="success" onClick={confirmPaidDebt}>
+              Complete
             </Button>
           </Modal.Footer>
         </>
@@ -56,4 +54,4 @@ const DeleteDebtModal = ({ debt, deleteDebt, reqStatus, modal, setModal }) => {
   );
 };
 
-export default DeleteDebtModal;
+export default PaidOffDebtModal;
