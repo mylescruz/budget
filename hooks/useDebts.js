@@ -119,6 +119,60 @@ const useDebts = () => {
     }
   };
 
+  // Update a debt in the database and replace the current debt in the debts state
+  const putDebt = async (editedDebt) => {
+    setDebtsRequest({
+      action: REQUEST_TYPE.PUT,
+      status: REQUEST_STATUS.LOADING,
+      message: "Updating this debt",
+    });
+
+    try {
+      const response = await fetch(`/api/debts/${editedDebt._id}`, {
+        method: REQUEST_TYPE.PUT,
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedDebt),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+
+        throw new Error(errorMessage);
+      }
+
+      // Get the updated debt
+      const updatedDebt = await response.json();
+
+      // Replace the current debt with the updated one
+      setDebts((prev) => {
+        return prev.map((debt) => {
+          if (debt._id === updatedDebt._id) {
+            return updatedDebt;
+          } else {
+            return debt;
+          }
+        });
+      });
+
+      setDebtsRequest({
+        action: REQUEST_TYPE.PUT,
+        status: REQUEST_STATUS.SUCCESS,
+        message: "Successfully updated your debt",
+      });
+    } catch (error) {
+      setDebtsRequest({
+        action: REQUEST_TYPE.PUT,
+        status: REQUEST_STATUS.ERROR,
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
   // Delete a debt from the database and remove it from the debts state
   const deleteDebt = async (debtId) => {
     setDebtsRequest({
@@ -193,7 +247,7 @@ const useDebts = () => {
     };
   }, [debtsRequest]);
 
-  return { debts, reqStatus, postDebt, deleteDebt };
+  return { debts, reqStatus, postDebt, putDebt, deleteDebt };
 };
 
 export default useDebts;
