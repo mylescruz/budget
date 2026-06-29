@@ -119,6 +119,53 @@ const useDebts = () => {
     }
   };
 
+  // Delete a debt from the database and remove it from the debts state
+  const deleteDebt = async (debtId) => {
+    setDebtsRequest({
+      action: REQUEST_TYPE.DELETE,
+      status: REQUEST_STATUS.LOADING,
+      message: "Deleting this debt",
+    });
+
+    try {
+      const response = await fetch(`/api/debts/${debtId}`, {
+        method: REQUEST_TYPE.DELETE,
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+
+        throw new Error(errorMessage);
+      }
+
+      // Get the deleted debt _id and delete message
+      const deletedDebt = await response.json();
+
+      // Remove the debt from the debts array
+      setDebts((prev) => {
+        return prev.filter((debt) => debt._id !== deletedDebt._id);
+      });
+
+      setDebtsRequest({
+        action: REQUEST_TYPE.DELETE,
+        status: REQUEST_STATUS.SUCCESS,
+        message: deletedDebt.message,
+      });
+    } catch (error) {
+      setDebtsRequest({
+        action: REQUEST_TYPE.DELETE,
+        status: REQUEST_STATUS.ERROR,
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
   // Status of the API call to the debts endpoint
   const reqStatus = useMemo(() => {
     if (!debtsRequest) {
@@ -132,12 +179,18 @@ const useDebts = () => {
       isInitialError:
         debtsRequest.action === REQUEST_TYPE.GET &&
         debtsRequest.status === REQUEST_STATUS.ERROR,
+      isError:
+        debtsRequest.action !== REQUEST_TYPE.GET &&
+        debtsRequest.status === REQUEST_STATUS.ERROR,
+      isSuccess:
+        debtsRequest.action !== REQUEST_TYPE.GET &&
+        debtsRequest.status === REQUEST_STATUS.SUCCESS,
       hasData: debtsRequest.status === REQUEST_STATUS.SUCCESS,
       message: debtsRequest.message,
     };
   }, [debtsRequest]);
 
-  return { debts, reqStatus, postDebt };
+  return { debts, reqStatus, postDebt, deleteDebt };
 };
 
 export default useDebts;
