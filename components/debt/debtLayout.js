@@ -11,6 +11,7 @@ import DeleteDebtModal from "./mutateDebt/deleteDebtModal";
 import SuccessMessage from "../ui/successMessage";
 import EditDebtModal from "./mutateDebt/editDebtModal";
 import PaidOffDebtModal from "./mutateDebt/paidOffDebtModal";
+import InactiveDebtLayout from "./inactiveDebt/inactiveDebtLayout";
 
 const DebtLayout = () => {
   const { debts, reqStatus, postDebt, putDebt, markDebtPaidOff, deleteDebt } =
@@ -68,6 +69,14 @@ const DebtLayout = () => {
     return debts.filter((debt) => debt.active);
   }, [debts]);
 
+  const inactiveDebts = useMemo(() => {
+    if (!debts) {
+      return null;
+    }
+
+    return debts.filter((debt) => !debt.active);
+  }, [debts]);
+
   if (reqStatus.isInitialLoad) {
     return <LoadingIndicator message={reqStatus.message} />;
   } else {
@@ -86,7 +95,7 @@ const DebtLayout = () => {
 
                   {activeDebts.length > 0 ? (
                     <Row className="g-3">
-                      {debts.map((debt) => (
+                      {activeDebts.map((debt) => (
                         <Col key={debt._id} xs={12} lg={6}>
                           <DebtCard
                             debt={debt}
@@ -100,6 +109,10 @@ const DebtLayout = () => {
                     <p className="text-center fw-bold">
                       Congrats! You have no active debt!
                     </p>
+                  )}
+
+                  {inactiveDebts.length > 0 && (
+                    <InactiveDebtLayout inactiveDebts={inactiveDebts} />
                   )}
                 </>
               )}

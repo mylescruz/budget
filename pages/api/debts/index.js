@@ -57,7 +57,7 @@ async function getDebts(req, res, { debtsCol, username }) {
             startDate: 1,
             targetPayoffDate: 1,
             creditLimit: { $divide: ["$creditLimit", 100] },
-            notes: 1,
+            paidOffDate: 1,
             createdTS: 1,
             updatedTS: 1,
           },
@@ -94,6 +94,7 @@ async function addDebt(req, res, { debtsCol, username }) {
       balanceLastUpdatedTS: currentTS,
       apr: Number(debtInfo.apr),
       monthlyPayment: dollarsToCents(debtInfo.monthlyPayment),
+      paidOffDate: null,
       createdTS: currentTS,
       updatedTS: currentTS,
     };

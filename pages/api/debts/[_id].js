@@ -128,6 +128,7 @@ async function markDebtPaidOff(req, res, { client, debtsCol, username }) {
       currentBalance: 0,
       balanceLastUpdatedTS: currentTS,
       monthlyPayment: 0,
+      paidOffDate: currentTS,
       updatedTS: currentTS,
     };
 
@@ -147,11 +148,12 @@ async function markDebtPaidOff(req, res, { client, debtsCol, username }) {
 
     const updatedDebt = {
       ...req.body,
-      active: false,
-      currentBalance: 0,
-      balanceLastUpdatedTS: currentTS,
-      monthlyPayment: 0,
-      updatedTS: currentTS,
+      active: debtQuery.active,
+      currentBalance: debtQuery.currentBalance,
+      balanceLastUpdatedTS: debtQuery.balanceLastUpdatedTS,
+      monthlyPayment: debtQuery.monthlyPayment,
+      paidOffDate: debtQuery.paidOffDate,
+      updatedTS: debtQuery.updatedTS,
     };
 
     return res.status(200).json(updatedDebt);

@@ -132,7 +132,7 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
           </Col>
 
           <Col xs={6}>
-            <small className="text-muted">Payoff Time</small>
+            <small className="text-muted">Remaining Time</small>
             <div className="fw-bold">{monthsRemaining}</div>
           </Col>
         </Row>
