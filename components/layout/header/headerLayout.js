@@ -8,6 +8,7 @@ import UserNavbar from "./userNavbar";
 const pages = [
   { title: "Budget", link: "/budget", role: "User" },
   { title: "Income", link: "/income", role: "User" },
+  { title: "Debt", link: "/debt", role: "User" },
   { title: "Summary", link: "/summary", role: "User" },
   { title: "Account", link: "/account", role: "User" },
   { title: "Users", link: "/admin/users", role: "Administrator" },
