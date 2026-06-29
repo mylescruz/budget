@@ -21,7 +21,7 @@ export default function formatTimeAgo(pastTime) {
 
   // Handle Hours
   if (diffInMinutes >= 60 && diffInHours < 24) {
-    return `${diffInHours} hours${diffInHours > 1 ? "s" : ""} ago`;
+    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
   }
 
   // Handle Days

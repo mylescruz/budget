@@ -1,3 +1,4 @@
+import calculateMonthsRemaining from "@/helpers/calculateMonthsRemaining";
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import formatTimeAgo from "@/helpers/formatTimeAgo";
@@ -28,17 +29,27 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
     setModal("DELETE");
   };
 
-  let percentPaid;
+  let remainingPercent;
 
   if (debt.type === DEBT_TYPE.LOAN) {
-    percentPaid = Math.round(
+    remainingPercent = Math.round(
       (debt.currentBalance / debt.originalBalance) * 100,
     );
   } else {
-    percentPaid = Math.round((debt.currentBalance / debt.creditLimit) * 100);
+    remainingPercent = Math.round(
+      (debt.currentBalance / debt.creditLimit) * 100,
+    );
   }
 
-  const remainingPercent = 100 - percentPaid;
+  const percentPaid = 100 - remainingPercent;
+
+  const monthsRemaining = calculateMonthsRemaining(
+    debt.currentBalance,
+    debt.apr,
+    debt.monthlyPayment,
+  );
+
+  const utilization = DEBT_TYPE.CREDIT_CARD ? percentPaid : null;
 
   return (
     <Card className="shadow-sm h-100">
@@ -70,9 +81,23 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
 
         <Row className="g-3 mb-3">
           <Col xs={6}>
-            <small className="text-muted">Balance</small>
-            <div className="fw-bold">
+            <small className="text-muted">Current Balance</small>
+            <div className="fw-bold fs-5">
               {dollarFormatter(debt.currentBalance)}
+            </div>
+          </Col>
+
+          <Col xs={6}>
+            <small className="text-muted">
+              {debt.type === DEBT_TYPE.LOAN
+                ? "Original Balance"
+                : "Credit Limit"}
+            </small>
+
+            <div className="fw-bold">
+              {debt.type === DEBT_TYPE.LOAN
+                ? dollarFormatter(debt.originalBalance)
+                : dollarFormatter(debt.creditLimit)}
             </div>
           </Col>
 
@@ -89,26 +114,31 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
           </Col>
 
           <Col xs={6}>
-            <small className="text-muted">Payoff Goal</small>
+            <small className="text-muted">Progress</small>
             <div className="fw-bold">
-              {dateFormatter(debt.targetPayoffDate)}
+              {debt.type === DEBT_TYPE.LOAN
+                ? `${Math.round(percentPaid)}% Paid Off`
+                : `${utilization}% Utilization`}
             </div>
           </Col>
-        </Row>
 
-        {debt.balanceLastUpdatedTS && (
-          <div className="small">
-            Balance last updated {formatTimeAgo(debt.balanceLastUpdatedTS)}
-          </div>
-        )}
+          <Col xs={6}>
+            <small className="text-muted">Payoff Time</small>
+            <div className="fw-bold">{monthsRemaining}</div>
+          </Col>
+        </Row>
 
         <div className="mt-2">
           <div className="progress" style={{ height: 6 }}>
             <div
               className="progress-bar bg-primary"
-              style={{ width: `${remainingPercent}%` }}
+              style={{ width: `${percentPaid}%` }}
             />
           </div>
+        </div>
+
+        <div className="mt-2 small">
+          Balance last updated {formatTimeAgo(debt.balanceLastUpdatedTS)}
         </div>
       </Card.Body>
     </Card>
