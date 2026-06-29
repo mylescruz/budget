@@ -5,10 +5,12 @@ const DebtSummary = ({ debts }) => {
   // Calculate the totals for all debts
   const totals = debts.reduce(
     (sum, debt) => {
-      sum.debts += debt.currentBalance;
-      sum.monthlyPayments += debt.monthlyPayment;
-      sum.accounts += 1;
-      sum.apr += debt.apr;
+      if (debt.active) {
+        sum.debts += debt.currentBalance;
+        sum.monthlyPayments += debt.monthlyPayment;
+        sum.accounts += 1;
+        sum.apr += debt.apr;
+      }
 
       return sum;
     },

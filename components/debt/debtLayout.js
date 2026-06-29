@@ -58,6 +58,14 @@ const DebtLayout = () => {
     }
   }, [modal]);
 
+  const activeDebts = useMemo(() => {
+    if (!debts) {
+      return null;
+    }
+
+    return debts.filter((debt) => debt.active);
+  }, [debts]);
+
   if (reqStatus.isInitialLoad) {
     return <LoadingIndicator message={reqStatus.message} />;
   } else {
@@ -74,17 +82,23 @@ const DebtLayout = () => {
                 <>
                   <DebtSummary debts={debts} />
 
-                  <Row className="g-3">
-                    {debts.map((debt) => (
-                      <Col key={debt._id} xs={12} lg={6}>
-                        <DebtCard
-                          debt={debt}
-                          setSelectedDebt={setSelectedDebt}
-                          setModal={setModal}
-                        />
-                      </Col>
-                    ))}
-                  </Row>
+                  {activeDebts.length > 0 ? (
+                    <Row className="g-3">
+                      {debts.map((debt) => (
+                        <Col key={debt._id} xs={12} lg={6}>
+                          <DebtCard
+                            debt={debt}
+                            setSelectedDebt={setSelectedDebt}
+                            setModal={setModal}
+                          />
+                        </Col>
+                      ))}
+                    </Row>
+                  ) : (
+                    <p className="text-center fw-bold">
+                      Congrats! You have no active debt!
+                    </p>
+                  )}
                 </>
               )}
             </Col>
