@@ -4,6 +4,23 @@ import { DEBT_TYPE } from "@/lib/constants/debt";
 import { Badge, Card, Col, Dropdown, ProgressBar, Row } from "react-bootstrap";
 
 const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
+  const openEditModal = () => {
+    const formattedDebt = { ...debt };
+
+    if (formattedDebt.type === DEBT_TYPE.LOAN) {
+      formattedDebt.startDate = new Date(debt.startDate)
+        .toISOString()
+        .split("T")[0];
+      formattedDebt.targetPayoffDate = new Date(debt.targetPayoffDate)
+        .toISOString()
+        .split("T")[0];
+    }
+
+    setSelectedDebt(formattedDebt);
+
+    setModal("EDIT");
+  };
+
   const openDeleteModal = () => {
     setSelectedDebt(debt);
 
@@ -30,7 +47,7 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item>Edit</Dropdown.Item>
+              <Dropdown.Item onClick={openEditModal}>Edit</Dropdown.Item>
               <Dropdown.Item className="text-danger" onClick={openDeleteModal}>
                 Delete
               </Dropdown.Item>

@@ -9,6 +9,7 @@ import AddDebtModal from "./addDebtModal/addDebtModal";
 import DebtCard from "./debtCard";
 import DeleteDebtModal from "./mutateDebt/deleteDebtModal";
 import SuccessMessage from "../ui/successMessage";
+import EditDebtModal from "./mutateDebt/editDebtModal";
 
 const DebtLayout = () => {
   const { debts, reqStatus, postDebt, deleteDebt } = useDebts();
@@ -21,6 +22,16 @@ const DebtLayout = () => {
       case "ADD":
         return (
           <AddDebtModal modal={modal} setModal={setModal} postDebt={postDebt} />
+        );
+      case "EDIT":
+        return (
+          <EditDebtModal
+            debt={selectedDebt}
+            setDebt={setSelectedDebt}
+            modal={modal}
+            setModal={setModal}
+            reqStatus={reqStatus}
+          />
         );
       case "DELETE":
         return (
