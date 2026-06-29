@@ -43,112 +43,38 @@ const EditDebtModal = ({ debt, modal, setModal, putDebt, reqStatus }) => {
       {form.status === REQUEST_STATUS.IDLE && (
         <>
           <Modal.Header closeButton>
-            <Modal.Title>Edit Debt</Modal.Title>
+            <Modal.Title>Edit your {debt.type}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <NumberInput
+              id={"currentBalance"}
+              label={"What is the current balance?"}
+              value={selectedDebt.currentBalance}
+              handleInput={handleInput}
+              min={0.01}
+            />
+            <NumberInput
+              id={"apr"}
+              label={"What is the Annual Percentage Rate (APR)?"}
+              value={selectedDebt.apr}
+              handleInput={handleInput}
+              min={0.01}
+            />
+            <NumberInput
+              id={"monthlyPayment"}
+              label={"What is your current monthly payment?"}
+              value={selectedDebt.monthlyPayment}
+              handleInput={handleInput}
+              min={0}
+            />
             {selectedDebt.type === DEBT_TYPE.CREDIT_CARD && (
-              <>
-                <TextInput
-                  id={"lender"}
-                  label={"Who is the credit card servicer?"}
-                  value={selectedDebt.lender}
-                  handleInput={handleInput}
-                />
-                <NumberInput
-                  id={"currentBalance"}
-                  label={"What is the current balance?"}
-                  value={selectedDebt.currentBalance}
-                  handleInput={handleInput}
-                  min={0.01}
-                />
-                <NumberInput
-                  id={"creditLimit"}
-                  label={"What is the card's credit limit?"}
-                  value={selectedDebt.creditLimit}
-                  handleInput={handleInput}
-                  min={0.01}
-                />
-                <NumberInput
-                  id={"apr"}
-                  label={"What is the Annual Percentage Rate (APR)?"}
-                  value={selectedDebt.apr}
-                  handleInput={handleInput}
-                  min={0.01}
-                />
-                <NumberInput
-                  id={"monthlyPayment"}
-                  label={"What is your current monthly payment?"}
-                  value={selectedDebt.monthlyPayment}
-                  handleInput={handleInput}
-                  min={0}
-                />
-                <NumberInput
-                  id={"dueDate"}
-                  label={"What day of the month is your payment due?"}
-                  value={selectedDebt.dueDate}
-                  handleInput={handleInput}
-                  min={1}
-                  max={31}
-                />
-              </>
-            )}
-            {selectedDebt.type === DEBT_TYPE.LOAN && (
-              <>
-                <TextInput
-                  id={"lender"}
-                  label={"What is the lender's name?"}
-                  value={selectedDebt.lender}
-                  handleInput={handleInput}
-                />
-                <NumberInput
-                  id={"currentBalance"}
-                  label={"What is the current balance?"}
-                  value={selectedDebt.currentBalance}
-                  handleInput={handleInput}
-                  min={0.01}
-                />
-                <NumberInput
-                  id={"originalBalance"}
-                  label={"What was the loan's original balance?"}
-                  value={selectedDebt.originalBalance}
-                  handleInput={handleInput}
-                  min={0.01}
-                />
-                <NumberInput
-                  id={"apr"}
-                  label={"What is the Annual Percentage Rate (APR)?"}
-                  value={selectedDebt.apr}
-                  handleInput={handleInput}
-                  min={0.01}
-                />
-                <DateInput
-                  id={"startDate"}
-                  label={"When did this loan start?"}
-                  value={selectedDebt.startDate}
-                  handleInput={handleInput}
-                />
-                <DateInput
-                  id={"targetPayoffDate"}
-                  label={"What is the target payoff date?"}
-                  value={selectedDebt.targetPayoffDate}
-                  handleInput={handleInput}
-                />
-                <NumberInput
-                  id={"monthlyPayment"}
-                  label={"What is your current monthly payment?"}
-                  value={selectedDebt.monthlyPayment}
-                  handleInput={handleInput}
-                  min={0}
-                />
-                <NumberInput
-                  id={"dueDate"}
-                  label={"What day of the month is your payment due?"}
-                  value={selectedDebt.dueDate}
-                  handleInput={handleInput}
-                  min={1}
-                  max={31}
-                />
-              </>
+              <NumberInput
+                id={"creditLimit"}
+                label={"What is the card's credit limit?"}
+                value={selectedDebt.creditLimit}
+                handleInput={handleInput}
+                min={0.01}
+              />
             )}
             {form.error && <ErrorMessage message={form.error} />}
           </Modal.Body>

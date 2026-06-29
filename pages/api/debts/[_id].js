@@ -48,20 +48,11 @@ async function updateDebt(req, res, { client, debtsCol, username }) {
   try {
     // Format the new debt
     const debtQuery = {
-      lender: editedDebt.lender,
       currentBalance: dollarsToCents(editedDebt.currentBalance),
       apr: Number(editedDebt.apr),
       monthlyPayment: dollarsToCents(editedDebt.monthlyPayment),
-      dueDate: Number(editedDebt.dueDate),
       updatedTS: currentTS,
     };
-
-    // Add specific fields for Loan type debt
-    if (editedDebt.type === DEBT_TYPE.LOAN) {
-      debtQuery.originalBalance = dollarsToCents(editedDebt.originalBalance);
-      debtQuery.startDate = new Date(editedDebt.startDate);
-      debtQuery.targetPayoffDate = new Date(editedDebt.targetPayoffDate);
-    }
 
     // Add specific fields for Credit Card type debt
     if (editedDebt.type === DEBT_TYPE.CREDIT_CARD) {
@@ -96,15 +87,8 @@ async function updateDebt(req, res, { client, debtsCol, username }) {
       currentBalance: centsToDollars(debtQuery.currentBalance),
       monthlyPayment: centsToDollars(debtQuery.monthlyPayment),
       apr: debtQuery.apr,
-      dueDate: debtQuery.dueDate,
       updatedTS: debtQuery.updatedTS,
     };
-
-    if (updatedDebt.type === DEBT_TYPE.LOAN) {
-      updatedDebt.originalBalance = centsToDollars(debtQuery.originalBalance);
-      updatedDebt.startDate = debtQuery.startDate;
-      updatedDebt.targetPayoffDate = debtQuery.targetPayoffDate;
-    }
 
     if (updatedDebt.type === DEBT_TYPE.CREDIT_CARD) {
       updatedDebt.creditLimit = centsToDollars(debtQuery.creditLimit);
