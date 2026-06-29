@@ -1,9 +1,15 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
-import { DEBT_TYPE, LOAN_TYPE } from "@/lib/constants/debt";
+import { DEBT_TYPE } from "@/lib/constants/debt";
 import { Badge, Card, Col, Dropdown, ProgressBar, Row } from "react-bootstrap";
 
-const DebtCard = ({ debt }) => {
+const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
+  const openDeleteModal = () => {
+    setSelectedDebt(debt);
+
+    setModal("DELETE");
+  };
+
   return (
     <Card className="shadow-sm h-100">
       <Card.Body>
@@ -25,7 +31,9 @@ const DebtCard = ({ debt }) => {
 
             <Dropdown.Menu>
               <Dropdown.Item>Edit</Dropdown.Item>
-              <Dropdown.Item className="text-danger">Delete</Dropdown.Item>
+              <Dropdown.Item className="text-danger" onClick={openDeleteModal}>
+                Delete
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>

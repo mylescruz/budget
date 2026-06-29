@@ -179,6 +179,9 @@ const useDebts = () => {
       isInitialError:
         debtsRequest.action === REQUEST_TYPE.GET &&
         debtsRequest.status === REQUEST_STATUS.ERROR,
+      isLoading:
+        debtsRequest.action !== REQUEST_TYPE.GET &&
+        debtsRequest.status === REQUEST_STATUS.LOADING,
       isError:
         debtsRequest.action !== REQUEST_TYPE.GET &&
         debtsRequest.status === REQUEST_STATUS.ERROR,
