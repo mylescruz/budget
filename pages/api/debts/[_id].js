@@ -28,6 +28,8 @@ export default async function handler(req, res) {
   switch (req.method) {
     case "PUT":
       return updateDebt(req, res, debtsContext);
+    case "PATCH":
+      return markDebtPaidOff(req, res, debtsContext);
     case "DELETE":
       return deleteDebt(req, res, debtsContext);
     default:
@@ -105,6 +107,63 @@ async function updateDebt(req, res, { client, debtsCol, username }) {
       .status(500)
       .send(
         "We're unable to edit this debt at the moment. Please try again later!",
+      );
+  } finally {
+    await mongoSession.endSession();
+  }
+}
+
+// Mark the given debt as paid off for the user in MongoDB
+async function markDebtPaidOff(req, res, { client, debtsCol, username }) {
+  const mongoSession = client.startSession();
+
+  const debtId = req.query._id;
+
+  const currentTS = new Date();
+
+  try {
+    // Format the new debt
+    const debtQuery = {
+      active: false,
+      currentBalance: 0,
+      balanceLastUpdatedTS: currentTS,
+      apr: Number(editedDebt.apr),
+      monthlyPayment: 0,
+      updatedTS: currentTS,
+    };
+
+    await mongoSession.withTransaction(async (session) => {
+      // Update the given debt into MongoDB
+      await debtsCol.updateOne(
+        { _id: new ObjectId(debtId) },
+        {
+          $set: debtQuery,
+        },
+        {
+          session,
+          maxTimeMS: 5000,
+        },
+      );
+    });
+
+    const updatedDebt = {
+      ...req.body,
+      active: false,
+      currentBalance: 0,
+      balanceLastUpdatedTS: currentTS,
+      apr: Number(editedDebt.apr),
+      monthlyPayment: 0,
+      updatedTS: currentTS,
+    };
+
+    return res.status(200).json(updatedDebt);
+  } catch (error) {
+    await logError({ error, req, username });
+
+    return res
+      .status(500)
+      .send(
+        "We're unable to mark this debt as paid off at the moment. Please try again later!",
       );
   } finally {
     await mongoSession.endSession();
