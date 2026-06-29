@@ -12,7 +12,7 @@ import SuccessMessage from "../ui/successMessage";
 import EditDebtModal from "./mutateDebt/editDebtModal";
 
 const DebtLayout = () => {
-  const { debts, reqStatus, postDebt, deleteDebt } = useDebts();
+  const { debts, reqStatus, postDebt, putDebt, deleteDebt } = useDebts();
 
   const [selectedDebt, setSelectedDebt] = useState(null);
   const [modal, setModal] = useState(null);
@@ -27,9 +27,9 @@ const DebtLayout = () => {
         return (
           <EditDebtModal
             debt={selectedDebt}
-            setDebt={setSelectedDebt}
             modal={modal}
             setModal={setModal}
+            putDebt={putDebt}
             reqStatus={reqStatus}
           />
         );
