@@ -13,7 +13,8 @@ import EditDebtModal from "./mutateDebt/editDebtModal";
 import PaidOffDebtModal from "./mutateDebt/paidOffDebtModal";
 
 const DebtLayout = () => {
-  const { debts, reqStatus, postDebt, putDebt, deleteDebt } = useDebts();
+  const { debts, reqStatus, postDebt, putDebt, markDebtPaidOff, deleteDebt } =
+    useDebts();
 
   const [selectedDebt, setSelectedDebt] = useState(null);
   const [modal, setModal] = useState(null);
@@ -38,6 +39,7 @@ const DebtLayout = () => {
         return (
           <PaidOffDebtModal
             debt={selectedDebt}
+            markDebtPaidOff={markDebtPaidOff}
             reqStatus={reqStatus}
             modal={modal}
             setModal={setModal}

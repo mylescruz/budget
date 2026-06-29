@@ -127,7 +127,6 @@ async function markDebtPaidOff(req, res, { client, debtsCol, username }) {
       active: false,
       currentBalance: 0,
       balanceLastUpdatedTS: currentTS,
-      apr: Number(editedDebt.apr),
       monthlyPayment: 0,
       updatedTS: currentTS,
     };
@@ -151,7 +150,6 @@ async function markDebtPaidOff(req, res, { client, debtsCol, username }) {
       active: false,
       currentBalance: 0,
       balanceLastUpdatedTS: currentTS,
-      apr: Number(editedDebt.apr),
       monthlyPayment: 0,
       updatedTS: currentTS,
     };

@@ -4,7 +4,13 @@ import { REQUEST_STATUS } from "@/lib/constants/requests";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const PaidOffDebtModal = ({ debt, reqStatus, modal, setModal }) => {
+const PaidOffDebtModal = ({
+  debt,
+  markDebtPaidOff,
+  reqStatus,
+  modal,
+  setModal,
+}) => {
   const [form, setForm] = useState({
     status: REQUEST_STATUS.IDLE,
     error: null,
@@ -17,6 +23,8 @@ const PaidOffDebtModal = ({ debt, reqStatus, modal, setModal }) => {
   const confirmPaidDebt = async () => {
     try {
       setForm({ status: REQUEST_STATUS.LOADING, error: null });
+
+      await markDebtPaidOff(debt);
 
       setModal(null);
     } catch (error) {
