@@ -1,7 +1,7 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
 import { DEBT_TYPE } from "@/lib/constants/debt";
-import { Badge, Card, Col, Dropdown, ProgressBar, Row } from "react-bootstrap";
+import { Badge, Card, Col, Dropdown, Row } from "react-bootstrap";
 
 const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
   const openEditModal = () => {
@@ -26,6 +26,18 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
 
     setModal("DELETE");
   };
+
+  let percentPaid;
+
+  if (debt.type === DEBT_TYPE.LOAN) {
+    percentPaid = Math.round(
+      (debt.currentBalance / debt.originalBalance) * 100,
+    );
+  } else {
+    percentPaid = Math.round((debt.currentBalance / debt.creditLimit) * 100);
+  }
+
+  const remainingPercent = 100 - percentPaid;
 
   return (
     <Card className="shadow-sm h-100">
@@ -83,7 +95,14 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
           </Col>
         </Row>
 
-        <ProgressBar now={40} />
+        <div className="mt-2">
+          <div className="progress" style={{ height: 6 }}>
+            <div
+              className="progress-bar bg-primary"
+              style={{ width: `${remainingPercent}%` }}
+            />
+          </div>
+        </div>
       </Card.Body>
     </Card>
   );
