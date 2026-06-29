@@ -94,7 +94,6 @@ async function addDebt(req, res, { debtsCol, username }) {
       balanceLastUpdatedTS: currentTS,
       apr: Number(debtInfo.apr),
       monthlyPayment: dollarsToCents(debtInfo.monthlyPayment),
-      dueDate: Number(debtInfo.dueDate),
       createdTS: currentTS,
       updatedTS: currentTS,
     };
