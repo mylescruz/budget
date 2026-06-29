@@ -173,6 +173,60 @@ const useDebts = () => {
     }
   };
 
+  // Update a debt as paid off in the database and mark the current debt as not active in the debts state
+  const markDebtPaidOff = async (paidDebt) => {
+    setDebtsRequest({
+      action: REQUEST_TYPE.PATCH,
+      status: REQUEST_STATUS.LOADING,
+      message: "Marking this debt as paid off!",
+    });
+
+    try {
+      const response = await fetch(`/api/debts/${paidDebt._id}`, {
+        method: REQUEST_TYPE.PATCH,
+        headers: {
+          Accept: "application.json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paidDebt),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+
+        throw new Error(errorMessage);
+      }
+
+      // Get the updated debt
+      const updatedDebt = await response.json();
+
+      // Replace the current debt with the updated one
+      setDebts((prev) => {
+        return prev.map((debt) => {
+          if (debt._id === updatedDebt._id) {
+            return updatedDebt;
+          } else {
+            return debt;
+          }
+        });
+      });
+
+      setDebtsRequest({
+        action: REQUEST_TYPE.PATCH,
+        status: REQUEST_STATUS.SUCCESS,
+        message: "Successfully updated your debt",
+      });
+    } catch (error) {
+      setDebtsRequest({
+        action: REQUEST_TYPE.PATCH,
+        status: REQUEST_STATUS.ERROR,
+        message: error.message,
+      });
+
+      throw error;
+    }
+  };
+
   // Delete a debt from the database and remove it from the debts state
   const deleteDebt = async (debtId) => {
     setDebtsRequest({
@@ -247,7 +301,7 @@ const useDebts = () => {
     };
   }, [debtsRequest]);
 
-  return { debts, reqStatus, postDebt, putDebt, deleteDebt };
+  return { debts, reqStatus, postDebt, putDebt, markDebtPaidOff, deleteDebt };
 };
 
 export default useDebts;
