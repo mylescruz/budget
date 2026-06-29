@@ -1,5 +1,6 @@
 import dateFormatter from "@/helpers/dateFormatter";
 import dollarFormatter from "@/helpers/dollarFormatter";
+import formatTimeAgo from "@/helpers/formatTimeAgo";
 import { DEBT_TYPE } from "@/lib/constants/debt";
 import { Badge, Card, Col, Dropdown, Row } from "react-bootstrap";
 
@@ -94,6 +95,12 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
             </div>
           </Col>
         </Row>
+
+        {debt.balanceLastUpdatedTS && (
+          <div className="small">
+            Balance last updated {formatTimeAgo(debt.balanceLastUpdatedTS)}
+          </div>
+        )}
 
         <div className="mt-2">
           <div className="progress" style={{ height: 6 }}>

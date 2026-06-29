@@ -69,6 +69,15 @@ async function updateDebt(req, res, { client, debtsCol, username }) {
     }
 
     await mongoSession.withTransaction(async (session) => {
+      const currentDebt = await debtsCol.findOne(
+        { _id: new ObjectId(debtId) },
+        { session, maxTimeMS: 3000 },
+      );
+
+      if (currentDebt.currentBalance !== debtQuery.currentBalance) {
+        debtQuery.balanceLastUpdatedTS = currentTS;
+      }
+
       // Update the given debt into MongoDB
       await debtsCol.updateOne(
         { _id: new ObjectId(debtId) },
@@ -93,13 +102,16 @@ async function updateDebt(req, res, { client, debtsCol, username }) {
 
     if (updatedDebt.type === DEBT_TYPE.LOAN) {
       updatedDebt.originalBalance = centsToDollars(debtQuery.originalBalance);
-      debtQuery.startDate = debtQuery.startDate;
-      debtQuery.targetPayoffDate = debtQuery.targetPayoffDate;
+      updatedDebt.startDate = debtQuery.startDate;
+      updatedDebt.targetPayoffDate = debtQuery.targetPayoffDate;
     }
 
     if (updatedDebt.type === DEBT_TYPE.CREDIT_CARD) {
       updatedDebt.creditLimit = centsToDollars(debtQuery.creditLimit);
     }
+
+    updatedDebt.balanceLastUpdatedTS =
+      debtQuery.balanceLastUpdatedTS ?? editedDebt.balanceLastUpdatedTS;
 
     return res.status(200).json(updatedDebt);
   } catch (error) {
