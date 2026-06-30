@@ -18,7 +18,7 @@ const DebtSummary = ({ debts }) => {
   );
 
   // Calculate the average APR between all debts
-  const averageAPR = Math.round(totals.apr / totals.accounts);
+  const averageAPR = (totals.apr / totals.accounts).toFixed(2);
   const averageAPRText = averageAPR ? `${averageAPR}%` : "N/A";
 
   return (

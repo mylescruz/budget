@@ -55,7 +55,7 @@ const DebtCard = ({ debt, setSelectedDebt, setModal }) => {
     debt.monthlyPayment,
   );
 
-  const utilization = DEBT_TYPE.CREDIT_CARD ? percentPaid : null;
+  const utilization = DEBT_TYPE.CREDIT_CARD ? remainingPercent : null;
 
   return (
     <Card className="shadow-sm h-100">
